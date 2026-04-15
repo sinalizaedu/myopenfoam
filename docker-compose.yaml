@@ -1,0 +1,22 @@
+# docker compose build        — build the image
+# docker compose run --rm fsi  — start an interactive session
+# docker compose up            — run a default simulation (edit command below)
+
+services:
+  fsi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64   # Rosetta 2 on Apple Silicon — no native arm64 OF packages
+    image: fsi-openfoam:latest
+    platform: linux/amd64
+    stdin_open: true
+    tty: true
+    volumes:
+      # Mount your local simulation case(s) into the container
+      - ./cases:/simulation
+    working_dir: /simulation
+    # Override to run a specific case directly:
+    # command: bash -lc "cd myCase && ./Allrun"
+

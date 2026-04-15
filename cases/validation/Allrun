@@ -1,0 +1,33 @@
+#!/bin/bash
+# Allrun — Lid-driven cavity + solids4Foam cantilever beam
+# Proves the full stack: OpenFOAM, solids4Foam, ParaView output
+set -e
+cd "${0%/*}" || exit 1
+
+echo "============================================"
+echo " FSI Docker Stack Validation"
+echo "============================================"
+echo ""
+
+# ---- Fluid: lid-driven cavity (pimpleFoam) ----
+echo "=== [1/2] Fluid: lid-driven cavity ==="
+cd fluid
+blockMesh
+pimpleFoam > log.pimpleFoam 2>&1
+echo "  Fluid done. Check log: fluid/log.pimpleFoam"
+touch case.foam
+cd ..
+
+# ---- Solid: cantilever beam under gravity (solids4Foam) ----
+echo "=== [2/2] Solid: cantilever beam ==="
+cd solid
+blockMesh
+solids4Foam > log.solids4Foam 2>&1
+echo "  Solid done. Check log: solid/log.solids4Foam"
+touch case.foam
+cd ..
+
+echo ""
+echo "============================================"
+echo " Done. Open case.foam files in ParaView."
+echo "============================================"

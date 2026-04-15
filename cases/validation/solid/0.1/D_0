@@ -1,0 +1,80 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volVectorField;
+    location    "0.1";
+    object      D_0;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    left
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    right
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           uniform (0 0 0);
+        gradient        uniform (0 0 0);
+    }
+    top
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           uniform (0 0 0);
+        gradient        uniform (0 0 0);
+    }
+    bottom
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           uniform (0 0 0);
+        gradient        uniform (0 0 0);
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //

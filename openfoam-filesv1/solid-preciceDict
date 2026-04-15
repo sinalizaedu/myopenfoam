@@ -1,0 +1,42 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+// ---- preCICE adapter configuration for solids4Foam (solid) ----
+
+preciceConfig "../precice-config.xml";
+
+participant Solid;
+
+modules (FSI);
+
+interfaces
+{
+    Interface1
+    {
+        mesh              Solid-Mesh;
+        patches           (interface);    // <-- your coupling patch name
+        locations         faceCenters;
+
+        readData
+        (
+            Force
+        );
+
+        writeData
+        (
+            Displacement
+        );
+    }
+}
+
+FSI
+{
+    namePointDisplacement unused;    // solids4foam uses cell-based displacement
+    nameCellDisplacement  D;
+    nameForce             solidForce; // solids4foam expects solidForce field
+}
