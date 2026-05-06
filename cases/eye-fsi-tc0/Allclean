@@ -1,0 +1,26 @@
+#!/bin/bash
+# eye-fsi-tc0 — Allclean
+
+cd "$(dirname "$0")"
+
+echo "=== eye-fsi-tc0: cleaning ==="
+
+for domain in fluid solid; do
+    (
+        cd "$domain"
+        rm -rf log.* postProcessing
+        find . -maxdepth 1 -name '[0-9]*' ! -name '0' -exec rm -rf {} +
+        rm -rf constant/polyMesh
+        rm -f constant/mechanicalProperties.withDefaultValues \
+              constant/solidProperties.withDefaultValues
+        rm -f precice-*.log
+        rm -rf precice-profiling/
+        rm -rf dynamicCode   # force recompile of codedFixedValue BCs after any code change
+        touch "eye-fsi-tc0-${domain}.foam"
+        echo "  $domain cleaned"
+    )
+done
+
+rm -rf precice-run/ .precice-iterations
+
+echo "=== eye-fsi-tc0: clean done ==="

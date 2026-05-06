@@ -1,0 +1,53 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       pointVectorField;
+    object      pointDisplacement;
+}
+
+// ALE mesh motion: preCICE adapter writes barrier displacement here.
+// Exterior boundaries are fixed (no mesh motion).
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    outlet
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    top
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    bottom
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    // preCICE writes solid displacement here to morph the fluid mesh
+    interface
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    frontAndBack
+    {
+        type            empty;
+    }
+}

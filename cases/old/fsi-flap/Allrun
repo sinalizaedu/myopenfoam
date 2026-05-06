@@ -1,0 +1,57 @@
+#!/bin/bash
+# Allrun — FSI flap tutorial: flexible bar bending under channel flow
+# Uses pimpleFoam (fluid) + solids4Foam (solid) coupled via preCICE
+set -e
+cd "${0%/*}" || exit 1
+
+echo "============================================"
+echo " FSI Flap Tutorial"
+echo " Flexible bar bending under channel flow"
+echo "============================================"
+echo ""
+
+# ---- Mesh both domains ----
+echo "=== [1/3] Meshing fluid domain ==="
+blockMesh -case fluid
+touch fluid/case.foam
+echo "  Fluid mesh done."
+
+echo "=== [2/3] Meshing solid domain ==="
+blockMesh -case solid
+touch solid/case.foam
+echo "  Solid mesh done."
+
+# ---- Run coupled simulation ----
+echo "=== [3/3] Running coupled FSI simulation ==="
+echo "  Starting fluid (pimpleFoam) in background..."
+(cd fluid && pimpleFoam > log.pimpleFoam 2>&1) &
+FLUID_PID=$!
+
+echo "  Starting solid (solids4Foam) in foreground..."
+(cd solid && solids4Foam > log.solids4Foam 2>&1)
+
+# Wait for fluid to finish too
+wait $FLUID_PID
+
+# Remove timestep dirs that only contain uniform/ (preCICE coupling checkpoints)
+for domain in fluid solid; do
+    for td in "$domain"/*/; do
+        name=$(basename "$td")
+        case "$name" in
+            0) ;;  # keep initial conditions
+            *[0-9]*)
+                if [ -d "${td}uniform" ] && \
+                   [ -z "$(find "$td" -mindepth 1 -maxdepth 1 ! -name uniform 2>/dev/null)" ]; then
+                    rm -rf "$td"
+                fi
+                ;;
+        esac
+    done
+done
+
+echo ""
+echo "============================================"
+echo " Done. Open case.foam files in ParaView:"
+echo "   fluid/case.foam  — velocity and pressure"
+echo "   solid/case.foam  — displacement field D"
+echo "============================================"

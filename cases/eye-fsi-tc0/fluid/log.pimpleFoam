@@ -1,0 +1,269 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : pimpleFoam
+Date   : May 06 2026
+Time   : 18:27:16
+Host   : 729c7b852c8f
+PID    : 267
+I/O    : uncollated
+Case   : /simulation/eye-fsi-tc0/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Selecting dynamicFvMesh staticFvMesh
+
+PIMPLE: Operating solver in PISO mode
+
+Reading field p
+
+Reading field U
+
+Reading/calculating face flux field phi
+
+Selecting incompressible transport model Newtonian
+Selecting turbulence model type laminar
+Selecting laminar stress model Stokes
+No MRF models present
+
+Creating finite-volume options from "system/fvOptions"
+
+Selecting finite volume options type explicitPorositySource
+    Source: tm_porous
+    State: active
+    - selecting cells using cellZones (tm_zone)
+    - selected 4 cell(s) with volume 1e-09
+Porosity region tm_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/tm_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: tm_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.0005 0.002 0.001)
+
+Selecting finite volume options type explicitPorositySource
+    Source: tm_porous_left
+    State: active
+    - selecting cells using cellZones (tm_zone_left)
+    - selected 4 cell(s) with volume 1e-09
+Porosity region tm_porous_left:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/tm_porous_left/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: tm_zone_left
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.0005 0.002 0.001)
+
+Courant Number mean: 0 max: 0
+Courant Number mean: 0 max: 0
+
+Starting time loop
+
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[preCICE] This is preCICE version 3.3.1
+---[preCICE] Revision info: v3.3.1
+---[preCICE] Build type: Release (without debug log)
+---[preCICE] Working directory "/simulation/eye-fsi-tc0/fluid"
+---[preCICE] Configuring preCICE with configuration "../precice-config.xml"
+---[preCICE] I am participant "Fluid"
+---[preCICE] Setting up primary communication to coupling partner/s
+---[preCICE] Primary ranks are connected
+---[preCICE] Setting up preliminary secondary communication to coupling partner/s
+---[preCICE] Prepare partition for mesh Fluid-Mesh
+---[preCICE] Gather mesh Fluid-Mesh
+---[preCICE] Send global mesh Fluid-Mesh
+---[preCICE] Setting up secondary communication to coupling partner/s
+---[preCICE] Secondary ranks are connected
+---[preCICE] time-window 1, t 0 (max: 0.05), Dt 0.01, max-dt 0.01
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+surfaceFieldValue flowRateTM:
+    operation     = sum
+
+
+surfaceFieldValue flowRateTM_left:
+    operation     = sum
+
+
+surfaceFieldValue pressureIOP:
+    operation     = areaAverage
+
+
+surfaceFieldValue pressureACinlet:
+    operation     = areaAverage
+
+
+Courant Number mean: 0 max: 0
+Time = 0.01
+
+PIMPLE: iteration 1
+smoothSolver:  Solving for Ux, Initial residual = 0.99999995, Final residual = 1.6108876e-08, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.99999897, Final residual = 1.8640723e-08, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 1, Final residual = 8.4387721e-08, No Iterations 179
+time step continuity errors : sum local = 1.4014372e-12, global = -1.1571755e-15, cumulative = -1.1571755e-15
+ExecutionTime = 0.5 s  ClockTime = 1 s
+
+---[preCICE] Time window completed
+---[preCICE] time-window 2, t 0.01 (max: 0.05), Dt 0.01, max-dt 0.01
+surfaceFieldValue flowRateTM write:
+    total faces   = 4
+    total area    = 2e-06
+
+    sum(outlet_tm) of phi = 2.5050352e-11
+
+surfaceFieldValue flowRateTM_left write:
+    total faces   = 4
+    total area    = 2e-06
+
+    sum(outlet_tm_left) of phi = 2.5050352e-11
+
+surfaceFieldValue pressureIOP write:
+    total faces   = 4
+    total area    = 2e-06
+
+    areaAverage(outlet_tm) of p = 0
+
+surfaceFieldValue pressureACinlet write:
+    total faces   = 5
+    total area    = 2.4e-06
+
+    areaAverage(ac_inlet) of p = 2.0166729
+
+Courant Number mean: 6.0494736e-05 max: 0.00041942353
+Time = 0.02
+
+PIMPLE: iteration 1
+smoothSolver:  Solving for Ux, Initial residual = 0.25000266, Final residual = 3.3210136e-08, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 3.9854822e-05, Final residual = 1.0469107e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.74590735, Final residual = 8.4717075e-08, No Iterations 170
+time step continuity errors : sum local = 1.869954e-12, global = 4.5024987e-15, cumulative = 3.3453233e-15
+ExecutionTime = 0.54 s  ClockTime = 1 s
+
+---[preCICE] Time window completed
+---[preCICE] time-window 3, t 0.02 (max: 0.05), Dt 0.01, max-dt 0.01
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5050353e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.5050353e-11
+
+surfaceFieldValue pressureIOP write:
+    areaAverage(outlet_tm) of p = 0
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.3444245
+
+Courant Number mean: 6.0539979e-05 max: 0.0004047952
+Time = 0.03
+
+PIMPLE: iteration 1
+smoothSolver:  Solving for Ux, Initial residual = 0.076922902, Final residual = 3.5463015e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 5.4205417e-06, Final residual = 2.6840564e-08, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.47982861, Final residual = 8.7032333e-08, No Iterations 168
+time step continuity errors : sum local = 1.1140374e-12, global = 2.807687e-15, cumulative = 6.1530103e-15
+ExecutionTime = 0.55 s  ClockTime = 1 s
+
+---[preCICE] Time window completed
+---[preCICE] time-window 4, t 0.03 (max: 0.05), Dt 0.01, max-dt 0.01
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5050353e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.5050353e-11
+
+surfaceFieldValue pressureIOP write:
+    areaAverage(outlet_tm) of p = 0
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.1203571
+
+Courant Number mean: 6.0556553e-05 max: 0.00039878262
+Time = 0.04
+
+PIMPLE: iteration 1
+smoothSolver:  Solving for Ux, Initial residual = 0.024999821, Final residual = 6.4611638e-10, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.2534836e-06, Final residual = 5.903417e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.19865096, Final residual = 6.7185913e-08, No Iterations 166
+time step continuity errors : sum local = 1.1548309e-12, global = 1.7798133e-15, cumulative = 7.9328236e-15
+ExecutionTime = 0.57 s  ClockTime = 1 s
+
+---[preCICE] Time window completed
+---[preCICE] time-window 5, t 0.04 (max: 0.05), Dt 0.01, max-dt 0.01
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5050353e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.5050353e-11
+
+surfaceFieldValue pressureIOP write:
+    areaAverage(outlet_tm) of p = 0
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.0456662
+
+Courant Number mean: 6.0574961e-05 max: 0.00039269202
+Time = 0.05
+
+PIMPLE: iteration 1
+smoothSolver:  Solving for Ux, Initial residual = 0.0082644607, Final residual = 2.6632001e-10, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 6.7842014e-07, Final residual = 2.1152857e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.093965461, Final residual = 7.8321651e-08, No Iterations 165
+time step continuity errors : sum local = 1.0941765e-12, global = -6.7820754e-16, cumulative = 7.2546161e-15
+ExecutionTime = 0.58 s  ClockTime = 1 s
+
+---[preCICE] Time window completed
+---[preCICE] Reached end at: final time-window: 5, final time: 0.05
+---[preciceAdapter] The coupling completed.
+---[preCICE] Close communication channels
+---[preciceAdapter] The simulation was ended by preCICE. Calling the end() methods of any functionObject explicitly.
+---[preciceAdapter] Great that you are using the OpenFOAM-preCICE adapter! Next to the preCICE library and any other components, please also cite this adapter. Find how on https://precice.org/adapter-openfoam-overview.html.
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5050352e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.5050352e-11
+
+surfaceFieldValue pressureIOP write:
+    areaAverage(outlet_tm) of p = 0
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.0207694
+
+End
+
+I/O    : uncollated

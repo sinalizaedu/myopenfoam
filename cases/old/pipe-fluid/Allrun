@@ -1,0 +1,30 @@
+#!/bin/bash
+# Allrun — pipe-fluid: volumetric Darcy-Forchheimer porous barrier
+# Models the zonula as a porous medium zone (block B) — no structural deformation.
+set -e
+cd "${0%/*}" || exit 1
+
+echo "============================================"
+echo " pipe-fluid: Porous Darcy Volume Barrier"
+echo " Zonula = Darcy-Forchheimer cellZone"
+echo "============================================"
+echo ""
+
+echo "=== [1/3] Meshing ==="
+blockMesh -case fluid
+echo "  Mesh done."
+
+echo "=== [2/3] Creating barrier cellZone ==="
+topoSet -case fluid
+touch fluid/case.foam
+echo "  CellZone 'barrier' created."
+
+echo "=== [3/3] Running pimpleFoam ==="
+(cd fluid && pimpleFoam > log.pimpleFoam 2>&1)
+
+echo ""
+echo "============================================"
+echo " Done. Open fluid/case.foam in ParaView."
+echo " Inspect p and U to see pressure drop and"
+echo " velocity reduction through the porous zone."
+echo "============================================"

@@ -1,0 +1,93 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// eye-vitreous-ac-tc0: pimpleFoam, isothermal, no FSI, no preCICE.
+//
+// Transient scenario:
+//   t =  0 –  5 s : baseline          — ac_inlet only
+//   t =  5 – 10 s : injection ON      — needle_inlet + ac_inlet
+//   t = 10 – 15 s : injection OFF     — ac_inlet only
+//   t = 15 – 20 s : paracentesis ON   — needle_outlet + ac_inlet
+//   t = 20 – 25 s : paracentesis OFF  — ac_inlet only (recovery)
+//
+// writeControl = adjustableRunTime guarantees write snapshots at exact
+// physical times (0, 0.5, 1.0 … 20.0 s) regardless of Courant-adjusted dt.
+// This gives 40 frames for smooth ParaView animation.
+//
+// During injection (U~0.01 m/s, dx~0.5mm): Co → dt ~0.025 s → ~200 steps/5s.
+// Between events (U tiny): dt rises to maxDeltaT = 2 s automatically.
+
+application     pimpleFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         25;
+
+deltaT          0.01;
+adjustTimeStep  yes;
+maxCo           0.5;
+maxDeltaT       0.25;
+
+writeControl    adjustableRunTime;
+writeInterval   0.5;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    // Net volumetric flow rate through TM outlet (should equal ac_inlet flow)
+    flowRateTM
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet_tm;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    // Area-averaged pressure at TM outlet (proxy for IOP)
+    pressureIOP
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            outlet_tm;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    // Area-averaged pressure at ac_inlet
+    pressureACinlet
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            ac_inlet;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+}

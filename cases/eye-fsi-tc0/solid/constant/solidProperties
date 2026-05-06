@@ -1,0 +1,24 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// solids4Foam solid model — eye-fsi-tc0 lens.
+// unsLinearGeometry: updated Lagrangian, geometrically linear.
+// Suitable for small strains; quasi-static deformation driven by IOP.
+
+solidModel      unsLinearGeometry;
+
+unsLinearGeometryCoeffs
+{
+    nCorrectors             200;
+    solutionTolerance       1e-04;
+    // alternativeTolerance: 1e-6 (1 µm) resolves iris (~34 µm) and sclera/cornea
+    // (~1 µm) without causing max-iterations-reached warnings.
+    alternativeTolerance    1e-06;
+    materialTolerance       1e-05;
+    infoFrequency           50;
+}

@@ -1,0 +1,93 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        tolerance       1e-06;
+        relTol          0.01;
+        smoother        GaussSeidel;
+    }
+
+    pFinal
+    {
+        $p;
+        relTol          0;
+    }
+
+    "(U|UFinal)"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    // ALE mesh displacement
+    cellDisplacement
+    {
+        solver          GAMG;
+        tolerance       1e-05;
+        relTol          0;
+        smoother        GaussSeidel;
+    }
+
+    cellDisplacementFinal
+    {
+        $cellDisplacement;
+    }
+
+    pcorr
+    {
+        $p;
+        relTol          0;
+    }
+
+    pcorrFinal
+    {
+        $pcorr;
+    }
+}
+
+PIMPLE
+{
+    // The Darcy zone (d=1e9) makes the problem stiff: μ·d/ρ ≈ 1e6 >> ρ/Δt.
+    // 3 outer correctors are insufficient — the p-U loop oscillates and exits
+    // with unphysical velocities (Co=753).  Allow up to 100 iterations and
+    // stop early when both U and p are converged.
+    nOuterCorrectors        100;
+    nCorrectors             2;
+    nNonOrthogonalCorrectors 1;
+    pRefCell                0;
+    pRefValue               0;
+
+    residualControl
+    {
+        U
+        {
+            tolerance   1e-5;
+            relTol      0;
+        }
+        p
+        {
+            tolerance   1e-4;
+            relTol      0;
+        }
+    }
+}
+
+relaxationFactors
+{
+    equations
+    {
+        U       0.7;
+        UFinal  1;
+    }
+}

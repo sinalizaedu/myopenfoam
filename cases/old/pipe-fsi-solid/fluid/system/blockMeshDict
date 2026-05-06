@@ -1,0 +1,112 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// Fluid mesh: two disconnected blocks with a gap at x=[0.95,1.05] for the solid barrier.
+// The solid (pipe-fsi-solid/solid/) occupies exactly that gap.
+// Flow is BLOCKED by the impermeable barrier — this models IOP-driven quasi-static loading.
+//
+//  y=0.4  +--------[LEFT]-------+  ///  +-------[RIGHT]-------+
+//         |      vitreous       |SOLID|   anterior chamber    |
+//  y=0    +--------[LEFT]-------+  ///  +-------[RIGHT]-------+
+//        x=0                 x=0.95  x=1.05                x=2.0
+
+scale   1;
+
+vertices
+(
+    // z = 0 plane
+    (0     0    0)    // 0
+    (0.95  0    0)    // 1
+    (1.05  0    0)    // 2
+    (2.0   0    0)    // 3
+    (0     0.4  0)    // 4
+    (0.95  0.4  0)    // 5
+    (1.05  0.4  0)    // 6
+    (2.0   0.4  0)    // 7
+
+    // z = 0.01 plane
+    (0     0    0.01) // 8
+    (0.95  0    0.01) // 9
+    (1.05  0    0.01) // 10
+    (2.0   0    0.01) // 11
+    (0     0.4  0.01) // 12
+    (0.95  0.4  0.01) // 13
+    (1.05  0.4  0.01) // 14
+    (2.0   0.4  0.01) // 15
+);
+
+blocks
+(
+    // LEFT block: vitreous chamber  x=[0,0.95]
+    hex (0 1 5 4   8  9 13 12) (48 20 1) simpleGrading (1 1 1)
+
+    // RIGHT block: anterior chamber x=[1.05,2.0]
+    hex (2 3 7 6  10 11 15 14) (48 20 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ( (0 4 12 8) );    // LEFT left face x=0 (vitreous inlet)
+    }
+
+    outlet
+    {
+        type patch;
+        faces ( (3 7 15 11) );   // RIGHT right face x=2 (anterior outlet)
+    }
+
+    top
+    {
+        type wall;
+        faces
+        (
+            (4  5  13 12)  // LEFT top  y=0.4
+            (6  7  15 14)  // RIGHT top y=0.4
+        );
+    }
+
+    bottom
+    {
+        type wall;
+        faces
+        (
+            (1  9  8  0)   // LEFT bottom  y=0
+            (3  11 10 2)   // RIGHT bottom y=0
+        );
+    }
+
+    // Fluid faces that touch the solid barrier — ALE mesh motion applied here
+    interface
+    {
+        type wall;
+        faces
+        (
+            (5  13 9  1)   // LEFT right face  x=0.95 (left side of barrier)
+            (2  10 14 6)   // RIGHT left face  x=1.05 (right side of barrier)
+        );
+    }
+
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0  4  5  1)   // LEFT  z=0
+            (2  6  7  3)   // RIGHT z=0
+            (8  9  13 12)  // LEFT  z=0.01
+            (10 11 15 14)  // RIGHT z=0.01
+        );
+    }
+);

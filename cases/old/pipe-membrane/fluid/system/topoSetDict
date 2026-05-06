@@ -1,0 +1,22 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Select the internal faces at x=1.0 (shared between LEFT and RIGHT blocks)
+// and collect them into a faceZone for createBaffles to work on.
+
+actions
+(
+    {
+        name    membraneZone;
+        type    faceZoneSet;
+        action  new;
+        source  planeToFaceZone;
+        point   (1.0 0.2 0.005);
+        normal  (1 0 0);
+    }
+);

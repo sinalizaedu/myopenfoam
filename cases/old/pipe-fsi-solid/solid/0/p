@@ -1,0 +1,47 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+// Pore pressure for Biot poroLinearGeometry model.
+// Drives Darcy seepage: 400 Pa on vitreous side → 0 Pa on anterior side.
+// Gradient = 4000 Pa/m → Darcy flux = K * dP/(gamma_w * dx) through barrier.
+
+dimensions      [1 -1 -2 0 0 0 0];
+
+internalField   uniform 200;
+
+boundaryField
+{
+    top
+    {
+        type            zeroGradient;
+    }
+
+    bottom
+    {
+        type            zeroGradient;
+    }
+
+    // Vitreous side — maintained at IOP pressure
+    interface_left
+    {
+        type            fixedValue;
+        value           uniform 400;
+    }
+
+    // Anterior chamber side — reference (drainage)
+    interface_right
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+
+    frontAndBack
+    {
+        type            empty;
+    }
+}

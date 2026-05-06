@@ -1,0 +1,55 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      solidForce;
+}
+
+// Force field written by the preCICE adapter from fluid pressure (all coupled patches).
+// Patches not listed in solid/system/preciceDict stay zero here (e.g. Robin / fixed supports).
+
+dimensions      [1 1 -2 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // FSI — preCICE writes mapped force on these patches (see preciceDict)
+    lens_bottom           { type calculated; value uniform (0 0 0); }
+    lens_bottom_left      { type calculated; value uniform (0 0 0); }
+    lens_top              { type calculated; value uniform (0 0 0); }
+    lens_top_left         { type calculated; value uniform (0 0 0); }
+
+    iris_pupil            { type calculated; value uniform (0 0 0); }
+    iris_bottom           { type calculated; value uniform (0 0 0); }
+    iris_top              { type calculated; value uniform (0 0 0); }
+    iris_pupil_left       { type calculated; value uniform (0 0 0); }
+    iris_bottom_left      { type calculated; value uniform (0 0 0); }
+    iris_top_left         { type calculated; value uniform (0 0 0); }
+
+    sclera_side           { type calculated; value uniform (0 0 0); }
+    sclera_top_inner      { type calculated; value uniform (0 0 0); }
+    sclera_tm_gap         { type calculated; value uniform (0 0 0); }
+    sclera_side_left      { type calculated; value uniform (0 0 0); }
+    sclera_top_inner_left { type calculated; value uniform (0 0 0); }
+    sclera_tm_gap_left    { type calculated; value uniform (0 0 0); }
+
+    cornea_inner          { type calculated; value uniform (0 0 0); }
+    cornea_inner_left     { type calculated; value uniform (0 0 0); }
+
+    // Robin / fixed — no mapped fluid force
+    lens_right            { type calculated; value uniform (0 0 0); }
+    lens_left             { type calculated; value uniform (0 0 0); }
+    iris_base             { type calculated; value uniform (0 0 0); }
+    iris_base_left        { type calculated; value uniform (0 0 0); }
+    optic_disc            { type calculated; value uniform (0 0 0); }
+    optic_disc_left       { type calculated; value uniform (0 0 0); }
+    sclera_outer          { type calculated; value uniform (0 0 0); }
+    sclera_outer_left     { type calculated; value uniform (0 0 0); }
+    cornea_outer          { type calculated; value uniform (0 0 0); }
+    cornea_outer_left     { type calculated; value uniform (0 0 0); }
+
+    front { type empty; }
+    back  { type empty; }
+}

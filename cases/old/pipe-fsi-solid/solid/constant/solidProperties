@@ -1,0 +1,32 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// pipe-fsi-solid: Biot poroelastic zonula under IOP pressure difference.
+// poroLinearGeometry solves coupled momentum + pore pressure (Darcy seepage).
+// Fluid seeps through the solid driven by the 400 Pa trans-barrier gradient.
+
+solidModel      poroLinearGeometry;
+
+poroLinearGeometryCoeffs
+{
+    nCorrectors             1000;
+    solutionTolerance       1e-06;
+    alternativeTolerance    1e-07;
+    materialTolerance       1e-05;
+    infoFrequency           50;
+
+    // Biot poroelastic transport parameters for zonular tissue:
+    //   hydraulicConductivity K = k_perm * rho_w * g / mu_w
+    //   k_perm ~ 1e-14 m² → K ~ 1e-7 m/s  (biological connective tissue)
+    //   Using K = 1e-6 m/s for a demonstrably visible seepage flux.
+    hydraulicConductivity   hydraulicConductivity [0 1 -1 0 0 0 0] 1e-6;
+    porosity                porosity              [0 0  0 0 0 0 0] 0.5;
+    waterSpecificWeight     waterSpecificWeight   [1 -2 -2 0 0 0 0] 9810;
+    degreeOfSaturation      degreeOfSaturation    [0 0  0 0 0 0 0] 1.0;
+    waterBulkModulus        waterBulkModulus      [1 -1 -2 0 0 0 0] 2e9;
+}

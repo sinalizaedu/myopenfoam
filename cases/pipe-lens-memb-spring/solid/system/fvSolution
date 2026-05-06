@@ -1,0 +1,20 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    // Displacement solver
+    "D|DD"
+    {
+        solver          GAMG;
+        tolerance       1e-09;
+        relTol          0.01;
+        smoother        GaussSeidel;
+        nCellsInCoarsestLevel 20;
+    }
+}

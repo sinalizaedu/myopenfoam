@@ -1,0 +1,109 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// Rectangular pipe: x=[0,2] m, y=[0,0.4] m, z=[0,0.01] m (2D)
+// Three connected blocks — block B (x=[0.95,1.05]) becomes the Darcy porous zone.
+// Cell boundaries align exactly with x=0.95, x=1.05, so topoSet boxToCell works precisely.
+//
+//  y=0.4  +--------[A]--------+--[B]--+-------[C]--------+
+//         |    vitreous        |DARCY  |  anterior chamber |
+//         |    (free flow)     | zone  |   (free flow)     |
+//  y=0    +--------[A]--------+--[B]--+-------[C]--------+
+//        x=0               x=0.95  x=1.05             x=2.0
+
+scale   1;
+
+vertices
+(
+    // z = 0 plane
+    (0     0    0)    // 0
+    (0.95  0    0)    // 1
+    (1.05  0    0)    // 2
+    (2.0   0    0)    // 3
+    (0     0.4  0)    // 4
+    (0.95  0.4  0)    // 5
+    (1.05  0.4  0)    // 6
+    (2.0   0.4  0)    // 7
+
+    // z = 0.01 plane
+    (0     0    0.01) // 8
+    (0.95  0    0.01) // 9
+    (1.05  0    0.01) // 10
+    (2.0   0    0.01) // 11
+    (0     0.4  0.01) // 12
+    (0.95  0.4  0.01) // 13
+    (1.05  0.4  0.01) // 14
+    (2.0   0.4  0.01) // 15
+);
+
+blocks
+(
+    // Block A: left free-flow region   x=[0,0.95]
+    hex (0 1 5 4   8  9 13 12) (48 20 1) simpleGrading (1 1 1)
+
+    // Block B: barrier / porous zone   x=[0.95,1.05]
+    hex (1 2 6 5   9 10 14 13) ( 5 20 1) simpleGrading (1 1 1)
+
+    // Block C: right free-flow region  x=[1.05,2.0]
+    hex (2 3 7 6  10 11 15 14) (48 20 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ( (0 4 12 8) );    // A left face x=0
+    }
+
+    outlet
+    {
+        type patch;
+        faces ( (3 7 15 11) );   // C right face x=2
+    }
+
+    top
+    {
+        type wall;
+        faces
+        (
+            (4  5  13 12)  // A top
+            (5  6  14 13)  // B top
+            (6  7  15 14)  // C top
+        );
+    }
+
+    bottom
+    {
+        type wall;
+        faces
+        (
+            (1  9  8  0)   // A bottom
+            (2  10 9  1)   // B bottom
+            (3  11 10 2)   // C bottom
+        );
+    }
+
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0  4  5  1)   // A z=0
+            (1  5  6  2)   // B z=0
+            (2  6  7  3)   // C z=0
+            (8  9  13 12)  // A z=0.01
+            (9  10 14 13)  // B z=0.01
+            (10 11 15 14)  // C z=0.01
+        );
+    }
+);

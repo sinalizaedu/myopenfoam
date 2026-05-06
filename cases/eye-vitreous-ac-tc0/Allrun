@@ -1,0 +1,41 @@
+#!/bin/bash
+# eye-vitreous-ac-tc0 — Allrun
+# ──────────────────────────────────────────────────────────────────────────
+# Fluid-only, isothermal eye simulation (no FSI, no preCICE).
+# Solver: pimpleFoam  |  Geometry: quarter-sphere (90° sector)
+# Lens:   flat disc wall at x=[5,7mm], R_lens=4mm
+# Inlets: ac_inlet (sclera x=[8,10mm], mass flow) + ivi_inlet (closed for tc0)
+# Outlet: outlet_tm (x=10mm flat face, fixed pressure)
+#
+# Run inside Docker:
+#   docker compose run --rm fsi bash -lc "cd /simulation/eye-vitreous-ac-tc0 && ./Allrun"
+# ──────────────────────────────────────────────────────────────────────────
+
+set -e
+cd "$(dirname "$0")"
+
+echo "=== eye-vitreous-ac-tc0: meshing ==="
+
+(cd fluid && blockMesh 2>&1 | tee log.blockMesh)
+echo "  Mesh OK — $(cd fluid && checkMesh -noTopology 2>&1 | grep 'cells:')"
+
+echo ""
+echo "=== eye-vitreous-ac-tc0: running pimpleFoam ==="
+echo "  deltaT=1s, endTime=100s (extend to 3600s once stable)"
+echo ""
+
+(cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
+
+echo ""
+echo "=== eye-vitreous-ac-tc0: post-run checks ==="
+
+# Flow rate at TM outlet (should match ac_inlet: ~1.244e-8 kg/s * 993 = ~1.235e-11 m³/s)
+QTM=$(grep -a "flowRateTM" fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+echo "  phi@outlet_tm (last step) = $QTM  [expect ~ -1.24e-11 m³/s]"
+
+# IOP proxy: pressure at TM outlet (should stay near 1.342 m²/s²)
+IOP=$(grep -a "pressureIOP" fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+echo "  p@outlet_tm   (last step) = $IOP  [fixed at 1.342 m²/s²]"
+
+echo ""
+echo "=== done. Open fluid/eye-vitreous-ac-tc0-fluid.foam in ParaView to visualise. ==="

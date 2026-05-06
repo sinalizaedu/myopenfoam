@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  pipe-lens-spring: preCICE coupling configuration
+  ─────────────────────────────────────────────────
+  Participants : Fluid (pimpleFoam) ↔ Solid (solids4Foam)
+  Coupling     : serial-implicit + IQN-ILS (Anderson acceleration)
+  Data         : Force (Fluid→Solid), Displacement (Solid→Fluid)
+  Dimensions   : 3  (3D sector mesh)
+
+  Quasi-static regime: time-window-size matches fluid deltaT=0.01 s.
+  IQN-ILS reuse=5 and initial-relaxation=0.5 are conservative first values;
+  tighten convergence if the coupling oscillates.
+  The two FSI patches (interface_upstream, interface_downstream) are treated
+  as a single combined mesh on each side.
+-->
+
+<precice-configuration>
+
+  <log>
+    <sink filter="%Severity% > debug" format="---[preCICE] %Message%" enabled="on"/>
+  </log>
+
+  <!-- 3D mesh with RBF mapping between fluid and solid interfaces -->
+  <data:vector name="Force"/>
+  <data:vector name="Displacement"/>
+
+  <mesh name="Fluid-Mesh" dimensions="3">
+    <use-data name="Force"/>
+    <use-data name="Displacement"/>
+  </mesh>
+
+  <mesh name="Solid-Mesh" dimensions="3">
+    <use-data name="Force"/>
+    <use-data name="Displacement"/>
+  </mesh>
+
+  <participant name="Fluid">
+    <provide-mesh name="Fluid-Mesh"/>
+    <receive-mesh name="Solid-Mesh" from="Solid"/>
+    <write-data name="Force"        mesh="Fluid-Mesh"/>
+    <read-data  name="Displacement" mesh="Fluid-Mesh"/>
+    <!-- RBF mapping: Solid-Mesh → Fluid-Mesh for displacement -->
+    <mapping:rbf
+      direction="read"
+      from="Solid-Mesh"
+      to="Fluid-Mesh"
+      constraint="consistent">
+      <basis-function:thin-plate-splines/>
+    </mapping:rbf>
+  </participant>
+
+  <participant name="Solid">
+    <provide-mesh name="Solid-Mesh"/>
+    <receive-mesh name="Fluid-Mesh" from="Fluid"/>
+    <read-data    name="Force"        mesh="Solid-Mesh"/>
+    <write-data   name="Displacement" mesh="Solid-Mesh"/>
+    <!-- RBF mapping: Fluid-Mesh → Solid-Mesh for forces -->
+    <mapping:rbf
+      direction="read"
+      from="Fluid-Mesh"
+      to="Solid-Mesh"
+      constraint="conservative">
+      <basis-function:thin-plate-splines/>
+    </mapping:rbf>
+  </participant>
+
+  <m2n:sockets acceptor="Fluid" connector="Solid" exchange-directory=".."/>
+
+  <coupling-scheme:serial-implicit>
+    <time-window-size value="0.0002"/>
+    <max-time value="0.01"/>
+    <participants first="Fluid" second="Solid"/>
+    <exchange data="Force"        mesh="Fluid-Mesh" from="Fluid" to="Solid"/>
+    <exchange data="Displacement" mesh="Solid-Mesh" from="Solid" to="Fluid"/>
+
+    <!-- Convergence: relative change in displacement and force -->
+    <relative-convergence-measure data="Displacement" mesh="Solid-Mesh" limit="1e-5"/>
+    <relative-convergence-measure data="Force"        mesh="Fluid-Mesh" limit="1e-5"/>
+    <max-iterations value="50"/>
+
+    <!-- IQN-ILS (Anderson acceleration) — conservative settings for 3D FSI -->
+    <acceleration:IQN-ILS>
+      <data name="Displacement" mesh="Solid-Mesh"/>
+      <initial-relaxation value="0.5"/>
+      <max-used-iterations value="5"/>
+      <time-windows-reused value="5"/>
+      <filter type="QR1" limit="1e-6"/>
+    </acceleration:IQN-ILS>
+  </coupling-scheme:serial-implicit>
+
+</precice-configuration>

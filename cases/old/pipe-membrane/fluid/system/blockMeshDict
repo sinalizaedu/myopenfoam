@@ -1,0 +1,97 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// Rectangular pipe: x=[0,2] m, y=[0,0.4] m, z=[0,0.01] m (2D)
+// Zero-thickness membrane at x=1.0 — created by createBaffles after blockMesh.
+// Two blocks share the face at x=1.0; that face becomes the porousBaffle pair.
+//
+//  y=0.4  +-----------[LEFT]----------‖-----------[RIGHT]-----------+
+//         |           vitreous        ‖      anterior chamber        |
+//  y=0    +-----------[LEFT]----------‖-----------[RIGHT]-----------+
+//        x=0                        x=1.0                         x=2.0
+
+scale   1;
+
+vertices
+(
+    // z = 0 plane
+    (0    0    0)    // 0
+    (1.0  0    0)    // 1
+    (2.0  0    0)    // 2
+    (0    0.4  0)    // 3
+    (1.0  0.4  0)    // 4
+    (2.0  0.4  0)    // 5
+
+    // z = 0.01 plane
+    (0    0    0.01) // 6
+    (1.0  0    0.01) // 7
+    (2.0  0    0.01) // 8
+    (0    0.4  0.01) // 9
+    (1.0  0.4  0.01) // 10
+    (2.0  0.4  0.01) // 11
+);
+
+blocks
+(
+    // LEFT block  x=[0,1.0]
+    hex (0 1 4 3  6 7 10 9)  (50 20 1) simpleGrading (1 1 1)
+
+    // RIGHT block x=[1.0,2.0]
+    hex (1 2 5 4  7 8 11 10) (50 20 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ( (0 3 9 6) );   // LEFT left face x=0
+    }
+
+    outlet
+    {
+        type patch;
+        faces ( (2 5 11 8) );  // RIGHT right face x=2
+    }
+
+    top
+    {
+        type wall;
+        faces
+        (
+            (3  4  10 9)   // LEFT top
+            (4  5  11 10)  // RIGHT top
+        );
+    }
+
+    bottom
+    {
+        type wall;
+        faces
+        (
+            (1  7  6  0)   // LEFT bottom
+            (2  8  7  1)   // RIGHT bottom
+        );
+    }
+
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0  3  4  1)   // LEFT  z=0
+            (1  4  5  2)   // RIGHT z=0
+            (6  7  10 9)   // LEFT  z=0.01
+            (7  8  11 10)  // RIGHT z=0.01
+        );
+    }
+);

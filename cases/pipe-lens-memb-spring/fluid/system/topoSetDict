@@ -1,0 +1,50 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// pipe-lens-memb-spring: mark the zonula ring as a cellZone for fvOptions.
+//
+// Target: fluid cells in the ANNULAR region R_lens < r ≤ Ro at x=[x1,x2] ONLY.
+// The Darcy resistance is localised to the lens cross-section (the zonula gap)
+// and does NOT extend into the upstream or downstream pipe sections.
+// This is physically correct (zonular fibres are localised at the lens equator)
+// and avoids numerical instability from resistance in the entire outer annulus.
+//
+// Cylinder axis along x (p1 → p2); radii in metres.
+// x1=9mm, x2=11mm, R_lens=4.5mm, Ro=6mm.
+//
+// After topoSet, run setsToZones to promote the cellSet → cellZone.
+
+actions
+(
+    // Step 1: Select cells in the annular slot at the lens cross-section
+    //         p1/p2 define the axial extent — x=[x1=9mm, x2=11mm] only.
+    {
+        name    zonulaSet;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      ( 0.009 0 0 );   // x1 = lens upstream face
+        p2      ( 0.011 0 0 );   // x2 = lens downstream face
+        radius  0.0061;           // slightly > Ro=6mm
+    }
+
+    // Step 2: Subtract the inner disc region (r ≤ R_lens) — no fluid cells
+    //         exist there (that is the solid domain), but defensive subtraction
+    //         ensures robustness if mesh tolerances place any cell centroid inside.
+    {
+        name    zonulaSet;
+        type    cellSet;
+        action  subtract;
+        source  cylinderToCell;
+        p1      ( 0.009 0 0 );
+        p2      ( 0.011 0 0 );
+        radius  0.0044;           // slightly < R_lens=4.5mm
+    }
+
+    // Step 3: Promote cellSet → cellZone (done by setsToZones in Allrun)
+);

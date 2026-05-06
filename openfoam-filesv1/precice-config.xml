@@ -30,8 +30,10 @@
     <receive-mesh name="Solid-Mesh" from="Solid"/>
     <write-data name="Force"        mesh="Fluid-Mesh"/>
     <read-data  name="Displacement" mesh="Fluid-Mesh"/>
-    <mapping:rbf-thin-plate-splines direction="read"
-        from="Solid-Mesh" to="Fluid-Mesh" constraint="consistent"/>
+    <mapping:rbf direction="read"
+        from="Solid-Mesh" to="Fluid-Mesh" constraint="consistent">
+      <basis-function:thin-plate-splines/>
+    </mapping:rbf>
   </participant>
 
   <!-- Solid participant (solids4Foam) -->
@@ -40,8 +42,10 @@
     <receive-mesh name="Fluid-Mesh" from="Fluid"/>
     <write-data name="Displacement" mesh="Solid-Mesh"/>
     <read-data  name="Force"        mesh="Solid-Mesh"/>
-    <mapping:rbf-thin-plate-splines direction="read"
-        from="Fluid-Mesh" to="Solid-Mesh" constraint="consistent"/>
+    <mapping:rbf direction="read"
+        from="Fluid-Mesh" to="Solid-Mesh" constraint="consistent">
+      <basis-function:thin-plate-splines/>
+    </mapping:rbf>
   </participant>
 
   <!-- Communication -->

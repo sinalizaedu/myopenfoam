@@ -1,0 +1,285 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : May 06 2026
+Time   : 18:27:14
+Host   : 729c7b852c8f
+PID    : 252
+I/O    : uncollated
+Case   : /simulation/eye-fsi-tc0/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 
+28
+(
+needle_inlet_left
+needle_inlet_right
+needle_outlet_left
+needle_outlet_right
+sclera_left_lower
+sclera_left_upper
+sclera_right
+sclera_right_upper
+sclera_top
+cornea_fsi
+lens_bottom
+lens_bottom_left
+lens_right
+lens_left
+lens_top
+lens_top_left
+iris_bottom
+iris_pupil
+iris_pupil_left
+iris_top
+tm_limbus_wall
+ac_inlet
+ac_inlet_left
+outlet_tm
+outlet_tm_left
+front
+back
+defaultFaces
+)
+
+Extracted patch groups:
+    group empty with patches 3(front back defaultFaces)
+    group wall with patches 
+17
+(
+sclera_left_lower
+sclera_left_upper
+sclera_right
+sclera_right_upper
+sclera_top
+cornea_fsi
+lens_bottom
+lens_bottom_left
+lens_right
+lens_left
+lens_top
+lens_top_left
+iris_bottom
+iris_pupil
+iris_pupil_left
+iris_top
+tm_limbus_wall
+)
+
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 1(defaultFaces)
+fieldDict:
+{
+    needle_inlet_left
+    {
+        type            patch;
+        nFaces          1;
+        startFace       6272;
+    }
+    needle_inlet_right
+    {
+        type            patch;
+        nFaces          1;
+        startFace       6273;
+    }
+    needle_outlet_left
+    {
+        type            patch;
+        nFaces          1;
+        startFace       6274;
+    }
+    needle_outlet_right
+    {
+        type            patch;
+        nFaces          1;
+        startFace       6275;
+    }
+    sclera_left_lower
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          7;
+        startFace       6276;
+    }
+    sclera_left_upper
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          29;
+        startFace       6283;
+    }
+    sclera_right
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          7;
+        startFace       6312;
+    }
+    sclera_right_upper
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          29;
+        startFace       6319;
+    }
+    sclera_top
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          80;
+        startFace       6348;
+    }
+    cornea_fsi
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          80;
+        startFace       6428;
+    }
+    lens_bottom
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          30;
+        startFace       6508;
+    }
+    lens_bottom_left
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          30;
+        startFace       6538;
+    }
+    lens_right
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          10;
+        startFace       6568;
+    }
+    lens_left
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          10;
+        startFace       6578;
+    }
+    lens_top
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          30;
+        startFace       6588;
+    }
+    lens_top_left
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          30;
+        startFace       6618;
+    }
+    iris_bottom
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          60;
+        startFace       6648;
+    }
+    iris_pupil
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          5;
+        startFace       6708;
+    }
+    iris_pupil_left
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          5;
+        startFace       6713;
+    }
+    iris_top
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          40;
+        startFace       6718;
+    }
+    tm_limbus_wall
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          4;
+        startFace       6758;
+    }
+    ac_inlet
+    {
+        type            patch;
+        nFaces          5;
+        startFace       6762;
+    }
+    ac_inlet_left
+    {
+        type            patch;
+        nFaces          5;
+        startFace       6767;
+    }
+    outlet_tm
+    {
+        type            patch;
+        nFaces          4;
+        startFace       6772;
+    }
+    outlet_tm_left
+    {
+        type            patch;
+        nFaces          4;
+        startFace       6776;
+    }
+    front
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          3268;
+        startFace       6780;
+    }
+    back
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          3268;
+        startFace       10048;
+    }
+    defaultFaces
+    {
+        type            wall;
+        inGroups        1 ( empty );
+        nFaces          20;
+        startFace       13316;
+    }
+}
+
+Writing modified boundary
+
+End
+

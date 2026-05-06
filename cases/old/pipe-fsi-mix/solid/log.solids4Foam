@@ -1,0 +1,80 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : Apr 22 2026
+Time   : 21:41:25
+Host   : 7e50ea3c609d
+PID    : 1847
+I/O    : uncollated
+Case   : /simulation/pipe-fsi-mix/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel unsLinearGeometry
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Selecting mechanical law linearElastic
+Time = 1
+
+Evolving solid solver
+Solving the momentum equation for D
+setCellDisplacements: reading cellDisplacements
+    Corr, res, relRes, matRes, iters
+    10, 0.0080140159, 0.036176036, 0, 6
+    20, 0.0036288178, 0.015702249, 0, 6
+    30, 0.0018505554, 0.0077063446, 0, 6
+    40, 0.00097663477, 0.0039806903, 0, 6
+    50, 0.00052284745, 0.0021062286, 0, 6
+    60, 0.00028175448, 0.0011282696, 0, 6
+    70, 0.00015236885, 0.00060827018, 0, 6
+    80, 8.2556082e-05, 0.00032903701, 0, 6
+    90, 4.4776643e-05, 0.00017830934, 0, 6
+    100, 2.4299578e-05, 9.6721432e-05, 0, 6
+    110, 1.3191047e-05, 5.2492503e-05, 0, 6
+    120, 7.1619695e-06, 2.8496653e-05, 0, 6
+    130, 3.8888863e-06, 1.5472354e-05, 0, 6
+    140, 2.1117358e-06, 8.4014572e-06, 0, 6
+    150, 1.1467419e-06, 4.5621772e-06, 0, 6
+    160, 6.2272767e-07, 2.4774227e-06, 0, 6
+    170, 3.3816926e-07, 1.3453452e-06, 0, 6
+    Both residuals have converged
+    175, 2.4920279e-07, 9.9140653e-07, 0, 6
+
+Max epsilonEq = 0.0028610622
+Max sigmaEq (von Mises stress) = 2959.7195
+ExecutionTime = 0.24 s  ClockTime = 0 s
+
+The momentum equation converged in all time-steps
+
+
+End
+

@@ -1,0 +1,75 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// Solid mesh: elastic barrier (zonula) x=[0.95,1.05], y=[0,0.4], z=[0,0.01]
+// Clamped at top (y=0.4) and bottom (y=0).
+// interfaceLeft  (x=0.95): faces the vitreous — high-pressure side.
+// interfaceRight (x=1.05): faces the anterior chamber — low-pressure side.
+// Pressure load from the fluid is applied independently on each face by Allrun.
+
+scale   1;
+
+vertices
+(
+    (0.95  0    0   )  // 0
+    (1.05  0    0   )  // 1
+    (1.05  0.4  0   )  // 2
+    (0.95  0.4  0   )  // 3
+    (0.95  0    0.01)  // 4
+    (1.05  0    0.01)  // 5
+    (1.05  0.4  0.01)  // 6
+    (0.95  0.4  0.01)  // 7
+);
+
+blocks
+(
+    hex (0 1 2 3  4 5 6 7) (5 20 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    bottom
+    {
+        type patch;
+        faces ( (0 1 5 4) );
+    }
+
+    top
+    {
+        type patch;
+        faces ( (3 7 6 2) );
+    }
+
+    // High-pressure face — vitreous side (x=0.95, outward normal = -x)
+    interfaceLeft
+    {
+        type wall;
+        faces ( (0 4 7 3) );
+    }
+
+    // Low-pressure face — anterior chamber side (x=1.05, outward normal = +x)
+    interfaceRight
+    {
+        type wall;
+        faces ( (2 6 5 1) );
+    }
+
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);

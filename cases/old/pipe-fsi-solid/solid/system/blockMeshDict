@@ -1,0 +1,76 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// Solid mesh: elastic barrier (zonula) x=[0.95,1.05], y=[0,0.4], z=[0,0.01]
+// Full-height — spans the entire pipe cross-section.
+// Clamped at top (y=0.4) and bottom (y=0).
+// Left (x=0.95) and right (x=1.05) faces couple to the fluid via preCICE.
+
+scale   1;
+
+vertices
+(
+    (0.95  0    0   )  // 0
+    (1.05  0    0   )  // 1
+    (1.05  0.4  0   )  // 2
+    (0.95  0.4  0   )  // 3
+    (0.95  0    0.01)  // 4
+    (1.05  0    0.01)  // 5
+    (1.05  0.4  0.01)  // 6
+    (0.95  0.4  0.01)  // 7
+);
+
+blocks
+(
+    hex (0 1 2 3  4 5 6 7) (5 20 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    // Clamped at pipe bottom wall
+    bottom
+    {
+        type patch;
+        faces ( (0 1 5 4) );
+    }
+
+    // Clamped at pipe top wall
+    top
+    {
+        type patch;
+        faces ( (3 7 6 2) );
+    }
+
+    // Left face: coupled to vitreous chamber (high IOP, 400 Pa)
+    interface_left
+    {
+        type wall;
+        faces ( (0 4 7 3) );
+    }
+
+    // Right face: coupled to anterior chamber (reference, 0 Pa)
+    interface_right
+    {
+        type wall;
+        faces ( (2 6 5 1) );
+    }
+
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)  // z=0
+            (4 5 6 7)  // z=0.01
+        );
+    }
+);

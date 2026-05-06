@@ -1,0 +1,98 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+// eye-vitreous-ac-tc0
+//
+// Under-relaxation factors from Fluent report:
+//   Pressure: 0.3  |  Momentum: 0.7
+// (Fluent SIMPLE URFs translated directly to PIMPLE relaxation fields)
+
+solvers
+{
+    // PCG+DIC for pressure: the TM Darcy zone (d=2.57e14) creates a 1944:1
+    // coefficient ratio in the Poisson equation. GAMG would fail ("no coarse
+    // levels") for this condition number; PCG+DIC handles it without coarsening.
+    // The DIC preconditioner reduces the effective condition number to ~sqrt(1944)
+    // ≈ 44, so PCG converges in ~100-200 iterations (fast for a 1630-cell mesh).
+    // maxIter=1000 to accommodate worst-case coupling iterations.
+    p
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-07;
+        relTol          0.01;
+        maxIter         1000;
+    }
+
+    pFinal
+    {
+        $p;
+        relTol          0;
+    }
+
+    "(U|UFinal)"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-07;
+        relTol          0;
+    }
+
+    // pcorr uses PCG+DIC: the pressure-correction matrix is small and
+    // well-conditioned (no porous zones), so PCG converges quickly without
+    // the agglomeration overhead that caused GAMG "no coarse levels" errors.
+    pcorr
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-07;
+        relTol          0;
+        maxIter         500;
+    }
+
+    pcorrFinal
+    {
+        $pcorr;
+    }
+
+    // ALE mesh motion — required by displacementLaplacian motion solver.
+    // relTol tightened from 0.001 to 1e-5 so the mesh displacement is fully
+    // converged before phi/U are solved; a loose relTol (= 4 GAMG sweeps,
+    // residual ~3e-4) left face-area inconsistencies that inflated Co_max.
+    cellDisplacement
+    {
+        solver          GAMG;
+        tolerance       1e-08;
+        relTol          1e-5;
+        smoother        GaussSeidel;
+        nPreSweeps      1;
+        nPostSweeps     2;
+    }
+
+    cellDisplacementFinal
+    {
+        $cellDisplacement;
+        relTol          0;
+    }
+}
+
+PIMPLE
+{
+    nOuterCorrectors        1;
+    nCorrectors             1;
+    nNonOrthogonalCorrectors 0;
+
+    // No pRefCell/pRefValue: outlet_tm is fixedValue p=0 (Dirichlet) which
+    // makes the pressure matrix non-singular. TM resistance is now modelled
+    // by the DarcyForchheimer explicitPorositySource in fvOptions (tm_zone).
+
+    relaxationFactors
+    {
+        equations { U 0.7; UFinal 1.0; }
+    }
+}

@@ -1,0 +1,526 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// eye-fsi-tc0 — SOLID domain — FULL SYMMETRIC MODEL
+//
+// Coordinate system (same as fluid):
+//   x = -21 mm (left outer sclera) → +21 mm (right outer sclera)
+//   y = -1 mm  (cornea outer)       →  25 mm (sclera top outer)
+//   z = 0 → 1 mm  (2-D slab)
+//
+// Geometry is symmetric about x=0 (optical axis, now fully interior).
+// The original half-model (x=[0,21mm]) is preserved exactly; the left half
+// (x=[-21,0mm]) is added by mirroring all blocks about x=0.
+//
+// LENS MOUNTING:
+//   lens_right (x=+15mm): solidForce FSI (receives AC pressure from right)
+//   lens_left  (x=-15mm): Robin spring — coeff0=3e4 Pa/m (zonule support)
+//   lens_rim   (x= 0mm):  REMOVED — x=0 is now interior
+//
+// Vertex numbering:
+//   RIGHT HALF (x=[0,21mm]):   0–55  (unchanged)
+//   LEFT HALF  (x=[-21,0mm]): 56–97 (new, mirror of right)
+//     56–59  : Lens left
+//     60–67  : Iris left
+//     68–75  : Sclera A lower left (x=[-21,-20mm], y=[0,0.4mm])
+//     76–83  : Sclera A upper left (x=[-21,-20mm], y=[2.4,25mm])
+//     84–91  : Sclera A mid left   (x=-20.5mm column)
+//     92–93  : Sclera B left       (x=-20mm, y=24mm)
+//     94–97  : Cornea left         (x=-21mm)
+//     98–101 : Sclera B split @ x=+d (ONH strip, d=2mm)
+//     102–105: Sclera B split @ x=-d
+
+scale   1;
+
+// ── Vertices ──────────────────────────────────────────────────────────────────
+
+vertices
+(
+    // ════════════════════════════════════════════════════════════════════════
+    // RIGHT HALF — original vertices 0–55
+    // ════════════════════════════════════════════════════════════════════════
+
+    // ── Lens  (z=0) ──────────────────────────────────────────────────────────
+    ( 0.000  0.00960  0.000 )  //  0
+    ( 0.015  0.00960  0.000 )  //  1
+    ( 0.015  0.01440  0.000 )  //  2
+    ( 0.000  0.01440  0.000 )  //  3
+    // ── Lens  (z=0.001) ──────────────────────────────────────────────────────
+    ( 0.000  0.00960  0.001 )  //  4
+    ( 0.015  0.00960  0.001 )  //  5
+    ( 0.015  0.01440  0.001 )  //  6
+    ( 0.000  0.01440  0.001 )  //  7
+
+    // ── Iris  (z=0) ──────────────────────────────────────────────────────────
+    ( 0.005  0.00480  0.000 )  //  8
+    ( 0.020  0.00480  0.000 )  //  9
+    ( 0.020  0.00720  0.000 )  // 10
+    ( 0.005  0.00720  0.000 )  // 11
+    // ── Iris  (z=0.001) ──────────────────────────────────────────────────────
+    ( 0.005  0.00480  0.001 )  // 12
+    ( 0.020  0.00480  0.001 )  // 13
+    ( 0.020  0.00720  0.001 )  // 14
+    ( 0.005  0.00720  0.001 )  // 15
+
+    // ── Sclera A right — lower row  x=[20,21mm], y=[0,0.4mm]  (z=0) ──────────
+    ( 0.020  0.00000  0.000 )  // 16
+    ( 0.021  0.00000  0.000 )  // 17
+    ( 0.021  0.00040  0.000 )  // 18
+    ( 0.020  0.00040  0.000 )  // 19
+    // ── (z=0.001) ────────────────────────────────────────────────────────────
+    ( 0.020  0.00000  0.001 )  // 20
+    ( 0.021  0.00000  0.001 )  // 21
+    ( 0.021  0.00040  0.001 )  // 22
+    ( 0.020  0.00040  0.001 )  // 23
+
+    // ── Sclera B — top strip  x=[0,20mm], y=[24,25mm]  (z=0) ─────────────────
+    ( 0.000  0.02400  0.000 )  // 24
+    ( 0.020  0.02400  0.000 )  // 25
+    ( 0.020  0.02500  0.000 )  // 26
+    ( 0.000  0.02500  0.000 )  // 27
+    // ── (z=0.001) ────────────────────────────────────────────────────────────
+    ( 0.000  0.02400  0.001 )  // 28
+    ( 0.020  0.02400  0.001 )  // 29
+    ( 0.020  0.02500  0.001 )  // 30
+    ( 0.000  0.02500  0.001 )  // 31
+
+    // ── Cornea right  x=[0,21mm], y=[-1,0mm]  (z=0) ──────────────────────────
+    ( 0.000 -0.00100  0.000 )  // 32
+    ( 0.021 -0.00100  0.000 )  // 33
+    ( 0.021  0.00000  0.000 )  // 34
+    ( 0.000  0.00000  0.000 )  // 35
+    // ── (z=0.001) ────────────────────────────────────────────────────────────
+    ( 0.000 -0.00100  0.001 )  // 36
+    ( 0.021 -0.00100  0.001 )  // 37
+    ( 0.021  0.00000  0.001 )  // 38
+    ( 0.000  0.00000  0.001 )  // 39
+
+    // ── Sclera A right — upper row  x=[20,21mm], y=[2.4,25mm]  (z=0) ─────────
+    ( 0.020  0.00240  0.000 )  // 40
+    ( 0.021  0.00240  0.000 )  // 41
+    ( 0.021  0.02500  0.000 )  // 42
+    ( 0.020  0.02500  0.000 )  // 43
+    // ── (z=0.001) ────────────────────────────────────────────────────────────
+    ( 0.020  0.00240  0.001 )  // 44
+    ( 0.021  0.00240  0.001 )  // 45
+    ( 0.021  0.02500  0.001 )  // 46
+    ( 0.020  0.02500  0.001 )  // 47
+
+    // ── Sclera A right — middle column  x=20.5mm  (z=0) ─────────────────────
+    ( 0.0205  0.00000  0.000 )  // 48
+    ( 0.0205  0.00040  0.000 )  // 49
+    ( 0.0205  0.00240  0.000 )  // 50
+    ( 0.0205  0.02500  0.000 )  // 51
+    // ── (z=0.001) ────────────────────────────────────────────────────────────
+    ( 0.0205  0.00000  0.001 )  // 52
+    ( 0.0205  0.00040  0.001 )  // 53
+    ( 0.0205  0.00240  0.001 )  // 54
+    ( 0.0205  0.02500  0.001 )  // 55
+
+    // ════════════════════════════════════════════════════════════════════════
+    // LEFT HALF — new vertices 56–97  (x=[-21,0mm])
+    // Vertices at x=0 are SHARED with right half.
+    // ════════════════════════════════════════════════════════════════════════
+
+    // ── Lens left  x=[-15,0mm], y=[9.6,14.4mm] ───────────────────────────────
+    // x=0 vertices (0,3,4,7) shared with lens_right block.
+    (-0.015  0.00960  0.000 )  // 56  bottom-front
+    (-0.015  0.01440  0.000 )  // 57  top-front
+    (-0.015  0.00960  0.001 )  // 58  bottom-back
+    (-0.015  0.01440  0.001 )  // 59  top-back
+
+    // ── Iris left  x=[-20,-5mm], y=[4.8,7.2mm] ───────────────────────────────
+    (-0.005  0.00480  0.000 )  // 60  pupil-bottom-front  (x=-5mm)
+    (-0.020  0.00480  0.000 )  // 61  base-bottom-front   (x=-20mm)
+    (-0.020  0.00720  0.000 )  // 62  base-top-front
+    (-0.005  0.00720  0.000 )  // 63  pupil-top-front
+    (-0.005  0.00480  0.001 )  // 64  pupil-bottom-back
+    (-0.020  0.00480  0.001 )  // 65  base-bottom-back
+    (-0.020  0.00720  0.001 )  // 66  base-top-back
+    (-0.005  0.00720  0.001 )  // 67  pupil-top-back
+
+    // ── Sclera A left — lower row  x=[-21,-20mm], y=[0,0.4mm]  (z=0) ─────────
+    (-0.020  0.00000  0.000 )  // 68  x=-20, y=0
+    (-0.021  0.00000  0.000 )  // 69  x=-21, y=0
+    (-0.021  0.00040  0.000 )  // 70  x=-21, y=0.4mm
+    (-0.020  0.00040  0.000 )  // 71  x=-20, y=0.4mm
+    (-0.020  0.00000  0.001 )  // 72
+    (-0.021  0.00000  0.001 )  // 73
+    (-0.021  0.00040  0.001 )  // 74
+    (-0.020  0.00040  0.001 )  // 75
+
+    // ── Sclera A left — upper row  x=[-21,-20mm], y=[2.4,25mm]  (z=0) ────────
+    (-0.020  0.00240  0.000 )  // 76  x=-20, y=2.4mm
+    (-0.021  0.00240  0.000 )  // 77  x=-21, y=2.4mm
+    (-0.021  0.02500  0.000 )  // 78  x=-21, y=25mm
+    (-0.020  0.02500  0.000 )  // 79  x=-20, y=25mm
+    (-0.020  0.00240  0.001 )  // 80
+    (-0.021  0.00240  0.001 )  // 81
+    (-0.021  0.02500  0.001 )  // 82
+    (-0.020  0.02500  0.001 )  // 83
+
+    // ── Sclera A left — middle column  x=-20.5mm  (z=0) ─────────────────────
+    (-0.0205  0.00000  0.000 )  // 84  x=-20.5, y=0
+    (-0.0205  0.00040  0.000 )  // 85  x=-20.5, y=0.4mm
+    (-0.0205  0.00240  0.000 )  // 86  x=-20.5, y=2.4mm
+    (-0.0205  0.02500  0.000 )  // 87  x=-20.5, y=25mm
+    (-0.0205  0.00000  0.001 )  // 88
+    (-0.0205  0.00040  0.001 )  // 89
+    (-0.0205  0.00240  0.001 )  // 90
+    (-0.0205  0.02500  0.001 )  // 91
+
+    // ── Sclera B left — extra corners  x=-20mm, y=[24,25mm] ──────────────────
+    // y=25mm corners reuse v79 (z=0) and v83 (z=1mm) already defined above.
+    (-0.020  0.02400  0.000 )  // 92  x=-20, y=24mm, z=0
+    (-0.020  0.02400  0.001 )  // 93  x=-20, y=24mm, z=1mm
+
+    // ── Cornea left  x=-21mm  ─────────────────────────────────────────────────
+    // x=0 corners (32,35,36,39) shared with cornea_right.
+    (-0.021 -0.00100  0.000 )  // 94  x=-21, y=-1mm, z=0
+    (-0.021  0.00000  0.000 )  // 95  x=-21, y=0,    z=0
+    (-0.021 -0.00100  0.001 )  // 96  x=-21, y=-1mm, z=1mm
+    (-0.021  0.00000  0.001 )  // 97  x=-21, y=0,    z=1mm
+
+    // ── Sclera B split plane x = ±2 mm — optic_disc patches at y = 25 mm ──────
+    ( 0.002  0.02400  0.000 )  // 98
+    ( 0.002  0.02500  0.000 )  // 99
+    ( 0.002  0.02400  0.001 )  // 100
+    ( 0.002  0.02500  0.001 )  // 101
+    (-0.002  0.02400  0.000 )  // 102
+    (-0.002  0.02500  0.000 )  // 103
+    (-0.002  0.02400  0.001 )  // 104
+    (-0.002  0.02500  0.001 )  // 105
+);
+
+// ── Blocks ────────────────────────────────────────────────────────────────────
+
+blocks
+(
+    // ════════════════════════════════════════════════════════════════════════
+    // RIGHT HALF — original blocks (unchanged)
+    // ════════════════════════════════════════════════════════════════════════
+
+    hex ( 0  1  2  3   4  5  6  7 )  lens   ( 15 10 1 )  simpleGrading ( 1 1 1 )
+
+    hex ( 8  9 10 11  12 13 14 15 )  iris   ( 15  3 1 )  simpleGrading ( 1 1 1 )
+
+    hex (16 48 49 19  20 52 53 23 )  sclera (  1  1 1 )  simpleGrading ( 1 1 1 )
+    hex (48 17 18 49  52 21 22 53 )  sclera (  1  1 1 )  simpleGrading ( 1 1 1 )
+    hex (49 18 41 50  53 22 45 54 )  sclera (  1  4 1 )  simpleGrading ( 1 1 1 )
+    hex (40 50 51 43  44 54 55 47 )  sclera (  1 23 1 )  simpleGrading ( 1 1 1 )
+    hex (50 41 42 51  54 45 46 55 )  sclera (  1 23 1 )  simpleGrading ( 1 1 1 )
+
+    // Sclera B right — split @ x=2mm: peri-axis strip + outer (ONH patch on top)
+    hex (24 98 99 27  28 100 101 31 )  sclera (  2  1 1 )  simpleGrading ( 1 1 1 )
+    hex (98 25 26 99  100 29 30 101 )  sclera ( 18  1 1 )  simpleGrading ( 1 1 1 )
+
+    hex (32 33 34 35  36 37 38 39 )  cornea ( 21  1 1 )  simpleGrading ( 1 1 1 )
+
+    // ════════════════════════════════════════════════════════════════════════
+    // LEFT HALF — mirrored blocks
+    // i-direction goes from more-negative toward x=0.
+    // Vertices at x=0 are shared with right-half blocks (ensures conforming mesh).
+    // ════════════════════════════════════════════════════════════════════════
+
+    // Lens left — x=[-15,0mm]  (shares v0,v3,v4,v7 with lens_right)
+    hex ( 56  0  3 57  58  4  7 59 )  lens   ( 15 10 1 )  simpleGrading ( 1 1 1 )
+
+    // Iris left — x=[-20,-5mm]
+    hex ( 61 60 63 62  65 64 67 66 )  iris   ( 15  3 1 )  simpleGrading ( 1 1 1 )
+
+    // Sclera A left strips
+    hex ( 84 68 71 85  88 72 75 89 )  sclera (  1  1 1 )  simpleGrading ( 1 1 1 )  // inner_lower
+    hex ( 69 84 85 70  73 88 89 74 )  sclera (  1  1 1 )  simpleGrading ( 1 1 1 )  // outer_lower
+    hex ( 70 85 86 77  74 89 90 81 )  sclera (  1  4 1 )  simpleGrading ( 1 1 1 )  // outer_mid
+    hex ( 86 76 79 87  90 80 83 91 )  sclera (  1 23 1 )  simpleGrading ( 1 1 1 )  // inner_upper
+    hex ( 77 86 87 78  81 90 91 82 )  sclera (  1 23 1 )  simpleGrading ( 1 1 1 )  // outer_upper
+
+    // Sclera B left — split @ x=-2mm (shares v24,v27,v28,v31; reuses v79,v83)
+    hex (102 24 27 103 104 28 31 105 )  sclera (  2  1 1 )  simpleGrading ( 1 1 1 )
+    hex ( 92 102 103 79  93 104 105 83 )  sclera ( 18  1 1 )  simpleGrading ( 1 1 1 )
+
+    // Cornea left — x=[-21,0mm]  (shares v32,v35,v36,v39)
+    hex ( 94 32 35 95  96 36 39 97 )  cornea ( 21  1 1 )  simpleGrading ( 1 1 1 )
+);
+
+edges ();
+
+// ── Boundary ──────────────────────────────────────────────────────────────────
+
+boundary
+(
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ LENS (RIGHT HALF) ═══════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    lens_bottom
+    {
+        type wall;
+        faces ( ( 0  1  5  4 ) );   // j_min — y=9.6mm  (n=-y)
+    }
+    lens_right
+    {
+        type wall;
+        faces ( ( 1  2  6  5 ) );   // i_max — x=+15mm  (FSI)
+    }
+    lens_top
+    {
+        type wall;
+        faces ( ( 3  7  6  2 ) );   // j_max — y=14.4mm (n=+y)
+    }
+    // lens_rim (i_min at x=0) REMOVED — x=0 is interior
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ LENS (LEFT HALF) ════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    lens_bottom_left
+    {
+        type wall;
+        faces ( ( 56  0  4 58 ) );  // j_min — y=9.6mm  (n=-y)
+    }
+    lens_left
+    {
+        // Robin spring — represents zonule fibre support at the lens equator.
+        // coeff0=3e4 Pa/m is ~3000x softer than E/L of the lens, so it allows
+        // free deformation but removes the singular rigid-body translation mode.
+        type wall;
+        faces ( ( 56 58 59 57 ) );  // i_min — x=-15mm
+    }
+    lens_top_left
+    {
+        type wall;
+        faces ( ( 57 59  7  3 ) );  // j_max — y=14.4mm (n=+y)
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ IRIS (RIGHT) ════════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    iris_pupil
+    {
+        type wall;
+        faces ( ( 8 12 15 11 ) );   // i_min — x=+5mm (n=-x)
+    }
+    iris_bottom
+    {
+        type wall;
+        faces ( ( 8  9 13 12 ) );   // j_min — y=4.8mm
+    }
+    iris_top
+    {
+        type wall;
+        faces ( (11 15 14 10 ) );   // j_max — y=7.2mm
+    }
+    iris_base
+    {
+        type wall;
+        faces ( ( 9 10 14 13 ) );   // i_max — x=+20mm (scleral spur)
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ IRIS (LEFT) ═════════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    iris_pupil_left
+    {
+        type wall;
+        faces ( ( 60 63 67 64 ) );  // i_max — x=-5mm  (n=+x, left pupil margin)
+    }
+    iris_bottom_left
+    {
+        type wall;
+        faces ( ( 61 60 64 65 ) );  // j_min — y=4.8mm
+    }
+    iris_top_left
+    {
+        type wall;
+        faces ( ( 62 66 67 63 ) );  // j_max — y=7.2mm
+    }
+    iris_base_left
+    {
+        type wall;
+        faces ( ( 61 65 66 62 ) );  // i_min — x=-20mm (scleral spur left)
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ SCLERA — FSI INNER FACES ════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    sclera_side
+    {
+        type wall;
+        faces
+        (
+            (16 20 23 19)   // A_inner_lower i_min — x=+20mm, y=[0,0.4mm]
+            (40 44 47 43)   // A_inner_upper i_min — x=+20mm, y=[2.4,25mm]
+        );
+    }
+    sclera_top_inner
+    {
+        type wall;
+        faces
+        (
+            (24 98 100 28)   // sclera B_right inner strip j_min — y=24mm
+            (98 25 29 100)   // sclera B_right outer strip j_min
+        );
+    }
+    sclera_side_left
+    {
+        type wall;
+        faces
+        (
+            (68 71 75 72)   // A_inner_lower_left i_max — x=-20mm, y=[0,0.4mm]
+            (76 79 83 80)   // A_inner_upper_left i_max — x=-20mm, y=[2.4,25mm]
+        );
+    }
+    sclera_top_inner_left
+    {
+        type wall;
+        faces
+        (
+            (102 24 28 104)   // sclera B_left peri-axis j_min — y=24mm
+            (92 102 104 93)   // sclera B_left outer strip j_min
+        );
+    }
+
+    // ── Optic nerve head anchor (posterior pole y=25mm, |x|≤2mm) ────────────────
+    optic_disc
+    {
+        type wall;
+        faces ( (27 31 101 99) );   // right half — fixed D in solid/0/D
+    }
+    optic_disc_left
+    {
+        type wall;
+        faces ( (103 105 31 27) ); // left half (ordering matches former sclera top)
+    }
+
+    // ── Outer sclera / cornea — traction-free in solid/0/D (no rigid clamp) ───
+    sclera_outer
+    {
+        type wall;
+        faces
+        (
+            // RIGHT A — outer wall at x=+21mm
+            (17 18 22 21)   (18 41 45 22)   (41 42 46 45)
+            // RIGHT A — bottom/top rigid faces
+            (16 48 52 20)   (48 17 21 52)
+            (43 47 55 51)   (51 55 46 42)
+            // RIGHT B — top y=25mm (outer part x≥2mm) and i_max x=20mm corner
+            (99 101 30 26)   (25 26 30 29)
+            // NOTE: B i_min at x=0 remains interior (not a boundary face)
+        );
+    }
+    sclera_outer_left
+    {
+        type wall;
+        faces
+        (
+            // LEFT A — outer wall at x=-21mm
+            (69 73 74 70)   (70 74 81 77)   (77 81 82 78)
+            // LEFT A — bottom/top rigid faces
+            (84 68 72 88)   (69 84 88 73)
+            (79 83 91 87)   (87 91 82 78)
+            // LEFT B — top y=25mm outer part (x≤-2mm) and i_min x=-20mm strip
+            (79 83 105 103)   (92 93 83 79)
+        );
+    }
+
+    sclera_tm_gap
+    {
+        type wall;
+        faces
+        (
+            (19 23 53 49)   // A_inner_lower  j_max — y=0.4mm
+            (40 50 54 44)   // A_inner_upper  j_min — y=2.4mm
+            (49 53 54 50)   // A_outer_mid    i_min — x=+20.5mm
+        );
+    }
+    sclera_tm_gap_left
+    {
+        type wall;
+        faces
+        (
+            (71 85 89 75)   // A_inner_lower_left j_max — y=0.4mm
+            (76 86 90 80)   // A_inner_upper_left j_min — y=2.4mm
+            (85 86 90 89)   // A_outer_mid_left   i_max — x=-20.5mm
+        );
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ CORNEA ══════════════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    cornea_inner
+    {
+        type wall;
+        faces ( (35 39 38 34) );    // right half j_max — y=0mm
+    }
+    cornea_inner_left
+    {
+        type wall;
+        faces ( (95 97 39 35) );    // left half  j_max — y=0mm, x=[-21,0mm]
+    }
+    cornea_outer
+    {
+        type wall;
+        faces
+        (
+            (32 33 37 36)   // j_min — y=-1mm (right half)
+            // i_min at x=0 REMOVED (interior)
+            (33 34 38 37)   // i_max — x=+21mm
+        );
+    }
+    cornea_outer_left
+    {
+        type wall;
+        faces
+        (
+            (94 32 36 96)   // j_min — y=-1mm (left half)
+            (94 96 97 95)   // i_min — x=-21mm
+        );
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ 2D EMPTY FACES ══════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    front
+    {
+        type empty;
+        faces
+        (
+            // RIGHT HALF (z=1mm faces, outward +z)
+            ( 4  5  6  7 )   ( 12 13 14 15 )
+            ( 20 52 53 23 )  ( 52 21 22 53 )  ( 53 22 45 54 )
+            ( 44 54 55 47 )  ( 54 45 46 55 )
+            ( 28 100 101 31 )  ( 100 29 30 101 )
+            ( 36 37 38 39 )
+            // LEFT HALF (z=1mm faces)
+            ( 58  4  7 59 )  ( 65 64 67 66 )
+            ( 88 72 75 89 )  ( 73 88 89 74 )  ( 74 89 90 81 )
+            ( 90 80 83 91 )  ( 81 90 91 82 )
+            ( 104 28 31 105 )  ( 93 104 105 83 )
+            ( 96 36 39 97 )
+        );
+    }
+
+    back
+    {
+        type empty;
+        faces
+        (
+            // RIGHT HALF (z=0 faces, outward -z)
+            ( 0  3  2  1 )   ( 8 11 10  9 )
+            ( 16 19 49 48 )  ( 48 49 18 17 )  ( 49 50 41 18 )
+            ( 40 43 51 50 )  ( 50 51 42 41 )
+            ( 24 27 99 98 )  ( 98 99 26 25 )
+            ( 32 35 34 33 )
+            // LEFT HALF (z=0 faces)
+            ( 56 57  3  0 )  ( 61 62 63 60 )
+            ( 84 85 71 68 )  ( 69 70 85 84 )  ( 70 77 86 85 )
+            ( 86 87 79 76 )  ( 77 78 87 86 )
+            ( 92 102 103 79 )  ( 102 103 27 24 )
+            ( 94 95 35 32 )
+        );
+    }
+);

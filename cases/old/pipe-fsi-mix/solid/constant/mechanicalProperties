@@ -1,0 +1,25 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// Linear elastic model for the zonular fibers (simplified).
+// E = 1 MPa: soft elastic tissue (zonula ciliaris range: 0.1-10 MPa)
+// nu = 0.45: nearly incompressible biological tissue
+// rho = 1200 kg/m3: soft tissue density
+
+planeStress     yes;
+
+mechanical
+(
+    zonula
+    {
+        type            linearElastic;
+        rho             rho [ 1 -3  0 0 0 0 0 ] 1200;
+        E               E   [ 1 -1 -2 0 0 0 0 ] 1e6;
+        nu              nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+);

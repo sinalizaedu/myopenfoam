@@ -1,0 +1,34 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// pipe-fsi-solid: Biot poroelastic zonula model.
+//
+// poroMechanicalLaw couples pore pressure to effective stress via Biot coefficient.
+// Effective stress law: linearElastic (E=1e5 Pa, nu=0.3 — well away from locking).
+// Biot coefficient alpha=1.0 (fully saturated soft tissue).
+//
+// Physical meaning: the total stress = effective stress - alpha*p_pore*I
+// Seepage is governed by Darcy's law with K defined in solidProperties.
+
+planeStress     no;
+
+mechanical
+(
+    zonulaBiot
+    {
+        type            poroMechanicalLaw;
+        rho             rho      [ 1 -3  0 0 0 0 0 ] 1200;
+        biotCoeff       biotCoeff [ 0  0  0 0 0 0 0 ] 1.0;
+        effectiveStressMechanicalLaw
+        {
+            type    linearElastic;
+            E       E  [ 1 -1 -2 0 0 0 0 ] 1e5;
+            nu      nu [ 0  0  0 0 0 0 0 ] 0.3;
+        }
+    }
+);

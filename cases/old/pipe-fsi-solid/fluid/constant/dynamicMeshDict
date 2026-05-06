@@ -1,0 +1,21 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      dynamicMeshDict;
+}
+
+// ALE: fluid mesh morphs as the elastic barrier deforms under IOP loading.
+// displacementLaplacian propagates the interface displacement through the domain.
+
+dynamicFvMesh   dynamicMotionSolverFvMesh;
+
+motionSolverLibs ("libfvMotionSolvers.so");
+
+solver          displacementLaplacian;
+
+displacementLaplacianCoeffs
+{
+    diffusivity     uniform;
+}

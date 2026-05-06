@@ -1,0 +1,68 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+// Velocity field.
+// Pressure-driven flow in a full cylindrical pipe (r∈[0,Ro]).
+// The lens disc (r ≤ R_lens) is impermeable — no flow crosses it; fluid passes
+// only through the outer annulus (R_lens < r ≤ Ro) at the lens plane.
+// At the FSI patches the fluid velocity matches the moving wall.
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
+
+    outlet
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
+
+    // ALE: match wall velocity to mesh motion (preCICE-driven displacement)
+    interface_upstream
+    {
+        type            movingWallVelocity;
+        value           uniform (0 0 0);
+    }
+
+    interface_downstream
+    {
+        type            movingWallVelocity;
+        value           uniform (0 0 0);
+    }
+
+    lensRim
+    {
+        type            noSlip;
+    }
+
+    // wallInner removed: mesh now extends to r=0 (degenerate hex).
+    // The axis is an interior edge — no BC needed there.
+
+    wallOuter
+    {
+        type            noSlip;
+    }
+
+    symmetry_z
+    {
+        type            symmetryPlane;
+    }
+
+    symmetry_y
+    {
+        type            symmetryPlane;
+    }
+}

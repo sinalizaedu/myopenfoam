@@ -1,0 +1,55 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+
+// pipe-lens-memb-spring: Darcy–Forchheimer porous resistance in the ZONULA only.
+//
+// The cellZone "zonulaZone" is created by topoSet (system/topoSetDict)
+// and marks the annular fluid region R_lens < r ≤ Ro for ALL x.
+// The lens disc itself (r ≤ R_lens) is NOT in this zone — it remains
+// impermeable; this option only acts on the fluid cells in the ring.
+//
+// In OpenFOAM 2512, Darcy-Forchheimer is accessed via explicitPorositySource
+// with DarcyForchheimer as the inner porosityModel.
+//
+// Physical intent: model zonular-fibre resistance to aqueous flow.
+// -∇p_source = d·μ·U  (Darcy only, f=0 → linear regime)
+// With d=1e9, μ=1e-3, U≈1e-4 m/s, Δx≈2mm: Δp ≈ 0.2 Pa
+
+zonulaPorosity
+{
+    type            explicitPorositySource;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        zonulaSet;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            // Darcy coefficient (m⁻²) — isotropic, viscous resistance only
+            d               d [0 -2 0 0 0 0 0] (1e9 1e9 1e9);
+
+            // Forchheimer coefficient (m⁻¹) — zero for linear Darcy regime
+            f               f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                rotation
+                {
+                    type    axes;
+                    e1      (1 0 0);
+                    e2      (0 1 0);
+                }
+            }
+        }
+    }
+}

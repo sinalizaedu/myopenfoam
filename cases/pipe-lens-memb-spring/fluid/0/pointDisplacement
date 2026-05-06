@@ -1,0 +1,71 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       pointVectorField;
+    object      pointDisplacement;
+}
+
+// ALE mesh motion field.
+// preCICE adapter writes solid displacement here at the FSI patches.
+// All other boundaries are fixed (no mesh motion outside the FSI zone).
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    outlet
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    // preCICE writes disc displacement here → morphs fluid mesh at FSI patches
+    interface_upstream
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    interface_downstream
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    lensRim
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    wallInner
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    wallOuter
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    symmetry_z
+    {
+        type            symmetryPlane;
+    }
+
+    symmetry_y
+    {
+        type            symmetryPlane;
+    }
+}

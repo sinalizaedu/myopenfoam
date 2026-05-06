@@ -1,0 +1,207 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : May 06 2026
+Time   : 18:27:14
+Host   : 729c7b852c8f
+PID    : 258
+I/O    : uncollated
+Case   : /simulation/eye-fsi-tc0/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel unsLinearGeometry
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidTraction boundary condition
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidTraction boundary condition
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidTraction boundary condition
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidTraction boundary condition
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Number of cells in new mesh : 300
+Number of faces in new mesh : 1240
+Number of points in new mesh: 682
+Number of cells in new mesh : 90
+Number of faces in new mesh : 396
+Number of points in new mesh: 256
+Number of cells in new mesh : 144
+Number of faces in new mesh : 679
+Number of points in new mesh: 500
+Number of cells in new mesh : 42
+Number of faces in new mesh : 211
+Number of points in new mesh: 172
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[preCICE] This is preCICE version 3.3.1
+---[preCICE] Revision info: v3.3.1
+---[preCICE] Build type: Release (without debug log)
+---[preCICE] Working directory "/simulation/eye-fsi-tc0/solid"
+---[preCICE] Configuring preCICE with configuration "../precice-config.xml"
+---[preCICE] I am participant "Solid"
+---[preCICE] Setting up primary communication to coupling partner/s
+---[preCICE] Primary ranks are connected
+---[preCICE] Setting up preliminary secondary communication to coupling partner/s
+---[preCICE] Receive global mesh Fluid-Mesh
+---[preCICE] Prepare partition for mesh Solid-Mesh
+---[preCICE] Setting up secondary communication to coupling partner/s
+---[preCICE] Secondary ranks are connected
+---[preCICE] Automatic RBF mapping alias from mesh "Fluid-Mesh" to mesh "Solid-Mesh" in "read" direction resolves to "partition-of-unity RBF" .
+---[preCICE] Computing "partition-of-unity RBF" mapping from mesh "Fluid-Mesh" to mesh "Solid-Mesh" in "read" direction.
+---[preCICE] Mapping "Force" for t=0 from "Fluid-Mesh" to "Solid-Mesh" (skipped zero sample)
+---[preCICE] Mapping "Force" for t=0.01 from "Fluid-Mesh" to "Solid-Mesh"
+---[preCICE] time-window 1, t 0 (max: 0.05), Dt 0.01, max-dt 0.01
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+Time = 0.01
+
+Evolving solid solver
+Solving the momentum equation for D
+setCellDisplacements: reading cellDisplacements
+    Corr, res, relRes, matRes, iters
+    50, 0.0078674229, 0.011993647, 0, 20
+    100, 0.002848324, 0.0048592026, 0, 20
+    150, 0.0014425588, 0.0025640395, 0, 20
+--> FOAM Warning : Max iterations reached within momentum loop
+ExecutionTime = 1.13 s  ClockTime = 4 s
+
+---[preCICE] Time window completed
+---[preCICE] Mapping "Force" for t=0.02 from "Fluid-Mesh" to "Solid-Mesh"
+---[preCICE] time-window 2, t 0.01 (max: 0.05), Dt 0.01, max-dt 0.01
+Time = 0.02
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.0008275443, 0.010138823, 0, 20
+    100, 0.00043832465, 0.0039143127, 0, 20
+    150, 0.00025900899, 0.0020138365, 0, 20
+--> FOAM Warning : Max iterations reached within momentum loop
+ExecutionTime = 1.77 s  ClockTime = 5 s
+
+---[preCICE] Time window completed
+---[preCICE] Mapping "Force" for t=0.03 from "Fluid-Mesh" to "Solid-Mesh"
+---[preCICE] time-window 3, t 0.02 (max: 0.05), Dt 0.01, max-dt 0.01
+Time = 0.03
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.00064723604, 0.012537622, 0, 20
+    100, 0.00039973998, 0.005063211, 0, 20
+    150, 0.00025657809, 0.0026689186, 0, 20
+--> FOAM Warning : Max iterations reached within momentum loop
+ExecutionTime = 2.36 s  ClockTime = 5 s
+
+---[preCICE] Time window completed
+---[preCICE] Mapping "Force" for t=0.04 from "Fluid-Mesh" to "Solid-Mesh"
+---[preCICE] time-window 4, t 0.03 (max: 0.05), Dt 0.01, max-dt 0.01
+Time = 0.04
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.00031567761, 0.013145778, 0, 20
+    100, 0.00019533045, 0.0053474334, 0, 20
+    150, 0.00012540195, 0.0028145749, 0, 20
+--> FOAM Warning : Max iterations reached within momentum loop
+ExecutionTime = 2.99 s  ClockTime = 6 s
+
+---[preCICE] Time window completed
+---[preCICE] Mapping "Force" for t=0.05 from "Fluid-Mesh" to "Solid-Mesh"
+---[preCICE] time-window 5, t 0.04 (max: 0.05), Dt 0.01, max-dt 0.01
+Time = 0.05
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.00012545276, 0.01342635, 0, 20
+    100, 7.7242079e-05, 0.0054635043, 0, 20
+    150, 4.9423299e-05, 0.0028647595, 0, 20
+--> FOAM Warning : Max iterations reached within momentum loop
+ExecutionTime = 3.65 s  ClockTime = 7 s
+
+---[preCICE] Time window completed
+---[preCICE] Reached end at: final time-window: 5, final time: 0.05
+---[preciceAdapter] The coupling completed.
+---[preCICE] Close communication channels
+---[preciceAdapter] The simulation was ended by preCICE. Calling the end() methods of any functionObject explicitly.
+---[preciceAdapter] Great that you are using the OpenFOAM-preCICE adapter! Next to the preCICE library and any other components, please also cite this adapter. Find how on https://precice.org/adapter-openfoam-overview.html.
+--> FOAM Warning : 
+    From unsLinearGeometry::end()
+    in file solidModels/solidModel/solidModel.C at line 1354
+    The maximum momentum correctors were reached in 5 time-steps
+
+
+End
+
+I/O    : uncollated

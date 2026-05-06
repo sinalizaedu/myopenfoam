@@ -1,0 +1,134 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// eye-fsi-tc0: pimpleFoam + solids4Foam, coupled via preCICE (serial-explicit, Force-only).
+// FSI: lens deformation driven by fluid pressure; spring (zonule) Robin BC on rim.
+//
+// Transient scenario (symmetric fluid: two AC inlets + mirrored needles):
+//   t =  0 –  5 s : baseline           — ac_inlet + ac_inlet_left
+//   t =  5 – 11 s : injection ON       — needle_inlet_* + both AC inlets
+//   t = 11 – 15 s : injection OFF      — AC inlets only
+//   t = 15 – 21 s : paracentesis ON    — needle_outlet_* + both AC inlets
+//   t = 21 – 25 s : paracentesis OFF   — AC inlets only (recovery)
+//
+// preCICE time-window-size must match deltaT in precice-config.xml.
+// The adapter function object is mandatory for synchronisation.
+
+application     pimpleFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         25;
+
+deltaT          0.01;
+// Fixed timestep matching preCICE time-window-size (adjustTimeStep must be
+// OFF with preCICE: adaptive stepping accumulates machine-precision drift
+// over many windows, causing max-dt→0 and a zero-dt collapse).
+adjustTimeStep  no;
+
+writeControl    adjustableRunTime;
+writeInterval   0.5;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    // Required by preCICE adapter — must be first in the function list
+    preCICE_Adapter
+    {
+        type preciceAdapterFunctionObject;
+        libs ("libpreciceAdapterFunctionObject.so");
+    }
+
+    // Net volumetric flow rate through TM outlet (should equal ac_inlet flow)
+    flowRateTM
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet_tm;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    flowRateTM_left
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet_tm_left;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    // Area-averaged pressure at TM outlet (proxy for IOP)
+    pressureIOP
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            outlet_tm;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    // Area-averaged pressure at ac_inlet
+    pressureACinlet
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            ac_inlet;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    // IOP probe — interior AC point, y=4mm is Row 3 (y=[3.16,4.80mm]) col 1
+    // (x=[5,15mm]) which is pure AC fluid (block B10), well away from iris/TM.
+    // Vitreous probe at y=20mm is Row 8 (y=[18,21.92mm]) col 1 — should equal
+    // AC pressure (IOP) since the vitreous is pressure-coupled via the lens gap.
+    // Kinematic pressure p [m²/s²]; convert: IOP_mmHg = p × ρ / 133.322
+    iop_probe
+    {
+        type            probes;
+        libs            (sampling);
+        fields          (p);
+        probeLocations
+        (
+            ( 0.010  0.004  0.0005)   // AC interior (right)
+            (-0.010  0.004  0.0005)   // AC interior (left)
+            ( 0.010  0.020  0.0005)   // Vitreous (right)
+            (-0.010  0.020  0.0005)   // Vitreous (left)
+        );
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+}

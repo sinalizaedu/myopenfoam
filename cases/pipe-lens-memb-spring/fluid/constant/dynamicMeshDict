@@ -1,0 +1,25 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      dynamicMeshDict;
+}
+
+// ALE mesh motion for FSI: displacement Laplacian diffusivity = 1/distance²
+// to concentrate deformation near the moving FSI patches and freeze the
+// far-field mesh (inlet, outlet, outer wall).
+//
+// The FSI patches (interface_upstream, interface_downstream) receive point
+// displacement from the preCICE adapter; all other patches are pinned.
+
+dynamicFvMesh   dynamicMotionSolverFvMesh;
+
+motionSolverLibs ( "libfvMotionSolvers.so" );
+
+motionSolver    displacementLaplacian;
+
+displacementLaplacianCoeffs
+{
+    diffusivity  inverseDistance ( interface_upstream interface_downstream );
+}

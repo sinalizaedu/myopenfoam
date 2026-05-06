@@ -1,0 +1,26 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// pipe-fluid: pimpleFoam + Darcy-Forchheimer porous zone (block B)
+// Models the zonula as a volumetric porous medium — no structural deformation.
+
+application     pimpleFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         5;
+deltaT          0.01;
+writeControl    timeStep;
+writeInterval   10;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;

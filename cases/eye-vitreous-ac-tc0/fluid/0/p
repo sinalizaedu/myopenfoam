@@ -1,0 +1,85 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+// Kinematic pressure [m²/s²]  (p_physical / ρ)
+//
+// outlet_tm fixed at:  1333.22 Pa / 993 kg/m³ = 1.342 m²/s²
+//   → matches Fluent outlet_tm gauge pressure from Report_UDS_Final.
+//
+// All inlets and walls use zeroGradient (pressure free to adjust).
+// No pRefCell/pRefValue needed — fixedValue at outlet_tm anchors the pressure.
+//
+// front/back: empty — 2D simulation.
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform 1.342;
+
+boundaryField
+{
+    ac_inlet
+    {
+        type            zeroGradient;
+    }
+
+    outlet_tm
+    {
+        type            fixedValue;
+        value           uniform 1.342;   // 1333.22 Pa / 993 kg/m³
+    }
+
+    needle_inlet
+    {
+        type            zeroGradient;
+    }
+
+    needle_outlet
+    {
+        type            zeroGradient;
+    }
+
+    lens_wall
+    {
+        type            zeroGradient;
+    }
+
+    iris_wall
+    {
+        type            zeroGradient;
+    }
+
+    sclera_left
+    {
+        type            zeroGradient;
+    }
+
+    sclera_top
+    {
+        type            zeroGradient;
+    }
+
+    sclera_bot
+    {
+        type            zeroGradient;
+    }
+
+    sclera_right
+    {
+        type            zeroGradient;
+    }
+
+    front
+    {
+        type            empty;
+    }
+
+    back
+    {
+        type            empty;
+    }
+}

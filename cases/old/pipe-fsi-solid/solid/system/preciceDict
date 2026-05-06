@@ -1,0 +1,43 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+// preCICE adapter for solids4Foam — pipe-fsi-solid solid participant
+
+preciceConfig "../precice-config.xml";
+
+participant Solid;
+
+modules (FSI);
+
+interfaces
+{
+    Interface1
+    {
+        mesh              Solid-Mesh;
+        patches           (interface_left interface_right);
+        locations         faceCenters;
+
+        readData
+        (
+            Force
+        );
+
+        writeData
+        (
+            Displacement
+        );
+    }
+}
+
+FSI
+{
+    solverType              solid;
+    namePointDisplacement   unused;
+    nameCellDisplacement    D;
+    nameForce               solidForce;
+}

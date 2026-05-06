@@ -1,0 +1,211 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// pipe-lens-memb-spring: FLUID domain — 3D quarter-cylinder (90° sector).
+//
+// Geometry: Ro=6mm, R_lens=4.5mm, Ri=1mm, L=20mm, x1=9mm, x2=11mm
+//   Inner boundary: r=Ri=1mm (axis approximation — avoids degenerate cells
+//   near r=0 that cause CFL instability with the Darcy-Forchheimer source).
+//   wallInner uses slip BC (tangential shear-free axis approximation).
+//
+// Block layout (5 blocks):
+//   B0: inner upstream    r∈[Ri,R_lens], x∈[0,x1]
+//   B2: outer upstream    r∈[R_lens,Ro], x∈[0,x1]
+//   B3: zonula at lens    r∈[R_lens,Ro], x∈[x1,x2]
+//   B4: outer downstream  r∈[R_lens,Ro], x∈[x2,L]
+//   B6: inner downstream  r∈[Ri,R_lens], x∈[x2,L]
+//
+// Vertex layout: 4 x-slices × 6 vertices = 24 total
+//   Per slice: (Ri,θ=0°), (Ri,θ=90°), (R_lens,θ=0°), (R_lens,θ=90°), (Ro,θ=0°), (Ro,θ=90°)
+//
+// Arc midpoints at θ=45°:
+//   Ri/√2 = 7.071e-4,  R_lens/√2 = 3.182e-3,  Ro/√2 = 4.243e-3
+
+scale   1;
+
+vertices
+(
+    // ── x = 0 (inlet) ────────────────────────────────────────── v0–v5
+    ( 0.000   0.0010   0.0000 )  //  0  [x0, Ri,    θ=0°]
+    ( 0.000   0.0000   0.0010 )  //  1  [x0, Ri,    θ=90°]
+    ( 0.000   0.0045   0.0000 )  //  2  [x0, R_lens,θ=0°]
+    ( 0.000   0.0000   0.0045 )  //  3  [x0, R_lens,θ=90°]
+    ( 0.000   0.0060   0.0000 )  //  4  [x0, Ro,    θ=0°]
+    ( 0.000   0.0000   0.0060 )  //  5  [x0, Ro,    θ=90°]
+
+    // ── x = 0.009 (x1, upstream FSI face) ───────────────────── v6–v11
+    ( 0.009   0.0010   0.0000 )  //  6  [x1, Ri,    θ=0°]
+    ( 0.009   0.0000   0.0010 )  //  7  [x1, Ri,    θ=90°]
+    ( 0.009   0.0045   0.0000 )  //  8  [x1, R_lens,θ=0°]
+    ( 0.009   0.0000   0.0045 )  //  9  [x1, R_lens,θ=90°]
+    ( 0.009   0.0060   0.0000 )  // 10  [x1, Ro,    θ=0°]
+    ( 0.009   0.0000   0.0060 )  // 11  [x1, Ro,    θ=90°]
+
+    // ── x = 0.011 (x2, downstream FSI face) ─────────────────── v12–v17
+    ( 0.011   0.0010   0.0000 )  // 12  [x2, Ri,    θ=0°]
+    ( 0.011   0.0000   0.0010 )  // 13  [x2, Ri,    θ=90°]
+    ( 0.011   0.0045   0.0000 )  // 14  [x2, R_lens,θ=0°]
+    ( 0.011   0.0000   0.0045 )  // 15  [x2, R_lens,θ=90°]
+    ( 0.011   0.0060   0.0000 )  // 16  [x2, Ro,    θ=0°]
+    ( 0.011   0.0000   0.0060 )  // 17  [x2, Ro,    θ=90°]
+
+    // ── x = 0.020 (outlet) ──────────────────────────────────── v18–v23
+    ( 0.020   0.0010   0.0000 )  // 18  [x3, Ri,    θ=0°]
+    ( 0.020   0.0000   0.0010 )  // 19  [x3, Ri,    θ=90°]
+    ( 0.020   0.0045   0.0000 )  // 20  [x3, R_lens,θ=0°]
+    ( 0.020   0.0000   0.0045 )  // 21  [x3, R_lens,θ=90°]
+    ( 0.020   0.0060   0.0000 )  // 22  [x3, Ro,    θ=0°]
+    ( 0.020   0.0000   0.0060 )  // 23  [x3, Ro,    θ=90°]
+);
+
+blocks
+(
+    // ── B0: inner upstream   r∈[Ri,R_lens], x∈[x0,x1] ─── 10×30×12 ──
+    hex (  0  1  7  6    2  3  9  8 )  ( 10 30 12 )  simpleGrading ( 1 1 1 )
+
+    // ── B2: outer upstream   r∈[R_lens,Ro], x∈[x0,x1] ─── 10×30×8 ───
+    hex (  2  3  9  8    4  5 11 10 )  ( 10 30  8 )  simpleGrading ( 1 1 1 )
+
+    // ── B3: zonula at lens   r∈[R_lens,Ro], x∈[x1,x2] ─── 10×4×8 ────
+    hex (  8  9 15 14   10 11 17 16 )  ( 10  4  8 )  simpleGrading ( 1 1 1 )
+
+    // ── B4: outer downstream r∈[R_lens,Ro], x∈[x2,x3] ─── 10×30×8 ───
+    hex ( 14 15 21 20   16 17 23 22 )  ( 10 30  8 )  simpleGrading ( 1 1 1 )
+
+    // ── B6: inner downstream r∈[Ri,R_lens], x∈[x2,x3] ─── 10×30×12 ──
+    hex ( 12 13 19 18   14 15 21 20 )  ( 10 30 12 )  simpleGrading ( 1 1 1 )
+);
+
+edges
+(
+    // x = 0
+    arc  0  1  ( 0.000  7.071e-4  7.071e-4 )   // Ri
+    arc  2  3  ( 0.000  3.182e-3  3.182e-3 )   // R_lens
+    arc  4  5  ( 0.000  4.243e-3  4.243e-3 )   // Ro
+
+    // x = 0.009 (x1)
+    arc  6  7  ( 0.009  7.071e-4  7.071e-4 )
+    arc  8  9  ( 0.009  3.182e-3  3.182e-3 )
+    arc 10 11  ( 0.009  4.243e-3  4.243e-3 )
+
+    // x = 0.011 (x2)
+    arc 12 13  ( 0.011  7.071e-4  7.071e-4 )
+    arc 14 15  ( 0.011  3.182e-3  3.182e-3 )
+    arc 16 17  ( 0.011  4.243e-3  4.243e-3 )
+
+    // x = 0.020 (outlet)
+    arc 18 19  ( 0.020  7.071e-4  7.071e-4 )
+    arc 20 21  ( 0.020  3.182e-3  3.182e-3 )
+    arc 22 23  ( 0.020  4.243e-3  4.243e-3 )
+);
+
+boundary
+(
+    // ── Inlet: x=0 ──────────────────────────────────────────────────────
+    inlet
+    {
+        type patch;
+        faces
+        (
+            ( 0  1  3  2 )   // B0 k_min: inner (Ri→R_lens)
+            ( 2  3  5  4 )   // B2 k_min: outer (R_lens→Ro)
+        );
+    }
+
+    // ── Outlet: x=L ─────────────────────────────────────────────────────
+    outlet
+    {
+        type patch;
+        faces
+        (
+            ( 18 19 21 20 )  // B6 k_max: inner
+            ( 20 21 23 22 )  // B4 k_max: outer
+        );
+    }
+
+    // ── FSI: upstream face of lens disc (x=x1, r∈[Ri,R_lens]) ──────────
+    interface_upstream
+    {
+        type wall;
+        faces
+        (
+            ( 6  7  9  8 )   // B0 k_max
+        );
+    }
+
+    // ── FSI: downstream face of lens disc (x=x2, r∈[Ri,R_lens]) ────────
+    interface_downstream
+    {
+        type wall;
+        faces
+        (
+            ( 12 13 15 14 )  // B6 k_min
+        );
+    }
+
+    // ── Zonula inner wall: r=R_lens, x∈[x1,x2] ──────────────────────────
+    lensRim
+    {
+        type wall;
+        faces
+        (
+            ( 8  9 15 14 )   // B3 i_min
+        );
+    }
+
+    // ── Inner cylindrical wall: r=Ri (axis approximation, slip BC) ───────
+    wallInner
+    {
+        type wall;
+        faces
+        (
+            ( 0  1  7  6 )   // B0 i_min
+            ( 12 13 19 18 )  // B6 i_min
+        );
+    }
+
+    // ── Outer cylindrical wall: r=Ro ────────────────────────────────────
+    wallOuter
+    {
+        type wall;
+        faces
+        (
+            (  4  5 11 10 )  // B2 i_max
+            ( 10 11 17 16 )  // B3 i_max
+            ( 16 17 23 22 )  // B4 i_max
+        );
+    }
+
+    // ── Symmetry plane θ=0° (z=0, y≥0) ─────────────────────────────────
+    symmetry_z
+    {
+        type symmetryPlane;
+        faces
+        (
+            (  0  2  8  6 )  // B0 j_min
+            (  2  4 10  8 )  // B2 j_min
+            (  8 10 16 14 )  // B3 j_min
+            ( 14 16 22 20 )  // B4 j_min
+            ( 12 14 20 18 )  // B6 j_min
+        );
+    }
+
+    // ── Symmetry plane θ=90° (y=0, z≥0) ────────────────────────────────
+    symmetry_y
+    {
+        type symmetryPlane;
+        faces
+        (
+            (  1  7  9  3 )  // B0 j_max
+            (  3  9 11  5 )  // B2 j_max
+            (  9 15 17 11 )  // B3 j_max
+            ( 15 21 23 17 )  // B4 j_max
+            ( 13 19 21 15 )  // B6 j_max
+        );
+    }
+);

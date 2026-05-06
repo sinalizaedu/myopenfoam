@@ -1,0 +1,55 @@
+#!/bin/bash
+# eye-fsi-tc0 — Allrun
+# ──────────────────────────────────────────────────────────────────────────
+# 2D FSI: pimpleFoam (fluid) + solids4Foam (solid) coupled via preCICE.
+#
+# Solid domain contains all eye structures in one mesh (cell zones):
+#   lens_zone   — deformable, FSI-coupled via preCICE
+#   iris_zone   — rigid solid
+#   sclera_zone — rigid solid (AC limbus rim)
+#   cornea_zone — rigid solid (anterior dome)
+# ──────────────────────────────────────────────────────────────────────────
+
+set -e
+set -o pipefail
+
+cd "$(dirname "$0")"
+
+echo "=== eye-fsi-tc0: meshing ==="
+
+(cd fluid && blockMesh 2>&1 | tee log.blockMesh)
+(cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+echo "  Fluid mesh OK"
+
+(cd solid && blockMesh 2>&1 | tee log.blockMesh)
+echo "  Solid mesh OK (lens + iris + sclera + cornea)"
+
+echo ""
+echo "=== eye-fsi-tc0: running coupled FSI ==="
+echo "  preCICE serial-explicit (Force fluid→solid), t∈[0,25]s, dt=0.01s — see precice-config.xml"
+echo ""
+
+# Launch solid in background (preCICE connector)
+(cd solid && solids4Foam 2>&1 | tee log.solids4Foam) &
+SOLID_PID=$!
+
+# Short delay — let connector socket initialise before acceptor connects
+sleep 2
+
+# Launch fluid in foreground (preCICE acceptor)
+(cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
+
+wait $SOLID_PID
+
+echo ""
+echo "=== eye-fsi-tc0: post-run checks ==="
+echo ""
+
+QTM=$(grep -a "flowRateTM" fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+echo "  Q_outlet_tm (last step) = $QTM"
+
+echo ""
+echo "=== eye-fsi-tc0: done ==="
+echo "    ParaView files:"
+echo "      fluid/eye-fsi-tc0-fluid.foam  — fluid flow field"
+echo "      solid/eye-fsi-tc0-solid.foam  — all solids (lens FSI + iris + sclera + cornea)"

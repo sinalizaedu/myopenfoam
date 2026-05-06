@@ -1,0 +1,36 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createBafflesDict;
+}
+
+// Convert the internal faceZone at x=1.0 into a cyclic baffle pair.
+
+internalFacesOnly true;
+
+baffles
+{
+    membrane
+    {
+        type        faceZone;
+        zoneName    membraneZone;
+
+        patches
+        {
+            master
+            {
+                name            membraneFront;
+                type            cyclic;
+                neighbourPatch  membraneBack;
+            }
+            slave
+            {
+                name            membraneBack;
+                type            cyclic;
+                neighbourPatch  membraneFront;
+            }
+        }
+    }
+}

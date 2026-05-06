@@ -1,0 +1,42 @@
+#!/bin/bash
+# Allrun — pipe-membrane: zero-thickness porous membrane (porousBaffle)
+# Models the zonula as a Darcy pressure-jump interface at x=1.0
+# Workflow: blockMesh → topoSet (faceZone at x=1.0) → createBaffles → pimpleFoam
+set -e
+cd "${0%/*}" || exit 1
+
+echo "============================================"
+echo " pipe-membrane: Porous Membrane (Δp jump)"
+echo " Zonula = zero-thickness porousBaffle"
+echo "============================================"
+echo ""
+
+echo "=== [1/4] Meshing ==="
+blockMesh -case fluid
+echo "  Mesh done."
+
+echo "=== [2/4] Creating faceZone at x=1.0 ==="
+topoSet -case fluid
+echo "  FaceZone 'membraneZone' created."
+
+echo "=== [3/4] Creating porous baffle patches ==="
+createBaffles -case fluid -overwrite
+touch fluid/case.foam
+echo "  Patches 'membraneFront' / 'membraneBack' created."
+
+echo "=== [3b/4] Applying porousBafflePressure BC to membraneFront ==="
+foamDictionary \
+    -entry boundaryField.membraneFront \
+    -set '{ type porousBafflePressure; patchType cyclic; D 1000; I 0; length 1; jump uniform 0; value uniform 0; }' \
+    fluid/0/p
+echo "  porousBafflePressure BC applied (D=1000, I=0)."
+
+echo "=== [4/4] Running pimpleFoam ==="
+(cd fluid && pimpleFoam > log.pimpleFoam 2>&1)
+
+echo ""
+echo "============================================"
+echo " Done. Open fluid/case.foam in ParaView."
+echo " Inspect p to see the pressure jump across"
+echo " the membrane at x=1.0."
+echo "============================================"

@@ -1,0 +1,95 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// Rectangular pipe: x=[0,2] m, y=[0,0.4] m, z=[0,0.01] m (2D)
+// Single connected domain — two blocks sharing the internal face at x=1.0.
+// That face becomes the porous baffle (membraneFront/membraneBack) via createBaffles.
+// Flow passes through; pressure jump is set by porousBafflePressure (Darcy).
+//
+//  y=0.4  +-----------[LEFT]----------‖-----------[RIGHT]-----------+
+//         |           vitreous        ‖      anterior chamber        |
+//  y=0    +-----------[LEFT]----------‖-----------[RIGHT]-----------+
+//        x=0                        x=1.0                         x=2.0
+
+scale   1;
+
+vertices
+(
+    // z = 0 plane
+    (0    0    0)    // 0
+    (1.0  0    0)    // 1
+    (2.0  0    0)    // 2
+    (0    0.4  0)    // 3
+    (1.0  0.4  0)    // 4
+    (2.0  0.4  0)    // 5
+
+    // z = 0.01 plane
+    (0    0    0.01) // 6
+    (1.0  0    0.01) // 7
+    (2.0  0    0.01) // 8
+    (0    0.4  0.01) // 9
+    (1.0  0.4  0.01) // 10
+    (2.0  0.4  0.01) // 11
+);
+
+blocks
+(
+    hex (0 1 4 3  6 7 10 9)  (50 20 1) simpleGrading (1 1 1)
+    hex (1 2 5 4  7 8 11 10) (50 20 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ( (0 3 9 6) );
+    }
+
+    outlet
+    {
+        type patch;
+        faces ( (2 5 11 8) );
+    }
+
+    top
+    {
+        type wall;
+        faces
+        (
+            (3  4  10 9)
+            (4  5  11 10)
+        );
+    }
+
+    bottom
+    {
+        type wall;
+        faces
+        (
+            (1  7  6  0)
+            (2  8  7  1)
+        );
+    }
+
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0  3  4  1)
+            (1  4  5  2)
+            (6  7  10 9)
+            (7  8  11 10)
+        );
+    }
+);

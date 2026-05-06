@@ -1,0 +1,68 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+// Kinematic pressure (p/rho, m²/s²).
+// p_inlet = 0.4 m²/s² → 0.4 × 1000 = 400 Pa ≈ 3 mmHg (IOP driving difference).
+// p_outlet = 0 (reference).
+// Flow is pressure-driven through the zonula ring; lens disc is impermeable.
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 0.4;
+    }
+
+    outlet
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+
+    // FSI patches: zero gradient (pressure not prescribed at moving wall)
+    interface_upstream
+    {
+        type            zeroGradient;
+    }
+
+    interface_downstream
+    {
+        type            zeroGradient;
+    }
+
+    // Rigid walls: zero gradient
+    lensRim
+    {
+        type            zeroGradient;
+    }
+
+    wallInner
+    {
+        type            zeroGradient;
+    }
+
+    wallOuter
+    {
+        type            zeroGradient;
+    }
+
+    symmetry_z
+    {
+        type            symmetryPlane;
+    }
+
+    symmetry_y
+    {
+        type            symmetryPlane;
+    }
+}

@@ -1,0 +1,70 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+// Velocity field.
+// Pressure-driven flow through the zonula ring (R_lens < r ≤ Ro).
+// The lens disc (r ≤ R_lens) is impermeable — no flow crosses it.
+// At the FSI patches the fluid velocity matches the moving wall.
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
+
+    outlet
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
+
+    // ALE: match wall velocity to mesh motion (preCICE-driven displacement)
+    interface_upstream
+    {
+        type            movingWallVelocity;
+        value           uniform (0 0 0);
+    }
+
+    interface_downstream
+    {
+        type            movingWallVelocity;
+        value           uniform (0 0 0);
+    }
+
+    lensRim
+    {
+        type            noSlip;
+    }
+
+    // Inner cylindrical wall (r=Ri=1mm axis approximation): slip
+    wallInner
+    {
+        type            slip;
+    }
+
+    wallOuter
+    {
+        type            noSlip;
+    }
+
+    symmetry_z
+    {
+        type            symmetryPlane;
+    }
+
+    symmetry_y
+    {
+        type            symmetryPlane;
+    }
+}

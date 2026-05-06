@@ -1,0 +1,389 @@
+ Container myopenfoam-fsi-run-8fa47fa46d80 Creating 
+ Container myopenfoam-fsi-run-8fa47fa46d80 Created 
+=== eye-fsi-tc0: cleaning ===
+  fluid cleaned
+  solid cleaned
+=== eye-fsi-tc0: clean done ===
+=== eye-fsi-tc0: meshing ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh
+Date   : May 06 2026
+Time   : 17:25:18
+Host   : f50735313aee
+PID    : 242
+I/O    : uncollated
+Case   : /simulation/eye-fsi-tc0/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating block mesh from "system/blockMeshDict"
+Creating block edges
+No non-planar block faces defined
+Creating topology blocks
+
+Creating topology patches - from boundary section
+
+Creating block mesh topology
+
+
+--> FOAM FATAL ERROR: (openfoam-2512)
+face 4 in patch 8 vertices 4((-0.005 0.024 0) (0 0.024 0) (0 0.024 0.001) (0 0.02208 0.001)) does not have neighbour cell face: 4(204 60 125 120)
+
+    From Foam::labelList Foam::polyMesh::facePatchFaceCells(const Foam::faceList&, const Foam::labelListList&, const Foam::faceListList&, Foam::label) const
+    in file meshes/polyMesh/polyMeshFromShapeMesh.C at line 113.
+
+FOAM aborting
+
+[stack trace]
+=============
+#1  Foam::error::simpleExit(int, bool) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so
+#2  Foam::polyMesh::facePatchFaceCells(Foam::List<Foam::face> const&, Foam::List<Foam::List<int> > const&, Foam::List<Foam::List<Foam::face> > const&, int) const in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so
+#3  Foam::polyMesh::setTopology(Foam::List<Foam::cellShape> const&, Foam::List<Foam::List<Foam::face> > const&, Foam::List<Foam::word> const&, Foam::List<int>&, Foam::List<int>&, int&, int&, Foam::List<Foam::cell>&) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so
+#4  Foam::polyMesh::polyMesh(Foam::IOobject const&, Foam::Field<Foam::Vector<double> >&&, Foam::List<Foam::cellShape> const&, Foam::List<Foam::List<Foam::face> > const&, Foam::List<Foam::word> const&, Foam::PtrList<Foam::dictionary> const&, Foam::word const&, Foam::word const&, bool) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so
+#5  Foam::blockMesh::createTopology(Foam::IOdictionary const&, Foam::word const&) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libblockMesh.so
+#6  Foam::blockMesh::blockMesh(Foam::IOdictionary const&, Foam::word const&, Foam::blockMesh::mergeStrategy, int) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libblockMesh.so
+#7  ? in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/bin/blockMesh
+#8  ? in /lib/x86_64-linux-gnu/libc.so.6
+#9  __libc_start_main in /lib/x86_64-linux-gnu/libc.so.6
+#10  ? in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/bin/blockMesh
+=============
+  Fluid mesh OK
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh
+Date   : May 06 2026
+Time   : 17:25:19
+Host   : f50735313aee
+PID    : 269
+I/O    : uncollated
+Case   : /simulation/eye-fsi-tc0/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating block mesh from "system/blockMeshDict"
+Creating block edges
+No non-planar block faces defined
+Creating topology blocks
+
+Creating topology patches - from boundary section
+
+Creating block mesh topology
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 11
+		Number of boundary faces : 86
+		Number of defined boundary faces : 86
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+Creating block offsets
+Creating merge list (topological search)...
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale (1 1 1)
+    Block 0 cell size :
+        i : 0.001 .. 0.001
+        j : 0.00048 .. 0.00048
+        k : 0.001 .. 0.001
+
+    Block 1 cell size :
+        i : 0.001 .. 0.001
+        j : 0.0008 .. 0.0008
+        k : 0.001 .. 0.001
+
+    Block 2 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0004 .. 0.0004
+        k : 0.001 .. 0.001
+
+    Block 3 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0004 .. 0.0004
+        k : 0.001 .. 0.001
+
+    Block 4 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0005 .. 0.0005
+        k : 0.001 .. 0.001
+
+    Block 5 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0009826087 .. 0.0009826087
+        k : 0.001 .. 0.001
+
+    Block 6 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0009826087 .. 0.0009826087
+        k : 0.001 .. 0.001
+
+    Block 7 cell size :
+        i : 0.001 .. 0.001
+        j : 0.001 .. 0.001
+        k : 0.001 .. 0.001
+
+    Block 8 cell size :
+        i : 0.001 .. 0.001
+        j : 0.001 .. 0.001
+        k : 0.001 .. 0.001
+
+    Block 9 cell size :
+        i : 0.001 .. 0.001
+        j : 0.00048 .. 0.00048
+        k : 0.001 .. 0.001
+
+    Block 10 cell size :
+        i : 0.001 .. 0.001
+        j : 0.0008 .. 0.0008
+        k : 0.001 .. 0.001
+
+    Block 11 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0004 .. 0.0004
+        k : 0.001 .. 0.001
+
+    Block 12 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0004 .. 0.0004
+        k : 0.001 .. 0.001
+
+    Block 13 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0005 .. 0.0005
+        k : 0.001 .. 0.001
+
+    Block 14 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0009826087 .. 0.0009826087
+        k : 0.001 .. 0.001
+
+    Block 15 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0009826087 .. 0.0009826087
+        k : 0.001 .. 0.001
+
+    Block 16 cell size :
+        i : 0.001 .. 0.001
+        j : 0.001 .. 0.001
+        k : 0.001 .. 0.001
+
+    Block 17 cell size :
+        i : 0.001 .. 0.001
+        j : 0.001 .. 0.001
+        k : 0.001 .. 0.001
+
+Adding cell zones
+    0	lens
+    1	iris
+    2	sclera
+    3	cornea
+No patch pairs to merge
+
+Writing polyMesh with 4 cellZones
+----------------
+Mesh Information
+----------------
+  boundingBox: (-0.021 -0.001 0) (0.021 0.025 0.001)
+  nPoints: 1610
+  nCells: 576
+  nFaces: 2526
+  nInternalFaces: 930
+----------------
+Cell Zones
+----------------
+  zone 0 (size: 300) name: lens
+  zone 1 (size: 90) name: iris
+  zone 2 (size: 144) name: sclera
+  zone 3 (size: 42) name: cornea
+----------------
+Patches
+----------------
+  patch 0 (start: 930 size: 15) name: lens_bottom
+  patch 1 (start: 945 size: 10) name: lens_right
+  patch 2 (start: 955 size: 15) name: lens_top
+  patch 3 (start: 970 size: 15) name: lens_bottom_left
+  patch 4 (start: 985 size: 10) name: lens_left
+  patch 5 (start: 995 size: 15) name: lens_top_left
+  patch 6 (start: 1010 size: 3) name: iris_pupil
+  patch 7 (start: 1013 size: 15) name: iris_bottom
+  patch 8 (start: 1028 size: 15) name: iris_top
+  patch 9 (start: 1043 size: 3) name: iris_base
+  patch 10 (start: 1046 size: 3) name: iris_pupil_left
+  patch 11 (start: 1049 size: 15) name: iris_bottom_left
+  patch 12 (start: 1064 size: 15) name: iris_top_left
+  patch 13 (start: 1079 size: 3) name: iris_base_left
+  patch 14 (start: 1082 size: 24) name: sclera_side
+  patch 15 (start: 1106 size: 20) name: sclera_top_inner
+  patch 16 (start: 1126 size: 24) name: sclera_side_left
+  patch 17 (start: 1150 size: 20) name: sclera_top_inner_left
+  patch 18 (start: 1170 size: 53) name: sclera_outer
+  patch 19 (start: 1223 size: 53) name: sclera_outer_left
+  patch 20 (start: 1276 size: 6) name: sclera_tm_gap
+  patch 21 (start: 1282 size: 6) name: sclera_tm_gap_left
+  patch 22 (start: 1288 size: 21) name: cornea_inner
+  patch 23 (start: 1309 size: 21) name: cornea_inner_left
+  patch 24 (start: 1330 size: 22) name: cornea_outer
+  patch 25 (start: 1352 size: 22) name: cornea_outer_left
+  patch 26 (start: 1374 size: 576) name: front
+  patch 27 (start: 1950 size: 576) name: back
+
+End
+
+  Solid mesh OK (lens + iris + sclera + cornea)
+
+=== eye-fsi-tc0: running coupled FSI ===
+  preCICE serial-implicit IQN-ILS, t∈[0,25]s, dt=0.01s
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : May 06 2026
+Time   : 17:25:19
+Host   : f50735313aee
+PID    : 272
+I/O    : uncollated
+Case   : /simulation/eye-fsi-tc0/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel unsLinearGeometry
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Number of cells in new mesh : 300
+Number of faces in new mesh : 1240
+Number of points in new mesh: 682
+Number of cells in new mesh : 90
+Number of faces in new mesh : 396
+Number of points in new mesh: 256
+Number of cells in new mesh : 144
+Number of faces in new mesh : 679
+Number of points in new mesh: 500
+Number of cells in new mesh : 42
+Number of faces in new mesh : 211
+Number of points in new mesh: 172
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[preCICE] This is preCICE version 3.3.1
+---[preCICE] Revision info: v3.3.1
+---[preCICE] Build type: Release (without debug log)
+---[preCICE] Working directory "/simulation/eye-fsi-tc0/solid"
+---[preCICE] Configuring preCICE with configuration "../precice-config.xml"
+---[preCICE] I am participant "Solid"
+---[preCICE] Setting up primary communication to coupling partner/s
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : pimpleFoam
+Date   : May 06 2026
+Time   : 17:25:21
+Host   : f50735313aee
+PID    : 281
+I/O    : uncollated
+Case   : /simulation/eye-fsi-tc0/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Selecting dynamicFvMesh staticFvMesh
+
+
+--> FOAM FATAL ERROR: (openfoam-2512)
+Cannot find file "points" in directory "polyMesh" in times "0" down to constant
+
+    From virtual Foam::IOobject Foam::fileOperation::findInstance(const Foam::IOobject&, Foam::scalar, const Foam::word&, bool) const
+    in file global/fileOperations/fileOperation/fileOperation.C at line 1221.
+
+FOAM exiting
+

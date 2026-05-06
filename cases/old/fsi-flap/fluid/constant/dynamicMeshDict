@@ -1,0 +1,22 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      dynamicMeshDict;
+}
+
+// ALE dynamic mesh: fluid mesh morphs to follow bar deformation.
+// preCICE adapter writes pointDisplacement on the interface patch;
+// displacementLaplacian propagates that motion smoothly through the domain.
+
+dynamicFvMesh   dynamicMotionSolverFvMesh;
+
+motionSolverLibs ("libfvMotionSolvers.so");
+
+solver          displacementLaplacian;
+
+displacementLaplacianCoeffs
+{
+    diffusivity     uniform;
+}

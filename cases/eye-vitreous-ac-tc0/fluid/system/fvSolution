@@ -1,0 +1,71 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+// eye-vitreous-ac-tc0
+//
+// Under-relaxation factors from Fluent report:
+//   Pressure: 0.3  |  Momentum: 0.7
+// (Fluent SIMPLE URFs translated directly to PIMPLE relaxation fields)
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        tolerance       1e-07;
+        relTol          0.01;
+        smoother        GaussSeidel;
+    }
+
+    pFinal
+    {
+        $p;
+        relTol          0;
+    }
+
+    "(U|UFinal)"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-07;
+        relTol          0;
+    }
+
+    pcorr
+    {
+        $p;
+        relTol          0;
+    }
+
+    pcorrFinal
+    {
+        $pcorr;
+    }
+}
+
+PIMPLE
+{
+    nOuterCorrectors        2;
+    nCorrectors             2;
+    nNonOrthogonalCorrectors 2;
+
+    // Under-relaxation prevents PIMPLE outer-correctors from overshooting
+    // when a large flow disturbance is introduced into an established field.
+    relaxationFactors
+    {
+        fields
+        {
+            p       0.3;
+        }
+        equations
+        {
+            U       0.7;
+            UFinal  1.0;
+        }
+    }
+}

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  eye-fsi-tc0: preCICE coupling configuration
+  ─────────────────────────────────────────────────────────────────────────
+  Participants : Fluid (pimpleFoam) ↔ Solid (solids4Foam)
+
+  COUPLING STRATEGY: serial-explicit, Force-only (one-way FSI).
+  ─────────────────────────────────────────────────────────────────────────
+  The fluid mesh is STATIC (staticFvMesh). Each time-window:
+    1. Fluid solves on static mesh → computes pressure → writes Force to solid.
+    2. Solid reads Force → computes D (displacement field).
+  No displacement feedback to the fluid. No ALE mesh deformation.
+
+  ONE interface covering ALL FSI patches (lens + iris + sclera + cornea).
+  Previously two interfaces caused the solidForce BC to silently return
+  zero for the second interface's patches (iris/sclera/cornea showed D=0).
+  Merging into one interface/mesh pair fixes this bug.
+
+  Fluid patches → Solid patches (nearest-neighbor conservative mapping):
+    fluid/system/preciceDict lists all interior walls; solid/system/preciceDict
+    lists matching solid surfaces with solidForce BC (see solid/0/D).
+-->
+
+<precice-configuration>
+
+  <log>
+    <sink filter="%Severity% > debug" format="---[preCICE] %Message%" enabled="on"/>
+  </log>
+
+  <!-- ── Data types ───────────────────────────────────────────────────── -->
+  <data:vector name="Force"/>
+
+  <!-- ── Single mesh pair covering ALL FSI patches ────────────────────── -->
+  <mesh name="Fluid-Mesh" dimensions="3">
+    <use-data name="Force"/>
+  </mesh>
+
+  <mesh name="Solid-Mesh" dimensions="3">
+    <use-data name="Force"/>
+  </mesh>
+
+  <!-- ── Participants ─────────────────────────────────────────────────── -->
+  <participant name="Fluid">
+    <provide-mesh name="Fluid-Mesh"/>
+    <write-data name="Force" mesh="Fluid-Mesh"/>
+  </participant>
+
+  <participant name="Solid">
+    <provide-mesh name="Solid-Mesh"/>
+    <receive-mesh name="Fluid-Mesh" from="Fluid"/>
+    <read-data    name="Force" mesh="Solid-Mesh"/>
+    <!-- RBF (vs nearest-neighbor): smoother traction when fluid/solid surface
+         meshes differ in patch layout and resolution — reduces spiky nodal
+         forces that drive solid iterations to the limit and destabilize any
+         displacement feedback to the fluid. Same pattern as pipe-lens-memb-spring. -->
+    <mapping:rbf
+      direction="read"
+      from="Fluid-Mesh"
+      to="Solid-Mesh"
+      constraint="conservative">
+      <basis-function:thin-plate-splines/>
+    </mapping:rbf>
+  </participant>
+
+  <m2n:sockets acceptor="Fluid" connector="Solid" exchange-directory=".."/>
+
+  <!-- ── Coupling scheme ──────────────────────────────────────────────── -->
+  <coupling-scheme:serial-explicit>
+    <time-window-size value="0.01"/>
+    <max-time value="25"/>
+    <participants first="Fluid" second="Solid"/>
+    <exchange data="Force" mesh="Fluid-Mesh" from="Fluid" to="Solid"/>
+  </coupling-scheme:serial-explicit>
+
+</precice-configuration>

@@ -1,0 +1,57 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+// Kinematic pressure [m²/s²].
+//
+// IOP reference: outlet_tm = 0 (gauge; episcleral venous pressure).
+// TM resistance is modelled by DarcyForchheimer in fvOptions (tm_zone,
+// d_eff = 3.08e14 m⁻², calibrated to IOP_probe = 15 mmHg = 15 Torr).
+// The Darcy term creates the pressure drop from the AC interior to the
+// outlet (p = 0). The Dirichlet BC at outlet_tm anchors the pressure
+// level for a stable cold start.
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    ac_inlet         { type zeroGradient; }
+    ac_inlet_left    { type zeroGradient; }
+
+    outlet_tm        { type fixedValue; value uniform 0; }
+    outlet_tm_left   { type fixedValue; value uniform 0; }
+
+    needle_inlet_left    { type zeroGradient; }
+    needle_inlet_right   { type zeroGradient; }
+    needle_outlet_left   { type zeroGradient; }
+    needle_outlet_right  { type zeroGradient; }
+
+    lens_bottom         { type zeroGradient; }
+    lens_bottom_left    { type zeroGradient; }
+    lens_right          { type zeroGradient; }
+    lens_left           { type zeroGradient; }
+    lens_top            { type zeroGradient; }
+    lens_top_left       { type zeroGradient; }
+
+    iris_bottom         { type zeroGradient; }
+    iris_pupil          { type zeroGradient; }
+    iris_pupil_left     { type zeroGradient; }
+    iris_top            { type zeroGradient; }
+    sclera_right        { type zeroGradient; }
+    sclera_right_upper  { type zeroGradient; }
+    sclera_left_lower   { type zeroGradient; }
+    sclera_left_upper   { type zeroGradient; }
+    sclera_top          { type zeroGradient; }
+    cornea_fsi          { type zeroGradient; }
+    tm_limbus_wall      { type zeroGradient; }
+    defaultFaces        { type zeroGradient; }
+
+    front           { type empty; }
+    back            { type empty; }
+}

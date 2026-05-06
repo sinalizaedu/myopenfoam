@@ -1,0 +1,113 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// pipe-lens-spring: pimpleFoam + solids4Foam coupled via preCICE (3D, serial-implicit).
+// Quasi-static regime: IOP pressure difference (400 Pa) drives zonula flow and
+// loads the impermeable lens disc; spring/Robin BC at rim provides support.
+
+application     pimpleFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         0.01;
+deltaT          0.0002;
+adjustTimeStep  yes;
+maxCo           0.5;
+maxDeltaT       0.0002;
+writeControl    adjustableRunTime;
+writeInterval   0.005;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    preCICE_Adapter
+    {
+        type preciceAdapterFunctionObject;
+        libs ("libpreciceAdapterFunctionObject.so");
+    }
+
+    // Zonula flow rate: Q_zonula > 0 confirms bypass around the lens disc.
+    // Measured at the outlet face of the zonula region (B4 j_max).
+    flowRateZonula
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    // Net flow through the FSI patches — must stay ≈0 (impermeable disc).
+    flowRateLensUpstream
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            interface_upstream;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    flowRateLensDownstream
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            interface_downstream;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    // Pressure on FSI patches (upstream – downstream → loading on disc).
+    pressureUpstream
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            interface_upstream;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    pressureDownstream
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            interface_downstream;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+}

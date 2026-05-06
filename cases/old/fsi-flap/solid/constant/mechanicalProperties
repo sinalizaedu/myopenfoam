@@ -1,0 +1,22 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// Rubber-like material — soft enough for visible bending under moderate flow
+// E=1 MPa gives significant deflection at Re~200 with water
+planeStress     yes;
+
+mechanical
+(
+    rubber
+    {
+        type            linearElastic;
+        rho             rho [ 1 -3  0 0 0 0 0 ] 1500;
+        E               E   [ 1 -1 -2 0 0 0 0 ] 1e6;
+        nu              nu  [ 0  0  0 0 0 0 0 ] 0.4;
+    }
+);

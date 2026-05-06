@@ -1,0 +1,82 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// pipe-fsi-solid (Alt A): pimpleFoam + solids4Foam coupled via preCICE
+// Zonula = Biot poroelastic solid (unsLinearGeometry fallback).
+// IOP pressure difference drives quasi-static deformation of the barrier.
+
+application     pimpleFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         5;
+deltaT          0.01;
+writeControl    timeStep;
+writeInterval   10;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    preCICE_Adapter
+    {
+        type preciceAdapterFunctionObject;
+        libs ("libpreciceAdapterFunctionObject.so");
+    }
+
+    // Measures volumetric flow rate (phi) at the fluid-solid interface.
+    // If the barrier is impermeable: sum ≈ 0.
+    // If porous flow-through exists: sum will be non-zero.
+    flowRateInterface
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            interface;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    // Inlet and outlet flow rates for mass conservation check.
+    flowRateInlet
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            inlet;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+
+    flowRateOutlet
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+}

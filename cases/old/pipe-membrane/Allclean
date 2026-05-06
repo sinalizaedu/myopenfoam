@@ -1,0 +1,11 @@
+#!/bin/bash
+cd "${0%/*}" || exit 1
+for td in fluid/*/; do
+    name=$(basename "$td")
+    case "$name" in
+        0) ;;
+        *[0-9]*) rm -rf "$td" ;;
+    esac
+done
+(cd fluid && rm -rf log.* case.foam postProcessing constant/polyMesh 2>/dev/null)
+echo "Cleaned."

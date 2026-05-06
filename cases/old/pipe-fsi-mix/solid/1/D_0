@@ -1,0 +1,120 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volVectorField;
+    location    "1";
+    object      D_0;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    bottom
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    top
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    interfaceLeft
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 376.435;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           nonuniform List<vector> 
+20
+(
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+(3.0020691e-06 0 0)
+)
+;
+        gradient        uniform (0 0 0);
+    }
+    interfaceRight
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 104.873;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           nonuniform List<vector> 
+20
+(
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636217e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636217e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636217e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636217e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+(-8.3636218e-07 0 0)
+)
+;
+        gradient        uniform (0 0 0);
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //

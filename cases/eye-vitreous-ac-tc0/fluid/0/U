@@ -1,0 +1,102 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+// Velocity field — eye-vitreous-ac-tc0  (2D rectangular geometry)
+//
+// Timeline:
+//   t =  0 –  5 s : baseline     — ac_inlet only, both needles closed
+//   t =  5 – 10 s : injection ON — needle_inlet active + ac_inlet
+//                   ṁ = 5.958e-5 kg/s → U ≈ 0.01 m/s (+x into vitreous)
+//   t = 10 – 15 s : injection OFF — ac_inlet only
+//   t = 15 – 20 s : paracentesis ON — needle_outlet active + ac_inlet
+//                   U = 0.005 m/s (−x outward) → Q ≈ 2.4e-8 m³/s, ~0.12 mL in 5 s
+//   t = 20 – 25 s : paracentesis OFF — ac_inlet only (recovery)
+//
+// ac_inlet:   constant ṁ = 4.975e-8 kg/s  (physiological aqueous production)
+// outlet_tm:  pressureInletOutletVelocity  (p fixed at 1333.22 Pa in 0/p)
+// walls:      noSlip
+// front/back: empty (2D)
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ── Aqueous humor production — always on ─────────────────────────────
+    ac_inlet
+    {
+        type            flowRateInletVelocity;
+        massFlowRate    constant 4.975e-8;   // physiological rate [kg/s]
+        rhoInlet        993;
+        value           uniform (0 0 0);
+    }
+
+    outlet_tm
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
+
+    // ── IVI injection — ON during t=[5,10s], 1s linear ramps ───────────
+    // Velocity +x (into domain from left wall), U = 2e-5 m/s
+    needle_inlet
+    {
+        type            uniformFixedValue;
+        uniformValue
+        {
+            type                table;
+            values
+            (
+                (  0       ( 0      0 0 ) )   // baseline off
+                (  5       ( 0      0 0 ) )
+                (  6       ( 2e-5   0 0 ) )   // ramp ON over 1 s
+                ( 10       ( 2e-5   0 0 ) )
+                ( 11       ( 0      0 0 ) )   // ramp OFF over 1 s
+                ( 1e6      ( 0      0 0 ) )
+            );
+            interpolationScheme linear;
+            outOfBounds         clamp;
+        }
+        value           uniform (0 0 0);
+    }
+
+    // ── Paracentese — t=[15,21s], 1s de rampa, U = 2e-5 m/s ────────────
+    needle_outlet
+    {
+        type            uniformFixedValue;
+        uniformValue
+        {
+            type                table;
+            values
+            (
+                (  0       ( 0      0 0 ) )   // fechado
+                ( 15       ( 0      0 0 ) )
+                ( 16       (-2e-5   0 0 ) )   // ramp ON
+                ( 20       (-2e-5   0 0 ) )
+                ( 21       ( 0      0 0 ) )   // ramp OFF
+                ( 1e6      ( 0      0 0 ) )
+            );
+            interpolationScheme linear;
+            outOfBounds         clamp;
+        }
+        value           uniform (0 0 0);
+    }
+
+    // ── Walls ─────────────────────────────────────────────────────────────
+    lens_wall   { type noSlip; }
+    iris_wall   { type noSlip; }
+    sclera_left { type noSlip; }
+    sclera_top  { type noSlip; }
+    sclera_bot  { type noSlip; }
+    sclera_right{ type noSlip; }
+
+    // ── 2D ────────────────────────────────────────────────────────────────
+    front { type empty; }
+    back  { type empty; }
+}

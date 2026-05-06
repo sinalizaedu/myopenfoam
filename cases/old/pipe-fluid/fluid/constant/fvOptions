@@ -1,0 +1,37 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+
+// Darcy-Forchheimer resistance in the 'barrier' cellZone (block B).
+// Format confirmed against v2512 tutorials (angledDuct/constant/fvOptions).
+//
+// Pressure drop: Δ(p/rho) = D * nu * |U| * L_zone
+// With D=1e8 m^-2, nu=1e-3 m^2/s, U~0.5 m/s, L=0.1 m → Δ(p/rho) ≈ 5000 m^2/s^2 = 5 MPa
+// For realistic IOP ~400 Pa use D ≈ 8e4 m^-2.
+
+porousBarrier
+{
+    type            explicitPorositySource;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        barrier;
+
+        type            DarcyForchheimer;
+
+        d   (1e5 1e5 1e5);   // Darcy coefficient [m^-2], isotropic
+        f   (0   0   0  );   // Forchheimer coefficient [m^-1], off
+
+        coordinateSystem
+        {
+            origin  (1.0 0.2 0.005);
+            e1      (1 0 0);
+            e3      (0 0 1);
+        }
+    }
+}

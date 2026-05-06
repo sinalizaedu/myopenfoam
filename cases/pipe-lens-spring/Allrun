@@ -1,0 +1,74 @@
+#!/bin/bash
+# pipe-lens-spring — Allrun
+# ──────────────────────────────────────────────────────────────────────────
+# 3D FSI: pimpleFoam (fluid) + solids4Foam (solid) coupled via preCICE.
+# Geometry: quarter-cylinder sector (90°), lens disc at x=9–11 mm,
+#           zonula bypass ring R_lens=4.5mm < r ≤ Ro=6mm.
+#
+# Run inside Docker:
+#   docker run --rm -v $(pwd):/case openfoam_solids4foam_precice /case/Allrun
+#   (or adapt to your docker-compose setup per README)
+# ──────────────────────────────────────────────────────────────────────────
+
+set -e
+
+cd "$(dirname "$0")"
+
+echo "=== pipe-lens-spring: meshing ==="
+
+# Generate fluid mesh
+(cd fluid  && blockMesh 2>&1 | tee log.blockMesh)
+echo "  Fluid mesh OK — $(cd fluid && checkMesh -noTopology 2>&1 | grep 'cells:')"
+
+# Generate solid mesh
+(cd solid  && blockMesh 2>&1 | tee log.blockMesh)
+echo "  Solid mesh OK — $(cd solid && checkMesh -noTopology 2>&1 | grep 'cells:')"
+
+echo ""
+echo "=== pipe-lens-spring: running coupled FSI ==="
+echo "  preCICE serial-implicit, IQN-ILS, t∈[0,0.5] s, dt=0.0002 s (Co<0.5)"
+echo ""
+
+# Launch solid in background (preCICE connector), fluid as acceptor
+(cd solid && solids4Foam 2>&1 | tee log.solids4Foam) &
+SOLID_PID=$!
+
+# Short delay so the connector socket is ready
+sleep 2
+
+(cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
+
+wait $SOLID_PID
+
+echo ""
+echo "=== pipe-lens-spring: post-run checks ==="
+echo ""
+
+# ── Check 1: Q_zonula > 0 (bypass flow must exist)
+QOUT=$(grep -a "flowRateZonula" fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+echo "  Q_outlet (proxy for Q_zonula) = $QOUT  [must be non-zero]"
+
+# ── Check 2: Flow through lens ≈ 0 (impermeable disc)
+QUP=$(grep -a "flowRateLensUpstream"   fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+QDN=$(grep -a "flowRateLensDownstream" fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+echo "  phi@interface_upstream   = $QUP  [must be ≈ 0]"
+echo "  phi@interface_downstream = $QDN  [must be ≈ 0]"
+
+# ── Check 3: No fixedDisplacement used anywhere (skip comment lines)
+if grep -rh "type" solid/0/ solid/constant/ 2>/dev/null \
+        | grep -v "^\s*//" \
+        | grep -q "fixedDisplacement"; then
+    echo "  [FAIL] fixedDisplacement found in solid BCs — violates design constraint!"
+else
+    echo "  [OK]   No fixedDisplacement BC in solid"
+fi
+
+# ── Check 4: preCICE convergence
+if grep -a "Convergence" solid/log.solids4Foam | tail -5; then
+    true
+else
+    echo "  (no convergence messages found — check logs)"
+fi
+
+echo ""
+echo "=== pipe-lens-spring: done. Check ParaView for |D|_max and pressure field. ==="

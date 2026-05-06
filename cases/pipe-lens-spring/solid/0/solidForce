@@ -1,0 +1,51 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      solidForce;
+}
+
+// Force field written by the preCICE adapter each coupling step.
+// Initialized to zero; solidForce BC reads this to apply fluid traction
+// on the lens disc faces (interface_upstream, interface_downstream).
+// Dimensions: N = kg·m·s⁻²
+
+dimensions      [1 1 -2 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    interface_upstream
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+
+    interface_downstream
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+
+    rim
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+
+    // axisApprox removed: solid mesh now extends to r=0 (degenerate hex).
+
+    symmetry_z
+    {
+        type            symmetryPlane;
+        value           uniform (0 0 0);
+    }
+
+    symmetry_y
+    {
+        type            symmetryPlane;
+        value           uniform (0 0 0);
+    }
+}

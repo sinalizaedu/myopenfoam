@@ -1,0 +1,17 @@
+#!/bin/bash
+# eye-vitreous-ac-tc0 — Allclean
+# Removes generated mesh, time directories, and logs.
+
+set -e
+cd "$(dirname "$0")"
+
+echo "=== eye-vitreous-ac-tc0: cleaning ==="
+
+(
+    cd fluid
+    rm -rf constant/polyMesh
+    rm -rf [1-9]* [0-9]*.[0-9]*
+    rm -f  log.*
+)
+
+echo "  Done."

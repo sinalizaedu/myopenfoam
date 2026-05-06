@@ -1,0 +1,32 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Two-step: first build a cellSet from the bounding box, then promote to
+// cellZoneSet. Splitting into two actions avoids the version-dependent
+// question of whether boxToCell works directly on a cellZoneSet source.
+
+actions
+(
+    // Step 1: select all cells whose centre is inside block B
+    {
+        name    barrierSet;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (0.949 -0.001 -0.001) (1.051 0.401 0.011);
+    }
+
+    // Step 2: promote the cellSet to a named cellZone
+    {
+        name    barrier;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     barrierSet;
+    }
+);

@@ -1,0 +1,52 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+// Pressure-driven setup: velocity is free at inlet/outlet.
+// With full-height impermeable barrier, flow is quasi-static (U≈0).
+// The pressure difference (inlet - outlet) loads the barrier.
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
+
+    outlet
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
+
+    top
+    {
+        type            noSlip;
+    }
+
+    bottom
+    {
+        type            noSlip;
+    }
+
+    // ALE: velocity = mesh velocity at the moving interface
+    interface
+    {
+        type            movingWallVelocity;
+        value           uniform (0 0 0);
+    }
+
+    frontAndBack
+    {
+        type            empty;
+    }
+}

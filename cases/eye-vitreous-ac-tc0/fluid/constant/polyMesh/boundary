@@ -1,0 +1,103 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+12
+(
+    needle_inlet
+    {
+        type            patch;
+        nFaces          1;
+        startFace       3108;
+    }
+    needle_outlet
+    {
+        type            patch;
+        nFaces          1;
+        startFace       3109;
+    }
+    sclera_left
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       3110;
+    }
+    sclera_top
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       3150;
+    }
+    sclera_bot
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       3190;
+    }
+    sclera_right
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          37;
+        startFace       3230;
+    }
+    lens_wall
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          70;
+        startFace       3267;
+    }
+    iris_wall
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          65;
+        startFace       3337;
+    }
+    ac_inlet
+    {
+        type            patch;
+        nFaces          5;
+        startFace       3402;
+    }
+    outlet_tm
+    {
+        type            patch;
+        nFaces          5;
+        startFace       3407;
+    }
+    front
+    {
+        type            empty;
+        inGroups        1(empty);
+        nFaces          1630;
+        startFace       3412;
+    }
+    back
+    {
+        type            empty;
+        inGroups        1(empty);
+        nFaces          1630;
+        startFace       5042;
+    }
+)
+
+// ************************************************************************* //

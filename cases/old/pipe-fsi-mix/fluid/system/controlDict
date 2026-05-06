@@ -1,0 +1,43 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// pipe-fsi-mix: pimpleFoam with porous membrane (porousBafflePressure).
+// Flow passes through the membrane with Darcy resistance.
+// Pressure on each side is sampled at probe points and used to load the solid.
+
+application     pimpleFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         5;
+deltaT          0.01;
+writeControl    timeStep;
+writeInterval   10;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    membraneProbes
+    {
+        type            probes;
+        libs            (sampling);
+        writeControl    writeTime;
+        fields          (p);
+        probeLocations
+        (
+            (0.9  0.2  0.005)   // vitreous side — left of membrane
+            (1.1  0.2  0.005)   // anterior side  — right of membrane
+        );
+    }
+}

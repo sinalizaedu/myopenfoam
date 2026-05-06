@@ -1,0 +1,83 @@
+#!/bin/bash
+# pipe-lens-memb-spring — Allrun
+# ──────────────────────────────────────────────────────────────────────────
+# 3D FSI: pimpleFoam (fluid, with Darcy–Forchheimer in zonula) +
+#         solids4Foam (solid) coupled via preCICE.
+#
+# Unique to barrier case:
+#   - After blockMesh, topoSet marks the annular fluid ring (R_lens<r≤Ro)
+#     as cellZone "zonulaSet"; setsToZones promotes it.
+#   - fvOptions (constant/fvOptions) applies Darcy resistance there.
+#   - Lens disc remains impermeable; no fvOptions on solid or lens cells.
+#
+# Run inside Docker:
+#   docker run --rm -v $(pwd):/case openfoam_solids4foam_precice /case/Allrun
+# ──────────────────────────────────────────────────────────────────────────
+
+set -e
+
+cd "$(dirname "$0")"
+
+echo "=== pipe-lens-memb-spring: meshing ==="
+
+(cd fluid  && blockMesh 2>&1 | tee log.blockMesh)
+echo "  Fluid mesh OK"
+
+(cd solid  && blockMesh 2>&1 | tee log.blockMesh)
+echo "  Solid mesh OK"
+
+echo ""
+echo "=== pipe-lens-memb-spring: creating zonula cellZone ==="
+
+# Mark annular ring as cellZone for Darcy–Forchheimer fvOptions
+(cd fluid && topoSet     2>&1 | tee log.topoSet)
+(cd fluid && setsToZones 2>&1 | tee log.setsToZones)
+echo "  cellZone 'zonulaSet' created in fluid mesh"
+
+echo ""
+echo "=== pipe-lens-memb-spring: running coupled FSI ==="
+echo "  preCICE serial-implicit, IQN-ILS, dt=0.0002 s (Co<0.5)"
+echo "  Darcy coeff d=1e9 m⁻² in zonulaSet (see constant/fvOptions)"
+echo ""
+
+# Guard against stale preCICE connection files from a previous crash
+rm -rf precice-run precice-profiling
+
+(cd solid && solids4Foam 2>&1 | tee log.solids4Foam) &
+SOLID_PID=$!
+
+sleep 2
+
+(cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
+
+wait $SOLID_PID
+
+echo ""
+echo "=== pipe-lens-memb-spring: post-run checks ==="
+echo ""
+
+QOUT=$(grep -a "flowRateZonula" fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+echo "  Q_outlet (Q_zonula proxy) = $QOUT  [must be non-zero; porous but permeable]"
+
+QUP=$(grep -a "flowRateLensUpstream"   fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+QDN=$(grep -a "flowRateLensDownstream" fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+echo "  phi@interface_upstream   = $QUP  [must be ≈ 0]"
+echo "  phi@interface_downstream = $QDN  [must be ≈ 0]"
+
+if grep -rh "type" solid/0/ solid/constant/ 2>/dev/null \
+        | grep -v "^\s*//" \
+        | grep -q "fixedDisplacement"; then
+    echo "  [FAIL] fixedDisplacement found — violates design constraint!"
+else
+    echo "  [OK]   No fixedDisplacement BC in solid"
+fi
+
+# Confirm fvOptions active in log
+if grep -a "DarcyForchheimer" fluid/log.pimpleFoam | head -1; then
+    echo "  [OK]   DarcyForchheimer fvOptions active in fluid"
+else
+    echo "  [WARN] DarcyForchheimer not found in fluid log — check fvOptions"
+fi
+
+echo ""
+echo "=== pipe-lens-memb-spring: done. Compare |D|_max and Δp vs pipe-lens-spring. ==="

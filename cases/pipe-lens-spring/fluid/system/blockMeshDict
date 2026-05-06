@@ -1,0 +1,203 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// pipe-lens-spring: FLUID domain — 3D quarter-cylinder (90° sector).
+//
+// Coordinate system:
+//   x = flow direction (inlet at x=0, outlet at x=L)
+//   y,z = transverse; sector θ∈[0°,90°] with y≥0, z≥0
+//
+// Geometry: Ro=6mm, R_lens=4.5mm, L=20mm, x1=9mm, x2=11mm
+//   Inner radius: r=0 (full pipe — no axis cut).
+//
+// Block convention — for each hex(v0 v1 v2 v3  v4 v5 v6 v7):
+//   i-dir: v0→v4  = radial  +r   (from inner to outer radius)
+//   j-dir: v0→v1  = angular +θ   (from θ=0° to θ=90°)
+//   k-dir: v0→v3  = axial   +x   (flow direction)
+//
+// Cell count tuple: (n_angular  n_axial  n_radial)
+//
+// Vertex numbering: index = x_slice*6 + r_idx*2 + θ_idx
+//   x_slices: 0=0mm, 1=9mm, 2=11mm, 3=20mm
+//   r_idx: 0=R_lens, 1=Ro
+//   θ_idx: 0 → (y=r,z=0),  1 → (y=0,z=r)
+//
+// Arc midpoints at θ=45°: (r/√2, r/√2)
+//   R_lens/√2=3.182e-3, Ro/√2=4.243e-3
+//
+// Central blocks B0 and B6 (r∈[0,R_lens] upstream/downstream) use
+// DEGENERATE hex: v0=v1=axis point (θ collapses at r=0).
+// blockMesh produces triangular prism cells there — no singularity,
+// no boundary condition needed at the axis (it is an interior edge).
+
+scale   1;
+
+vertices
+(
+    // ── x = 0 (inlet plane) ─────────────────────────────────── v0–v5
+    ( 0.000   0.0000   0.0000 )  //  0  [x0, axis]     ← NEW axis point
+    ( 0.000   0.0045   0.0000 )  //  1  [x0, R_lens, θ=0°]
+    ( 0.000   0.0000   0.0045 )  //  2  [x0, R_lens, θ=90°]
+    ( 0.000   0.0060   0.0000 )  //  3  [x0, Ro,     θ=0°]
+    ( 0.000   0.0000   0.0060 )  //  4  [x0, Ro,     θ=90°]
+
+    // ── x = 0.009 (upstream FSI face, x1) ───────────────────── v5–v9
+    ( 0.009   0.0000   0.0000 )  //  5  [x1, axis]     ← NEW axis point
+    ( 0.009   0.0045   0.0000 )  //  6  [x1, R_lens, θ=0°]
+    ( 0.009   0.0000   0.0045 )  //  7  [x1, R_lens, θ=90°]
+    ( 0.009   0.0060   0.0000 )  //  8  [x1, Ro,     θ=0°]
+    ( 0.009   0.0000   0.0060 )  //  9  [x1, Ro,     θ=90°]
+
+    // ── x = 0.011 (downstream FSI face, x2) ─────────────────── v10–v14
+    ( 0.011   0.0000   0.0000 )  // 10  [x2, axis]     ← NEW axis point
+    ( 0.011   0.0045   0.0000 )  // 11  [x2, R_lens, θ=0°]
+    ( 0.011   0.0000   0.0045 )  // 12  [x2, R_lens, θ=90°]
+    ( 0.011   0.0060   0.0000 )  // 13  [x2, Ro,     θ=0°]
+    ( 0.011   0.0000   0.0060 )  // 14  [x2, Ro,     θ=90°]
+
+    // ── x = 0.020 (outlet plane) ────────────────────────────── v15–v19
+    ( 0.020   0.0000   0.0000 )  // 15  [x3, axis]     ← NEW axis point
+    ( 0.020   0.0045   0.0000 )  // 16  [x3, R_lens, θ=0°]
+    ( 0.020   0.0000   0.0045 )  // 17  [x3, R_lens, θ=90°]
+    ( 0.020   0.0060   0.0000 )  // 18  [x3, Ro,     θ=0°]
+    ( 0.020   0.0000   0.0060 )  // 19  [x3, Ro,     θ=90°]
+);
+
+// hex(v0 v1 v2 v3  v4 v5 v6 v7) → (n_angular  n_axial  n_radial)
+blocks
+(
+    // ── B0: Central upstream   r∈[0,R_lens], x∈[0,x1]  — degenerate hex ──
+    // v0=v1=axis_x0 (θ collapses). Creates 10 prism cells in angular fan.
+    hex (  0  0  5  5    1  2  7  6 )  ( 10 30 12 )  simpleGrading ( 1 1 1 )
+
+    // ── B2: Outer upstream     r∈[R_lens,Ro], x∈[0,x1]  — 10×30×8 ──────
+    hex (  1  2  7  6    3  4  9  8 )  ( 10 30  8 )  simpleGrading ( 1 1 1 )
+
+    // ── B3: Zonula at lens     r∈[R_lens,Ro], x∈[x1,x2] — 10×4×8 ───────
+    hex (  6  7 12 11    8  9 14 13 )  ( 10  4  8 )  simpleGrading ( 1 1 1 )
+
+    // ── B4: Outer downstream   r∈[R_lens,Ro], x∈[x2,L]  — 10×30×8 ──────
+    hex ( 11 12 17 16   13 14 19 18 )  ( 10 30  8 )  simpleGrading ( 1 1 1 )
+
+    // ── B6: Central downstream r∈[0,R_lens], x∈[x2,L]  — degenerate hex ─
+    hex ( 10 10 15 15   11 12 17 16 )  ( 10 30 12 )  simpleGrading ( 1 1 1 )
+);
+
+edges
+(
+    // x = 0
+    arc  1  2  ( 0.000  3.182e-3  3.182e-3 )   // R_lens
+    arc  3  4  ( 0.000  4.243e-3  4.243e-3 )   // Ro
+
+    // x = 0.009 (x1)
+    arc  6  7  ( 0.009  3.182e-3  3.182e-3 )
+    arc  8  9  ( 0.009  4.243e-3  4.243e-3 )
+
+    // x = 0.011 (x2)
+    arc 11 12  ( 0.011  3.182e-3  3.182e-3 )
+    arc 13 14  ( 0.011  4.243e-3  4.243e-3 )
+
+    // x = 0.020 (outlet)
+    arc 16 17  ( 0.020  3.182e-3  3.182e-3 )
+    arc 18 19  ( 0.020  4.243e-3  4.243e-3 )
+);
+
+boundary
+(
+    // ── Inlet: x=0, full sector ────────────────────────────────────────────
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (  0  0  2  1 )   // B0 k_min: central (degenerate triangle)
+            (  1  2  4  3 )   // B2 k_min: outer
+        );
+    }
+
+    // ── Outlet: x=L, full sector ───────────────────────────────────────────
+    outlet
+    {
+        type patch;
+        faces
+        (
+            ( 15 15 17 16 )  // B6 k_max: central (degenerate triangle)
+            ( 16 17 19 18 )  // B4 k_max: outer
+        );
+    }
+
+    // ── FSI: upstream face of lens disc (x=x1, r∈[0,R_lens]) ─────────────
+    interface_upstream
+    {
+        type wall;
+        faces
+        (
+            (  5  5  7  6 )   // B0 k_max: central (degenerate triangle)
+        );
+    }
+
+    // ── FSI: downstream face of lens disc (x=x2, r∈[0,R_lens]) ──────────
+    interface_downstream
+    {
+        type wall;
+        faces
+        (
+            ( 10 10 12 11 )  // B6 k_min: central (degenerate triangle)
+        );
+    }
+
+    // ── Zonula inner wall: r=R_lens, x∈[x1,x2] — rigid wall in fluid ─────
+    lensRim
+    {
+        type wall;
+        faces
+        (
+            (  6  7 12 11 )   // B3 i_min
+        );
+    }
+
+    // ── Outer cylindrical wall: r=Ro ─────────────────────────────────────
+    wallOuter
+    {
+        type wall;
+        faces
+        (
+            (  3  4  9  8 )  // B2 i_max
+            (  8  9 14 13 )  // B3 i_max
+            ( 13 14 19 18 )  // B4 i_max
+        );
+    }
+
+    // ── Symmetry plane θ=0° (z=0, y≥0) ──────────────────────────────────
+    symmetry_z
+    {
+        type symmetryPlane;
+        faces
+        (
+            (  0  1  6  5 )  // B0 j_min (triangle: 0=axis)
+            (  1  3  8  6 )  // B2 j_min
+            (  6  8 13 11 )  // B3 j_min
+            ( 11 13 18 16 )  // B4 j_min
+            ( 10 11 16 15 )  // B6 j_min (triangle: 10=axis)
+        );
+    }
+
+    // ── Symmetry plane θ=90° (y=0, z≥0) ─────────────────────────────────
+    symmetry_y
+    {
+        type symmetryPlane;
+        faces
+        (
+            (  0  5  7  2 )  // B0 j_max (triangle: 0=axis)
+            (  2  7  9  4 )  // B2 j_max
+            (  7 12 14  9 )  // B3 j_max
+            ( 12 17 19 14 )  // B4 j_max
+            ( 10 15 17 12 )  // B6 j_max (triangle: 10=axis)
+        );
+    }
+);

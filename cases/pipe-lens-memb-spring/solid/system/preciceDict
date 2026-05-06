@@ -1,0 +1,43 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+// preCICE adapter configuration for the SOLID participant (solids4Foam).
+// Exchanges: reads Force, writes Displacement at the two FSI patches.
+
+participant   Solid;
+
+preciceConfig "../precice-config.xml";
+
+modules ( FSI );
+
+interfaces
+{
+    Interface1
+    {
+        mesh          Solid-Mesh;
+
+        // Both axial faces of the lens disc are FSI interfaces.
+        patches       ( interface_upstream interface_downstream );
+
+        locations     faceCenters;
+
+        // Fluid → Solid : fluid forces drive lens deformation
+        readData      ( Force );
+
+        // Solid → Fluid : deformed disc position feeds back to fluid mesh
+        writeData     ( Displacement );
+    }
+}
+
+FSI
+{
+    solverType              solid;
+    namePointDisplacement   unused;
+    nameCellDisplacement    D;
+    nameForce               solidForce;
+}

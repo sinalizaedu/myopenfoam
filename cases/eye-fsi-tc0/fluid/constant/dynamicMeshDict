@@ -1,0 +1,16 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      dynamicMeshDict;
+}
+
+// Static mesh — no ALE motion.
+//
+// The fluid mesh never deforms. Solid deformations are < 10 µm on a ~18 mm
+// domain (< 0.06 %), so the feedback of structural motion on IOP is negligible.
+// The preCICE coupling is serial-explicit Force-only: fluid sends Force to
+// solid, solid computes D. No Displacement feedback to the fluid.
+
+dynamicFvMesh   staticFvMesh;

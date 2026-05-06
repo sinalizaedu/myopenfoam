@@ -1,0 +1,107 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// pipe-lens-spring: SOLID domain — lens disc (3D quarter-cylinder sector).
+//
+// Volume: r∈[0, R_lens=4.5mm], θ∈[0°,90°], x∈[x1=9mm, x2=11mm]
+//   Inner radius: r=0 (full disc — axis approximation removed).
+//
+// Block convention — same as fluid:
+//   i-dir: v0→v4 = radial  +r   (from axis to R_lens)
+//   j-dir: v0→v1 = angular +θ   (θ=0° → θ=90°)
+//   k-dir: v0→v3 = axial   +x   (from x1 to x2)
+//
+// DEGENERATE hex: v0=v1 = axis at x1, v2=v3 = axis at x2.
+// blockMesh produces triangular prism cells — axis is an interior edge,
+// no axisApprox boundary condition needed.
+//
+// Vertices (6 unique, 2 at r=0):
+//   0: axis at x1 = (0.009, 0, 0)   [old v0=v1 collapsed]
+//   1: axis at x2 = (0.011, 0, 0)   [old v2=v3 collapsed]
+//   2: (x1, R_lens, θ=0°)  = (0.009, 0.0045, 0.000)
+//   3: (x1, R_lens, θ=90°) = (0.009, 0.000,  0.0045)
+//   4: (x2, R_lens, θ=90°) = (0.011, 0.000,  0.0045)
+//   5: (x2, R_lens, θ=0°)  = (0.011, 0.0045, 0.000)
+//
+// Block (10 angular × 4 axial × 12 radial):
+//   hex(v0 v0 v1 v1  v2 v3 v4 v5)
+//
+// Face formulas for hex(p0 p1 p2 p3  p4 p5 p6 p7):
+//   i_min (axis)               = (p0,p1,p2,p3) → degenerate line, INTERIOR
+//   i_max (rim, r=R_lens)      = (p4,p5,p6,p7)
+//   j_min (θ=0°, symmetry_z)   = (p0,p4,p7,p3)
+//   j_max (θ=90°, symmetry_y)  = (p1,p2,p6,p5)
+//   k_min (interface_upstream) = (p0,p1,p5,p4)
+//   k_max (interface_downstream)=(p3,p2,p6,p7)
+
+scale   1;
+
+vertices
+(
+    ( 0.009   0.0000   0.0000 )  //  0  [x1, axis]  (r=0, collapses θ)
+    ( 0.011   0.0000   0.0000 )  //  1  [x2, axis]  (r=0, collapses θ)
+    ( 0.009   0.0045   0.0000 )  //  2  [x1, R_lens, θ=0°]
+    ( 0.009   0.0000   0.0045 )  //  3  [x1, R_lens, θ=90°]
+    ( 0.011   0.0000   0.0045 )  //  4  [x2, R_lens, θ=90°]
+    ( 0.011   0.0045   0.0000 )  //  5  [x2, R_lens, θ=0°]
+);
+
+// hex(p0 p1 p2 p3  p4 p5 p6 p7) → (n_angular  n_axial  n_radial)
+// Repeated index 0 (at x1) and 1 (at x2) creates the degenerate axis edge.
+blocks
+(
+    hex ( 0 0 1 1   2 3 4 5 )  ( 10 4 12 )  simpleGrading ( 1 1 1 )
+);
+
+edges
+(
+    // R_lens arcs at θ=45°: midpoint = (R_lens/√2, R_lens/√2) = 3.182e-3
+    arc  2  3  ( 0.009  3.182e-3  3.182e-3 )  // x1, R_lens
+    arc  5  4  ( 0.011  3.182e-3  3.182e-3 )  // x2, R_lens
+    // No Ri arcs — inner boundary collapsed to axis.
+);
+
+boundary
+(
+    // ── FSI: upstream face (x=x1, full disc r∈[0,R_lens]) ────────────────
+    interface_upstream
+    {
+        type wall;
+        faces ( ( 0 0 3 2 ) );   // k_min = (p0,p1,p5,p4): triangle at x=x1
+    }
+
+    // ── FSI: downstream face (x=x2, full disc r∈[0,R_lens]) ─────────────
+    interface_downstream
+    {
+        type wall;
+        faces ( ( 1 1 4 5 ) );   // k_max = (p3,p2,p6,p7): triangle at x=x2
+    }
+
+    // ── Rim (r=R_lens) — spring/Robin support ────────────────────────────
+    rim
+    {
+        type wall;
+        faces ( ( 2 3 4 5 ) );   // i_max = (p4,p5,p6,p7)
+    }
+
+    // ── Symmetry θ=0° (z=0 plane) ────────────────────────────────────────
+    symmetry_z
+    {
+        type symmetryPlane;
+        faces ( ( 0 2 5 1 ) );   // j_min = (p0,p4,p7,p3)
+    }
+
+    // ── Symmetry θ=90° (y=0 plane) ───────────────────────────────────────
+    symmetry_y
+    {
+        type symmetryPlane;
+        faces ( ( 0 1 4 3 ) );   // j_max = (p1,p2,p6,p5)
+    }
+
+    // axisApprox removed: axis is now an interior edge, no BC needed.
+);

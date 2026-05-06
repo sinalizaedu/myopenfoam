@@ -1,0 +1,22 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// solids4Foam solid model for the lens disc.
+// unsLinearGeometry: updated Lagrangian, geometrically linear,
+// suitable for small strains / quasi-static deformation.
+
+solidModel      unsLinearGeometry;
+
+unsLinearGeometryCoeffs
+{
+    nCorrectors             1000;
+    solutionTolerance       1e-06;
+    alternativeTolerance    1e-07;
+    materialTolerance       1e-05;
+    infoFrequency           50;
+}

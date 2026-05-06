@@ -1,0 +1,59 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// Multi-material solid — eye-fsi-tc0.
+// Each structure is assigned to its cell zone.
+// Properties from user's reference tables (Fase 1 / literature):
+//
+//   lens   : Ariza2018 / Issarti2021  — IOL silicone/acrylic: 1.45 MPa, ν=0.47, ρ=1225
+//   (Note: crystalline lens parenchyma is O(kPa), but this models an IOL implant.)
+//   iris   : Wang2016 / Heys2001/2002 — 27 kPa,   ν=0.49, ρ=1000
+//              (G=9 kPa used; E=3G=27 kPa, incompressible iris)
+//   sclera : Tahavvor2020             — 2.72 MPa,  ν=0.49, ρ=1049
+//   cornea : Karimi2019               — 1.50 MPa,  ν=0.47, ρ=1143
+//
+// NOTE on iris: E=27 kPa with iris_base spring coeff0=5e7 Pa/m gives
+//   k_total = k_spring(120 N/m) + k_internal(27 N/m) = 147 N/m
+//   → equilibrium deflection ~63 µm at 14 mmHg — ALE-manageable.
+
+planeStress     no;
+
+mechanical
+(
+    lens
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1225;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1.45e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.47;
+    }
+
+    iris
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 27e3;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+
+    sclera
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1049;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 2.72e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+
+    cornea
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1143;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1.50e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.47;
+    }
+);

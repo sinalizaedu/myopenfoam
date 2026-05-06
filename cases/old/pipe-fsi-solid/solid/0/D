@@ -1,0 +1,49 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// Displacement field for the poroelastic zonula barrier.
+// Clamped at top and bottom (fiber attachment points).
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    bottom
+    {
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+
+    top
+    {
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+
+    // preCICE coupling: fluid forces → solid deformation (both faces)
+    interface_left
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform (0 0 0);
+    }
+
+    interface_right
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform (0 0 0);
+    }
+
+    frontAndBack
+    {
+        type            empty;
+    }
+}

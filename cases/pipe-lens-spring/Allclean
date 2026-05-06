@@ -1,0 +1,22 @@
+#!/bin/bash
+# pipe-lens-spring — Allclean
+# Removes all generated files: meshes, time directories, logs, preCICE output.
+
+set -e
+cd "$(dirname "$0")"
+
+echo "=== pipe-lens-spring: cleaning ==="
+
+for side in fluid solid; do
+    (
+        cd $side
+        rm -rf constant/polyMesh
+        rm -rf [1-9]* [0-9]*.[0-9]*
+        rm -f  log.*
+    )
+done
+
+# preCICE runtime files
+rm -rf precice-run/ precice-profiling/ .precice-iterations* *.json
+
+echo "  Done."

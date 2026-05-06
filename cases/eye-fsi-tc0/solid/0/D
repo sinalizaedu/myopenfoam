@@ -1,0 +1,244 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+// eye-fsi-tc0 — SOLID displacement field — FULL SYMMETRIC MODEL
+//
+// FSI strategy: ONE-WAY (fluid→solid), serial-explicit, static fluid mesh.
+//
+// LENS mounting (zonule spring model):
+//   lens_bottom / lens_bottom_left: solidForce — anterior lens, fluid pressure (preCICE).
+//   lens_top / lens_top_left: solidForce — posterior lens, fluid pressure (preCICE).
+//   lens_right / lens_left: robin spring (coeff0=1e7 Pa/m) — zonule (not preCICE).
+//
+// IRIS / SCLERA / CORNEA / TM gap (inner): solidForce — fluid pressure via preCICE.
+//
+// FIXED supports:
+//   iris_base, iris_base_left: scleral spur (iris–sclera contact at x=±20mm).
+//   optic_disc, optic_disc_left: posterior pole anchor (y=25mm, |x|≤2mm) — ONH proxy.
+// FREE traction (solidTraction zero): sclera_outer / _left, cornea_outer / _left — see blockMeshDict ONH split.
+
+dimensions      [0 1 0 0 0 0 0];
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ LENS — EQUATORIAL SPRINGS (zonule fibers, both sides) ══════════════
+    // ════════════════════════════════════════════════════════════════════════
+    lens_right
+    {
+        // RIGHT zonule spring — coeff0 = 1e7 Pa/m.
+        // coeff0 >> IOP/lens_width (2000/0.015 = 1.3e5) → spring dominates x-motion.
+        // Prevents rigid-body x-translation and cantilever bending.
+        type        robin;
+        coeff0      uniform 1e7;
+        coeff1      uniform 0;
+        rhs         uniform (0 0 0);
+        value       uniform (0 0 0);
+    }
+    lens_left
+    {
+        // LEFT zonule spring — symmetric with lens_right.
+        type        robin;
+        coeff0      uniform 1e7;
+        coeff1      uniform 0;
+        rhs         uniform (0 0 0);
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ LENS — FSI FACES (anterior + posterior, fluid pressure drives D) ════
+    // ════════════════════════════════════════════════════════════════════════
+    lens_bottom
+    {
+        // Anterior face (y=9.6mm): receives AC pressure from preCICE/fluid.
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    lens_top
+    {
+        // Posterior face (y=14.4mm): receives vitreous pressure from preCICE/fluid.
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ LENS — LEFT (symmetric prescribed load) ══════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    lens_bottom_left
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    lens_top_left
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ IRIS — RIGHT (fluid force via preCICE) ══════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    iris_pupil
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    iris_bottom
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    iris_top
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    iris_base
+    {
+        type        fixedValue;
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ IRIS — LEFT (fluid force via preCICE) ════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    iris_pupil_left
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    iris_bottom_left
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    iris_top_left
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    iris_base_left
+    {
+        type        fixedValue;
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ SCLERA — RIGHT (fluid force via preCICE) ════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    sclera_side
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    sclera_top_inner
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    sclera_outer
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+    sclera_tm_gap
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ SCLERA — LEFT (fluid force via preCICE) ═════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    sclera_side_left
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    sclera_top_inner_left
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    sclera_outer_left
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+    optic_disc
+    {
+        type        fixedValue;
+        value       uniform (0 0 0);
+    }
+    optic_disc_left
+    {
+        type        fixedValue;
+        value       uniform (0 0 0);
+    }
+    sclera_tm_gap_left
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ CORNEA (fluid force via preCICE) ═════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    cornea_inner
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    cornea_outer
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+    cornea_inner_left
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+    cornea_outer_left
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ══ 2D ══════════════════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════════
+    front { type empty; }
+    back  { type empty; }
+}

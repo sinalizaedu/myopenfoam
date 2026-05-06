@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- precice-config.xml — pipe-fsi-solid (Alt A)                             -->
+<!-- pimpleFoam (fluid) + solids4Foam (solid) coupled via preCICE            -->
+<!-- Zonula = Biot/linearElastic barrier loaded by IOP pressure difference   -->
+<precice-configuration>
+
+  <log>
+    <sink filter="%Severity% > debug"
+          format="---[precice] %ColorizedSeverity% %Message%"
+          enabled="true"/>
+  </log>
+
+  <data:vector name="Force"/>
+  <data:vector name="Displacement"/>
+
+  <mesh name="Fluid-Mesh" dimensions="2">
+    <use-data name="Force"/>
+    <use-data name="Displacement"/>
+  </mesh>
+
+  <mesh name="Solid-Mesh" dimensions="2">
+    <use-data name="Force"/>
+    <use-data name="Displacement"/>
+  </mesh>
+
+  <participant name="Fluid">
+    <provide-mesh name="Fluid-Mesh"/>
+    <receive-mesh name="Solid-Mesh" from="Solid"/>
+    <write-data name="Force"        mesh="Fluid-Mesh"/>
+    <read-data  name="Displacement" mesh="Fluid-Mesh"/>
+    <mapping:rbf direction="read"
+        from="Solid-Mesh" to="Fluid-Mesh" constraint="consistent">
+      <basis-function:thin-plate-splines/>
+    </mapping:rbf>
+  </participant>
+
+  <participant name="Solid">
+    <provide-mesh name="Solid-Mesh"/>
+    <receive-mesh name="Fluid-Mesh" from="Fluid"/>
+    <write-data name="Displacement" mesh="Solid-Mesh"/>
+    <read-data  name="Force"        mesh="Solid-Mesh"/>
+    <mapping:rbf direction="read"
+        from="Fluid-Mesh" to="Solid-Mesh" constraint="conservative">
+      <basis-function:thin-plate-splines/>
+    </mapping:rbf>
+  </participant>
+
+  <m2n:sockets acceptor="Fluid" connector="Solid" exchange-directory=".."/>
+
+  <coupling-scheme:serial-implicit>
+    <participants first="Fluid" second="Solid"/>
+    <max-time value="5.0"/>
+    <time-window-size value="0.01"/>
+    <max-iterations value="50"/>
+    <relative-convergence-measure limit="1e-4"
+        data="Displacement" mesh="Solid-Mesh"/>
+    <relative-convergence-measure limit="1e-3"
+        data="Force"        mesh="Fluid-Mesh"/>
+    <acceleration:IQN-ILS>
+      <data name="Displacement" mesh="Solid-Mesh"/>
+      <initial-relaxation value="0.1"/>
+      <max-used-iterations value="60"/>
+      <time-windows-reused value="15"/>
+      <filter type="QR2" limit="1e-3"/>
+    </acceleration:IQN-ILS>
+    <exchange data="Force"        mesh="Fluid-Mesh" from="Fluid" to="Solid"/>
+    <exchange data="Displacement" mesh="Solid-Mesh" from="Solid" to="Fluid"/>
+  </coupling-scheme:serial-implicit>
+
+</precice-configuration>

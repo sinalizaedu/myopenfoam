@@ -1,0 +1,21 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Aqueous humor — isothermal Newtonian fluid (tc0, no heat transfer).
+//
+// From Fluent report (Report_UDS_Final) + water literature at 34–37°C:
+//   μ = 6.92e-4 Pa·s  (dynamic viscosity, water at 37°C)
+//   ρ = 993   kg/m³   (density, water at 37°C)
+//   ν = μ/ρ   = 6.97e-7 m²/s
+//
+// Polynomial μ(T) and ρ(T) will be applied in a later tc when heat transfer
+// is enabled (buoyantBoussinesqPimpleFoam).
+
+transportModel  Newtonian;
+
+nu              nu [ 0 2 -1 0 0 0 0 ] 6.97e-7;

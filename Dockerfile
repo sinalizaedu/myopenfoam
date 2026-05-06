@@ -10,7 +10,7 @@
 # ---------------------------------------------------------------------------
 # Stage 1: Builder — compile preCICE, adapter, solids4foam
 # ---------------------------------------------------------------------------
-FROM --platform=linux/amd64 ubuntu:24.04 AS builder
+FROM --platform=linux/amd64 public.ecr.aws/ubuntu/ubuntu:24.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -76,7 +76,7 @@ RUN source /usr/lib/openfoam/openfoam2512/etc/bashrc && \
 # ---------------------------------------------------------------------------
 # Stage 2: Runtime — lean image without build tools
 # ---------------------------------------------------------------------------
-FROM --platform=linux/amd64 ubuntu:24.04
+FROM --platform=linux/amd64 public.ecr.aws/ubuntu/ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -94,6 +94,19 @@ RUN apt-get update && \
 
 # preCICE libraries + headers + binaries
 COPY --from=builder /opt/precice /opt/precice
+
+# Boost runtime libs — copied from builder (avoids apt-get network dependency)
+# preCICE adapter needs boost_log, boost_log_setup and their dependencies
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libboost_log.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libboost_log_setup.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libboost_filesystem.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libboost_program_options.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libboost_system.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libboost_timer.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libboost_chrono.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libboost_atomic.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libboost_thread.so* /usr/lib/x86_64-linux-gnu/
+
 RUN echo "/opt/precice/lib" > /etc/ld.so.conf.d/precice.conf && ldconfig
 
 # Adapter + solids4foam compiled artifacts

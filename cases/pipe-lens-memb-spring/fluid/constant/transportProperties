@@ -1,0 +1,14 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Aqueous / vitreous humour approximated as water.
+// nu = 1e-3 m²/s (kinematic viscosity; mu ≈ 1e-3 Pa·s at 37°C)
+
+transportModel  Newtonian;
+
+nu              nu [ 0 2 -1 0 0 0 0 ] 1e-3;

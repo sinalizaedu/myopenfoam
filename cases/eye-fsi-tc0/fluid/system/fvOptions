@@ -1,0 +1,102 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+
+// Porous zone momentum sources — eye-fsi-tc0
+//
+// TM porous zone — DarcyForchheimer
+// TM geometry: x=[20,20.5mm] (L_mesh=0.5mm), y=[0.40,2.40mm] (H_TM=2mm)
+// outlet_tm at x=20.5mm (Schlemm's canal inside limbal tissue)
+//
+// Derivation of d_eff (geometry scaling from literature):
+//   Real TM:   d_real = 2.57e13 m⁻², L_real = 5 mm
+//   Mesh TM:   L_mesh = 0.5 mm  (col4 width)
+//   To match resistance: d_eff × L_mesh = d_real × L_real
+//   d_eff = d_real × (L_real/L_mesh) = 2.57e13 × 10 = 2.57e14 m⁻²
+//
+// IOP calibration (probe-based, targeting 15 Torr = 15 mmHg):
+//   ν     = 6.97e-7 m²/s  (transportProperties, aqueous at 37°C)
+//   A_TM  = H_TM × depth = 2.0e-3 × 1e-3 = 2.0e-6 m²
+//   Q_TM  ≈ 5.011e-11 m³/s at baseline (fixed by ac_inlet BC)
+//   U_TM  = Q_TM/A_TM = 2.505e-5 m/s
+//
+//   Calibration run (d = 2.14e14):
+//     IOP_probe (AC interior, t=3-5s) = 10.43 mmHg
+//     IOP_Darcy = ν×d×L×U_TM×ρ/133.322 = 13.92 mmHg (analytical)
+//
+//   Target 15 mmHg → scale d proportionally (Q fixed by inlet BC):
+//     d_eff = 2.14e14 × (15/10.43) = 3.08e14 m⁻²
+//     IOP_probe (predicted) ≈ 10.43 × (3.08e14/2.14e14) = 15.0 mmHg  ✓
+//
+// Matrix conditioning:
+//   rAtU_normal  = dt/ρ = 0.01/993 = 1.007e-5 m³s/kg
+//   rAtU_porous  = 1/(ρ/dt + ν×d_eff) ≈ 1/(99300 + 1.145e8) ≈ 8.7e-9 m³s/kg
+//   Ratio        ≈ 1160  (handled by PCG+DIC in fvSolution)
+//
+// The p BC at outlet_tm is fixedValue 0 (episcleral venous pressure reference).
+// IOP is measured in the interior via the iop_probe function object.
+//
+// Vitreous porous zone NOT included: the vitreous lies on the primary IVI
+// injection flow path (needle → vitreous → pupil → AC → TM). Adding Darcy
+// resistance there would block injected fluid from reaching the TM, preventing
+// any IOP response to injection.
+
+tm_porous
+{
+    type            explicitPorositySource;
+    active          true;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        tm_zone;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            // d [m⁻²]: Darcy viscous resistance tensor (isotropic)
+            d   d [0 -2 0 0 0 0 0] (3.08e14 3.08e14 3.08e14);
+            // f [m⁻¹]: Forchheimer inertial resistance = 0 (creeping flow)
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                coordinateRotation { type axesRotation; e1 (1 0 0); e2 (0 1 0); }
+            }
+        }
+    }
+}
+
+tm_porous_left
+{
+    type            explicitPorositySource;
+    active          true;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        tm_zone_left;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            d   d [0 -2 0 0 0 0 0] (3.08e14 3.08e14 3.08e14);
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                coordinateRotation { type axesRotation; e1 (1 0 0); e2 (0 1 0); }
+            }
+        }
+    }
+}

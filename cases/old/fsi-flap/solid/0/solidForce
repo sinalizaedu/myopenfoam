@@ -1,0 +1,34 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      solidForce;
+}
+
+// Force field (Newtons) written by the preCICE adapter each coupling step.
+// Initialized to zero; the solidForce BC reads this and applies it as traction.
+
+dimensions      [1 1 -2 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    bottom
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+
+    interface
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+
+    frontAndBack
+    {
+        type            empty;
+    }
+}

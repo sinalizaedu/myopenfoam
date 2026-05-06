@@ -1,0 +1,88 @@
+#!/bin/bash
+# Allrun — pipe-fsi-mix: porous flow + elastic barrier (one-way FSI)
+# Phase 1: pimpleFoam with porousBafflePressure membrane — fluid flows through.
+# Phase 2: solids4Foam — barrier deforms under the extracted pressure load.
+set -e
+cd "${0%/*}" || exit 1
+
+echo "============================================"
+echo " pipe-fsi-mix: Porous Flow + Elastic Barrier"
+echo " Fluid flows through membrane (Darcy, D=1000)"
+echo " Solid deforms under extracted pressure load"
+echo " IOP driving pressure: 400 Pa (~3 mmHg)"
+echo "============================================"
+echo ""
+
+# ── Phase 1: Fluid ──────────────────────────────────────────────────────────
+
+echo "=== [1/6] Meshing fluid domain ==="
+blockMesh -case fluid
+echo "  Mesh done."
+
+echo "=== [2/6] Creating faceZone at x=1.0 ==="
+topoSet -case fluid
+echo "  FaceZone 'membraneZone' created."
+
+echo "=== [3/6] Creating porous baffle patches ==="
+createBaffles -case fluid -overwrite
+touch fluid/case.foam
+echo "  Patches 'membraneFront' / 'membraneBack' created."
+
+echo "=== [3b/6] Applying porousBafflePressure BC to membraneFront ==="
+foamDictionary \
+    -entry boundaryField.membraneFront \
+    -set '{ type porousBafflePressure; patchType cyclic; D 1000; I 0; length 1; jump uniform 0; value uniform 0; }' \
+    fluid/0/p
+echo "  porousBafflePressure BC applied (D=1000, I=0)."
+
+echo "=== [4/6] Running pimpleFoam ==="
+(cd fluid && pimpleFoam > log.pimpleFoam 2>&1)
+echo "  Fluid simulation done."
+
+# ── Phase 2: Extract pressure and load solid ─────────────────────────────────
+
+echo "=== [5/6] Extracting pressure load from fluid probes ==="
+
+PROBE_FILE="fluid/postProcessing/membraneProbes/0/p"
+if [ ! -f "$PROBE_FILE" ]; then
+    echo "  ERROR: probe file not found at $PROBE_FILE" >&2
+    exit 1
+fi
+
+# Last line: "time  p_left  p_right" (kinematic pressure, m2/s2)
+P_LEFT_KIN=$(tail -1 "$PROBE_FILE"  | awk '{print $2}')
+P_RIGHT_KIN=$(tail -1 "$PROBE_FILE" | awk '{print $3}')
+
+# Convert kinematic → physical pressure: P [Pa] = p [m2/s2] * rho [kg/m3]
+P_LEFT_PA=$(awk  "BEGIN{printf \"%.6g\", $P_LEFT_KIN  * 1000}")
+P_RIGHT_PA=$(awk "BEGIN{printf \"%.6g\", $P_RIGHT_KIN * 1000}")
+
+echo "  p_vitreous  = ${P_LEFT_KIN}  m2/s2  =  ${P_LEFT_PA}  Pa"
+echo "  p_anterior  = ${P_RIGHT_KIN} m2/s2  =  ${P_RIGHT_PA} Pa"
+echo "  Pressure jump across membrane: $(awk "BEGIN{printf \"%.4g\", $P_LEFT_PA - $P_RIGHT_PA}") Pa"
+
+# ── Phase 3: Solid ───────────────────────────────────────────────────────────
+
+echo "=== [5b/6] Meshing solid domain ==="
+blockMesh -case solid
+touch solid/case.foam
+
+echo "=== [5c/6] Setting solidTraction BCs from fluid pressure ==="
+foamDictionary solid/0/D \
+    -entry boundaryField/interfaceLeft/pressure  \
+    -set "uniform $P_LEFT_PA"
+foamDictionary solid/0/D \
+    -entry boundaryField/interfaceRight/pressure \
+    -set "uniform $P_RIGHT_PA"
+echo "  interfaceLeft  pressure = ${P_LEFT_PA}  Pa"
+echo "  interfaceRight pressure = ${P_RIGHT_PA} Pa"
+
+echo "=== [6/6] Running solids4Foam ==="
+(cd solid && solids4Foam > log.solids4Foam 2>&1)
+
+echo ""
+echo "============================================"
+echo " Done. Open case.foam files in ParaView:"
+echo "   fluid/case.foam  — p (pressure jump) + U (flow through membrane)"
+echo "   solid/case.foam  — D (barrier displacement under IOP load)"
+echo "============================================"

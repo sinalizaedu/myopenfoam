@@ -1,0 +1,63 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// Displacement field — lens disc (pipe-lens-spring).
+//
+// Support strategy: traction-free rim (no fixedDisplacement anywhere).
+// FSI forces applied via preCICE solidForce on both axial faces.
+// Symmetry planes constrain out-of-plane rigid-body modes.
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ── preCICE FSI faces — fluid loads drive disc deformation ───────────
+    interface_upstream
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform (0 0 0);
+    }
+
+    interface_downstream
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform (0 0 0);
+    }
+
+    // ── Rim (r=R_lens) — Winkler/Robin spring (zonula model).
+    // Eliminates all rigid-body modes incl. axial (x) translation.
+    // k = 1e4 Pa/m  →  equilibrium deflection ≈ 0.1 mm under 1 Pa driving ΔP.
+    rim
+    {
+        type            robin;
+        coeff0          uniform 1e4;
+        coeff1          uniform 0;
+        rhs             uniform (0 0 0);
+        value           uniform (0 0 0);
+    }
+
+    // axisApprox removed: solid mesh now extends to r=0 (degenerate hex).
+    // The axis is an interior edge — no BC needed there.
+
+    // ── Symmetry planes ───────────────────────────────────────────────────
+    symmetry_z
+    {
+        type            symmetryPlane;
+        value           uniform (0 0 0);
+    }
+
+    symmetry_y
+    {
+        type            symmetryPlane;
+        value           uniform (0 0 0);
+    }
+}

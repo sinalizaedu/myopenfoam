@@ -5,14 +5,16 @@ OpenFOAM, preCICE, and solids4foam — built for Apple Silicon Macs.
 
 ## Software Versions
 
-| Component | Version | Notes |
-|-----------|---------|-------|
-| Ubuntu | 24.04 LTS | Base image |
-| OpenFOAM | v2512 (ESI/OpenCFD) | Released Dec 2025 |
-| preCICE | 3.3.1 | Built from source |
-| OpenFOAM-preCICE adapter | 1.3.1 | Compiled against v2512 |
-| solids4foam | master (v2.3+) | Compiled against v2512 |
-| Python | 3.12 | With numpy, scipy, matplotlib |
+
+| Component                | Version             | Notes                         |
+| ------------------------ | ------------------- | ----------------------------- |
+| Ubuntu                   | 24.04 LTS           | Base image                    |
+| OpenFOAM                 | v2512 (ESI/OpenCFD) | Released Dec 2025             |
+| preCICE                  | 3.3.1               | Built from source             |
+| OpenFOAM-preCICE adapter | 1.3.1               | Compiled against v2512        |
+| solids4foam              | master (v2.3+)      | Compiled against v2512        |
+| Python                   | 3.12                | With numpy, scipy, matplotlib |
+
 
 ## Architecture
 
@@ -87,7 +89,7 @@ Expected output: fluid writes timesteps 0.1-0.5, solid writes 0.1-1.0.
 
 ### 4. Visualise results
 
-Install ParaView on your Mac (https://www.paraview.org/download/) and open:
+Install ParaView on your Mac ([https://www.paraview.org/download/](https://www.paraview.org/download/)) and open:
 
 - `cases/validation/fluid/case.foam` — select `U` field to see cavity vortex
 - `cases/validation/solid/case.foam` — select `D` field to see beam deflection
@@ -176,6 +178,7 @@ myFSICase/
 coupling scheme. See template in `openfoam-filesv1/precice-config.xml`.
 
 **fluid/system/preciceDict:**
+
 ```
 preciceConfig   "../precice-config.xml";
 participant     Fluid;
@@ -194,6 +197,7 @@ interfaces
 ```
 
 **solid/system/preciceDict:**
+
 ```
 preciceConfig   "../precice-config.xml";
 participant     Solid;
@@ -218,6 +222,7 @@ FSI
 ```
 
 **Both controlDicts** — add the preCICE adapter function object:
+
 ```
 functions
 {
@@ -230,6 +235,7 @@ functions
 ```
 
 **solid/0/D** — use `solidForce` BC on the coupling interface patch:
+
 ```
 interface
 {
@@ -252,29 +258,32 @@ PIMPLE sub-dict, and solver entries should use regex patterns like
 `"(U|UFinal)"` to cover both predictor and corrector steps.
 
 **Boundary conditions renamed:**
+
 - `timeVaryingUniformFixedValue` is replaced by `uniformFixedValue` with a
-  `uniformValue` sub-dict containing `type tableFile; file "path";
-  outOfBounds clamp;`
+`uniformValue` sub-dict containing `type tableFile; file "path"; outOfBounds clamp;`
 - `symmetryPlane` patch type — check consistency with BC type (`symmetry`
-  vs `symmetryPlane` are different in v2512)
+vs `symmetryPlane` are different in v2512)
 - `solidSymmetry` (solids4foam) requires `symmetry` patch type in the mesh,
-  not `symmetryPlane`
+not `symmetryPlane`
 
 **solids4foam model names changed:**
+
 - `linearGeometry` is now `unsLinearGeometry`
 - The coefficients sub-dict must match: `unsLinearGeometryCoeffs { ... }`
 - Run `solids4Foam` with an invalid model name to see the full list of
-  available models
+available models
 
 ## Available Solvers and Tools
 
-| Command | Purpose |
-|---------|---------|
-| `pimpleFoam` | Incompressible transient flow (fluid side) |
-| `solids4Foam` | Solid mechanics / FSI (solid side) |
-| `blockMesh` | Structured mesh generation |
-| `decomposePar` | Domain decomposition for parallel runs |
-| `reconstructPar` | Recombine parallel results |
+
+| Command          | Purpose                                    |
+| ---------------- | ------------------------------------------ |
+| `pimpleFoam`     | Incompressible transient flow (fluid side) |
+| `solids4Foam`    | Solid mechanics / FSI (solid side)         |
+| `blockMesh`      | Structured mesh generation                 |
+| `decomposePar`   | Domain decomposition for parallel runs     |
+| `reconstructPar` | Recombine parallel results                 |
+
 
 ```bash
 # Inside the container:

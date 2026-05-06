@@ -1,0 +1,63 @@
+#!/bin/bash
+# Allrun — pipe-fsi-solid (Alt A): FSI with Biot poroelastic barrier
+# Zonula = poroelastic (Biot) solid under IOP pressure difference (400 Pa)
+# NOTE: requires solids4Foam with poroLinearGeometry compiled.
+#       Current fallback: unsLinearGeometry (see solid/constant/solidProperties).
+set -e
+cd "${0%/*}" || exit 1
+
+echo "============================================"
+echo " pipe-fsi-solid: FSI — Biot Poroelastic"
+echo " Zonula = porous elastic + permeable + FSI"
+echo " IOP driving pressure: 400 Pa (~3 mmHg)"
+echo "============================================"
+echo ""
+
+echo "=== [1/3] Meshing fluid domain ==="
+blockMesh -case fluid
+touch fluid/case.foam
+echo "  Fluid mesh done."
+
+echo "=== [2/3] Meshing solid domain ==="
+blockMesh -case solid
+touch solid/case.foam
+echo "  Solid mesh done."
+
+echo "=== [3/3] Running coupled FSI simulation ==="
+echo "  Starting fluid (pimpleFoam) in background..."
+(cd fluid && stdbuf -oL -eL pimpleFoam > log.pimpleFoam 2>&1) &
+FLUID_PID=$!
+
+echo "  Starting solid (solids4Foam) in foreground..."
+(cd solid && solids4Foam > log.solids4Foam 2>&1)
+
+wait $FLUID_PID
+FLUID_EXIT=$?
+if [ $FLUID_EXIT -ne 0 ]; then
+    echo "  WARNING: pimpleFoam exited with code $FLUID_EXIT (possible cleanup crash — check log.pimpleFoam)"
+fi
+
+# Remove preCICE-only checkpoint directories
+for domain in fluid solid; do
+    for td in "$domain"/*/; do
+        name=$(basename "$td")
+        case "$name" in
+            0) ;;
+            *[0-9]*)
+                if [ -d "${td}uniform" ] && \
+                   [ -z "$(find "$td" -mindepth 1 -maxdepth 1 ! -name uniform 2>/dev/null)" ]; then
+                    rm -rf "$td"
+                fi
+                ;;
+        esac
+    done
+done
+
+echo ""
+echo "============================================"
+echo " Done. Open case.foam files in ParaView:"
+echo "   fluid/case.foam — pressure (IOP loading)"
+echo "   solid/case.foam — displacement D"
+echo " Compare with pipe-fsi-mix to see effect"
+echo " of softer/more-incompressible Biot solid."
+echo "============================================"

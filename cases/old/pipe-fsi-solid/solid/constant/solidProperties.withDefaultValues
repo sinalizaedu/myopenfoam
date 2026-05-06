@@ -1,0 +1,47 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       dictionary;
+    location    "constant";
+    object      solidProperties.withDefaultValues;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solidModel      poroLinearGeometry;
+
+poroLinearGeometryCoeffs
+{
+    nCorrectors     1000;
+    solutionTolerance 1e-06;
+    alternativeTolerance 1e-07;
+    materialTolerance 1e-05;
+    infoFrequency   50;
+    hydraulicConductivity hydraulicConductivity [ 0 1 -1 0 0 0 0 ] 1e-06;
+    porosity        porosity [ 0 0 0 0 0 0 0 ] 0.5;
+    waterSpecificWeight waterSpecificWeight [ 1 -2 -2 0 0 0 0 ] 9810;
+    degreeOfSaturation degreeOfSaturation [ 0 0 0 0 0 0 0 ] 1;
+    waterBulkModulus waterBulkModulus [ 1 -1 -2 0 0 0 0 ] 2e+09;
+    dampingCoeff    dampingCoeff [ 0 0 -1 0 0 0 0 ] 0;
+    minCorrectors   1;
+    writeResidualField false;
+    relaxationMethod fixed;
+    restart         false;
+    residualFile    false;
+    stabilisation
+    {
+        type            RhieChow;
+        scaleFactor     0.1;
+    }
+}
+
+
+// ************************************************************************* //
