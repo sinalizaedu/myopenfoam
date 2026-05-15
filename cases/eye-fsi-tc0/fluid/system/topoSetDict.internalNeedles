@@ -1,0 +1,48 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Creates internal faceZones for the needle baffles at x=0 (centre of the
+// full-symmetric model).  Run before createBaffles.
+//
+//   needle_inlet_int_zone  — IVI injection tip:   x=0, y≈[21.91, 22.09] mm
+//   needle_outlet_int_zone — paracentesis tip:     x=0, y≈[2.99,  3.17]  mm
+
+actions
+(
+    // ── IVI injection ────────────────────────────────────────────────────
+    {
+        name    needle_inlet_int_faces;
+        type    faceSet;
+        action  new;
+        source  boxToFace;
+        box     (-5e-05 0.02191 -5e-05) (5e-05 0.02209 0.00105);
+    }
+    {
+        name    needle_inlet_int_zone;
+        type    faceZoneSet;
+        action  new;
+        source  setToFaceZone;
+        faceSet needle_inlet_int_faces;
+    }
+
+    // ── Paracentesis ─────────────────────────────────────────────────────
+    {
+        name    needle_outlet_int_faces;
+        type    faceSet;
+        action  new;
+        source  boxToFace;
+        box     (-5e-05 0.00299 -5e-05) (5e-05 0.00317 0.00105);
+    }
+    {
+        name    needle_outlet_int_zone;
+        type    faceZoneSet;
+        action  new;
+        source  setToFaceZone;
+        faceSet needle_outlet_int_faces;
+    }
+);

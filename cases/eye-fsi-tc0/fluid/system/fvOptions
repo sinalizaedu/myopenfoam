@@ -40,10 +40,28 @@ FoamFile
 // The p BC at outlet_tm is fixedValue 0 (episcleral venous pressure reference).
 // IOP is measured in the interior via the iop_probe function object.
 //
-// Vitreous porous zone NOT included: the vitreous lies on the primary IVI
-// injection flow path (needle → vitreous → pupil → AC → TM). Adding Darcy
-// resistance there would block injected fluid from reaching the TM, preventing
-// any IOP response to injection.
+// Vitreous porous zone — DarcyForchheimer
+//
+// Estratégia: separar AC e vítreo HIDRAULICAMENTE (não estruturalmente). O
+// vítreo é tratado como meio fluido poroso (gel hialurônico) que oferece
+// resistência viscosa de Darcy ao escoamento. Não há parede/baffle entre AC
+// e vítreo — a "separação" emerge da diferença de permeabilidade.
+//
+// Resistência viscosa alinhada ao Fluent (zona porosa isotrópica):
+//   d_vitreous = 1.72e13 m⁻²  (Direction-1 e Direction-2 iguais)
+// k_ef ≈ 1/d ≈ 5.8e-14 m² — mais permeável que a estimativa Penkova (d~1.4e14).
+// Caminho IVI: agulha → vítreo poroso → anel lateral → AC → TM poroso.
+//
+// Extensão da cellZone (definida em blockMeshDict):
+//   - central:    x∈[-15,+15] mm, y∈[12.0, 24] mm
+//   - lateral:    x∈[±15,±20] mm, y∈[8.2, 14.4] mm   (anel ao redor do equador)
+//   - posterior:  x∈[-20,+20] mm, y∈[14.4, 24] mm
+// Uma única cellZone (vitreous_zone) cobre direita e esquerda, ao contrário
+// do TM (tm_zone / tm_zone_left).
+//
+// AVISO: a calibração d_TM = 3.08e14 (15 mmHg) feita para o caso sem vítreo
+// poroso provavelmente precisará de re-ajuste — o IOP no AC agora depende de
+// dois Darcy em série. Re-rodar plot_iop.py após a primeira simulação.
 
 tm_porous
 {
@@ -89,6 +107,35 @@ tm_porous_left
         DarcyForchheimerCoeffs
         {
             d   d [0 -2 0 0 0 0 0] (3.08e14 3.08e14 3.08e14);
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                coordinateRotation { type axesRotation; e1 (1 0 0); e2 (0 1 0); }
+            }
+        }
+    }
+}
+
+vitreous_porous
+{
+    type            explicitPorositySource;
+    active          true;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        vitreous_zone;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            // d [m⁻²]: Darcy viscous resistance (isotropic), Fluent 1.72e13 m⁻²
+            d   d [0 -2 0 0 0 0 0] (1.72e13 1.72e13 1.72e13);
+            // f [m⁻¹]: Forchheimer = 0 (creeping flow no gel vítreo)
             f   f [0 -1 0 0 0 0 0] (0 0 0);
 
             coordinateSystem

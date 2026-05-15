@@ -1,0 +1,82 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// on-mestrado — FASE FUTURA: debondar interface ON-ONS para modelar
+// dilatação da bainha (ONS) pela PIC elevada em microgravidade.
+//
+// FASE ATUAL (tortuosidade, Sigal 2004):
+//   A pressão CSF é aplicada na face posterior_ons (abertura do espaço
+//   subaracnoide em z=0) como solidTraction com P_CSF = 2667 Pa.
+//   Não são necessários topoSet nem createPatch nesta fase.
+//
+// FASE FUTURA: quando se quiser aplicar P_CSF na interface radial ON-ONS
+// (r = 1.5 mm, ao longo de z=0–30 mm) para modelar a expansão diametral
+// da bainha (aumento do DBON), utilizar este arquivo:
+//
+//   1. blockMesh
+//   2. topoSet -dict system/topoSetDict_csf   ← cria faceSet csf_interface
+//   3. createPatch -overwrite                 ← cria on_outer + ons_inner
+//   4. solids4Foam
+//
+// Objetivo: selecionar as faces internas entre zona "on" e zona "ons"
+// (cilindro r = 1.5 mm, z = 0–30 mm) para expô-las como patches de
+// fronteira onde solidTraction com P_CSF pode ser aplicado em cada lado.
+
+actions
+(
+    // Passo 1: cellSet da zona "on"
+    {
+        name    on_cells;
+        type    cellSet;
+        action  new;
+        source  zoneToCell;
+        sourceInfo
+        {
+            name    on;
+        }
+    }
+
+    // Passo 2: cellSet da zona "ons"
+    {
+        name    ons_cells;
+        type    cellSet;
+        action  new;
+        source  zoneToCell;
+        sourceInfo
+        {
+            name    ons;
+        }
+    }
+
+    // Passo 3: faces adjacentes à zona "on"
+    {
+        name    csf_interface;
+        type    faceSet;
+        action  new;
+        source  cellToFace;
+        sourceInfo
+        {
+            set     on_cells;
+            option  all;
+        }
+    }
+
+    // Passo 4: intersecta com faces adjacentes à zona "ons"
+    //   → resultado = faces que pertencem a AMBAS as zonas = interface ON-ONS
+    {
+        name    csf_interface;
+        type    faceSet;
+        action  subset;
+        source  cellToFace;
+        sourceInfo
+        {
+            set     ons_cells;
+            option  all;
+        }
+    }
+);

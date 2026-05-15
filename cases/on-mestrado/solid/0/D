@@ -1,0 +1,115 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// on-mestrado - campo de deslocamento
+//
+// Carregamentos em microgravidade (SANS - foco em tortuosidade):
+//
+//   contact_artoph : tracao lateral da arteria oftalmica dilatada (setor +X)
+//     P_contact = 9000 Pa - derivado do artoph-mestrado (P_micro = 13300 Pa)
+//
+//   anterior_globo : face z=31.0mm - parede orbital rigida = deslocamento zero
+//   posterior_ons  : face z=0, ONS - fixedDisplacement (bainha ancorada no
+//                    canal optico; a dura-mater funde-se com o periosteo)
+//
+// Configuracao anatomica:
+//   - ONS preso ao canal optico (z=0): posterior_ons = fixedDisplacement
+//   - ON livre na traseira (z=0): posterior_on = solidTraction = 0
+//     (o nervo desliza dentro da bainha; conecta-se ao quiasma cerebralmente,
+//      modelado aqui via interface bonded com lc no z=30mm)
+//   - Globo ancorado na orbita (z=31mm): anterior_globo = fixedDisplacement
+//
+// CSF: DESATIVADO nesta fase. Em microgravidade a PIC ~ 2667 Pa (20 mmHg)
+//      atuaria radialmente nas paredes do espaco subaracnoide. Sera incluida
+//      numa segunda etapa apos debondar a interface ON-ONS via topoSet.
+//
+// Gordura orbital: ainda como superficie livre. Proxima etapa: compilar BC
+//      customizada solidTractionElasticFoundation (mola de Winkler k=200 kPa/m).
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // Tecido neural na traseira (z=0) - livre (desliza dentro da bainha)
+    posterior_on
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Bainha na traseira (z=0) - ancorada no canal optico
+    // A dura-mater do ONS funde-se com o periosteo da abertura ossea
+    posterior_ons
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Contato arteria oftalmica - ONS (setor +X, z=0 a 30mm)
+    // Carregamento pulsatil:
+    //   p_contact(t) = 0.6767 * P_lumen(t)    (ALPHA = 9000/13300)
+    //   variando de ~7240 Pa (diastole) a ~10827 Pa (sistole)
+    //   ciclo cardiaco T = 0.5 s (HR ~ 120 bpm), 5 ciclos completos
+    // Tabela: constant/contact_pressure.dat
+    //   (gerada por brunaStuff/gen_contact_pressure_table.py)
+    contact_artoph
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressureSeries
+        {
+            "fileName|file"    "$FOAM_CASE/constant/contact_pressure.dat";
+            outOfBounds        clamp;
+        }
+        value       uniform ( 0 0 0 );
+    }
+
+    // Superficie externa da ONS (setores N/W/S) - mola de Winkler (gordura orbital)
+    //   t_n = -k * (D . n)
+    //   k = E_fat / t_fat = 500 Pa / 2.5e-3 m = 200000 Pa/m
+    //   E_fat = 0.5 kPa (Schoemaker 2006), t_fat = 2.5 mm
+    // Implementacao: BC customizada solidTractionElasticFoundation
+    //   (cases/on-mestrado/src/elasticFoundation/, carregada via controlDict)
+    ons_outer
+    {
+        type        solidTractionElasticFoundation;
+        k           200000;             // Pa/m
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;          // sobrescrito a cada iteracao
+        value       uniform ( 0 0 0 );
+    }
+
+    // Parede orbital anterior (z=31.0mm) - ancora rigida do globo ocular
+    anterior_globo
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Borda cilindrica da esclera posterior (r=2.5mm, z=30 a 30.5mm) - livre
+    sclera_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Borda cilindrica do globo (r=2.5mm, z=30.5 a 31.0mm) - livre
+    globo_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+}

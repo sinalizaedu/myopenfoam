@@ -1,51 +1,186 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
+    arch        "LSB;label=32;scalar=64";
     class       volVectorField;
+    location    "0";
     object      cellDisplacement;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// ALE mesh displacement field for displacementLaplacian solver.
-// preCICE adapter writes Displacement onto the FSI patches each coupling step.
-// All other boundaries are rigid (zero displacement).
+dimensions      [ 0 1 0 0 0 0 0 ];
 
-dimensions      [0 1 0 0 0 0 0];
-
-internalField   uniform (0 0 0);
+internalField   uniform ( 0 0 0 );
 
 boundaryField
 {
-    // ── FSI patches — preCICE sets displacement each coupling step ────────
-    lens_bottom         { type fixedValue; value uniform (0 0 0); }
-    lens_bottom_left    { type fixedValue; value uniform (0 0 0); }
-    lens_right          { type fixedValue; value uniform (0 0 0); }
-    lens_left           { type fixedValue; value uniform (0 0 0); }
-    lens_top            { type fixedValue; value uniform (0 0 0); }
-    lens_top_left       { type fixedValue; value uniform (0 0 0); }
-    iris_bottom         { type fixedValue; value uniform (0 0 0); }
-    iris_pupil          { type fixedValue; value uniform (0 0 0); }
-    iris_pupil_left     { type fixedValue; value uniform (0 0 0); }
-    iris_top            { type fixedValue; value uniform (0 0 0); }
-    sclera_right        { type fixedValue; value uniform (0 0 0); }
-    sclera_right_upper  { type fixedValue; value uniform (0 0 0); }
-    sclera_left_lower   { type fixedValue; value uniform (0 0 0); }
-    sclera_left_upper   { type fixedValue; value uniform (0 0 0); }
-    sclera_top          { type fixedValue; value uniform (0 0 0); }
-    cornea_fsi          { type fixedValue; value uniform (0 0 0); }
-    tm_limbus_wall      { type fixedValue; value uniform (0 0 0); }
-    defaultFaces        { type fixedValue; value uniform (0 0 0); }
-
-    ac_inlet            { type fixedValue; value uniform (0 0 0); }
-    ac_inlet_left       { type fixedValue; value uniform (0 0 0); }
-    outlet_tm           { type fixedValue; value uniform (0 0 0); }
-    outlet_tm_left      { type fixedValue; value uniform (0 0 0); }
-    needle_inlet_left   { type fixedValue; value uniform (0 0 0); }
-    needle_inlet_right  { type fixedValue; value uniform (0 0 0); }
-    needle_outlet_left  { type fixedValue; value uniform (0 0 0); }
-    needle_outlet_right { type fixedValue; value uniform (0 0 0); }
-
-    // ── 2D empty patches ─────────────────────────────────────────────────
-    front              { type empty; }
-    back               { type empty; }
+    needle_inlet_left
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    needle_inlet_right
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    needle_outlet_left
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    needle_outlet_right
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    sclera_left_lower
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    sclera_left_upper
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    sclera_right
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    sclera_right_upper
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    sclera_top
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    cornea_fsi
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    lens_bottom
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    lens_bottom_left
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    lens_right
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    lens_left
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    lens_top
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    lens_top_left
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    iris_bottom
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    iris_pupil
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    iris_pupil_left
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    iris_top
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    tm_limbus_wall
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    ac_inlet
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    ac_inlet_left
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    outlet_tm
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    outlet_tm_left
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    front
+    {
+        type            empty;
+    }
+    back
+    {
+        type            empty;
+    }
+    defaultFaces
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    needle_int_inlet_master
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    needle_int_inlet_slave
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    needle_int_outlet_master
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    needle_int_outlet_slave
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
 }
+
+
+// ************************************************************************* //

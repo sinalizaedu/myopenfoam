@@ -1,0 +1,63 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createBafflesDict;
+}
+
+// Converts the internal faceZones (created by topoSetDict.internalNeedles)
+// into baffle patch pairs.  Run with:  createBaffles -overwrite
+//
+// Resulting patches (4 total):
+//   needle_int_inlet_master  / needle_int_inlet_slave   — IVI injection at x=0
+//   needle_int_outlet_master / needle_int_outlet_slave  — paracentesis at x=0
+
+internalFacesOnly true;
+
+baffles
+{
+    needleIntInlet
+    {
+        type        faceZone;
+        zoneName    needle_inlet_int_zone;
+
+        patches
+        {
+            master
+            {
+                name              needle_int_inlet_master;
+                type              patch;
+                neighbourPatch    needle_int_inlet_slave;
+            }
+            slave
+            {
+                name              needle_int_inlet_slave;
+                type              patch;
+                neighbourPatch    needle_int_inlet_master;
+            }
+        }
+    }
+
+    needleIntOutlet
+    {
+        type        faceZone;
+        zoneName    needle_outlet_int_zone;
+
+        patches
+        {
+            master
+            {
+                name              needle_int_outlet_master;
+                type              patch;
+                neighbourPatch    needle_int_outlet_slave;
+            }
+            slave
+            {
+                name              needle_int_outlet_slave;
+                type              patch;
+                neighbourPatch    needle_int_outlet_master;
+            }
+        }
+    }
+}

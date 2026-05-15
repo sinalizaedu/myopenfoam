@@ -1,0 +1,57 @@
+#!/bin/bash
+# on-mestrado - padrao-ouro FEA para SANS (tortuosidade do nervo optico)
+# Modo: ANALISE PULSATIL QUASI-ESTATICA (2 ciclos cardiacos)
+#
+# Zonas (5 materiais bonded):
+#   ON     : tecido neural,      r=0-1.5mm,   L=30mm,   E=30kPa
+#   ONS    : bainha neural,      r=1.5-2.5mm, L=30mm,   E=3MPa
+#   lc     : lamina cribrosa,    r=0-1.5mm,   t=0.5mm,  E=0.4MPa
+#   sclera : anel escleral,      r=1.5-2.5mm, t=0.5mm,  E=5MPa
+#   globo  : casca do globo,     r=0-2.5mm,   t=0.5mm,  E=5MPa
+#
+# Carregamentos:
+#   contact_artoph : pressao pulsatil ~7240 a ~10827 Pa (tabela contact_pressure.dat)
+#                    derivada do artoph-mestrado (ALPHA = 0.6767 x P_lumen)
+#   ons_outer      : mola de Winkler k=200 kPa/m (gordura orbital, BC customizada)
+#
+# Condicoes de contorno:
+#   posterior_ons  : fixedDisplacement (canal optico - fusao dura-mater/periosteo)
+#   posterior_on   : solidTraction = 0 (nervo livre na traseira)
+#   anterior_globo : fixedDisplacement (z=31mm - parede orbital)
+#
+# Tempo:
+#   T_ciclo = 0.5 s (HR ~ 120 bpm), endTime = 2.5 s (5 ciclos), deltaT = 0.05 s
+#
+# Pre-requisito (so na primeira vez ou apos rebuild da imagem):
+#   cd solid/../src/elasticFoundation && ./Allwmake
+#
+# Uso (dentro do container):
+#   cd /simulation/on-mestrado
+#   chmod +x Allrun Allclean
+#   ./Allrun
+
+set -e
+cd "$(dirname "$0")/solid"
+
+# Compilar BC customizada se ainda nao existir
+SPRING_LIB="../src/elasticFoundation/libsolidTractionElasticFoundation.so"
+if [ ! -f "$SPRING_LIB" ]; then
+    echo "=== Compilando BC customizada (mola de Winkler) ==="
+    ( cd ../src/elasticFoundation && ./Allwmake )
+fi
+
+echo "=== on-mestrado: blockMesh ==="
+blockMesh | tee log.blockMesh
+
+echo "=== on-mestrado: solids4Foam (pulsatil, 50 timesteps) ==="
+solids4Foam | tee log.solids4Foam
+
+echo ""
+echo "=== Concluido. Resultados pulsateis em solid/0.05/ ... solid/2.5/ ==="
+echo "    50 timesteps cobrindo 5 ciclos cardiacos completos"
+echo "    Picos sistolicos: t ~ 0.10, 0.60, 1.10, 1.60, 2.10 s"
+echo "    Diastoles:        t ~ 0.30, 0.80, 1.30, 1.80, 2.30 s"
+echo ""
+echo "    Carregamento:"
+echo "      contact_artoph: ~7240 Pa (diast) a ~10827 Pa (sist)"
+echo "      ons_outer: mola de Winkler k=200 kPa/m"

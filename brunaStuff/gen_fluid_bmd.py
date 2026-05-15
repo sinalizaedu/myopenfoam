@@ -475,8 +475,9 @@ emit("")
 # ─── BOUNDARY ─────────────────────────────────────────────────────────────────
 emit("boundary\n(")
 
-# Needles sit on x=±20 mm inner sclera strips (x=0 is interior — merged halves).
-emit(f"""    // ── IVI / paracentesis — mirrored at x=±20 mm (was x=0 half-model) ────────
+# Lateral needle_* strips at x=±20 mm (BCs usually off); IVI/paracentesis via internal
+# baffles at x=0 — topoSetDict.internalNeedles + createBafflesDict in eye-fsi-tc0.
+emit(f"""    // ── Lateral needle placeholders — mirrored at x=±20 mm ───────────────────
     needle_inlet_left
     {{
         type patch;

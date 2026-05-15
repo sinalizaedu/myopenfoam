@@ -1,0 +1,22 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      surfaceFeatureExtractDict;
+}
+
+// Extract sharp edges from the artery STL so snappyHexMesh can snap to them.
+// Only true features are the ring edges at z=-30 mm (posterior) and z=0 mm
+// (anterior) where the artery STL was cut. The curved tube surface itself
+// is smooth (no creases).
+
+artery.stl
+{
+    extractionMethod    extractFromSurface;
+    extractFromSurfaceCoeffs
+    {
+        includedAngle   150;
+    }
+    writeObj            no;
+}

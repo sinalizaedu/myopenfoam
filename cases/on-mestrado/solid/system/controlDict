@@ -1,0 +1,49 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// on-mestrado - analise pulsatil quasi-estatica
+//
+// Cada timestep e tratado como um equilibrio estatico com a pressao instantanea
+// (ddtSchemes = steadyState em fvSchemes). Justificativa: o tempo caracteristico
+// elastico do nervo (~ms) e muito menor que o ciclo cardiaco (~500ms), entao
+// efeitos inerciais sao desprezíveis para amplitudes esperadas.
+//
+// Ciclo cardiaco: HR ~ 120 bpm, T_ciclo = 0.5 s
+// Carga: p_contact(t) variando de ~7240 Pa (diastole) a ~10827 Pa (sistole)
+//        tabela em constant/contact_pressure.dat
+//
+// 5 ciclos cardiacos completos: endTime = 2.5 s
+// 50 passos por simulacao (deltaT = 0.05 s = 10 passos/ciclo)
+// Resolucao adequada para capturar pico sistolico (largura ~0.22s ~ 4-5 pontos)
+// Picos sistolicos em t ~ 0.11, 0.61, 1.11, 1.61, 2.11 s
+
+application     solids4Foam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         2.5;
+
+deltaT          0.05;
+
+writeControl    timeStep;
+writeInterval   1;
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
+
+// Carrega a BC customizada de fundacao elastica (mola de Winkler)
+// Compilada em $FOAM_CASE/../src/elasticFoundation/Allwmake
+libs ("$FOAM_CASE/../src/elasticFoundation/libsolidTractionElasticFoundation.so");

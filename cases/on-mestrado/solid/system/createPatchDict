@@ -1,0 +1,54 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+// on-mestrado — FASE FUTURA: criar patches on_outer e ons_inner
+// a partir da faceSet "csf_interface" (interface ON-ONS r=1.5mm, z=0-30mm).
+//
+// FASE ATUAL (tortuosidade, Sigal 2004):
+//   Este arquivo NÃO é usado. A pressão CSF é representada pela face
+//   posterior_ons (solidTraction P_CSF = 2667 Pa).
+//   Ver blockMeshDict → patch "posterior_ons".
+//
+// FASE FUTURA: para modelar dilatação radial da bainha (ONS expansion),
+// usar após topoSet (topoSetDict_csf):
+//
+//   on_outer  → superfície externa do ON (r=1.5mm, zona "on")
+//               solidTraction: pressure = 2667 Pa (comprime ON radialmente)
+//
+//   ons_inner → superfície interna da ONS (r=1.5mm, zona "ons")
+//               solidTraction: pressure = 2667 Pa (expande ONS radialmente)
+//               [sinal positivo: normal aponta para dentro da ONS → força para fora]
+//
+// Nota: em OpenFOAM v2512, faces internas convertidas a wall patches criam
+// uma descontinuidade controlada — cada zona tem seu patch independente.
+// A transmissão de carga ON↔ONS passa exclusivamente pela camada escleral
+// (z = 30–30.5 mm, bonded) nesta configuração.
+
+pointSync   false;
+
+patches
+(
+    {
+        name            on_outer;
+        patchInfo
+        {
+            type    wall;
+        }
+        constructFrom   set;
+        set             csf_interface;
+    }
+    {
+        name            ons_inner;
+        patchInfo
+        {
+            type    wall;
+        }
+        constructFrom   set;
+        set             csf_interface;
+    }
+);

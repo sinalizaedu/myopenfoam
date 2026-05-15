@@ -7,9 +7,8 @@ FoamFile
 }
 
 // preCICE adapter — SOLID participant (solids4Foam).
-//
-// FSI: all interior surfaces that face fluid receive mapped Force (fluid pressure).
-// lens_right / lens_left: Robin zonule — excluded from preCICE.
+// ÍRIS ONLY: apenas patches da íris recebem Force do fluido.
+// Lente, esclera e córnea foram removidas do domínio sólido.
 
 participant   Solid;
 
@@ -23,11 +22,8 @@ interfaces
     {
         mesh          Solid-Mesh;
         patches       (
-            lens_bottom lens_bottom_left lens_top lens_top_left
-            iris_pupil iris_bottom iris_top iris_pupil_left iris_bottom_left iris_top_left
-            sclera_side sclera_top_inner sclera_side_left sclera_top_inner_left
-            sclera_tm_gap sclera_tm_gap_left
-            cornea_inner cornea_inner_left
+            iris_pupil iris_bottom iris_top
+            iris_pupil_left iris_bottom_left iris_top_left
         );
         locations     faceCenters;
         readData      ( Force );
@@ -39,6 +35,6 @@ FSI
 {
     solverType              solid;
     namePointDisplacement   unused;
-    nameCellDisplacement    D;
+    nameCellDisplacement    unused;
     nameForce               solidForce;
 }

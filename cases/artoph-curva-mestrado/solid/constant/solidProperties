@@ -1,0 +1,23 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// artoph-mestrado — modelo sólido
+//
+// linearElastic + unsLinearGeometry: geometricamente linear, quasi-estático.
+// Adequado para deformações <5% da parede arterial sob pressão fisiológica.
+
+solidModel      linearGeometryTotalDisplacement;
+
+linearGeometryTotalDisplacementCoeffs
+{
+    nCorrectors             10000;
+    solutionTolerance       1e-06;
+    alternativeTolerance    1e-06;
+    materialTolerance       1e-05;
+    infoFrequency           200;
+}

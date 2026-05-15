@@ -1,158 +1,194 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
+    arch        "LSB;label=32;scalar=64";
     class       volVectorField;
+    location    "0";
     object      U;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// Velocity field — eye-fsi-tc0  (full symmetric fluid x∈[-21,21] mm, FSI)
-//
-// Timeline:
-//   t =  0 –  5 s : baseline      — ac_inlet + ac_inlet_left, needles closed
-//   t =  5 – 11 s : injection ON  — needle_inlet_* + both AC inlets
-//   t = 11 – 15 s : injection OFF — AC inlets only
-//   t = 15 – 21 s : paracentesis ON — needle_outlet_* + both AC inlets
-//   t = 21 – 25 s : paracentesis OFF — AC inlets only (recovery)
-//
-// ALL FSI patches: movingWallVelocity — velocity tracks ALE mesh deformation
-// from preCICE Displacement data (single unified interface).
-// front/back: empty (2D)
+dimensions      [ 0 1 -1 0 0 0 0 ];
 
-dimensions      [0 1 -1 0 0 0 0];
-
-internalField   uniform (0 0 0);
+internalField   uniform ( 0 0 0 );
 
 boundaryField
 {
-    // ── Aqueous humor production — always on ─────────────────────────────
-    // Total aqueous production unchanged vs half-model: split evenly x=±20 mm.
+    needle_inlet_left
+    {
+        type            noSlip;
+    }
+    needle_inlet_right
+    {
+        type            noSlip;
+    }
+    needle_outlet_left
+    {
+        type            noSlip;
+    }
+    needle_outlet_right
+    {
+        type            noSlip;
+    }
+    sclera_left_lower
+    {
+        type            noSlip;
+    }
+    sclera_left_upper
+    {
+        type            noSlip;
+    }
+    sclera_right
+    {
+        type            noSlip;
+    }
+    sclera_right_upper
+    {
+        type            noSlip;
+    }
+    sclera_top
+    {
+        type            noSlip;
+    }
+    cornea_fsi
+    {
+        type            noSlip;
+    }
+    lens_bottom
+    {
+        type            noSlip;
+    }
+    lens_bottom_left
+    {
+        type            noSlip;
+    }
+    lens_right
+    {
+        type            noSlip;
+    }
+    lens_left
+    {
+        type            noSlip;
+    }
+    lens_top
+    {
+        type            noSlip;
+    }
+    lens_top_left
+    {
+        type            noSlip;
+    }
+    iris_bottom
+    {
+        type            noSlip;
+    }
+    iris_pupil
+    {
+        type            noSlip;
+    }
+    iris_pupil_left
+    {
+        type            noSlip;
+    }
+    iris_top
+    {
+        type            noSlip;
+    }
+    tm_limbus_wall
+    {
+        type            noSlip;
+    }
     ac_inlet
     {
         type            flowRateInletVelocity;
-        massFlowRate    constant 2.4875e-8;
+        massFlowRate    constant 2.4875e-08;
         rhoInlet        993;
-        value           uniform (0 0 0);
+        value           uniform ( 0 0 0 );
     }
     ac_inlet_left
     {
         type            flowRateInletVelocity;
-        massFlowRate    constant 2.4875e-8;
+        massFlowRate    constant 2.4875e-08;
         rhoInlet        993;
-        value           uniform (0 0 0);
+        value           uniform ( 0 0 0 );
     }
-
-    // TM resistance is modelled by Darcy porous zones in fvOptions (tm_zone, tm_zone_left).
-    outlet_tm       { type zeroGradient; }
-    outlet_tm_left  { type zeroGradient; }
-
-    // ── IVI injection — ON during t=[5,11s], 1s ramps ────────────────────
-    needle_inlet_left
+    outlet_tm
+    {
+        type            zeroGradient;
+    }
+    outlet_tm_left
+    {
+        type            zeroGradient;
+    }
+    front
+    {
+        type            empty;
+    }
+    back
+    {
+        type            empty;
+    }
+    defaultFaces
+    {
+        type            noSlip;
+    }
+    needle_int_inlet_master
     {
         type            uniformFixedValue;
+        value           uniform ( 0 0 0 );
         uniformValue
         {
-            type                table;
-            values
-            (
-                (  0       ( 0      0 0 ) )
-                (  5       ( 0      0 0 ) )
-                (  6       ( 2e-5   0 0 ) )
-                ( 10       ( 2e-5   0 0 ) )
-                ( 11       ( 0      0 0 ) )
-                ( 1e6      ( 0      0 0 ) )
-            );
+            type            table;
+            values          ( ( 0 ( 0 0 0 ) ) ( 5 ( 0 0 0 ) ) ( 6 ( 2e-05 0 0 ) ) ( 10 ( 2e-05 0 0 ) ) ( 11 ( 0 0 0 ) ) ( 1000000 ( 0 0 0 ) ) );
             interpolationScheme linear;
-            outOfBounds         clamp;
+            outOfBounds     clamp;
         }
-        value           uniform (0 0 0);
     }
-    needle_inlet_right
+    needle_int_inlet_slave
     {
         type            uniformFixedValue;
+        value           uniform ( 0 0 0 );
         uniformValue
         {
-            type                table;
-            values
-            (
-                (  0       ( 0       0 0 ) )
-                (  5       ( 0       0 0 ) )
-                (  6       ( -2e-5   0 0 ) )
-                ( 10       ( -2e-5   0 0 ) )
-                ( 11       ( 0       0 0 ) )
-                ( 1e6      ( 0       0 0 ) )
-            );
+            type            table;
+            values          ( ( 0 ( 0 0 0 ) ) ( 5 ( 0 0 0 ) ) ( 6 ( -2e-05 0 0 ) ) ( 10 ( -2e-05 0 0 ) ) ( 11 ( 0 0 0 ) ) ( 1000000 ( 0 0 0 ) ) );
             interpolationScheme linear;
-            outOfBounds         clamp;
+            outOfBounds     clamp;
         }
-        value           uniform (0 0 0);
     }
-
-    // ── Paracentesis — ON during t=[15,21s], 1s ramps ────────────────────
-    needle_outlet_left
+    needle_int_outlet_master
     {
         type            uniformFixedValue;
+        value           uniform ( 0 0 0 );
         uniformValue
         {
-            type                table;
-            values
-            (
-                (  0       ( 0      0 0 ) )
-                ( 15       ( 0      0 0 ) )
-                ( 16       (-2e-5   0 0 ) )
-                ( 20       (-2e-5   0 0 ) )
-                ( 21       ( 0      0 0 ) )
-                ( 1e6      ( 0      0 0 ) )
-            );
+            type            table;
+            values          ( ( 0 ( 0 0 0 ) ) ( 15 ( 0 0 0 ) ) ( 16 ( -2e-05 0 0 ) ) ( 20 ( -2e-05 0 0 ) ) ( 21 ( 0 0 0 ) ) ( 1000000 ( 0 0 0 ) ) );
             interpolationScheme linear;
-            outOfBounds         clamp;
+            outOfBounds     clamp;
         }
-        value           uniform (0 0 0);
     }
-    needle_outlet_right
+    needle_int_outlet_slave
     {
         type            uniformFixedValue;
+        value           uniform ( 0 0 0 );
         uniformValue
         {
-            type                table;
-            values
-            (
-                (  0       ( 0      0 0 ) )
-                ( 15       ( 0      0 0 ) )
-                ( 16       ( 2e-5   0 0 ) )
-                ( 20       ( 2e-5   0 0 ) )
-                ( 21       ( 0      0 0 ) )
-                ( 1e6      ( 0      0 0 ) )
-            );
+            type            table;
+            values          ( ( 0 ( 0 0 0 ) ) ( 15 ( 0 0 0 ) ) ( 16 ( 2e-05 0 0 ) ) ( 20 ( 2e-05 0 0 ) ) ( 21 ( 0 0 0 ) ) ( 1000000 ( 0 0 0 ) ) );
             interpolationScheme linear;
-            outOfBounds         clamp;
+            outOfBounds     clamp;
         }
-        value           uniform (0 0 0);
     }
-
-    // ── FSI patches — static mesh, all walls rigid (noSlip) ──────────────
-    // Fluid mesh is staticFvMesh. Deformations are < 10 µm on 18 mm domain.
-    lens_bottom         { type noSlip; }
-    lens_bottom_left    { type noSlip; }
-    lens_right          { type noSlip; }
-    lens_left           { type noSlip; }
-    lens_top            { type noSlip; }
-    lens_top_left       { type noSlip; }
-    iris_bottom         { type noSlip; }
-    iris_pupil          { type noSlip; }
-    iris_pupil_left     { type noSlip; }
-    iris_top            { type noSlip; }
-    sclera_right        { type noSlip; }
-    sclera_right_upper  { type noSlip; }
-    sclera_left_lower   { type noSlip; }
-    sclera_left_upper   { type noSlip; }
-    sclera_top          { type noSlip; }
-    cornea_fsi          { type noSlip; }
-    tm_limbus_wall      { type noSlip; }
-
-    defaultFaces        { type noSlip; }
-
-    // ── 2D ────────────────────────────────────────────────────────────────
-    front { type empty; }
-    back  { type empty; }
 }
+
+
+// ************************************************************************* //

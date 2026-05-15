@@ -16,7 +16,7 @@ FoamFile
 //   t = 15 – 21 s : paracentesis ON    — needle_outlet_* + both AC inlets
 //   t = 21 – 25 s : paracentesis OFF   — AC inlets only (recovery)
 //
-// preCICE time-window-size must match deltaT in precice-config.xml.
+// preCICE time-window-size (0.01 s) matches fluid deltaT (0.01 s): no sub-cycling.
 // The adapter function object is mandatory for synchronisation.
 
 application     pimpleFoam;
@@ -113,8 +113,11 @@ functions
 
     // IOP probe — interior AC point, y=4mm is Row 3 (y=[3.16,4.80mm]) col 1
     // (x=[5,15mm]) which is pure AC fluid (block B10), well away from iris/TM.
-    // Vitreous probe at y=20mm is Row 8 (y=[18,21.92mm]) col 1 — should equal
-    // AC pressure (IOP) since the vitreous is pressure-coupled via the lens gap.
+    // Vitreous probe at y=20mm is Row 8 (y=[18,21.92mm]) col 1 — agora dentro
+    // da vitreous_zone (porous Darcy). Com o vítreo poroso, p_AC e p_Vitreous
+    // NÃO são mais iguais: o salto de pressão entre eles reflete a queda de
+    // Darcy ao longo do anel lateral à lente. Esperar p_Vit > p_AC durante a
+    // injeção IVI e p_Vit < p_AC (ou queda atrasada) na paracentese.
     // Kinematic pressure p [m²/s²]; convert: IOP_mmHg = p × ρ / 133.322
     iop_probe
     {

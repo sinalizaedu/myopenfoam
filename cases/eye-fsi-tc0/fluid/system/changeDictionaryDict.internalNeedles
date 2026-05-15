@@ -1,0 +1,152 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+
+// Merges boundary conditions for the needle internal baffle patches into the
+// initial-condition files 0/{U, p, pcorr, cellDisplacement, pointDisplacement}.
+// Run AFTER createBaffles (which generates the four patch names below).
+//
+// Convention (x=0 baffles, full-symmetric model):
+//   master outward-normal → -x (faces right domain)
+//   slave  outward-normal → +x (faces left domain)
+//
+// IVI injection t=[5,11s]:   master (+x flow into right), slave (-x into left)
+// Paracentesis  t=[15,21s]:  master (-x out of right), slave (+x out of left)
+
+U
+{
+    boundaryField
+    {
+        // ── IVI injection ─────────────────────────────────────────────
+        needle_int_inlet_master
+        {
+            type            uniformFixedValue;
+            uniformValue
+            {
+                type                table;
+                values
+                (
+                    (  0       (  0      0 0 ) )
+                    (  5       (  0      0 0 ) )
+                    (  6       (  2e-5   0 0 ) )
+                    ( 10       (  2e-5   0 0 ) )
+                    ( 11       (  0      0 0 ) )
+                    ( 1e6      (  0      0 0 ) )
+                );
+                interpolationScheme linear;
+                outOfBounds         clamp;
+            }
+            value           uniform (0 0 0);
+        }
+        needle_int_inlet_slave
+        {
+            type            uniformFixedValue;
+            uniformValue
+            {
+                type                table;
+                values
+                (
+                    (  0       (  0      0 0 ) )
+                    (  5       (  0      0 0 ) )
+                    (  6       ( -2e-5   0 0 ) )
+                    ( 10       ( -2e-5   0 0 ) )
+                    ( 11       (  0      0 0 ) )
+                    ( 1e6      (  0      0 0 ) )
+                );
+                interpolationScheme linear;
+                outOfBounds         clamp;
+            }
+            value           uniform (0 0 0);
+        }
+
+        // ── Paracentesis ──────────────────────────────────────────────
+        needle_int_outlet_master
+        {
+            type            uniformFixedValue;
+            uniformValue
+            {
+                type                table;
+                values
+                (
+                    (  0       (  0      0 0 ) )
+                    ( 15       (  0      0 0 ) )
+                    ( 16       ( -2e-5   0 0 ) )
+                    ( 20       ( -2e-5   0 0 ) )
+                    ( 21       (  0      0 0 ) )
+                    ( 1e6      (  0      0 0 ) )
+                );
+                interpolationScheme linear;
+                outOfBounds         clamp;
+            }
+            value           uniform (0 0 0);
+        }
+        needle_int_outlet_slave
+        {
+            type            uniformFixedValue;
+            uniformValue
+            {
+                type                table;
+                values
+                (
+                    (  0       (  0      0 0 ) )
+                    ( 15       (  0      0 0 ) )
+                    ( 16       (  2e-5   0 0 ) )
+                    ( 20       (  2e-5   0 0 ) )
+                    ( 21       (  0      0 0 ) )
+                    ( 1e6      (  0      0 0 ) )
+                );
+                interpolationScheme linear;
+                outOfBounds         clamp;
+            }
+            value           uniform (0 0 0);
+        }
+    }
+}
+
+p
+{
+    boundaryField
+    {
+        needle_int_inlet_master  { type zeroGradient; }
+        needle_int_inlet_slave   { type zeroGradient; }
+        needle_int_outlet_master { type zeroGradient; }
+        needle_int_outlet_slave  { type zeroGradient; }
+    }
+}
+
+pcorr
+{
+    boundaryField
+    {
+        needle_int_inlet_master  { type zeroGradient; }
+        needle_int_inlet_slave   { type zeroGradient; }
+        needle_int_outlet_master { type zeroGradient; }
+        needle_int_outlet_slave  { type zeroGradient; }
+    }
+}
+
+cellDisplacement
+{
+    boundaryField
+    {
+        needle_int_inlet_master  { type fixedValue; value uniform (0 0 0); }
+        needle_int_inlet_slave   { type fixedValue; value uniform (0 0 0); }
+        needle_int_outlet_master { type fixedValue; value uniform (0 0 0); }
+        needle_int_outlet_slave  { type fixedValue; value uniform (0 0 0); }
+    }
+}
+
+pointDisplacement
+{
+    boundaryField
+    {
+        needle_int_inlet_master  { type fixedValue; value uniform (0 0 0); }
+        needle_int_inlet_slave   { type fixedValue; value uniform (0 0 0); }
+        needle_int_outlet_master { type fixedValue; value uniform (0 0 0); }
+        needle_int_outlet_slave  { type fixedValue; value uniform (0 0 0); }
+    }
+}

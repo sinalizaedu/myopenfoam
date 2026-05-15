@@ -1,0 +1,51 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       regIOobject;
+    location    "constant/polyMesh";
+    object      faceZones;
+    meta
+    {
+        names           ( needle_inlet_int_zone needle_outlet_int_zone needleIntInlet needleIntOutlet );
+    }
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+4
+(
+needle_inlet_int_zone
+{
+    type            faceZone;
+    faceLabels      List<label> 0();
+    flipMap         List<bool> 0();
+}
+needle_outlet_int_zone
+{
+    type            faceZone;
+    faceLabels      List<label> 0();
+    flipMap         List<bool> 0();
+}
+needleIntInlet
+{
+    type            faceZone;
+    faceLabels      List<label> 2(13812 13813);
+    flipMap         List<bool> 2(0 1);
+}
+needleIntOutlet
+{
+    type            faceZone;
+    faceLabels      List<label> 2(13814 13815);
+    flipMap         List<bool> 2(0 1);
+}
+)
+
+// ************************************************************************* //

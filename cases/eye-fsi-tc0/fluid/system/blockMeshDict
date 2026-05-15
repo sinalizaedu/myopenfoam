@@ -23,8 +23,12 @@ FoamFile
 // Cell zones:
 //   tm_zone      — right TM: x=[20,20.5mm], y=[0.40,2.40mm]
 //   tm_zone_left — left  TM: x=[-20.5,-20mm], y=[0.40,2.40mm]
-//   vitreous_zone — x=[-20,+20mm], y=[14.40,24mm] + x=[-15,+15mm], y=[9.60,14.40mm]
+//   vitreous_zone — central: x=[-15,+15mm], y=[12.0,24mm]
+//                   lateral (anel ao redor do equador da lente):
+//                            x=[±15,±20mm], y=[8.2,14.40mm]
+//                   posterior alargamento: x=[-20,+20mm], y=[14.40,24mm]
 //                   (NB: lens solid not in fluid mesh)
+//                   Porous Darcy applied via fvOptions (vitreous_porous).
 //
 // Vertex numbering:
 //   Right half (original):  0-143
@@ -280,6 +284,30 @@ vertices
     (-0.02050  0.002400  0.000 )  // 283  TM_left top     y=2.40mm z=0
     (-0.02050  0.000400  0.001 )  // 284  TM_left bottom  y=0.40mm z=1mm
     (-0.02050  0.002400  0.001 )  // 285  TM_left top     y=2.40mm z=1mm
+
+    // ── y=8.20mm: fundo real da lente sólida — vértices da row "5.5" ─────────
+    // Lado direito z=0 (front)
+    ( 0.00000  0.008200  0.000 )  // 286  V(0,5.5)  x=  0mm
+    ( 0.00500  0.008200  0.000 )  // 287  V(1,5.5)  x=  5mm
+    ( 0.01500  0.008200  0.000 )  // 288  V(2,5.5)  x= 15mm
+    ( 0.01950  0.008200  0.000 )  // 289  V(3,5.5)  x= 19.5mm
+    ( 0.02000  0.008200  0.000 )  // 290  V(4,5.5)  x= 20mm
+    // Lado direito z=1mm (back)
+    ( 0.00000  0.008200  0.001 )  // 291  V(0,5.5)b
+    ( 0.00500  0.008200  0.001 )  // 292  V(1,5.5)b
+    ( 0.01500  0.008200  0.001 )  // 293  V(2,5.5)b
+    ( 0.01950  0.008200  0.001 )  // 294  V(3,5.5)b
+    ( 0.02000  0.008200  0.001 )  // 295  V(4,5.5)b
+    // Lado esquerdo z=0 (front)  — V(0,5.5)=286 é compartilhado com o direito
+    (-0.00500  0.008200  0.000 )  // 296  VL(0,5.5) x= -5mm
+    (-0.01500  0.008200  0.000 )  // 297  VL(1,5.5) x=-15mm
+    (-0.01950  0.008200  0.000 )  // 298  VL(2,5.5) x=-19.5mm
+    (-0.02000  0.008200  0.000 )  // 299  VL(3,5.5) x=-20mm
+    // Lado esquerdo z=1mm (back)
+    (-0.00500  0.008200  0.001 )  // 300  VL(0,5.5)b
+    (-0.01500  0.008200  0.001 )  // 301  VL(1,5.5)b
+    (-0.01950  0.008200  0.001 )  // 302  VL(2,5.5)b
+    (-0.02000  0.008200  0.001 )  // 303  VL(3,5.5)b
 );
 
 // ── Blocks ────────────────────────────────────────────────────────────────────
@@ -328,19 +356,24 @@ blocks
     hex ( 20 21 26 25 85 86 91 90 ) (10 5 1)  simpleGrading (1 1 1)  // B12  right of pupil
     // cols 1-3 (x=[5,20mm]) → IRIS SOLID
 
-    // ── Row 5: y=[7.20, 9.60mm] ──────────────────────────────────────────
-    hex ( 25 26 31 30 90 91 96 95 ) (10 5 1)  simpleGrading (1 1 1)
-    hex ( 26 27 32 31 91 92 97 96 ) (20 5 1)  simpleGrading (1 1 1)
-    hex ( 27 28 33 32 92 93 98 97 ) (9 5 1)  simpleGrading (1 1 1)
-    hex ( 28 29 34 33 93 94 99 98 ) (1 5 1)  simpleGrading (1 1 1)
+    // ── Row 5a: y=[7.20, 8.20mm] — TODOS os cols (câmara posterior) ────────
+    hex ( 25 26 287 286  90 91 292 291 ) (10 2 1)  simpleGrading (1 1 1)  // col 0
+    hex ( 26 27 288 287  91 92 293 292 ) (20 2 1)  simpleGrading (1 1 1)  // col 1
+    hex ( 27 28 289 288  92 93 294 293 ) (9 2 1)   simpleGrading (1 1 1)  // col 2
+    hex ( 28 29 290 289  93 94 295 294 ) (1 2 1)   simpleGrading (1 1 1)  // col 3
+    // ── Row 5b: y=[8.20, 9.60mm] — cols 0-1 = LENTE (void); cols 2-3 = vitreous (anel lateral)
+    hex ( 288 289 33 32  293 294 98 97 ) vitreous_zone (9 3 1)   simpleGrading (1 1 1)  // col 2
+    hex ( 289 290 34 33  294 295 99 98 ) vitreous_zone (1 3 1)   simpleGrading (1 1 1)  // col 3
 
-    // ── Row 6a: y=[9.60, 12.00mm] — cols 0-1 = LENS SOLID ───────────────
-    hex ( 32 33 38 37 97 98 103 102 ) (9 5 1)  simpleGrading (1 1 1)
-    hex ( 33 34 39 38 98 99 104 103 ) (1 5 1)  simpleGrading (1 1 1)
+    // ── Row 6a: y=[9.60, 12.00mm] — cols 0-1 = LENS SOLID; cols 2-3 = vitreous (anel lateral)
+    hex ( 32 33 38 37 97 98 103 102 ) vitreous_zone (9 5 1)  simpleGrading (1 1 1)
+    hex ( 33 34 39 38 98 99 104 103 ) vitreous_zone (1 5 1)  simpleGrading (1 1 1)
 
-    // ── Row 6b: y=[12.00, 14.40mm] — cols 0-1 = LENS SOLID ──────────────
-    hex ( 37 38 43 42 102 103 108 107 ) (9 5 1)  simpleGrading (1 1 1)
-    hex ( 38 39 44 43 103 104 109 108 ) (1 5 1)  simpleGrading (1 1 1)
+    // ── Row 6b: y=[12.00, 14.40mm] — TODOS os cols = vitreous ───────────────
+    hex ( 35 36 41 40 100 101 106 105 ) vitreous_zone (10 5 1)  simpleGrading (1 1 1)  // col 0
+    hex ( 36 37 42 41 101 102 107 106 ) vitreous_zone (20 5 1)  simpleGrading (1 1 1)  // col 1
+    hex ( 37 38 43 42 102 103 108 107 ) vitreous_zone (9 5 1)  simpleGrading (1 1 1)
+    hex ( 38 39 44 43 103 104 109 108 ) vitreous_zone (1 5 1)  simpleGrading (1 1 1)
 
     // ── Row 7:  y=[14.40, 18.00mm] ─
     hex ( 40 41 46 45 105 106 111 110 ) vitreous_zone (10 7 1)  simpleGrading (1 1 1)
@@ -408,19 +441,24 @@ blocks
     hex ( 164 20 25 169 229 85 90 234 ) (10 5 1)  simpleGrading (1 1 1)  // B12L pupil-left
     // cols 1L-3L (x=[-20,-5mm]) → IRIS SOLID (not in fluid)
 
-    // ── Row 5 left: y=[7.20, 9.60mm] ────────────────────────────────────
-    hex ( 169 25 30 174 234 90 95 239 ) (10 5 1)  simpleGrading (1 1 1)
-    hex ( 170 169 174 175 235 234 239 240 ) (20 5 1)  simpleGrading (1 1 1)
-    hex ( 171 170 175 176 236 235 240 241 ) (9 5 1)  simpleGrading (1 1 1)
-    hex ( 172 171 176 177 237 236 241 242 ) (1 5 1)  simpleGrading (1 1 1)
+    // ── Row 5a left: y=[7.20, 8.20mm] — TODOS os cols ──────────────────────
+    hex ( 169 25 286 296  234 90 291 300 ) (10 2 1)  simpleGrading (1 1 1)  // col 0L
+    hex ( 170 169 296 297  235 234 300 301 ) (20 2 1)  simpleGrading (1 1 1)  // col 1L
+    hex ( 171 170 297 298  236 235 301 302 ) (9 2 1)   simpleGrading (1 1 1)  // col 2L
+    hex ( 172 171 298 299  237 236 302 303 ) (1 2 1)   simpleGrading (1 1 1)  // col 3L
+    // ── Row 5b left: y=[8.20, 9.60mm] — cols 0L-1L = LENTE (void); cols 2L-3L = vitreous (anel lateral)
+    hex ( 298 297 175 176  302 301 240 241 ) vitreous_zone (9 3 1)   simpleGrading (1 1 1)  // col 2L
+    hex ( 299 298 176 177  303 302 241 242 ) vitreous_zone (1 3 1)   simpleGrading (1 1 1)  // col 3L
 
-    // ── Row 6a left: y=[9.60, 12.00mm] — cols 0L-1L = LENS SOLID ────────
-    hex ( 176 175 180 181 241 240 245 246 ) (9 5 1)  simpleGrading (1 1 1)
-    hex ( 177 176 181 182 242 241 246 247 ) (1 5 1)  simpleGrading (1 1 1)
+    // ── Row 6a left: y=[9.60, 12.00mm] — cols 0L-1L = LENS SOLID; cols 2L-3L = vitreous (anel lateral)
+    hex ( 176 175 180 181 241 240 245 246 ) vitreous_zone (9 5 1)  simpleGrading (1 1 1)
+    hex ( 177 176 181 182 242 241 246 247 ) vitreous_zone (1 5 1)  simpleGrading (1 1 1)
 
-    // ── Row 6b left: y=[12.00, 14.40mm] — cols 0L-1L = LENS SOLID ───────
-    hex ( 181 180 185 186 246 245 250 251 ) (9 5 1)  simpleGrading (1 1 1)
-    hex ( 182 181 186 187 247 246 251 252 ) (1 5 1)  simpleGrading (1 1 1)
+    // ── Row 6b left: y=[12.00, 14.40mm] — TODOS os cols = vitreous ──────────
+    hex ( 179 35 40 184 244 100 105 249 ) vitreous_zone (10 5 1)  simpleGrading (1 1 1)  // col 0L
+    hex ( 180 179 184 185 245 244 249 250 ) vitreous_zone (20 5 1)  simpleGrading (1 1 1)  // col 1L
+    hex ( 181 180 185 186 246 245 250 251 ) vitreous_zone (9 5 1)  simpleGrading (1 1 1)
+    hex ( 182 181 186 187 247 246 251 252 ) vitreous_zone (1 5 1)  simpleGrading (1 1 1)
 
     // ── Row 7  left: y=[14.40, 18.00mm] ─
     hex ( 184 40 45 189 249 105 110 254 ) vitreous_zone (10 7 1)  simpleGrading (1 1 1)
@@ -563,11 +601,12 @@ boundary
     // ── Lens / iris — original right + mirrored left ───────────────────────────
     lens_bottom
     {
+        // y=8.2mm — fundo da cavidade da lente (row5b cols 0-1 ausentes)
         type wall;
         faces
         (
-            ( 30 31  96  95 )
-            ( 31 32  97  96 )
+            ( 286 287 292 291 )  // x=[0,5mm]
+            ( 287 288 293 292 )  // x=[5,15mm]
         );
     }
     lens_bottom_left
@@ -575,36 +614,38 @@ boundary
         type wall;
         faces
         (
-            ( 174 30 95 239 )
-            ( 175 174 239 240 )
+            ( 296 286 291 300 )  // x=[-5,0mm]
+            ( 297 296 300 301 )  // x=[-15,-5mm]
         );
     }
     lens_right
     {
+        // x=+15mm, y=[8.2mm, 12.0mm]
         type wall;
         faces
         (
-            ( 32 37 102  97 )
-            ( 37 42 107 102 )
+            ( 288 32  97 293 )   // y=[8.2, 9.6mm]
+            ( 32 37 102  97 )    // y=[9.6,12.0mm]
         );
     }
-    // x=-15 mm strip — mirror of lens_right (32 37 102 97) / (37 42 107 102).
     lens_left
     {
+        // x=-15mm, y=[8.2mm, 12.0mm]
         type wall;
         faces
         (
-            ( 175 180 245 240 )
-            ( 180 185 250 245 )
+            ( 297 175 240 301 )  // y=[8.2, 9.6mm]
+            ( 175 180 245 240 )  // y=[9.6,12.0mm]
         );
     }
     lens_top
     {
+        // y=12.0mm — topo da lente coincide com sólido
         type wall;
         faces
         (
-            ( 40 41 106 105 )
-            ( 41 42 107 106 )
+            ( 35 36 101 100 )
+            ( 36 37 102 101 )
         );
     }
     lens_top_left
@@ -612,8 +653,8 @@ boundary
         type wall;
         faces
         (
-            ( 184 40 105 249 )
-            ( 185 184 249 250 )
+            ( 179 35 100 244 )
+            ( 180 179 244 245 )
         );
     }
 
@@ -670,12 +711,12 @@ boundary
     ac_inlet
     {
         type patch;
-        faces ( ( 29 34 99 94 ) );
+        faces ( ( 29 290 295 94 ) ( 290 34 99 295 ) );
     }
     ac_inlet_left
     {
         type patch;
-        faces ( ( 172 177 242 237 ) );
+        faces ( ( 172 299 303 237 ) ( 299 177 242 303 ) );
     }
     outlet_tm
     {
@@ -715,12 +756,16 @@ boundary
             ( 17 18 23 22 )
             ( 18 19 24 23 )
             ( 20 21 26 25 )
-            ( 25 26 31 30 )
-            ( 26 27 32 31 )
-            ( 27 28 33 32 )
-            ( 28 29 34 33 )
+            ( 25 26 287 286 )
+            ( 26 27 288 287 )
+            ( 27 28 289 288 )
+            ( 28 29 290 289 )
+            ( 288 289 33 32 )
+            ( 289 290 34 33 )
             ( 32 33 38 37 )
             ( 33 34 39 38 )
+            ( 35 36 41 40 )
+            ( 36 37 42 41 )
             ( 37 38 43 42 )
             ( 38 39 44 43 )
             ( 40 41 46 45 )
@@ -761,12 +806,16 @@ boundary
             ( 161 160 165 166 )
             ( 162 161 166 167 )
             ( 164 20 25 169 )
-            ( 169 25 30 174 )
-            ( 170 169 174 175 )
-            ( 171 170 175 176 )
-            ( 172 171 176 177 )
+            ( 169 25 286 296 )
+            ( 170 169 296 297 )
+            ( 171 170 297 298 )
+            ( 172 171 298 299 )
+            ( 298 297 175 176 )
+            ( 299 298 176 177 )
             ( 176 175 180 181 )
             ( 177 176 181 182 )
+            ( 179 35 40 184 )
+            ( 180 179 184 185 )
             ( 181 180 185 186 )
             ( 182 181 186 187 )
             ( 184 40 45 189 )
@@ -815,12 +864,16 @@ boundary
             ( 82 83 88 87 )
             ( 83 84 89 88 )
             ( 85 86 91 90 )
-            ( 90 91 96 95 )
-            ( 91 92 97 96 )
-            ( 92 93 98 97 )
-            ( 93 94 99 98 )
+            ( 90 91 292 291 )
+            ( 91 92 293 292 )
+            ( 92 93 294 293 )
+            ( 93 94 295 294 )
+            ( 293 294 98 97 )
+            ( 294 295 99 98 )
             ( 97 98 103 102 )
             ( 98 99 104 103 )
+            ( 100 101 106 105 )
+            ( 101 102 107 106 )
             ( 102 103 108 107 )
             ( 103 104 109 108 )
             ( 105 106 111 110 )
@@ -861,12 +914,16 @@ boundary
             ( 226 225 230 231 )
             ( 227 226 231 232 )
             ( 229 85 90 234 )
-            ( 234 90 95 239 )
-            ( 235 234 239 240 )
-            ( 236 235 240 241 )
-            ( 237 236 241 242 )
+            ( 234 90 291 300 )
+            ( 235 234 300 301 )
+            ( 236 235 301 302 )
+            ( 237 236 302 303 )
+            ( 302 301 240 241 )
+            ( 303 302 241 242 )
             ( 241 240 245 246 )
             ( 242 241 246 247 )
+            ( 244 100 105 249 )
+            ( 245 244 249 250 )
             ( 246 245 250 251 )
             ( 247 246 251 252 )
             ( 249 105 110 254 )

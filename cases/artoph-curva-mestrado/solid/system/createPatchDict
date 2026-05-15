@@ -1,0 +1,39 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+// Pós-processo da malha snappyHexMesh:
+//   1. Cria os patches das duas tampas a partir dos faceSets gerados em
+//      topoSetDict (artoph_end_back, artoph_end_front).
+//   2. Renomeia o restante `artery_surface` (a superfície lateral curva) para
+//      `lumen` — mesmo nome do patch que recebe a pressão pulsátil no caso
+//      reto cases/artoph-mestrado/, permitindo reaproveitar 0/D e o tableFile
+//      de pressão sem alteração.
+
+pointSync false;
+
+patches
+(
+    {
+        name        artoph_end_back;
+        patchInfo   { type wall; }
+        constructFrom set;
+        set         artoph_end_back;
+    }
+    {
+        name        artoph_end_front;
+        patchInfo   { type wall; }
+        constructFrom set;
+        set         artoph_end_front;
+    }
+    {
+        name        lumen;
+        patchInfo   { type wall; }
+        constructFrom set;
+        set         lumen_lateral;
+    }
+);

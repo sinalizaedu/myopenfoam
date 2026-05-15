@@ -1,0 +1,73 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Identifica as faces das duas extremidades da artéria curva
+// (tampas em z = -30 mm e z = 0 mm), no patch `artery_surface`. Cria três
+// faceSets disjuntos para serem reatribuídos em patches separados:
+//   artoph_end_back  — faces com z ∈ [-30.3, -29.5] mm
+//   artoph_end_front — faces com z ∈ [ -0.3,  +1.0] mm
+//   lumen_lateral   — todas as outras faces de artery_surface (superfície curva lateral)
+
+actions
+(
+    // ── Tampa posterior ──────────────────────────────────────────────────
+    {
+        name    artoph_end_back;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name artery_surface; }
+    }
+    {
+        name    artoph_end_back;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1 -1 -0.0303) (1 1 -0.0295); }
+    }
+
+    // ── Tampa anterior ───────────────────────────────────────────────────
+    {
+        name    artoph_end_front;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name artery_surface; }
+    }
+    {
+        name    artoph_end_front;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1 -1 -0.0003) (1 1 0.001); }
+    }
+
+    // ── Lúmen lateral = artery_surface MENOS as duas tampas ──────────────
+    // Garante faceSets disjuntos antes do createPatch (sem duplicação).
+    {
+        name    lumen_lateral;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name artery_surface; }
+    }
+    {
+        name    lumen_lateral;
+        type    faceSet;
+        action  subtract;
+        source  faceToFace;
+        sourceInfo { set artoph_end_back; }
+    }
+    {
+        name    lumen_lateral;
+        type    faceSet;
+        action  subtract;
+        source  faceToFace;
+        sourceInfo { set artoph_end_front; }
+    }
+);

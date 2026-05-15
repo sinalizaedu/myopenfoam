@@ -1,0 +1,63 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volVectorField;
+    location    "0.35";
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    posterior_on
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    posterior_ons
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    contact_artoph
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    ons_outer
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    sclera_outer
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    globo_outer
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    anterior_globo
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+}
+
+
+// ************************************************************************* //

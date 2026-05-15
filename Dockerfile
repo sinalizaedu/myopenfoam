@@ -64,13 +64,17 @@ RUN source /usr/lib/openfoam/openfoam2512/etc/bashrc && \
 
 # ---------- Stage compiled artifacts into /opt for clean COPY ----------
 RUN source /usr/lib/openfoam/openfoam2512/etc/bashrc && \
-    mkdir -p /opt/of-user/{lib,bin} /opt/s4f-tutorials && \
-    # Adapter + solids4foam shared libs
+    # Ensure lnInclude trees are populated (used by custom BC builds)
+    for d in src/solids4FoamModels src/blockCoupledSolids4FoamTools; do \
+      if [ -d "/build/s4f/$d" ]; then \
+        cd /build/s4f/$d && wmakeLnInclude -u . ; \
+      fi ; \
+    done && \
+    mkdir -p /opt/of-user/lib /opt/of-user/bin /opt/of-user/src/solids4foam /opt/s4f-tutorials && \
     cp -a ${FOAM_USER_LIBBIN}/*.so /opt/of-user/lib/ 2>/dev/null || true && \
-    # solids4foam binaries (solids4Foam solver, utilities)
     cp -a ${FOAM_USER_APPBIN}/*   /opt/of-user/bin/  2>/dev/null || true && \
-    # Tutorials for reference
-    cp -a /build/s4f/tutorials/*  /opt/s4f-tutorials/ 2>/dev/null || true
+    cp -a /build/s4f/tutorials/*  /opt/s4f-tutorials/ 2>/dev/null || true && \
+    cp -a /build/s4f/src          /opt/of-user/src/solids4foam/ 2>/dev/null || true
 
 
 # ---------------------------------------------------------------------------

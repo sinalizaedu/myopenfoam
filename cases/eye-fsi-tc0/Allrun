@@ -19,6 +19,10 @@ echo "=== eye-fsi-tc0: meshing ==="
 
 (cd fluid && blockMesh 2>&1 | tee log.blockMesh)
 (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+(cd fluid && topoSet -dict system/topoSetDict.internalNeedles 2>&1 | tee log.topoSet.internalNeedles)
+(cd fluid && createBaffles -overwrite 2>&1 | tee log.createBaffles)
+(cd fluid && changeDictionary -dict system/changeDictionaryDict.internalNeedles 2>&1 | tee log.changeDictionary.internalNeedles)
+# changeDictionary rewrites 0/{U,p,pcorr,*Displacement} formatting and appends needle_int_* BCs.
 echo "  Fluid mesh OK"
 
 (cd solid && blockMesh 2>&1 | tee log.blockMesh)
@@ -33,8 +37,17 @@ echo ""
 (cd solid && solids4Foam 2>&1 | tee log.solids4Foam) &
 SOLID_PID=$!
 
-# Short delay — let connector socket initialise before acceptor connects
-sleep 2
+# Wait for solid to initialise — poll until the process has been running for at
+# least PRECICE_WAIT seconds or the solid has already exited (crash detection).
+PRECICE_WAIT=10
+echo "  Waiting ${PRECICE_WAIT}s for solid preCICE connector to initialise..."
+for i in $(seq 1 $PRECICE_WAIT); do
+    if ! kill -0 "$SOLID_PID" 2>/dev/null; then
+        echo "ERROR: solid (solids4Foam) exited prematurely. Check solid/log.solids4Foam." >&2
+        exit 1
+    fi
+    sleep 1
+done
 
 # Launch fluid in foreground (preCICE acceptor)
 (cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
@@ -45,7 +58,7 @@ echo ""
 echo "=== eye-fsi-tc0: post-run checks ==="
 echo ""
 
-QTM=$(grep -a "flowRateTM" fluid/log.pimpleFoam | tail -1 | awk '{print $NF}' 2>/dev/null || echo "N/A")
+QTM=$(grep -a "flowRateTM" fluid/log.pimpleFoam 2>/dev/null | tail -1 | awk '{v=$NF; if (v+0==v && v!="") print v; else print "N/A"}' || echo "N/A")
 echo "  Q_outlet_tm (last step) = $QTM"
 
 echo ""

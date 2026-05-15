@@ -5,240 +5,270 @@ FoamFile
     class       volVectorField;
     object      D;
 }
-// eye-fsi-tc0 — SOLID displacement field — FULL SYMMETRIC MODEL
+// eye-fsi-tc0 — STANDALONE SOLID — 5 zonas + anatomia correta
 //
-// FSI strategy: ONE-WAY (fluid→solid), serial-explicit, static fluid mesh.
-//
-// LENS mounting (zonule spring model):
-//   lens_bottom / lens_bottom_left: solidForce — anterior lens, fluid pressure (preCICE).
-//   lens_top / lens_top_left: solidForce — posterior lens, fluid pressure (preCICE).
-//   lens_right / lens_left: robin spring (coeff0=1e7 Pa/m) — zonule (not preCICE).
-//
-// IRIS / SCLERA / CORNEA / TM gap (inner): solidForce — fluid pressure via preCICE.
-//
-// FIXED supports:
-//   iris_base, iris_base_left: scleral spur (iris–sclera contact at x=±20mm).
-//   optic_disc, optic_disc_left: posterior pole anchor (y=25mm, |x|≤2mm) — ONH proxy.
-// FREE traction (solidTraction zero): sclera_outer / _left, cornea_outer / _left — see blockMeshDict ONH split.
+// Estrutura       BC pressão (Pa)                  Engaste/Conexão
+// ──────────────────────────────────────────────────────────────────────────
+// Córnea          top=1000(IOP→-y), bottom=0        limbo → CONECTADO à esclera (nós compartilhados)
+// Íris (cant.)    bottom=1000(AC), top=1300(PC)      iris_base fixedValue
+// Stub escl.      bottom=1000, top=1300              iris_base fixedValue
+// Lente           bottom=1300(PC→+y), top=0(livre)  lens_left/right fixedValue
+// Esclera upper   inner=1500(IOP→+x/-x), outer=0    sclera_R/L_top fixedValue
+// Esclera lower   bottom=0(livre), outer=0           conectada à córnea pelo limbo
 
 dimensions      [0 1 0 0 0 0 0];
+
 internalField   uniform (0 0 0);
 
 boundaryField
 {
-    // ════════════════════════════════════════════════════════════════════════
-    // ══ LENS — EQUATORIAL SPRINGS (zonule fibers, both sides) ══════════════
-    // ════════════════════════════════════════════════════════════════════════
-    lens_right
+    // ════════════════════════════════════════════════════════════════════
+    // ══ CÓRNEA (100 MPa, placa — limbo conectado à esclera) ══════════════
+    cornea_bottom
     {
-        // RIGHT zonule spring — coeff0 = 1e7 Pa/m.
-        // coeff0 >> IOP/lens_width (2000/0.015 = 1.3e5) → spring dominates x-motion.
-        // Prevents rigid-body x-translation and cantilever bending.
-        type        robin;
-        coeff0      uniform 1e7;
-        coeff1      uniform 0;
-        rhs         uniform (0 0 0);
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;           // superfície externa: livre
         value       uniform (0 0 0);
     }
-    lens_left
+    cornea_top
     {
-        // LEFT zonule spring — symmetric with lens_right.
-        type        robin;
-        coeff0      uniform 1e7;
-        coeff1      uniform 0;
-        rhs         uniform (0 0 0);
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1000;        // IOP empurra córnea para -y (para fora)
         value       uniform (0 0 0);
     }
+    // cornea_left e cornea_right REMOVIDAS: tornaram-se faces internas.
+    // O limbo é agora uma interface contínua entre córnea e esclera lower.
 
-    // ════════════════════════════════════════════════════════════════════════
-    // ══ LENS — FSI FACES (anterior + posterior, fluid pressure drives D) ════
-    // ════════════════════════════════════════════════════════════════════════
-    lens_bottom
-    {
-        // Anterior face (y=9.6mm): receives AC pressure from preCICE/fluid.
-        type        solidForce;
-        forceField  solidForce;
-        value       uniform (0 0 0);
-    }
-    lens_top
-    {
-        // Posterior face (y=14.4mm): receives vitreous pressure from preCICE/fluid.
-        type        solidForce;
-        forceField  solidForce;
-        value       uniform (0 0 0);
-    }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // ══ LENS — LEFT (symmetric prescribed load) ══════════════════════════════
-    // ════════════════════════════════════════════════════════════════════════
-    lens_bottom_left
-    {
-        type        solidForce;
-        forceField  solidForce;
-        value       uniform (0 0 0);
-    }
-    lens_top_left
-    {
-        type        solidForce;
-        forceField  solidForce;
-        value       uniform (0 0 0);
-    }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // ══ IRIS — RIGHT (fluid force via preCICE) ══════════════════════════════
-    // ════════════════════════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ÍRIS DIREITA (1 MPa, cantilever, D-shape) ════════════════════════
     iris_pupil
     {
-        type        solidForce;
-        forceField  solidForce;
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;           // extremidade livre
         value       uniform (0 0 0);
     }
     iris_bottom
     {
-        type        solidForce;
-        forceField  solidForce;
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1000;        // AC=1000 Pa → empurra iris para +y
         value       uniform (0 0 0);
     }
     iris_top
     {
-        type        solidForce;
-        forceField  solidForce;
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1300;        // PC=1300 Pa → empurra iris para -y (D-shape)
+        value       uniform (0 0 0);
+    }
+    sclera_stub_bottom
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1000;
+        value       uniform (0 0 0);
+    }
+    sclera_stub_top
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1300;
         value       uniform (0 0 0);
     }
     iris_base
     {
         type        fixedValue;
-        value       uniform (0 0 0);
+        value       uniform (0 0 0);     // x=+20mm: engaste (D=0)
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // ══ IRIS — LEFT (fluid force via preCICE) ════════════════════════════════
-    // ════════════════════════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ÍRIS ESQUERDA (simétrica) ════════════════════════════════════════
     iris_pupil_left
     {
-        type        solidForce;
-        forceField  solidForce;
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
         value       uniform (0 0 0);
     }
     iris_bottom_left
     {
-        type        solidForce;
-        forceField  solidForce;
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1000;
         value       uniform (0 0 0);
     }
     iris_top_left
     {
-        type        solidForce;
-        forceField  solidForce;
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1300;
+        value       uniform (0 0 0);
+    }
+    sclera_stub_bottom_left
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1000;
+        value       uniform (0 0 0);
+    }
+    sclera_stub_top_left
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1300;
         value       uniform (0 0 0);
     }
     iris_base_left
     {
         type        fixedValue;
-        value       uniform (0 0 0);
+        value       uniform (0 0 0);     // x=-20mm: engaste
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // ══ SCLERA — RIGHT (fluid force via preCICE) ════════════════════════════
-    // ════════════════════════════════════════════════════════════════════════
-    sclera_side
+    // ════════════════════════════════════════════════════════════════════
+    // ══ LENTE (1 MPa, placa clamped nas laterais x=±15mm) ════════════════
+    lens_bottom
     {
-        type        solidForce;
-        forceField  solidForce;
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1300;        // PC=1300 Pa empurra lente para +y
         value       uniform (0 0 0);
     }
-    sclera_top_inner
+    lens_top
     {
-        type        solidForce;
-        forceField  solidForce;
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;           // vitreous: livre
         value       uniform (0 0 0);
     }
-    sclera_outer
+    lens_left
     {
+        type        fixedValue;
+        value       uniform (0 0 0);     // suporte zonular: engaste
+    }
+    lens_right
+    {
+        type        fixedValue;
+        value       uniform (0 0 0);     // suporte zonular: engaste
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ESCLERA DIREITA (1 GPa) ══════════════════════════════════════════
+    // lower (y=-1→0mm) conectada à córnea via nós compartilhados no limbo
+    sclera_R_bottom
+    {
+        // y=-1mm — exterior da esclera lower: livre (mesma face do exterior da córnea)
         type        solidTraction;
         traction    uniform (0 0 0);
         pressure    uniform 0;
         value       uniform (0 0 0);
     }
+    sclera_R_top
+    {
+        type        fixedValue;
+        value       uniform (0 0 0);     // y=24mm: fixada na órbita
+    }
+    sclera_R_inner
+    {
+        // x=20mm — face interna da esclera upper (y=0→24mm): IOP
+        // a porção y=-1→0mm é face interna (limbo), sem BC aqui
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1500;        // IOP empurra esclera para +x (para fora)
+        value       uniform (0 0 0);
+    }
+    sclera_R_outer
+    {
+        // x=21mm — face externa: livre (lower + upper)
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ESCLERA ESQUERDA (simétrica) ═════════════════════════════════════
+    sclera_L_bottom
+    {
+        // y=-1mm — exterior da esclera lower: livre
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+    sclera_L_top
+    {
+        type        fixedValue;
+        value       uniform (0 0 0);     // y=24mm: fixada na órbita
+    }
+    sclera_L_inner
+    {
+        // x=-20mm — face interna da esclera upper (y=0→24mm): IOP
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1500;        // IOP empurra esclera para -x (para fora)
+        value       uniform (0 0 0);
+    }
+    sclera_L_outer
+    {
+        // x=-21mm — face externa: livre (lower + upper)
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ESCLERA SUPERIOR (1 GPa, placa clamped nas laterais x=±21mm) ════
+    sclera_top_bottom
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1500;        // IOP empurra a tampa para +y (para fora)
+        value       uniform (0 0 0);
+    }
+    sclera_top_top
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;           // exterior: livre
+        value       uniform (0 0 0);
+    }
+    sclera_top_left
+    {
+        type        fixedValue;
+        value       uniform (0 0 0);     // clamped: fixação orbital esquerda
+    }
+    sclera_top_right
+    {
+        type        fixedValue;
+        value       uniform (0 0 0);     // clamped: fixação orbital direita
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ NOTCH TM (paredes do recorte da trabecular meshwork) ═════════════
+    // Faces que envolvem o vazio da TM — IOP age nestas faces
     sclera_tm_gap
     {
-        type        solidForce;
-        forceField  solidForce;
-        value       uniform (0 0 0);
-    }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // ══ SCLERA — LEFT (fluid force via preCICE) ═════════════════════════════
-    // ════════════════════════════════════════════════════════════════════════
-    sclera_side_left
-    {
-        type        solidForce;
-        forceField  solidForce;
-        value       uniform (0 0 0);
-    }
-    sclera_top_inner_left
-    {
-        type        solidForce;
-        forceField  solidForce;
-        value       uniform (0 0 0);
-    }
-    sclera_outer_left
-    {
+        // Paredes direitas do notch: y=0.4mm (baixo), y=2.4mm (cima), x=20.5mm (interno)
         type        solidTraction;
         traction    uniform (0 0 0);
-        pressure    uniform 0;
-        value       uniform (0 0 0);
-    }
-    optic_disc
-    {
-        type        fixedValue;
-        value       uniform (0 0 0);
-    }
-    optic_disc_left
-    {
-        type        fixedValue;
+        pressure    uniform 1500;        // IOP empurra para dentro do notch
         value       uniform (0 0 0);
     }
     sclera_tm_gap_left
     {
-        type        solidForce;
-        forceField  solidForce;
+        // Paredes esquerdas do notch: simétrico
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 1500;
         value       uniform (0 0 0);
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // ══ CORNEA (fluid force via preCICE) ═════════════════════════════════════
-    // ════════════════════════════════════════════════════════════════════════
-    cornea_inner
-    {
-        type        solidForce;
-        forceField  solidForce;
-        value       uniform (0 0 0);
-    }
-    cornea_outer
-    {
-        type        solidTraction;
-        traction    uniform (0 0 0);
-        pressure    uniform 0;
-        value       uniform (0 0 0);
-    }
-    cornea_inner_left
-    {
-        type        solidForce;
-        forceField  solidForce;
-        value       uniform (0 0 0);
-    }
-    cornea_outer_left
-    {
-        type        solidTraction;
-        traction    uniform (0 0 0);
-        pressure    uniform 0;
-        value       uniform (0 0 0);
-    }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // ══ 2D ══════════════════════════════════════════════════════════════════
-    // ════════════════════════════════════════════════════════════════════════
+    // ════════════════════════════════════════════════════════════════════
+    // ══ 2D ══════════════════════════════════════════════════════════════
     front { type empty; }
     back  { type empty; }
 }

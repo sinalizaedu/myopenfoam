@@ -6,7 +6,7 @@ by cross-validating three independent criteria:
 
  1. MASS BALANCE      — Q_TM ≈ Q_inlet at baseline (no leakage)
  2. DARCY LAW         — IOP_probe ≈ ν·d·L·Q_TM/A  (Darcy resistance correct)
- 3. PRESSURE COUPLING — p_AC ≈ p_vitreous (both probes equal → zones are connected)
+ 3. PRESSURE DECOUPLING — p_vitreous vs p_AC (porous vitreous → finite Δp)
 """
 
 import numpy as np
@@ -39,8 +39,8 @@ with open(f'{BASE}/fluid/postProcessing/iop_probe/0/p') as f:
     for line in f:
         if line.startswith('#'): continue
         parts = line.split()
-        if len(parts) >= 3:
-            probe_raw.append((float(parts[0]), float(parts[1]), float(parts[2])))
+        if len(parts) >= 5:
+            probe_raw.append((float(parts[0]), float(parts[1]), float(parts[3])))
 p_arr = np.array(probe_raw)
 t_p, p_AC_kin, p_Vit_kin = p_arr[:,0], p_arr[:,1], p_arr[:,2]
 p_AC  = to_mmhg(p_AC_kin)
@@ -96,16 +96,18 @@ for name, mask_q, mask_p in [("baseline", mB, mBp), ("injection", mI, mIp),
 # ── Criterion 3: Pressure coupling ───────────────────────────────────────────
 print()
 print("=" * 60)
-print("CRITERION 3 — PRESSURE COUPLING  (p_AC = p_vitreous)")
-print("  Both zones should be in pressure equilibrium via the")
-print("  internal face at y=14.4mm, x=[15,20mm].")
+print("CRITERION 3 — PRESSURE DECOUPLING  (p_vitreous > p_AC via porous Darcy)")
+print("  Com o vitreous_porous (DarcyForchheimer, d=1.72e13 m⁻²) ativo, o")
+print("  vítreo deve apresentar pressão mais alta que a AC durante o regime")
+print("  permanente — a queda de pressão reflete a resistência viscosa do")
+print("  gel hialurônico ao escoamento vítreo → AC.")
 print("=" * 60)
-diff_B = np.mean(np.abs(p_AC_u[mBp] - p_Vit_u[mBp]))
-diff_I = np.mean(np.abs(p_AC_u[mIp] - p_Vit_u[mIp]))
-diff_P = np.mean(np.abs(p_AC_u[mPp] - p_Vit_u[mPp]))
+diff_B = np.mean(p_Vit_u[mBp] - p_AC_u[mBp])
+diff_I = np.mean(p_Vit_u[mIp] - p_AC_u[mIp])
+diff_P = np.mean(p_Vit_u[mPp] - p_AC_u[mPp])
 for name, diff in [("baseline", diff_B), ("injection", diff_I), ("paracentesis", diff_P)]:
-    print(f"  {name:14s}: |p_AC - p_vitreous| = {diff:.4f} mmHg  "
-          f"({'✓ coupled' if diff < 0.01 else '✗ decoupled'})")
+    print(f"  {name:14s}: p_vitreous - p_AC = {diff:+.4f} mmHg  "
+          f"({'✓ decoupled (porous OK)' if abs(diff) > 0.01 else '✗ no Darcy drop'})")
 
 # ── Plot: IOP curve (corrected RTM) ──────────────────────────────────────────
 IOP_mmHg = RTM * Q_tm / A_TM * RHO / MMHG

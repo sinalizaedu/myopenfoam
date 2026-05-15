@@ -17,9 +17,10 @@
   zero for the second interface's patches (iris/sclera/cornea showed D=0).
   Merging into one interface/mesh pair fixes this bug.
 
-  Fluid patches → Solid patches (nearest-neighbor conservative mapping):
-    fluid/system/preciceDict lists all interior walls; solid/system/preciceDict
-    lists matching solid surfaces with solidForce BC (see solid/0/D).
+  Mapping (RBF thin-plate-splines, conservative) is geometric: fluid and solid
+  patch names need not match 1:1 (e.g. one cornea_fsi vs cornea_inner + cornea_inner_left).
+  Lens + iris: mirrored names. Sclera: fluid sclera_right* / sclera_left* ↔ solid sclera_side*.
+  Consistency check: python3 brunaStuff/audit_eye_fsi_tc0.py
 -->
 
 <precice-configuration>

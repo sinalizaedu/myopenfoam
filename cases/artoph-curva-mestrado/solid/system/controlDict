@@ -1,0 +1,47 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// artoph-mestrado — análise quasi-estática pulsátil (ciclo cardíaco)
+//
+// Estratégia de carregamento:
+//   Cada passo de tempo = solução estática independente com a pressão P(t)
+//   lida da tabela lumen_pressure.dat (Function1 tableFile).
+//   O modelo é quasi-estático (ddtSchemes = steadyState): inércia negligenciável
+//   para tecido biológico sob pulsação cardíaca (~1 Hz).
+//
+//   deltaT   = 0.01 s  → 100 passos por ciclo cardíaco (resolução suficiente)
+//   endTime  = 1.0  s  → dois ciclos cardíacos completos (ciclo 1: t=0–0.5s,
+//                         ciclo 2: t=0.5–1.0s; waveform é periódica a cada 0.5s)
+//   writeInterval = 5  → salva a cada 0.05 s (20 snapshots por ciclo)
+//
+// Nota sobre fvSchemes:
+//   ddtSchemes = steadyState é mantido (correto para quasi-estático pulsátil).
+//   'backward' adicionaria termos de inércia desnecessários e incorretos
+//   para este regime de carregamento lento.
+
+application     solids4Foam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         1.0;
+
+deltaT          0.01;
+
+writeControl    timeStep;
+writeInterval   5;
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
