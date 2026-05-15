@@ -106,12 +106,18 @@ addLayersControls
 meshQualityControls
 {
     #include "meshQualityDict"
+    // Mais permissivo durante o snap pra preservar células marginais que
+    // de outra forma seriam removidas (criando os "buracos" visíveis).
     relaxed
     {
-        maxNonOrtho 75;
+        maxNonOrtho 80;
+        maxBoundarySkewness 25;
+        maxInternalSkewness 6;
+        minVol              1e-15;
+        minTetQuality      -1e-30;
     }
-    nSmoothScale        4;
-    errorReduction      0.75;
+    nSmoothScale        6;
+    errorReduction      0.5;
 }
 
 writeFlags ( );
