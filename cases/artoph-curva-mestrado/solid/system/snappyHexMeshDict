@@ -39,23 +39,24 @@ castellatedMeshControls
 
     features
     (
-        { file "artery.eMesh"; level 4; }
+        { file "artery.eMesh"; level 3; }
     );
 
     refinementSurfaces
     {
         artery_surface
         {
-            // Aumentado de (2 3) para (3 4): superfície curva mais densamente
-            // resolvida elimina o aspecto "esburacado" no ParaView causado
-            // por saltos abruptos de tamanho de célula. Cell size próxima à
-            // superfície ~30 µm (background 0.5 mm / 2^4).
-            level   (3 4);
+            // level (2 3): cell size próximo à superfície ~62 µm (background
+            // 0.5 mm / 2^3). Suficiente pra resolver a curvatura sem gerar
+            // cells degeneradas. Aumentar mais é contraproducente: as cells
+            // ficam tão finas que o snap não consegue evitar volume<0 nas
+            // curvas mais apertadas do "S".
+            level   (2 3);
             patchInfo { type wall; }
         }
     }
 
-    resolveFeatureAngle     30;
+    resolveFeatureAngle     45;
 
     refinementRegions { }
 
@@ -68,11 +69,15 @@ castellatedMeshControls
 
 snapControls
 {
-    nSmoothPatch        5;
-    tolerance           4.0;
-    nSolveIter          100;
-    nRelaxIter          8;
-    nFeatureSnapIter    15;
+    // Mais smoothing + mais iterações de relax pra eliminar gaps visuais
+    // entre cells de tamanhos diferentes (level 2 ↔ level 3) ao longo da
+    // superfície curva. O ParaView renderiza esses saltos de tamanho como
+    // "buracos" mesmo quando topologicamente a malha está fechada.
+    nSmoothPatch        10;
+    tolerance           2.0;
+    nSolveIter          200;
+    nRelaxIter          15;
+    nFeatureSnapIter    20;
     implicitFeatureSnap false;
     explicitFeatureSnap true;
     multiRegionFeatureSnap false;

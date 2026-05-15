@@ -10,35 +10,15 @@ FoamFile
     version     2.0;
     format      ascii;
     arch        "LSB;label=32;scalar=64";
-    class       polyBoundaryMesh;
+    class       uniformDimensionedScalarField;
     location    "constant/polyMesh";
-    object      boundary;
+    object      level0Edge;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-3
-(
-    artoph_end_back
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          2601;
-        startFace       475049;
-    }
-    artoph_end_front
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          2843;
-        startFace       477650;
-    }
-    lumen
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          85593;
-        startFace       480493;
-    }
-)
+dimensions      [0 1 0 0 0 0 0];
+value           0.0005;
+
+
 
 // ************************************************************************* //
