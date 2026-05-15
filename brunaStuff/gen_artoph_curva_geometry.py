@@ -35,6 +35,15 @@ SRC_STL = Path(
 CASE_DIR = REPO / "cases" / "artoph-curva-mestrado"
 TRISURF_DIR = CASE_DIR / "solid" / "constant" / "triSurface"
 
+# Translação aplicada em z para alinhar com a convenção do `on-mestrado`:
+#   STL original: z = -30 (posterior) → z = 0 (anterior)
+#   on-mestrado:  z = 0 (posterior) → z = +30 (anterior)
+# Aplicando +30 mm a TODOS os vértices em z, as duas geometrias passam a
+# compartilhar o mesmo sistema de coordenadas anatômico:
+#   posterior (canal óptico, entrada da órbita)   →  z = 0
+#   anterior  (globo ocular, lâmina cribrosa)     →  z = +30 mm
+Z_OFFSET_M = 30e-3
+
 
 def write_named_stl(mesh: trimesh.Trimesh, path: Path, solid_name: str) -> None:
     """Write ASCII STL with a chosen solid name (snappyHexMesh uses this as patch)."""
@@ -65,15 +74,18 @@ def main() -> None:
         f"[split] nerve V={nerve.volume:.2f}mm3  lumen V={lumen.volume:.2f}mm3"
     )
 
-    # mm → m
+    # mm → m, e translação em z para alinhar com a convenção do on-mestrado.
     nerve_m = nerve.copy()
     nerve_m.vertices = nerve_m.vertices * 1e-3
+    nerve_m.vertices[:, 2] += Z_OFFSET_M
+
     artery_m = lumen.copy()
     artery_m.vertices = artery_m.vertices * 1e-3
+    artery_m.vertices[:, 2] += Z_OFFSET_M
 
-    print(f"\n[bounds in meters]")
-    print(f"  nerve  : {nerve_m.bounds}")
-    print(f"  artery : {artery_m.bounds}")
+    print(f"\n[bounds in meters, AFTER z-shift +{Z_OFFSET_M*1e3:.0f} mm]")
+    print(f"  nerve  z: [{nerve_m.bounds[0,2]*1e3:7.2f}, {nerve_m.bounds[1,2]*1e3:7.2f}] mm")
+    print(f"  artery z: [{artery_m.bounds[0,2]*1e3:7.2f}, {artery_m.bounds[1,2]*1e3:7.2f}] mm")
 
     TRISURF_DIR.mkdir(parents=True, exist_ok=True)
     write_named_stl(artery_m, TRISURF_DIR / "artery.stl", "artery_surface")
