@@ -1,0 +1,115 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on -- displacement BCs                                       |
+|                                                                              |
+| BCs por patch:                                                               |
+|   outer_top    : fixedDisplacement (0 0 0)  -- orbital roof rigid            |
+|   outer_bottom : fixedDisplacement (0 0 0)  -- orbital floor rigid           |
+|   outer_left_* : solidSymmetry              -- slice infinita lateral        |
+|   outer_right_*: solidSymmetry              -- slice infinita lateral        |
+|   on_mestrado  : solidContact (MASTER)      -- topo Block A em y=9.95 mm     |
+|   oa_mestrado  : solidContact (SHADOW)      -- base Block B em y=10.00 mm    |
+|   lumen_bot    : solidForce  (preCICE)      -- FSI interface inferior        |
+|   lumen_top    : solidForce  (preCICE)      -- FSI interface superior        |
+|   frontAndBack : empty                                                       |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ---- Rigid orbital roof / floor ---------------------------------------
+    outer_top
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+    outer_bottom
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+
+    // ---- Symmetry nas laterais (slice infinita em x) ----------------------
+    outer_left_lower     { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_left_wall_inf  { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_left_wall_sup  { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_left_fat_above { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_right_lower    { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_right_wall_inf { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_right_wall_sup { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_right_fat_above{ type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+
+    // ---- Contato deslizante sem atrito OA <-> ONS -------------------------
+    //
+    // RE-ATIVADO com INITIAL_GAP = 50 um (blockMesh em y=9.95 mm topo Block A,
+    // y=10.00 mm base Block B). Isto elimina o estado singular tangente em
+    // t=0 que causava blow-up quando combinado com `solidForce` (FSI).
+    //
+    // Em t=0: gap = 50 um em toda a interface; nenhum par em contato; a
+    // forca de penalty inicia em 0. Durante a rampa Hann (0-100ms) a parede
+    // OA desce sob a pressao do lumen; quando a indentacao Hertziana
+    // (~delta_indent estimado em 552 um no pico) supera o gap, o contato
+    // engaja gradualmente -- evita o impulso unitario em t=0+ que diverge.
+    //
+    // Convencao master/shadow alinhada ao contactPatchTest:
+    //   on_mestrado (topo Block A, y=9.95) = MASTER
+    //   oa_mestrado (base Block B, y=10.0) = SHADOW
+    on_mestrado
+    {
+        type                  solidContact;
+        master                yes;
+        rigidMaster           no;
+        shadowPatch           oa_mestrado;
+        useNewPointDistanceMethod        no;
+        usePrevCandidateMasterNeighbors  no;
+        writePointDistanceFields         false;
+        normalContactModel    standardPenalty;
+        standardPenaltyNormalModelDict
+        {
+            penaltyScale      1;
+            relaxationFactor  0.05;
+        }
+        frictionContactModel  frictionless;
+        value                 uniform ( 0 0 0 );
+    }
+
+    oa_mestrado
+    {
+        type          solidContact;
+        master        no;
+        shadowPatch   on_mestrado;
+        value         uniform ( 0 0 0 );
+    }
+
+    // ---- FSI interfaces -- forca pulsatil do sangue -----------------------
+    // preCICE adapter escreve o campo 'solidForce' (N/m^3) nestes patches.
+    // BC solidForce converte para traction equivalente no equilibrio.
+    lumen_bot
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform ( 0 0 0 );
+    }
+    lumen_top
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform ( 0 0 0 );
+    }
+
+    frontAndBack
+    {
+        type        empty;
+    }
+}
+
+// ************************************************************************* //

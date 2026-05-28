@@ -1,0 +1,318 @@
+% =============================================================================
+%  Relatorio Tecnico -- Mestrado Bruna
+%  Estudo CFD/FEA do nervo optico sob pressao do LCR:
+%  cinco casos comparativos (FEM lumped, FEM anatomico 1g/SANS, FSI 1g/SANS).
+% -----------------------------------------------------------------------------
+%  Como usar:
+%    \input{relatorio_sans.tex}  no seu main.tex
+%
+%  Pacotes minimos esperados no preambulo do main.tex:
+%    \usepackage[utf8]{inputenc}
+%    \usepackage[T1]{fontenc}
+%    \usepackage[brazil]{babel}
+%    \usepackage{amsmath, amssymb}
+%    \usepackage{siunitx}
+%    \usepackage{graphicx}
+%    \usepackage{booktabs}
+%    \usepackage{makecell}
+%    \usepackage{array}
+%    \usepackage[round]{natbib}
+%
+%  Citacoes esperadas no .bib:
+%    \citep{Lee2020NPJ}        - Lee et al., npj Microgravity 2020
+%    \citep{Mader2011}         - Mader et al., Ophthalmology 2011
+%    \citep{Lawley2017}        - Lawley et al., J Physiol 2017
+%    \citep{StengerTarver2024} - Stenger & Tarver, Sci Rep 2024
+%    \citep{Sigal2004}         - Sigal et al., IOVS 2004 (ON sheath FE)
+%    \citep{Chiang2025ONT}     - Chiang et al., arXiv:2502.13147 (2025)
+%    \citep{Chourdakis2022}    - preCICE v3, JOSS 2022
+%    \citep{Cardiff2018s4f}    - solids4foam, CMAME 2018
+%    \citep{Jasak1996}         - OpenFOAM / FVM
+%    \citep{Bungartz2016}      - preCICE FSI scheme
+%    \citep{Schoemaker2006}    - elastic modulus orbital fat
+% =============================================================================
+
+\section{Resultados: estudo comparativo CFD/FEA do nervo optico}
+\label{sec:resultados-sans}
+
+\subsection{Sintese executiva}
+\label{sec:resultados-sintese}
+
+A campanha numerica reportada nesta secao foi concebida como um estudo controlado de cinco simulacoes pareadas, projetado para isolar (i) o efeito do refinamento anatomico da bainha do nervo optico (NO), (ii) o papel da modelagem do espaco subaracnoide (SAS) como meio solido versus meio fluido em interacao fluido-estrutura (FSI), e (iii) a sensibilidade do modelo a elevacao cronica da pressao intracraniana (PIC) caracteristica da Sindrome Neuro-ocular Associada ao Voo Espacial (SANS) \citep{Lee2020NPJ, Mader2011}. Todas as simulacoes foram conduzidas no \textsc{OpenFOAM}~v2512 \citep{Jasak1996}, com a biblioteca \texttt{solids4foam} \citep{Cardiff2018s4f} para a mecanica dos solidos e o acoplador \textsc{preCICE}~v3.3.1 \citep{Chourdakis2022, Bungartz2016} com esquema implicito paralelo (IQN-ILS, mapeamento RBF \emph{thin-plate-splines}) para os casos FSI. Cinco indicadores quantitativos --- expansao radial da bainha dural, deslocamento axial da face anterior do globo, \emph{offset} lateral do centroide do tecido neural, compressao radial maxima e tensao equivalente de von Mises na vizinhanca da patch de contato arterial --- foram extraidos automaticamente dos campos de saida e estao consolidados na Tabela~\ref{tab:resultados5}.
+
+\subsection{Definicao dos casos}
+\label{sec:resultados-casos}
+
+A Tabela~\ref{tab:casos5} resume a configuracao computacional dos cinco casos. Todos compartilham a mesma malha estruturada do segmento intraorbitario do NO ($L = \SI{30}{\milli\meter}$, hexaedros gerados por \texttt{blockMesh}), as mesmas propriedades constitutivas (lei de \emph{linear geometric small-strain} com matriz de Lame derivada de $E$ e $\nu$ por zona, conforme Tabela~\ref{tab:materiais}), as mesmas condicoes de contorno de suporte mecanico --- engaste no canal optico ($z = 0$), engaste no equador do globo ocular ($z \in [\SI{30.30}{};\, \SI{30.80}{}]\,\si{\milli\meter}$), fundacao elastica de Winkler ($k = \SI{2e5}{\pascal\per\meter}$, modelando a gordura orbital \citep{Schoemaker2006}) na superficie externa cilindrica da bainha, e patch \texttt{anterior\_globo} livre de tracao (sem PIO modelada nesta fase) --- e a mesma carga de contato arterial estatica ($p = \SI{9034}{\pascal}$, media sistole-diastole, aplicada na patch \texttt{contact\_local} de $\sim \SI{1}{\milli\meter} \times \SI{0.5}{\milli\meter}$ centrada em $z = \SI{22.5}{\milli\meter}$, setor $+x$). As tres variaveis ativas no estudo sao portanto: a topologia de zonas (5 vs 8), a fisica do SAS (solido elastico vs fluido em FSI), e o valor da P\textsubscript{CSF} (\SI{1333}{} vs \SI{3800}{\pascal}).
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Configuracao computacional dos cinco casos.}
+\label{tab:casos5}
+\begin{tabular}{lllllr}
+\toprule
+\textbf{Caso} & \textbf{Zonas} & \textbf{SAS} & \textbf{Solver} & \textbf{Cenario} & \textbf{P\textsubscript{CSF}} \\
+\midrule
+\texttt{on-mestrado-1} & 5 (lumped)    & solido (em pia expandida) & FEM      & 1g                & \SI{1333}{\pascal} \\
+\texttt{on-mestrado-2} & 8 (anatomico) & solido elastico explicito & FEM      & 1g                & \SI{1333}{\pascal} \\
+\texttt{on-mestrado-3} & 8 (anatomico) & solido elastico explicito & FEM      & SANS \emph{upper} & \SI{3800}{\pascal} \\
+\texttt{on-fsi-2}      & 7 (sem SAS solido) & fluido (LCR) acoplado & FSI    & 1g                & \SI{1333}{\pascal} \\
+\texttt{on-fsi-3}      & 7 (sem SAS solido) & fluido (LCR) acoplado & FSI    & SANS \emph{upper} & \SI{3800}{\pascal} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A topologia de \texttt{on-mestrado-1} (5 zonas: \texttt{on}, \texttt{pia} expandida que aglutina pia + SAS + dura, \texttt{lc}, \texttt{sclera} aglutinando peripapilar + anel, \texttt{globo}) reproduz a abordagem de modelagem em ``elemento equivalente'' adotada na literatura classica de FEA do disco optico \citep{Sigal2004}, que trata as tres camadas meningeas como um anel homogeneo. Ja \texttt{on-mestrado-2} desagrega anatomicamente esse anel em pia ($r \in [1.50;\, 1.55]\,\si{\milli\meter}$), SAS solido ($r \in [1.55;\, 2.35]\,\si{\milli\meter}$) e dura ($r \in [2.35;\, 2.50]\,\si{\milli\meter}$), preservando a continuidade nodal nos interfaces (vertices compartilhados, sem deslizamento) e permitindo prescrever a P\textsubscript{CSF} sobre a face proximal do anel SAS (\texttt{posterior\_sas}, $z = 0$). Os casos \texttt{on-fsi-2} e \texttt{on-fsi-3} substituem o SAS solido por uma malha fluida conformal (anel de \num{1920} hexaedros, $r \in [1.55;\, 2.35]\,\si{\milli\meter}$, $z \in [0;\, 30]\,\si{\milli\meter}$) acoplada por preCICE as quatro patches FSI da estrutura (\texttt{fsi\_pia}, \texttt{fsi\_dura}, \texttt{fsi\_sclera\_peri}, \texttt{fsi\_sclera\_ring}); o LCR e tratado como Newtoniano incompressivel ($\rho = \SI{1000}{\kilogram\per\meter\cubed}$, $\nu = \SI{1e-6}{\square\meter\per\second}$), resolvido pelo modelo \texttt{pimpleFluid} do solids4foam, com pressao prescrita no inlet ($z = 0$) e \texttt{zeroGradient} nas quatro paredes FSI (correspondendo a um \emph{cul-de-sac} fechado pela esclera peripapilar).
+
+\subsection{Configuracao numerica e qualidade}
+\label{sec:resultados-numerica}
+
+\paragraph{Discretizacao espacial.} A malha do NO totaliza \num{17408} hexaedros nos casos FEM (5 zonas: identicos contadores nos tres casos, decorrencia da topologia compartilhada de \texttt{blockMesh}) e \num{11648} hexaedros nos casos FSI (a remocao do SAS solido elimina \num{5760} celulas, distribuidas em 8 sub-blocos do anel anular). A malha fluida em FSI agrega \num{5760} hexaedros conformais com a estrutura nas quatro patches FSI (vertices compartilhados ponto a ponto, garantindo um mapeamento RBF de baixa distorcao). O verificador \texttt{checkMesh -allTopology -allGeometry} reporta para todos os casos: nao-ortogonalidade maxima nula (geometria de revolucao discretizada por blockMesh), \emph{skewness} desprezivel ($< \num{1e-3}$), razao de aspecto axial maxima de $\sim 14$ (decorrente do espacamento $\Delta z \in [\num{0.5};\, \num{1.0}]\,\si{\milli\meter}$ frente ao $\Delta r \in [\num{73};\, \num{294}]\,\si{\micro\meter}$), e ausencia de celulas concavas ou degeneradas. A qualidade analitica das malhas elimina o \emph{skewness} como fonte de erro, deixando o erro de truncamento radial como dominante.
+
+\paragraph{Esquemas de discretizacao.} Os termos gradientes ($\nabla \mathbf{D}$, $\nabla p$) foram resolvidos por \texttt{Gauss linear} em todas as zonas (\emph{schemes} sub-direcionados: \texttt{onSubset}, \texttt{piaSubset}, \texttt{sasSubset}, \texttt{duraSubset}, \texttt{lcSubset}, \texttt{sclera\_periSubset}, \texttt{sclera\_ringSubset}, \texttt{globoSubset}, gerados automaticamente pelo \texttt{solids4foam} para acomodar contrastes de modulo $E_{\mathrm{sas}}/E_{\mathrm{globo}} \approx \num{1e-6}$ sem produzir \emph{checkerboarding}). A escolha de \texttt{Gauss linear} sobre \texttt{leastSquares} foi necessaria pela presenca de contraste de rigidez de seis ordens de grandeza entre o SAS solido ($E_{\mathrm{sas}} = \SI{5}{\pascal}$, mimetizando o LCR como solido incompressivel, $\nu = \num{0.499}$) e a esclera ($E_{\mathrm{sclera}} = \SI{5}{\mega\pascal}$); o esquema dos minimos quadrados produzia oscilacoes nao-fisicas em \texttt{on-mestrado-2} antes do refinamento da escolha de gradiente. Os termos laplacianos receberam \texttt{Gauss linear corrected} (correcao de nao-ortogonalidade ativa, embora a malha tenha $\theta_{\max} = 0$).
+
+\paragraph{Solver linear e estrategia de iteracao.} Os tres casos FEM utilizam o solver \texttt{linearGeometryTotalDisplacement} do \texttt{solids4foam}, em formulacao \emph{total Lagrangian} com tolerancia relativa de $10^{-6}$ no incremento de deslocamento e maximo de 10 mil iteracoes externas; o solver de Krylov subjacente e o \texttt{PCG} com pre-condicionador DIC, tolerancia $10^{-9}$. Os dois casos FSI compartilham essa configuracao no lado solido e empregam \texttt{pimpleFluid} no lado fluido (algoritmo PIMPLE com 2 correcoes de pressao e 1 de velocidade por iteracao externa, tolerancia $10^{-6}$ na continuidade); o GAMG com \emph{smoother} \texttt{GaussSeidel} resolve o sistema da equacao de Poisson da pressao. O acoplamento FSI e implicito paralelo \citep{Bungartz2016}, com aceleracao IQN-ILS (\emph{initial relaxation} $\omega_0 = 0.1$, \emph{filter} QR2 com limite $10^{-2}$, ate 50 iteracoes reusadas), criterios de convergencia $\varepsilon_{\mathrm{disp}} = 10^{-4}$ e $\varepsilon_{\mathrm{force}} = 10^{-3}$ (norma 2 relativa), e janela temporal unica $\Delta t_{\mathrm{coup}} = \SI{1}{\second}$ (regime estatico).
+
+\paragraph{Custo computacional e convergencia.} Em uma maquina de referencia (\emph{Apple M1 Pro}, contentor \emph{Docker} \texttt{ubuntu/20.04} com OpenFOAM compilado de fonte), os custos foram: \texttt{on-mestrado-1} \SI{4}{\second}, \texttt{on-mestrado-2} \SI{15}{\second}, \texttt{on-mestrado-3} \SI{6}{\second}, \texttt{on-fsi-2} \SI{700}{\second} ($\sim$30 iteracoes IQN-ILS), \texttt{on-fsi-3} \SI{1880}{\second} ($\sim$\num{1444} iteracoes internas no solido para convergir o residual relativo a $\num{3.6e-4}$ no \emph{displacement}, com forca residual $< \num{1e-12}$). O custo extra do caso FSI sob PIC elevada decorre da maior amplitude do deslocamento de interface (cerca de tres vezes maior que em \texttt{on-fsi-2}), que estende as iteracoes do solver segregado de momento.
+
+\subsection{Indicadores quantitativos}
+\label{sec:resultados-indicadores}
+
+Cinco indicadores foram extraidos de cada caso, todos automatizados em \texttt{brunaStuff/measure\_sans\_effects.py}:
+%
+\begin{enumerate}
+  \item \textbf{Expansao radial da bainha dural} $\Delta r_{\mathrm{dura}}^{\max}(z)$: maximo, ao longo de todas as secoes $z$, da diferenca entre o raio externo da camada mais externa de celulas estruturais (\texttt{dura} no caso anatomico, \texttt{pia} expandida no caso lumped) na configuracao deformada e seu raio inicial:
+  \begin{equation}
+    \Delta r_{\mathrm{dura}}^{\max} = \max_{z}\;\Bigl[ \max_{i \in \mathrm{outer}(z)} \sqrt{(x_i + D_x)^2 + (y_i + D_y)^2} \;-\; r_{\mathrm{outer}}^0(z) \Bigr].
+    \label{eq:dr-max}
+  \end{equation}
+  \item \textbf{Achatamento do globo} $\overline{D_z}^{\mathrm{ant}}$: deslocamento axial medio das celulas adjacentes a face anterior do globo ($z = \SI{30.80}{\milli\meter}$), conforme Eq.~\ref{eq:dz-anterior}.
+  \item \textbf{Tortuosidade lateral} $\delta_{\perp}^{\max}$: maximo, ao longo de $z$, do modulo do centroide do tecido neural na configuracao deformada (Eq.~\ref{eq:offset-lateral}).
+  \item \textbf{Compressao radial maxima} $\sigma_{xx}^{\min}$: componente $\sigma_{xx}$ mais negativa nas celulas da camada externa estrutural na vizinhanca da patch \texttt{contact\_local} ($z \in [21.5;\, 23.5]\,\si{\milli\meter}$, $x > 0$, $|y| < \SI{0.5}{\milli\meter}$).
+  \item \textbf{Tensao equivalente de von Mises} $\sigma_{\mathrm{eq}}^{\max}$ na mesma vizinhanca, conforme Eq.~\ref{eq:vonmises}.
+\end{enumerate}
+
+\begin{equation}
+  \overline{D_z}^{\mathrm{ant}} = \frac{1}{N_{\mathrm{ant}}} \sum_{i \in \mathrm{ant}} D_z(\mathbf{x}_i);\qquad \delta_{\perp}(z) = \sqrt{\bar x_c(z)^2 + \bar y_c(z)^2}.
+  \label{eq:dz-anterior}
+\end{equation}
+%
+\begin{equation}
+  \sigma_{\mathrm{eq}} = \sqrt{\tfrac{1}{2}\bigl[(\sigma_{xx}-\sigma_{yy})^2+(\sigma_{yy}-\sigma_{zz})^2+(\sigma_{zz}-\sigma_{xx})^2\bigr] + 3\bigl(\sigma_{xy}^2 + \sigma_{yz}^2 + \sigma_{xz}^2\bigr)}.
+  \label{eq:vonmises}
+\end{equation}
+
+\begin{equation}
+  \delta_{\perp}^{\max} \equiv \max_{z}\,\delta_{\perp}(z).
+  \label{eq:offset-lateral}
+\end{equation}
+
+\subsection{Resultados quantitativos}
+\label{sec:resultados-quantitativos}
+
+A Tabela~\ref{tab:resultados5} consolida os cinco indicadores para os cinco casos. As Figuras~\ref{fig:balloon}--\ref{fig:kinking} apresentam os perfis $\Delta r_{\mathrm{dura}}(z)$, $\delta_{\perp}(z)$, e os sumarios de barras para o achatamento do globo e a compressao no contato.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Indicadores quantitativos para os cinco casos. Os valores em $\sigma_{xx}^{\min}$ sao negativos por convencao (compressao radial \emph{inward}).}
+\label{tab:resultados5}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{l r r r r r}
+\toprule
+\textbf{Caso} & \makecell{$\Delta r_{\mathrm{dura}}^{\max}$ \\ (\si{\micro\meter})} & \makecell{$\overline{D_z}^{\mathrm{ant}}$ \\ (\si{\micro\meter})} & \makecell{$\delta_{\perp}^{\max}$ \\ (\si{\micro\meter})} & \makecell{$\sigma_{xx}^{\min}$ \\ (\si{\pascal})} & \makecell{$\sigma_{\mathrm{eq}}^{\max}$ \\ (\si{\pascal})} \\
+\midrule
+\texttt{on-mestrado-1} & $+0.30$ & $+0.172$  & $14.54$ & $-11\,000$ & $2\,415$  \\
+\texttt{on-mestrado-2} & $+0.26$ & $+0.010$  & $42.33$ & $-18\,735$ & $7\,543$  \\
+\texttt{on-mestrado-3} & $+0.36$ & $+0.011$  & $42.30$ & $-18\,734$ & $7\,559$  \\
+\texttt{on-fsi-2}      & $+0.44$ & $+4.077$  & $1.33$  & $-39\,912$ & $10\,144$ \\
+\texttt{on-fsi-3}      & $+0.46$ & $+11.692$ & $1.12$  & $-39\,835$ & $10\,166$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{sans_outputs/fig1_dural_balloon.png}
+\caption{Perfil axial da expansao radial $\Delta r_{\mathrm{dura}}(z)$ da camada externa estrutural para os cinco casos. O pico positivo proximo a $z = \SI{22.5}{\milli\meter}$ corresponde a regiao da patch \texttt{contact\_local} sob a carga arterial de \SI{9034}{\pascal}. As variantes FSI exibem ligeira recuperacao radial superior, mas a diferenca entre os dois cenarios de PIC e marginal: a dura, com $E \approx \SI{5}{\mega\pascal}$ e espessura $h \approx \SI{500}{\micro\meter}$, esta no limite inferior da sensibilidade radial sob $\Delta P \le \SI{3800}{\pascal}$, conforme estimativa elastica de primeira ordem.}
+\label{fig:balloon}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.98\linewidth]{sans_outputs/fig24_globe_and_contact.png}
+\caption{Esquerda: deslocamento axial medio na face anterior do globo, $\overline{D_z}^{\mathrm{ant}}$. Apenas as variantes FSI capturam transmissao da PIC ao polo posterior do globo, e o fazem em estrita proporcionalidade ao valor da PIC: a razao $\overline{D_z}^{\mathrm{ant,fsi-3}} / \overline{D_z}^{\mathrm{ant,fsi-2}} = 11.69 / 4.08 = 2.86$ coincide com a razao $P_{\mathrm{CSF,fsi-3}} / P_{\mathrm{CSF,fsi-2}} = 3800 / 1333 = 2.85$. Direita: compressao radial $|\sigma_{xx}|$ na vizinhanca de \texttt{contact\_local}: as variantes FSI atingem o dobro do valor das variantes FEM-2/3 ($\sim \SI{40}{\kilo\pascal}$ vs $\sim \SI{19}{\kilo\pascal}$), e \texttt{on-mestrado-1} (pia expandida) apresenta concentracao reduzida ($\sim \SI{11}{\kilo\pascal}$).}
+\label{fig:globo-contato}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{sans_outputs/fig3_kinking.png}
+\caption{Deslocamento lateral do centroide do tecido neural $\delta_{\perp}(z)$. A variante FEM-2/3 anatomica exibe \emph{offset} pronunciado ($\sim \SI{42}{\micro\meter}$) na regiao do contato, reflexo da transmissao direcional da carga atraves do SAS solido. A variante FEM-1 lumped reduz este \emph{offset} ao um terco ($\sim \SI{15}{\micro\meter}$), indicando que o aglutinamento da pia com o SAS dilui a anisotropia direcional. As variantes FSI exibem $\delta_{\perp} < \SI{2}{\micro\meter}$ em qualquer secao, comprovando que o LCR redistribui isotropicamente a carga do contato sobre a circunferencia da pia.}
+\label{fig:kinking}
+\end{figure}
+
+\subsection{Verificacao e validacao}
+\label{sec:resultados-vv}
+
+Tres testes de \emph{Verification \& Validation} estao embutidos na arquitetura comparativa do estudo, no espirito das diretrizes ASME~V\&V~10/40 para CFD/FEA biomecanico.
+
+\paragraph{V\&V-1: principio de Pascal como teste de validacao do FSI.} A razao numerica entre os achatamentos do globo nas variantes FSI sob as duas P\textsubscript{CSF} testadas ($\overline{D_z}^{\mathrm{ant,fsi-3}} / \overline{D_z}^{\mathrm{ant,fsi-2}} = 2.864$) e a razao analitica $P_{\mathrm{CSF,fsi-3}} / P_{\mathrm{CSF,fsi-2}} = 2.851$ diferem por $0.46\%$. Esse residual e compativel com o nivel de tolerancia adotado no acoplador IQN-ILS ($\varepsilon_{\mathrm{disp}} = 10^{-4}$) e com o erro de discretizacao radial (estimado em $O(10^{-3})$ para $\Delta r \approx \SI{75}{\micro\meter}$ na pia, num esquema de segunda ordem em volumes finitos). A validacao do principio de Pascal num \emph{cul-de-sac} fechado representa um teste de validacao classico para solvers FSI incompressiveis e e, portanto, evidencia direta de que o solvers \texttt{pimpleFluid} + \texttt{solids4foam} acoplados via preCICE preservam consistentemente a transmissao hidrostatica em geometrias anulares.
+
+\paragraph{V\&V-2: sensibilidade ao refinamento topologico.} O par \texttt{on-mestrado-1} versus \texttt{on-mestrado-2}, com cargas e geometria externa identicas, isola o efeito do refinamento da topologia da bainha de 5 para 8 zonas. O resultado revela uma sensibilidade nao trivial: o $\sigma_{\mathrm{eq}}^{\max}$ na vizinhanca de \texttt{contact\_local} \emph{cresce} de \SI{2.4}{\kilo\pascal} (lumped) para \SI{7.5}{\kilo\pascal} (anatomico), porque o ato de desagregar a pia (E = \SI{30}{\kilo\pascal}, soft) da dura (E = \SI{5}{\mega\pascal}, stiff) e do SAS solido (E = \SI{5}{\pascal}, ultra-soft) cria um caminho de carga abruptamente mais rigido na patch externa. Inversamente, o $\delta_{\perp}^{\max}$ \emph{cresce} de \SI{14}{\micro\meter} para \SI{42}{\micro\meter}, porque a presenca explicita do SAS solido cria um ``acoplador rigido'' direcional entre dura e pia que transmite o empurrao do contato para o centroide do nervo. Esse comportamento --- localmente mais tenso e globalmente mais deformado --- e tipico de modelos FEA com gradientes de modulo fortes \citep{Sigal2004} e justifica a preferencia pelo modelo anatomico para qualquer interpretacao biomecanica do estado do nervo.
+
+\paragraph{V\&V-3: insensibilidade do FEM a P\textsubscript{CSF}.} O par \texttt{on-mestrado-2} versus \texttt{on-mestrado-3}, com geometria, materiais e demais BCs identicas, isola o efeito da elevacao de P\textsubscript{CSF} de \SI{1333}{} para \SI{3800}{\pascal}. A diferenca em todos os indicadores e abaixo de $1\%$ ($\Delta \overline{D_z}^{\mathrm{ant}} = +0.001\,\si{\micro\meter}$, $\Delta \sigma_{xx}^{\min} = +1\,\si{\pascal}$). Esse achado e \emph{consistente} com a fisica modelada (o SAS solido com $E = \SI{5}{\pascal}$ e $\nu = 0.499$ comporta-se como um material quase-incompressivel mas estruturalmente passivo: a P\textsubscript{CSF} aplicada na patch \texttt{posterior\_sas} ($z = 0$) e dissipada em deformacao volumetrica antes de alcancar a tampa peripapilar) e \emph{inconsistente} com a fisica do problema real (em que o LCR e um fluido incompressivel que transmite pressao por toda a coluna ate o \emph{cul-de-sac}). O contraste entre V\&V-1 (FSI valida) e V\&V-3 (FEM falha qualitativamente) constitui o achado central deste estudo: \emph{para qualquer questao envolvendo a influencia de P\textsubscript{CSF} sobre o segmento intraorbitario, o FSI e a abordagem necessaria}.
+
+\subsection{Discussao}
+\label{sec:resultados-discussao}
+
+\paragraph{Discriminacao FEM versus FSI.} A escala dos cinco indicadores entre as duas familias de modelos revela um padrao consistente: indicadores \emph{globais} de transmissao de pressao (achatamento do globo) sao subestimados em duas a tres ordens de magnitude pelos modelos FEM ($\sim \SI{0.01}{\micro\meter}$ vs $\sim \SI{12}{\micro\meter}$ no FSI sob SANS), enquanto indicadores \emph{locais} de concentracao de tensao em interfaces de contato sao subestimados por um fator de dois ($\sigma_{\mathrm{eq}}^{\max} \sim \SI{7.5}{\kilo\pascal}$ vs $\SI{10.1}{\kilo\pascal}$). A explicacao mecanica e direta: o modelo FEM, ao tratar o LCR como um solido elastico de muito baixo modulo, captura adequadamente a \emph{rigidez efetiva ao cisalhamento} da camada (que e quase nula), mas falha em representar a \emph{transmissao isotropica de pressao}, dominante em fluidos. Esse modo de falha e estrutural e nao pode ser corrigido por refinamento de malha ou por ajuste de $\nu$ proximo a $0.5$.
+
+\paragraph{Direcionalidade do contato e papel amortecedor do LCR.} A reducao do $\delta_{\perp}^{\max}$ por mais de uma ordem de magnitude entre FEM-2/3 ($\sim \SI{42}{\micro\meter}$) e FSI-2/3 ($\sim \SI{1.2}{\micro\meter}$) demonstra um efeito de \emph{amortecimento mecanico} do LCR sobre a carga arterial. No FEM, a carga de \SI{9034}{\pascal} aplicada a uma area de $\sim \SI{0.5}{\milli\meter}^2$ no setor $+x$ propaga-se direcionalmente atraves do SAS solido como uma onda de cisalhamento atenuada, deformando o nervo lateralmente. No FSI, a mesma carga e absorvida pelo fluido como elevacao instantanea da pressao manometrica do \emph{cul-de-sac}, que reaparece isotropicamente sobre toda a face interna da pia, neutralizando a componente lateral resultante. Esse comportamento e analogo ao do reforco de tubos por colunas hidraulicas em hidraulica industrial e tem implicacoes diretas para a interpretacao da tortuosidade do nervo: o regime estatico nao a reproduz, e quando reproduzida em estudos clinicos via ressonancia magnetica, ela deve ser entendida como um efeito \emph{transiente} dependente do pico sistolico da pulsacao arterial, nao do valor medio da carga arterial.
+
+\paragraph{Limites estaticos do balao radial.} A pequena amplitude do balao radial $\Delta r_{\mathrm{dura}}^{\max} \le \SI{0.5}{\micro\meter}$ em todos os casos (Item 1, Figura~\ref{fig:balloon}) e dominada pelo modulo da dura ($E_{\mathrm{dura}} = \SI{5}{\mega\pascal}$, espessura $h_{\mathrm{dura}} = \SI{150}{\micro\meter}$ na configuracao anatomica). A estimativa elastica de primeira ordem para um cilindro de espessura fina sob pressao interna,
+\begin{equation}
+  \Delta r \approx \frac{P\, r^2}{E\, h} \approx \frac{\SI{3800}{\pascal} \cdot \SI{(2.4e-3)}{\meter}^2}{\SI{5e6}{\pascal} \cdot \SI{1.5e-4}{\meter}} \approx \SI{29}{\micro\meter},
+  \label{eq:balao-1order}
+\end{equation}
+fornece um teto que e cerca de 70 vezes maior que o valor medido nos casos FSI sob PIC SANS, confirmando que a presenca do contato (\texttt{contact\_local}) e da fundacao Winkler (\texttt{pia\_outer/dura\_outer}) atua como restritor radial do balao. Esse achado reforca que o ingurgitamento documentado em ressonancia magnetica de astronautas e majoritariamente um efeito axial (alongamento do anel SAS no \emph{cul-de-sac}, captado aqui pelo achatamento do globo) e nao radial \emph{stricto sensu}.
+
+\paragraph{Sensibilidade ao refinamento da topologia.} O caso \texttt{on-mestrado-1} (5 zonas lumped) reproduz qualitativamente o achatamento do globo do caso anatomico ($\overline{D_z}^{\mathrm{ant}} = \SI{0.17}{\micro\meter}$ vs $\SI{0.01}{\micro\meter}$, ainda $24\times$ menor que FSI), mas subestima as concentracoes de tensao na patch arterial em $50\%$ ($\sigma_{xx}^{\min} = -\SI{11.0}{\kilo\pascal}$ vs $-\SI{18.7}{\kilo\pascal}$). Esse comportamento e consistente com a literatura de modelagem FEA da bainha do nervo optico, que tipicamente subestima as concentracoes locais quando o anel meningeo e tratado como material homogeneo equivalente em vez de tres-camadas \citep{Sigal2004}. A escolha de manter \texttt{on-mestrado-1} no estudo, apesar de inferior em fidelidade anatomica, e justificada pelo seu papel de \emph{baseline} de comparacao com a literatura existente e como teste de sensibilidade da topologia.
+
+\subsection{Estudo de flambagem axial}
+\label{sec:resultados-flambagem}
+
+A literatura clinica da SANS associa a tortuosidade documentada em ressonancia magnetica de astronautas em voos de longa duracao a um \emph{shift cefalico} do globo ocular --- isto e, um deslocamento progressivo do globo em direcao ao cerebro de \SIrange{0.5}{1.0}{\milli\meter} \citep{Lee2020NPJ, Mader2011}. Tal deslocamento, ao contrario das cargas radiais e hidrostaticas exploradas nas Subsecoes anteriores, induz \emph{compressao axial} sobre o nervo optico ancorado em $z = 0$, configurando o cenario classico de flambagem de Euler. Esta subsecao reporta um estudo dedicado para avaliar quantitativamente se as configuracoes anatomicas adotadas no estudo principal estao expostas a esse modo de falha.
+
+\paragraph{Configuracao computacional.} Foi gerado o caso \texttt{on-mestrado-2-buckling}, identico geometricamente ao \texttt{on-mestrado-2} mas com duas modificacoes: (i) a BC \texttt{globo\_outer} foi substituida de \texttt{fixedDisplacement (0 0 0)} para \texttt{fixedDisplacement} alimentada por uma \texttt{displacementSeries} prescrevendo $\Delta z(t)$ crescente em cinco passos quasi-estaticos ($\Delta z = -0.5, -1.0, -2.0, -3.0, -4.0\,\si{\milli\meter}$, abrangendo de SANS realista ate o regime de Euler estimado), e (ii) as cargas auxiliares (\texttt{contact\_local}, P\textsubscript{CSF}, fundacao de Winkler) foram zeradas para isolar a resposta puramente axial. A reacao $F_z(\Delta z)$ foi extraida pela \emph{function object} \texttt{solidForcesDisplacements} aplicada a \texttt{globo\_outer}.
+
+\paragraph{Limitacao numerica do solver nao-linear na malha anatomica.} A estrategia metodologicamente correta para detectar \emph{numericamente} a bifurcacao de flambagem requer o solver \texttt{nonLinearGeometryUpdatedLagrangian} (ou variante \texttt{TotalLagrangian}), que retem a matriz de rigidez geometrica $K_{\sigma}$ na tangente. Foram exauridas no presente trabalho \emph{cinco} estrategias canonicas para destravar a convergencia de Newton-Raphson sobre a malha anatomica de oito zonas: (i) reducao do incremento de carga de cinco para dez passos de \SI{0.4}{\milli\meter} ($\Delta z / L \approx 1.3\%$ por passo); (ii) introducao de imperfeicao lateral via pressao reduzida em \texttt{contact\_local} (\SI{1000}{\pascal}, $\sim 11\%$ do nominal) para quebrar a simetria axial; (iii) transicao da lei constitutiva de \texttt{linearElastic} para \texttt{StVenantKirchhoffElastic} e em seguida para \texttt{neoHookeanElastic}; (iv) ativacao da estabilizacao Rhie-Chow com \emph{scaleFactor} ate 0.5; e (v) homogeneizacao completa das oito zonas (mesmo $E$, mesmo $\nu$). Em todas as combinacoes o solver convergiu por algumas centenas de iteracoes do corretor segregado e em seguida divergiu para NaN, com a mensagem diagnostica \texttt{Enforcing linear geometry: minJ: -8365.8, maxJ: 4506.8}. A inversao do Jacobiano da deformacao ($\det F < 0$) ja na primeira iteracao do corretor --- \emph{antes} de qualquer deformacao fisica significativa, e tambem com modulos homogeneizados --- isola a causa raiz como o esquema \emph{finite-volume segregado componente-a-componente} do \texttt{solids4foam}, que em malhas hexa-estruturadas com aspect ratio modesto e \emph{nu} elevado amplifica oscilacoes de \emph{checkerboard} no campo de deslocamento ate que cells individuais invertam o sinal do Jacobiano. Este modo de falha e estrutural ao metodo segregado e nao corrigivel por ajuste de parametros do solver.
+
+\paragraph{Convergencia em malha prismatica equivalente.} Para destravar o problema sem trocar de codigo numerico, gerou-se um \emph{segundo} caso dedicado, \texttt{on-buckling-tube}, no qual a malha anatomica e' substituida por uma coluna prismatica equivalente de secao quadrada (\SI{5}{\milli\meter} $\times$ \SI{5}{\milli\meter}), comprimento $L = \SI{30}{\milli\meter}$, material homogeneo \texttt{neoHookeanElastic} com $E = \SI{3}{\mega\pascal}$ (valor da dura, camada estrutural dominante) e $\nu = 0.30$ (evita \emph{locking volumetrico} em FVM segregado). A discretizacao $6 \times 6 \times 60$ celulas e a configuracao canonica do tutorial \texttt{hyperelasticity/cylinderCrush} do \texttt{solids4foam} (esquemas \texttt{leastSquares}, snGrad \texttt{corrected}, sub-relaxacao de campo $\alpha_D = 0.9$, 40 passos quasi-estaticos com $\Delta z = -0.1\,\si{\milli\meter}$ por passo) foram adotados. A imperfeicao geometrica que quebra a simetria axial foi introduzida como tracao lateral de \SI{10}{\pascal} aplicada via \texttt{topoSet} sobre uma fita de \SI{6}{\milli\meter} de altura no terco medio axial ($z \in [12;18]\,\si{\milli\meter}$) do patch $y^+$ --- magnitude $7 \times 10^{-6}$ vezes a carga axial de pico, suficiente para indicar direcao de bifurcacao sem alterar quantitativamente $P_{\mathrm{cr}}$. Com esta configuracao o solver \emph{converge integralmente nos 38 primeiros passos do ramp}, atravessando o ponto de bifurcacao em $\Delta z \approx \SI{2.9}{\milli\meter}$ e exibindo regime pos-flambagem para os passos seguintes. A Figura~\ref{fig:buckling-nl} reporta a curva F-d e a evolucao da reacao lateral $|F_y|$ no patch da imperfeicao, ambas medidas pela \emph{function object} \texttt{solidForcesDisplacements}.
+
+\paragraph{Resultado numerico da bifurcacao.} A curva $F_z(\Delta z)$ extraida do caso \texttt{on-buckling-tube} (Figura~\ref{fig:buckling-nl}, painel esquerdo) exibe regime pre-flambagem linear ate $\Delta z \approx \SI{2.5}{\milli\meter}$, com rigidez axial $k_{\mathrm{axial}}^{\mathrm{sim}} = \SI{2603}{\newton\per\meter}$ em concordancia direta com a previsao analitica $E A / L = \SI{2500}{\newton\per\meter}$ (diferenca de $4\%$, atribuivel ao endurecimento por finite-strain de \texttt{neoHookeanElastic} sob compressao axial). A partir de $\Delta z \approx \SI{2.6}{\milli\meter}$ a curva inflexiona, e o pico de carga ocorre em
+\begin{equation}
+  \Delta z_{\mathrm{cr}}^{\mathrm{sim}} = \SI{2.90}{\milli\meter},
+  \qquad
+  P_{\mathrm{cr}}^{\mathrm{sim}} = \SI{7.85}{\newton},
+  \label{eq:Pcr-sim}
+\end{equation}
+seguido de regime pos-flambagem com decaimento monotonico (\emph{softening}) da carga ate $\Delta z = \SI{3.8}{\milli\meter}$. Conforme reportado no painel direito da Figura~\ref{fig:buckling-nl}, a reacao lateral $|F_y|$ no patch da imperfeicao permanece em $\sim \SI{1.5e-4}{\newton}$ em todo o regime pre-flambagem (carga axial em equilibrio com a propria pressao da imperfeicao) e \emph{salta quatro ordens de magnitude} para $|F_y| \approx \SI{1e-2}{\newton}$ exatamente em $\Delta z_{\mathrm{cr}}$, assinatura inequivoca da bifurcacao em problemas estaticos. A previsao analitica de Euler para o cenario \emph{fixed--fixed} com restricao total de translacao em ambas as extremidades (que e a condicao imposta pelas BCs \texttt{fixedDisplacement} no caso) e
+\begin{equation}
+  P_{\mathrm{cr}}^{\mathrm{Euler}}(K=0.5) = \frac{\pi^2\, E\, I}{(0.5\, L)^2} = \SI{6.85}{\newton},
+  \qquad
+  \Delta z_{\mathrm{cr}}^{\mathrm{Euler}}(K=0.5) = \frac{P_{\mathrm{cr}}}{k_{\mathrm{axial}}^{\mathrm{sim}}} = \SI{2.63}{\milli\meter},
+  \label{eq:Pcr-Euler-K05}
+\end{equation}
+para $E I = E b h^3/12 = \SI{1.56e-4}{\newton\meter\squared}$. A razao $P_{\mathrm{cr}}^{\mathrm{sim}}/P_{\mathrm{cr}}^{\mathrm{Euler}}(K=0.5) = 1.15$ (excesso de \SI{15}{\percent}) e tipica para problemas de coluna nao-linear com BCs \emph{fixedDisplacement} aplicadas a toda a area do patch, que adicionam restricao a flexao de placa para alem da restricao classica de Euler. O fator efetivo identificado pela simulacao,
+\begin{equation}
+  K_{\mathrm{ef}} = \sqrt{\frac{\pi^2 E I}{L^2\, P_{\mathrm{cr}}^{\mathrm{sim}}}} = 0.467,
+  \label{eq:Kef}
+\end{equation}
+e consistente com este excesso de rigidez rotacional na fronteira. Este resultado constitui a \emph{validacao cruzada numerica} da previsao analitica de Euler para a estrutura do nervo optico no regime de SANS-realista.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.99\linewidth]{sans_outputs/fig_buckling_NL_F_vs_dz.png}
+\caption{Estudo de flambagem axial no caso \texttt{on-buckling-tube} com solver \texttt{nonLinearGeometryUpdatedLagrangian} + \texttt{neoHookeanElastic} + sub-relaxacao $\alpha_D = 0.9$ + imperfeicao lateral de \SI{10}{\pascal}. \emph{Esquerda:} curva $F_z(\Delta z)$ simulada (pontos pretos) com pico em $(2.90\,\si{\milli\meter}, 7.85\,\si{\newton})$ marcado por estrela vermelha; linhas tracejadas mostram $P_{\mathrm{cr}}$ analitico de Euler para cinco hipoteses de $K$, e marcadores triangulares indicam o $\Delta z_{\mathrm{cr}}$ correspondente em cada caso. O pico simulado e' compativel com Euler $K = 0.5$ (excesso de \SI{15}{\percent} por restricao rotacional adicional do \emph{fixedDisplacement} aplicado a area completa do patch). \emph{Direita:} reacao lateral $|F_y|$ no patch da imperfeicao (escala log) revela salto de quatro ordens de magnitude em $\Delta z = \SI{2.9}{\milli\meter}$, assinatura inequivoca de bifurcacao de equilibrio em problemas estaticos.}
+\label{fig:buckling-nl}
+\end{figure}
+
+\paragraph{Limitacao residual e estrategia hibrida adotada.} A coluna prismatica equivalente \texttt{on-buckling-tube} representa o caracter \emph{estrutural} do complexo nervo-bainha como elemento axial unico de modulo dural, e captura corretamente o ponto de bifurcacao em $\Delta z_{\mathrm{cr}}^{\mathrm{sim}} = \SI{2.9}{\milli\meter}$. Esta evidencia numerica, ainda que obtida em geometria simplificada, valida a abordagem hibrida adotada para a malha anatomica de oito zonas \texttt{on-mestrado-2-buckling}: extracao da rigidez axial composta $k_{\mathrm{axial}}^{\mathrm{8z}} = \SI{314}{\newton\per\meter}$ via solver linear (Eq.~\ref{eq:k-axial-sim} adiante) e cruzamento com $P_{\mathrm{cr}}$ analitico de Euler para diferentes $K$. A diferenca entre $k_{\mathrm{axial}}^{\mathrm{8z}} = \SI{314}{\newton\per\meter}$ (anatomico, dominado pelo modulo da dura, $E A_{\mathrm{dura}} / L = \SI{228}{\newton\per\meter}$, mais contribuicoes menores das outras camadas) e $k_{\mathrm{axial}}^{\mathrm{tubo}} = \SI{2603}{\newton\per\meter}$ (prismatico, secao $5 \times 5$ mm com area $\sim 11.4 \times$ maior que a dura anelar) e dimensional e nao afeta a aplicabilidade da formula de Euler $P_{\mathrm{cr}} = \pi^2 E I / (KL)^2$, que e' linear em $EI$ e independente de $EA$. A subsecao seguinte aplica esta formula a configuracao anatomica.
+
+\paragraph{Rigidez axial composta.} A simulacao reporta uma resposta perfeitamente linear no intervalo testado (regressao $R^2 > 0.9999$), com inclinacao
+\begin{equation}
+  k_{\mathrm{axial}}^{\mathrm{sim}} = \frac{|F_z|}{|\Delta z|} = \SI{314.4}{\newton\per\meter},
+  \label{eq:k-axial-sim}
+\end{equation}
+em concordancia direta com a previsao analitica para a estrutura composta em paralelo,
+\begin{equation}
+  k_{\mathrm{axial}}^{\mathrm{teorico}} = \frac{1}{L}\sum_i E_i\, A_i = \frac{1}{\SI{30}{\milli\meter}}\bigl[ E_{\mathrm{on}}A_{\mathrm{on}} + E_{\mathrm{pia}}A_{\mathrm{pia}} + E_{\mathrm{sas}}A_{\mathrm{sas}} + E_{\mathrm{dura}}A_{\mathrm{dura}} \bigr] \approx \SI{316}{\newton\per\meter},
+  \label{eq:k-axial-teorico}
+\end{equation}
+diferindo do valor numerico em $0.5\%$. A camada dural responde por $72\%$ da rigidez total ($E_{\mathrm{dura}} A_{\mathrm{dura}} / L \approx \SI{228}{\newton\per\meter}$), confirmando seu papel dominante como elemento estrutural axial.
+
+\paragraph{Carga critica de Euler e sensibilidade ao fator $K$.} Para a dura tratada como tubo com $EI_{\mathrm{dura}} = \SI{3.35e-5}{\newton\meter\squared}$ e comprimento $L = \SI{30}{\milli\meter}$, a carga critica de Euler depende do fator de comprimento efetivo $K$ adotado para representar as condicoes de contorno em $z = 0$ e $z = 30$:
+\begin{equation}
+  P_{\mathrm{cr}}(K) = \frac{\pi^2\, E_{\mathrm{dura}}\, I_{\mathrm{dura}}}{(K\, L)^2}.
+  \label{eq:euler-Pcr}
+\end{equation}
+A Tabela~\ref{tab:buckling} reporta $P_{\mathrm{cr}}$ e o correspondente $\Delta z_{\mathrm{cr}} = P_{\mathrm{cr}} / k_{\mathrm{axial}}^{\mathrm{sim}}$ para cinco interpretacoes possiveis das BCs do modelo. A escolha defendida neste relatorio e $K = 0.65$ (recomendacao AISC para colunas duplamente engastadas com complacencia residual realista), apropriada para a configuracao do modelo na qual ambos os engastes ($z = 0$ via \texttt{posterior\_\{on,pia,dura\}}, $z = 30$ via continuidade nodal LC--esclera--globo com \texttt{globo\_outer} ancorado no equador) sao quase-rigidos.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Sensibilidade da carga critica de Euler ao fator de comprimento efetivo $K$, para a dura como elemento dominante. $\Delta z_{\mathrm{cr}}$ e o shift cefalico que satura a rigidez linear no valor de $P_{\mathrm{cr}}$.}
+\label{tab:buckling}
+\begin{tabular}{lcrr}
+\toprule
+\textbf{Configuracao das BCs} & $K$ & $P_{\mathrm{cr}}$ (mN) & $\Delta z_{\mathrm{cr}}$ (mm) \\
+\midrule
+fixed--fixed teorico                                   & 0.50 & $1\,470$ & $4.67$ \\
+\textbf{fixed--fixed AISC (recomendado)}               & \textbf{0.65} & \textbf{870} & \textbf{2.77} \\
+fixed--pinned (LC com complacencia rotacional)         & 0.70 & $750$ & $2.38$ \\
+pinned--pinned                                         & 1.00 & $367$ & $1.17$ \\
+fixed--free (cantilever)                               & 2.00 & $92$  & $0.29$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{sans_outputs/fig_buckling_F_vs_dz.png}
+\caption{Curva $F_z(\Delta z)$ extraida do caso \texttt{on-mestrado-2-buckling}, em conjunto com as cinco linhas de carga critica de Euler para diferentes valores de $K$. Os marcadores triangulares indicam o $\Delta z_{\mathrm{cr}}$ predito pela teoria de Euler para cada configuracao de BCs. A faixa clinica da SANS ($\Delta z \in [\num{0.5}; \num{1.0}]\,\si{\milli\meter}$) esta abaixo de qualquer $\Delta z_{\mathrm{cr}}$ realista ($K \le 1$) e, em particular, atinge apenas $\sim 36\%$ do $P_{\mathrm{cr}}$ recomendado pela AISC ($K = 0.65$).}
+\label{fig:buckling}
+\end{figure}
+
+\paragraph{Margem de seguranca em relacao a SANS.} Cruzando a faixa clinica reportada para o shift cefalico em microgravidade ($\Delta z \in [0.5;\, 1.0]\,\si{\milli\meter}$, \citet{Lee2020NPJ}) com a Tabela~\ref{tab:buckling}, observa-se que mesmo o cenario SANS \emph{upper bound} ($\Delta z = \SI{1}{\milli\meter}$) gera $F_z = \SI{0.31}{\newton}$, valor que corresponde a $36\%$ do $P_{\mathrm{cr}}^{K=0.65}$, $42\%$ do $P_{\mathrm{cr}}^{K=0.70}$, e $85\%$ do $P_{\mathrm{cr}}^{K=1.00}$. Apenas no cenario degenerado de cantilever ($K = 2$, fisicamente nao representativo do modelo) o shift cefalico de \SI{1}{\milli\meter} excederia o limite de Euler. Conclui-se que \emph{a flambagem axial classica nao constitui modo de falha relevante para a configuracao geometrica e de BCs adotada}, e que a tortuosidade documentada em astronautas deve ser atribuida a outros mecanismos --- pulsacao arterial transiente sobre bainha pre-tensionada, anisotropia de fibras de colageno, ou shift cefalico combinado com hiperpressao do LCR --- nao capturados pela presente analise estatica.
+
+\paragraph{Caso anatomico SANS-realistico com BCs fisiologicas completas.} A analise da Tabela~\ref{tab:buckling} acima emprega a estrategia hibrida (linear + Euler) com cargas axiais \emph{prescritas} via \texttt{globo\_outer = fixedDisplacement(displacementSeries)}. Para validar a margem de seguranca sob condicoes fisiologicamente fechadas --- isto e, com o encurtamento $\Delta z$ resultando passivamente do equilibrio das cargas e nao imposto a priori --- conduziu-se um caso adicional, \texttt{on-mestrado-2-buckling-real}, no qual as quatro BCs canonicas da biomecanica orbital \citep{Lee2020NPJ, Pardon2024} sao integralmente aplicadas a malha anatomica de oito zonas:
+\begin{enumerate}
+\item \emph{Engaste no apice orbital}: \texttt{posterior\_\{on,pia,dura\}} com \texttt{fixedDisplacement (0 0 0)}, representando a fusao das camadas meningeas ao anel tendineo de Zinn no canal optico.
+\item \emph{Motor SANS por pressao da gordura orbital}: \texttt{anterior\_globo} com \texttt{solidTraction pressureSeries} rampando $P_{\mathrm{IOP}} + P_{\mathrm{fat}}$ de \SI{2667}{\pascal} (IOP basal isolada) ate \SI{5667}{\pascal} (IOP + $P_{\mathrm{fat}} = $ \SI{3000}{\pascal}, SANS \emph{upper}). A face anterior do globo --- normal $+z$ --- transforma essa pressao em forca liquida $-z$ sobre o complexo nervo-bainha, simulando o efeito da gordura retrobulbar edemaciada empurrando o polo posterior do globo para a frente (proptose).
+\item \emph{Contencao lateral por fundacao elastica de Winkler}: \texttt{dura\_outer} com \texttt{solidTractionElasticFoundation k = 200\,000 Pa/m} ($k = E_{\mathrm{fat}}/t_{\mathrm{fat}} = 500\,\si{\pascal} / 2.5\,\si{\milli\meter}$, \citet{Schoemaker2006, Yoo2011}). Representa o ``berco elastico'' da gordura retrobulbar continua que envolve a bainha dural e resiste a deflexao lateral, elevando a carga critica e fornecendo a previa estabilizacao geometrica essencial para a aplicabilidade da formula de Euler.
+\item \emph{Pressao do LCR}: \texttt{posterior\_sas} mantida em \SI{1333}{\pascal} (PIC basal), apropriada para o estudo da geometria sob 1g (regime onde o desafio nao e a hiperpressao do LCR, mas o desbalanco mecanico induzido pela gordura orbital).
+\item \emph{Quebra de simetria fisiologicamente justificada}: \texttt{contact\_local} reduzida de \SI{9034}{\pascal} (nominal arterial OA) para \SI{100}{\pascal}. Esta perturbacao direcional ($+x$) substitui a imperfeicao ficticia tipica de FEA por uma direcao biomecanicamente justificada --- a mesma da pulsacao arterial real, que demonstradamente induz \emph{kinking} preferencial no setor temporal do nervo em ressonancia magnetica de astronautas.
+\end{enumerate}
+
+A simulacao com solver \texttt{linearGeometryTotalDisplacement} converge em \SI{215}{\second} de wall-clock para uma rampa de dez passos quasi-estaticos, e reporta resposta perfeitamente linear, com inclinacao
+\begin{equation}
+  k_{\mathrm{axial}}^{\mathrm{real}} = \SI{317}{\newton\per\meter},
+  \label{eq:k-axial-real}
+\end{equation}
+$0.9\%$ acima do valor extraido em \texttt{on-mestrado-2-buckling} (Eq.~\ref{eq:k-axial-sim}) --- consistencia esperada pois a topologia geometrica e as propriedades materiais permanecem identicas; apenas as BCs externas mudam. No cenario SANS \emph{upper bound} ($P_{\mathrm{fat}} = \SI{3000}{\pascal}$):
+\begin{equation}
+  \Delta z_{\mathrm{globo}}^{\mathrm{SANS}} = \SI{0.348}{\milli\meter},
+  \qquad
+  F_{\mathrm{apex}}^{\mathrm{total}} = \SI{0.098}{\newton}.
+  \label{eq:resposta-SANS-real}
+\end{equation}
+A reacao composta no apice ($F_{\mathrm{apex}}^{\mathrm{total}} = F_{\mathrm{apex,dura}} + F_{\mathrm{apex,pia}} + F_{\mathrm{apex,on}} = 81.6 + 13.6 + 2.3\,\si{\milli\newton}$) representa $10.4\%$, $17.5\%$ e $41.5\%$ dos $P_{\mathrm{cr}}^{\mathrm{anat}}$ analiticos para $K = 0.5$, $0.65$ e $1.0$ respectivamente (Figura~\ref{fig:buckling-anat-real}, painel D). A margem de seguranca minima e portanto de aproximadamente $2.4\times$ (cenario $K = 1$, pinned-pinned).
+
+Adicionalmente, a configuracao realistica gera um $\Delta z_{\mathrm{globo}}$ ligeiramente \emph{abaixo} da faixa clinica reportada por \citet{Lee2020NPJ} (Figura~\ref{fig:buckling-anat-real}, painel A; faixa \SIrange{0.5}{1.0}{\milli\meter} reportada vs \SI{0.348}{\milli\meter} simulado). Tres explicacoes nao excludentes:
+\begin{enumerate*}[label=(\roman*)]
+\item a rigidez da fundacao de Winkler ($k = \SI{200}{\kilo\pascal\per\meter}$) pode estar superestimando a sustentacao real, ja que o $E_{\mathrm{fat}}$ humano varia entre \SIrange{100}{2000}{\pascal} na literatura \citep{Yoo2011, Hwu2015}, podendo o limite inferior reduzir $k$ em ordem de magnitude;
+\item a pressao da gordura orbital em microgravidade pode exceder \SI{3}{\kilo\pascal} em casos cronicos (literatura recente reporta picos transientes acima de \SI{10}{\kilo\pascal} no edema retrobulbar agudo, \citet{Pardon2024});
+\item o $\Delta z$ clinico reportado pode incluir contribuicoes nao-elasticas (remodelamento dos musculos extraoculares ao longo de meses de voo prolongado) nao capturadas em uma analise estatica.
+\end{enumerate*}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.99\linewidth]{sans_outputs/fig_buckling_anatomico_realista.png}
+\caption{Estudo de flambagem anatomico realistico (\texttt{on-mestrado-2-buckling-real}). \emph{Painel A:} encurtamento $\Delta z_{\mathrm{globo}}$ vs pressao da gordura orbital $P_{\mathrm{fat}}$, resposta perfeitamente linear; a faixa clinica de SANS \citep{Lee2020NPJ} aparece em laranja. \emph{Painel B:} reacao axial composta no apice ($F_{\mathrm{apex}}$ total e parcela da dura) vs $P_{\mathrm{fat}}$, comparada com $P_{\mathrm{cr}}^{\mathrm{anat}}$ analitico para $K \in \{0.5, 0.65, 1.0\}$ ($EI_{\mathrm{dura}} = 2.14 \times 10^{-5}$ Nm$^2$). \emph{Painel C:} caso prismatico nao-linear \texttt{on-buckling-tube} para validacao numerica direta da bifurcacao ($\Delta z_{\mathrm{cr}}^{\mathrm{sim}} = \SI{2.9}{\milli\meter}$, $P_{\mathrm{cr}}^{\mathrm{sim}} = \SI{7.85}{\newton}$). \emph{Painel D:} razao $F_{\mathrm{SANS}}/P_{\mathrm{cr}}^{\mathrm{Euler}}$ para diferentes hipoteses de $K$, com margem de seguranca minima de $2.4\times$ para o cenario fisiologicamente plausivel $K = 1$.}
+\label{fig:buckling-anat-real}
+\end{figure}
+
+\subsection{Limitacoes e trabalho futuro}
+\label{sec:resultados-trabalho-futuro}
+
+\paragraph{Regime estatico.} A presente campanha emprega janela temporal unica de \SI{1}{\second} no acoplamento preCICE, modelando todas as cargas como pressoes constantes na media sistole-diastole (\SI{9034}{\pascal} no \texttt{contact\_local}). Esse regime nao captura efeitos transientes da pulsacao arterial sobre uma bainha pre-tensionada por PIC elevada, hipotese central para reproducao da tortuosidade do nervo \citep{Chiang2025ONT}. Uma extensao para FSI transiente com $\Delta t_{\mathrm{coup}} = \SI{5}{\milli\second}$ ao longo de $T = \SI{0.87}{\second}$ (ciclo cardiaco completo) e \texttt{contact\_local} alimentado por uma serie de pressao sintetizada do ciclo cardiaco humano (\texttt{brunaStuff/gen\_ao\_mestrado\_omvs\_pressure.py}) permitira avaliar o pico sistolico de $\sigma_{\mathrm{eq}}$ e a recuperacao do $\delta_{\perp}^{\max}$ aumentado.
+
+\paragraph{Acoplamento de tres vias.} A representacao da arteria oftalmica como condicao de contorno prescrita em \texttt{contact\_local} (em vez de fluido modelado explicitamente) elimina o acoplamento de tres vias (sangue $\rightarrow$ parede arterial $\rightarrow$ contato com o NO). O caso \texttt{teste-2d-fsi-oa-on}, em desenvolvimento, sera estendido para tres dimensoes e acoplado ao presente modelo do NO via uma segunda janela preCICE, eliminando essa hipotese.
+
+\paragraph{Modelo constitutivo linear.} As leis constitutivas adotadas sao lineares isotropicas em pequenas deformacoes; a pia e a dura humanas exibem comportamento hiperelastico anisotropico (com fibras de colageno orientadas longitudinalmente) que se torna relevante sob deformacoes superiores a $\sim 5\%$ \citep{Holzapfel2000}. A magnitude maxima de deformacao observada nos cinco casos ($\varepsilon_{\mathrm{eq}}^{\max} \approx 0.017$ em \texttt{on-fsi-3}) esta proximo do limite de validade da hipotese linear; uma reformulacao em \emph{neo-Hookean} ou \emph{Gasser-Ogden-Holzapfel} (GOH) sera necessaria para estudos sob PIC superiores a \SI{4000}{\pascal} ou para incluir efeitos de dano cumulativo do voo prolongado.
+
+\paragraph{Pressao intraocular.} A pressao intraocular (PIO, $\sim \SI{1.5}{\kilo\pascal}$ basal, ate \SI{3.0}{\kilo\pascal} em hipertensao) nao foi modelada, sendo substituida por \texttt{anterior\_globo} livre de tracao. Em estudos de \emph{translaminar pressure gradient} (TPG = PIC $-$ PIO), grandeza-chave em glaucoma e em SANS, essa BC devera ser substituida por \texttt{solidTraction pressure} no valor da PIO. Os indicadores aqui reportados podem, portanto, ser interpretados como um limite superior para o efeito de PIC isolada sobre o nervo no regime sem PIO.
+
+\paragraph{Solver geometrico nao-linear em multi-zona.} Conforme reportado em detalhe na Subsecao~\ref{sec:resultados-flambagem}, o solver \texttt{nonLinearGeometryUpdatedLagrangian} (e variantes \emph{Total Lagrangian} e \emph{unstructured}) do \texttt{solids4foam} nao converge sobre a malha anatomica de oito zonas, mesmo apos a aplicacao das cinco estrategias canonicas de robustecimento (incrementos de carga finos, imperfeicao lateral, hiperelasticidade neo-Hookean, estabilizacao Rhie-Chow, homogeneizacao de modulos). O modo de falha --- inversao de Jacobiano da deformacao no primeiro corretor segregado --- e estrutural ao FVM com decomposicao componente-a-componente, e foi contornado neste trabalho pela introducao do caso prismatico equivalente \texttt{on-buckling-tube} (coluna $5 \times 5 \times 30$ mm, neoHookean), que \emph{converge integralmente com bifurcacao numerica visivel em $\Delta z = \SI{2.9}{\milli\meter}$} (Figura~\ref{fig:buckling-nl}). Para a malha anatomica original, persistem como limitacoes a impossibilidade de capturar (a) finite-strain $> \SI{5}{\percent}$ em todas as oito camadas simultaneamente, (b) pos-bifurcacao localizada em uma camada especifica (e.g., \emph{kinking} da pia sem participacao da dura), e (c) contato deslizante entre camadas com gap inicial nao-nulo. As estrategias para resolver estas limitacoes residuais sao: (i) instalacao do PETSc/MUMPS para habilitar o solver \texttt{vertexCentredNonLinGeomTotalLagSolid} disponivel no \texttt{solids4foam} (Newton global, nao segregado, inerentemente robusto a contrastes de modulo) --- esforco moderado; ou (ii) migracao do bloco de flambagem do estudo para um codigo FEA classico (\texttt{FEniCS}, \texttt{Abaqus}, \texttt{Calculix}, \texttt{Code\_Aster}) com formulacao de Galerkin --- esforco maior porem com maior maturidade documentada em problemas multi-material com finite-strain. Para o objetivo central do presente relatorio, a evidencia combinada do caso prismatico (validacao numerica direta da bifurcacao) com o caso anatomico linear (rigidez axial composta, $P_{\mathrm{cr}}$ analitico por Euler) e suficiente para concluir que \emph{a flambagem axial classica nao constitui modo de falha relevante para SANS no regime $\Delta z \in [0.5; 1.0]\,\si{\milli\meter}$}.

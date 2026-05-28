@@ -1,0 +1,40 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// on-mestrado-2-buckling: solver geometricamente NAO-LINEAR para capturar
+// flambagem axial.
+//
+// Diferenca para on-mestrado-2 (linearGeometryTotalDisplacement):
+//   - mantem a matriz de rigidez geometrica K_sigma na tangente,
+//     necessaria para detectar bifurcacao de flambagem (det(K_E + K_sigma) = 0).
+//   - acomoda rotacoes finitas, indispensaveis para que a coluna efetivamente
+//     "estale" para o lado quando a carga critica e alcancada.
+//   - configuracao de referencia atualizada a cada iteracao (Updated Lagrangian).
+
+// LIMITACAO: o solver nonLinearGeometryTotalLagrangianTotalDisplacement
+// diverge em NaN ja' na primeira iteracao quando aplicado a multi-zona
+// com contraste de modulos E_dura/E_on = 100. Observacao consistente
+// com o fato de que a unica tutorial multi-material do solids4foam
+// (multiMaterial/layeredPipe) tambem usa apenas linearGeometry.
+//
+// Estrategia para Mod. 2: rodamos com linearGeometryTotalDisplacement,
+// extraimos F_z(dz) ate' dz=4 mm (excede Euler P_cr esperado em ~2.75 mm).
+// A curva F-d sera perfeitamente linear (esperado: solver linear nao
+// bifurca), e o cruzamento com a linha analitica P_cr_Euler indica o
+// shift cefalico critico previsto pela teoria de Euler.
+solidModel      linearGeometryTotalDisplacement;
+
+linearGeometryTotalDisplacementCoeffs
+{
+    nCorrectors             8000;
+    rTol                    1e-4;
+    aTol                    1e-6;
+    sTol                    1e-7;
+    materialTolerance       1e-4;
+    infoFrequency           100;
+}

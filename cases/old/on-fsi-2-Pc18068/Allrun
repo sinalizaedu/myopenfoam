@@ -1,0 +1,83 @@
+#!/bin/bash
+# on-fsi-2 -- FSI two-way (preCICE + Aitken) do nervo optico com SAS = LCR fluido.
+#
+# Comparacao com on-mestrado-2: mesma geometria externa, mesmas propriedades
+# dos 7 solidos, mesmas BCs estruturais, mesmo contact_local; UNICA diferenca:
+# a zona SAS deixa de ser um solido elastico mole (E=100kPa, nu=0.30) e passa
+# a ser um fluido real (LCR water-like: rho=1000, nu=1e-6).
+#
+# Acoplamento:
+#   Fluid (pimpleFoam, SAS annulus) <==> preCICE Aitken implicit <==> Solid (solids4Foam)
+#   Force        Fluid -> Solid    (pressao do LCR nas paredes do cul-de-sac)
+#   Displacement Solid -> Fluid    (mesh motion do fluido segue deformacao da pia/dura/sclera)
+#
+# Pipeline:
+#   1. gera blockMeshDicts (solid 11648 cells, fluid 5760 cells, conformes nas 4 FSI patches)
+#   2. blockMesh solid + topoSet/createPatch contact_local + checkMesh
+#   3. blockMesh fluid + checkMesh
+#   4. pimpleFoam + solids4Foam em paralelo via preCICE adapter
+
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+cd "$ROOT"
+
+# ---- 1) gerar blockMeshDicts ----------------------------------------------
+if [[ -f "${ROOT}/../../brunaStuff/gen_on_fsi_2_blockmesh.py" ]]; then
+  BRUNA="$(cd "${ROOT}/../../brunaStuff" && pwd)"
+elif [[ -f "/host/brunaStuff/gen_on_fsi_2_blockmesh.py" ]]; then
+  BRUNA="/host/brunaStuff"
+else
+  echo "ERROR: cannot find gen_on_fsi_2_blockmesh.py" >&2
+  exit 1
+fi
+echo "=== 1) Gerar blockMeshDicts (solid + fluid) ==="
+python3 "${BRUNA}/gen_on_fsi_2_blockmesh.py"
+
+# Em ambiente local sem OpenFOAM, parar aqui
+if [[ -z "${WM_PROJECT_DIR:-}" ]]; then
+  echo "SKIP solver: WM_PROJECT_DIR not set."
+  exit 0
+fi
+
+# ---- 2) solid: blockMesh + contact_local + checkMesh ----------------------
+echo "=== 2) Solid: blockMesh + topoSet + createPatch + checkMesh ==="
+rm -rf precice-Fluid-* precice-Solid-* precice-run 2>/dev/null || true
+( cd solid && rm -rf 0/polyMesh constant/polyMesh log.* \
+    && blockMesh 2>&1 | tee log.blockMesh \
+    && topoSet -dict system/topoSetDict_contact 2>&1 | tee log.topoSet \
+    && createPatch -overwrite -dict system/createPatchDict_contact 2>&1 | tee log.createPatch \
+    && checkMesh 2>&1 | tee log.checkMesh )
+
+# ---- 3) fluid: blockMesh + checkMesh --------------------------------------
+echo "=== 3) Fluid: blockMesh + checkMesh ==="
+( cd fluid && rm -rf 0/polyMesh constant/polyMesh log.* \
+    && blockMesh 2>&1 | tee log.blockMesh \
+    && checkMesh 2>&1 | tee log.checkMesh )
+
+# ---- 4) Coupled solvers via preCICE Aitken --------------------------------
+echo "=== 4) Coupled solvers (preCICE Aitken implicit two-way) ==="
+( cd fluid && pimpleFoam > log.pimpleFoam 2>&1 ) &
+PF=$!
+( cd solid && solids4Foam > log.solids4Foam 2>&1 ) &
+PS=$!
+
+RC_F=0; RC_S=0
+wait $PF || RC_F=$?
+wait $PS || RC_S=$?
+
+if (( RC_F != 0 )); then
+  echo "ERROR: pimpleFoam failed (rc=$RC_F)"; tail -40 fluid/log.pimpleFoam; exit 1
+fi
+if (( RC_S != 0 )); then
+  echo "ERROR: solids4Foam failed (rc=$RC_S)"; tail -40 solid/log.solids4Foam; exit 1
+fi
+if grep -q "FOAM FATAL\|FOAM aborting" fluid/log.pimpleFoam solid/log.solids4Foam 2>/dev/null; then
+  echo "ERROR: FATAL em algum log"
+  grep -nE "FOAM FATAL|FOAM aborting" fluid/log.pimpleFoam solid/log.solids4Foam | head
+  exit 1
+fi
+
+echo ""
+echo "=== Allrun finished. Resultado em solid/1/ e fluid/1/ ==="
+echo "    Logs: solid/log.solids4Foam, fluid/log.pimpleFoam"
+echo "    preCICE: precice-Fluid-iterations.log, precice-Solid-iterations.log"

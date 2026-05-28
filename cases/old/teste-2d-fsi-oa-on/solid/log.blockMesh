@@ -1,0 +1,114 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh
+Date   : May 25 2026
+Time   : 02:10:23
+Host   : 3e665f5d2268
+PID    : 252
+I/O    : uncollated
+Case   : /simulation/teste-2d-fsi-oa-on/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating block mesh from "system/blockMeshDict"
+Creating block edges
+No non-planar block faces defined
+Creating topology blocks
+
+Creating topology patches - from boundary section
+
+Creating block mesh topology - scaling/transform applied later
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 1
+		Number of boundary faces : 22
+		Number of defined boundary faces : 22
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+Creating block offsets
+Creating merge list (topological search)...
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale (0.001 0.001 0.001)
+    Block 0 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0005 .. 0.0005
+        k : 0.001 .. 0.001
+
+    Block 1 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0001 .. 0.0001
+        k : 0.001 .. 0.001
+
+    Block 2 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0001 .. 0.0001
+        k : 0.001 .. 0.001
+
+    Block 3 cell size :
+        i : 0.0005 .. 0.0005
+        j : 0.0005 .. 0.0005
+        k : 0.001 .. 0.001
+
+Adding cell zones
+    0	lower
+    1	wall_inf
+    2	wall_sup
+    3	fat_above
+No patch pairs to merge
+
+Writing polyMesh with 4 cellZones
+----------------
+Mesh Information
+----------------
+  boundingBox: (0 0 0) (0.02 0.02 0.001)
+  nPoints: 3608
+  nCells: 1640
+  nFaces: 6721
+  nInternalFaces: 3119
+----------------
+Cell Zones
+----------------
+  zone 0 (size: 800) name: lower
+  zone 1 (size: 80) name: wall_inf
+  zone 2 (size: 80) name: wall_sup
+  zone 3 (size: 680) name: fat_above
+----------------
+Patches
+----------------
+  patch 0 (start: 3119 size: 40) name: outer_bottom
+  patch 1 (start: 3159 size: 40) name: outer_top
+  patch 2 (start: 3199 size: 40) name: on_mestrado
+  patch 3 (start: 3239 size: 40) name: oa_mestrado
+  patch 4 (start: 3279 size: 40) name: lumen_bot
+  patch 5 (start: 3319 size: 40) name: lumen_top
+  patch 6 (start: 3359 size: 20) name: outer_left_lower
+  patch 7 (start: 3379 size: 2) name: outer_left_wall_inf
+  patch 8 (start: 3381 size: 2) name: outer_left_wall_sup
+  patch 9 (start: 3383 size: 17) name: outer_left_fat_above
+  patch 10 (start: 3400 size: 20) name: outer_right_lower
+  patch 11 (start: 3420 size: 2) name: outer_right_wall_inf
+  patch 12 (start: 3422 size: 2) name: outer_right_wall_sup
+  patch 13 (start: 3424 size: 17) name: outer_right_fat_above
+  patch 14 (start: 3441 size: 3280) name: frontAndBack
+
+End
+

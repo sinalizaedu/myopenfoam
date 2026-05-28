@@ -1,20 +1,35 @@
 # OpenFOAM FSI Docker Environment
 
 Dockerised environment for Fluid-Structure Interaction simulations using
-OpenFOAM, preCICE, and solids4foam — built for Apple Silicon Macs.
+OpenFOAM, preCICE, solids4foam, and CalculiX — built for Apple Silicon Macs.
 
 ## Software Versions
 
+| Component                | Version             | Notes                                         |
+| ------------------------ | ------------------- | --------------------------------------------- |
+| Ubuntu                   | 24.04 LTS           | Base image                                    |
+| OpenFOAM                 | v2512 (ESI/OpenCFD) | Released Dec 2025                             |
+| preCICE                  | 3.3.1               | Built from source                             |
+| OpenFOAM-preCICE adapter | 1.3.1               | Compiled against v2512                        |
+| solids4foam              | master (v2.3+)      | Compiled against v2512                        |
+| CalculiX (ccx_preCICE)   | 2.20                | Built with preCICE adapter v2.20.1            |
+| Python                   | 3.12                | With numpy, scipy, matplotlib                 |
 
-| Component                | Version             | Notes                         |
-| ------------------------ | ------------------- | ----------------------------- |
-| Ubuntu                   | 24.04 LTS           | Base image                    |
-| OpenFOAM                 | v2512 (ESI/OpenCFD) | Released Dec 2025             |
-| preCICE                  | 3.3.1               | Built from source             |
-| OpenFOAM-preCICE adapter | 1.3.1               | Compiled against v2512        |
-| solids4foam              | master (v2.3+)      | Compiled against v2512        |
-| Python                   | 3.12                | With numpy, scipy, matplotlib |
+### Why CalculiX 2.20 instead of the latest 2.23
 
+CalculiX itself is at v2.23, but the **CalculiX-preCICE adapter** (latest
+release v2.20.1, March 2024) only supports CalculiX 2.20. The adapter
+directly patches CalculiX source code to produce the `ccx_preCICE` binary,
+so the versions must match exactly.
+
+Since this image is FSI-focused (CalculiX coupled to OpenFOAM via preCICE),
+v2.20 is the correct choice. Standalone CalculiX 2.23 would give newer
+features but no preCICE coupling.
+
+CalculiX 2.20 source is downloaded from dhondt.de, then the adapter at
+tag `v2.20.1` is built against our source-built preCICE 3.3.1, producing
+the `ccx_preCICE` binary used for FSI runs. SPOOLES and ARPACK come from
+Ubuntu apt packages.
 
 ## Architecture
 
@@ -59,8 +74,9 @@ myopenfoam/
 docker compose build
 ```
 
-First build takes 30-60 minutes (compiles preCICE, adapter, solids4foam).
-Subsequent rebuilds use cached layers.
+First build takes 40-75 minutes (compiles preCICE, OpenFOAM adapter,
+solids4foam, and CalculiX with its preCICE adapter). Subsequent rebuilds
+use cached layers.
 
 ### 2. Verify the installation
 
@@ -69,8 +85,10 @@ docker compose run --rm fsi bash -lc '
 echo "OpenFOAM: $WM_PROJECT_VERSION"
 which pimpleFoam && echo "pimpleFoam: OK"
 which solids4Foam && echo "solids4Foam: OK"
+which ccx_preCICE && echo "ccx_preCICE: OK"
 ls /opt/precice/lib/libprecice.so && echo "preCICE: OK"
-ls /opt/of-user/lib/libpreciceAdapterFunctionObject.so && echo "Adapter: OK"
+ls /opt/of-user/lib/libpreciceAdapterFunctionObject.so && echo "OF adapter: OK"
+ccx_preCICE -v 2>&1 | head -1
 '
 ```
 
@@ -97,6 +115,9 @@ Install ParaView on your Mac ([https://www.paraview.org/download/](https://www.p
 The `case.foam` files are empty markers that tell ParaView to read the
 OpenFOAM directory structure. Results are visible on your Mac because the
 `cases/` folder is a shared volume mount.
+
+For CalculiX results, open the `.frd` output files directly in ParaView
+(or use CGX on the host for CalculiX-native visualisation).
 
 ### 5. Clean results
 
@@ -131,21 +152,35 @@ cd /simulation/myFSICase
 (cd fluid && blockMesh) && (cd solid && blockMesh)
 cd fluid && pimpleFoam
 
-# Terminal 2 — attach and run solid
+# Terminal 2 — attach and run solid (solids4foam OR CalculiX)
 docker exec -it fsi-run bash -l
 cd /simulation/myFSICase/solid && solids4Foam
+# OR for CalculiX-based FSI:
+# cd /simulation/myFSICase/solid && ccx_preCICE -i case -precice-participant Solid
 ```
 
 Both solvers run simultaneously. preCICE handles the data exchange — the
 fluid waits for displacement from the solid, the solid waits for forces
 from the fluid. You will see convergence info printed each time window.
 
+## Choosing a Solid Solver
+
+You have two options for the solid side of FSI:
+
+| Solver        | When to use                                                        |
+| ------------- | ------------------------------------------------------------------ |
+| `solids4Foam` | Native OpenFOAM workflow, shared mesh format, integrated dicts     |
+| `ccx_preCICE` | ABAQUS-style input decks, broader material/element library, FEA   |
+
+Both couple to OpenFOAM (pimpleFoam) via preCICE — pick based on which
+input format and solver capabilities suit your problem.
+
 ## Creating a Coupled FSI Case
 
 For 2-way FSI with preCICE, add these files on top of standard OpenFOAM cases.
 Templates are in `openfoam-filesv1/`.
 
-### Required layout
+### Required layout (solids4foam variant)
 
 ```
 myFSICase/
@@ -172,6 +207,24 @@ myFSICase/
         └── preciceDict         # adapter config
 ```
 
+### Required layout (CalculiX variant)
+
+```
+myFSICase/
+├── precice-config.xml          # coupling config (top level)
+├── Allrun
+├── Allclean
+├── fluid/                      # same as above
+└── solid/
+    ├── case.inp                # CalculiX ABAQUS-style input deck
+    └── precice-config.yml      # CalculiX adapter config (YAML)
+```
+
+Run the CalculiX side with:
+```bash
+ccx_preCICE -i case -precice-participant Solid
+```
+
 ### Key preCICE files
 
 **precice-config.xml** — defines participants, data exchange, mapping, and
@@ -196,7 +249,7 @@ interfaces
 }
 ```
 
-**solid/system/preciceDict:**
+**solid/system/preciceDict** (solids4foam):
 
 ```
 preciceConfig   "../precice-config.xml";
@@ -275,20 +328,20 @@ available models
 
 ## Available Solvers and Tools
 
-
-| Command          | Purpose                                    |
-| ---------------- | ------------------------------------------ |
-| `pimpleFoam`     | Incompressible transient flow (fluid side) |
-| `solids4Foam`    | Solid mechanics / FSI (solid side)         |
-| `blockMesh`      | Structured mesh generation                 |
-| `decomposePar`   | Domain decomposition for parallel runs     |
-| `reconstructPar` | Recombine parallel results                 |
-
+| Command          | Purpose                                              |
+| ---------------- | ---------------------------------------------------- |
+| `pimpleFoam`     | Incompressible transient flow (fluid side)           |
+| `solids4Foam`    | Solid mechanics / FSI (solid side, OpenFOAM-native)  |
+| `ccx_preCICE`    | CalculiX FEA solver with preCICE adapter (solid side) |
+| `blockMesh`      | Structured mesh generation                           |
+| `decomposePar`   | Domain decomposition for parallel runs               |
+| `reconstructPar` | Recombine parallel results                           |
 
 ```bash
 # Inside the container:
 ls /opt/of-user/lib/     # compiled libraries (adapter, solids4foam)
 ls /opt/of-user/bin/     # compiled binaries (solids4Foam, utilities)
+ls /opt/calculix/bin/    # ccx_preCICE binary
 ls /opt/s4f-tutorials/   # solids4foam tutorials (may need v2512 patches)
 ```
 
@@ -310,3 +363,12 @@ section above for common fixes.
 **File permissions on Mac:**
 Files created inside the container are owned by root. On your Mac you may
 need `sudo chown -R $(whoami) cases/` to regain ownership after a run.
+
+**CalculiX build fails on `Makefile.inc not found`:**
+The adapter's Makefile uses `$(HOME)/CalculiX/ccx_2.20/src` as the default
+CCX path. The Dockerfile sets `HOME=/build` during the make step so this
+resolves to where the CalculiX source was extracted.
+
+**CalculiX build fails on Fortran rank mismatch:**
+GCC 10+ enforces stricter Fortran rules. The Dockerfile patches the
+adapter's Makefile to add `-fallow-argument-mismatch` to FFLAGS.

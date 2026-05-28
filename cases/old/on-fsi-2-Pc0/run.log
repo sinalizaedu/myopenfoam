@@ -1,0 +1,74 @@
+=== Limpando antigos ===
+=== solid: blockMesh + topoSet + createPatch + checkMesh ===
+=== fluid: blockMesh + checkMesh ===
+=== Iniciando solvers em paralelo (preCICE) ===
+    Fluid PID=1477, Solid PID=1479
+./run_dual.sh: line 26:  1480 Aborted                 solids4Foam > log.solids4Foam 2>&1
+./run_dual.sh: line 24:  1478 Aborted                 solids4Foam > log.solids4Foam 2>&1
+=== Done. RC_F=134 RC_S=134 ===
+--- fluid tail ---
+terminate called after throwing an instance of 'precice::Error'
+  what():  Receiving data from another participant (using sockets) failed with a system error: read: Connection reset by peer [system:104]. This often means that the other participant exited with an error (look there).
+[11e9c566ab2e:01478] *** Process received signal ***
+[11e9c566ab2e:01478] Signal: Aborted (6)
+[11e9c566ab2e:01478] Signal code:  (-6)
+[11e9c566ab2e:01478] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x45330)[0x7ffffd9bc330]
+[11e9c566ab2e:01478] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x11c)[0x7ffffda15b2c]
+[11e9c566ab2e:01478] [ 2] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x1e)[0x7ffffd9bc27e]
+[11e9c566ab2e:01478] [ 3] /lib/x86_64-linux-gnu/libc.so.6(abort+0xdf)[0x7ffffd99f8ff]
+[11e9c566ab2e:01478] [ 4] /lib/x86_64-linux-gnu/libstdc++.so.6(+0xa5ff5)[0x7ffffdd47ff5]
+[11e9c566ab2e:01478] [ 5] /lib/x86_64-linux-gnu/libstdc++.so.6(+0xbb0da)[0x7ffffdd5d0da]
+[11e9c566ab2e:01478] [ 6] /lib/x86_64-linux-gnu/libstdc++.so.6(_ZSt10unexpectedv+0x0)[0x7ffffdd47a55]
+[11e9c566ab2e:01478] [ 7] /lib/x86_64-linux-gnu/libstdc++.so.6(+0xbb391)[0x7ffffdd5d391]
+[11e9c566ab2e:01478] [ 8] /opt/precice/lib/libprecice.so.3(+0x7c1ae)[0x7ffff7a4c1ae]
+[11e9c566ab2e:01478] [ 9] /opt/precice/lib/libprecice.so.3(+0x655d6)[0x7ffff7a355d6]
+[11e9c566ab2e:01478] [10] /opt/precice/lib/libprecice.so.3(+0x1ddb10)[0x7ffff7badb10]
+[11e9c566ab2e:01478] [11] /opt/precice/lib/libprecice.so.3(+0x1fd307)[0x7ffff7bcd307]
+[11e9c566ab2e:01478] [12] /opt/precice/lib/libprecice.so.3(+0x2161ff)[0x7ffff7be61ff]
+[11e9c566ab2e:01478] [13] /opt/precice/lib/libprecice.so.3(+0x217594)[0x7ffff7be7594]
+[11e9c566ab2e:01478] [14] /opt/precice/lib/libprecice.so.3(+0x24dcb7)[0x7ffff7c1dcb7]
+[11e9c566ab2e:01478] [15] /opt/precice/lib/libprecice.so.3(+0x255c39)[0x7ffff7c25c39]
+[11e9c566ab2e:01478] [16] /opt/of-user/lib/libpreciceAdapterFunctionObject.so(_ZN14preciceAdapter7Adapter7executeEv+0xa1)[0x7ffff7ecdaf1]
+[11e9c566ab2e:01478] [17] /opt/of-user/lib/libpreciceAdapterFunctionObject.so(_ZN4Foam15functionObjects28preciceAdapterFunctionObject7executeEv+0x11)[0x7ffff7ef7ea1]
+[11e9c566ab2e:01478] [18] /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so(_ZN4Foam18functionObjectList7executeEb+0xf8)[0x7ffffe37da38]
+[11e9c566ab2e:01478] [19] /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so(_ZNK4Foam4Time3runEv+0x19d)[0x7ffffe39766d]
+[11e9c566ab2e:01478] [20] solids4Foam(+0x27ab)[0x5555555567ab]
+[11e9c566ab2e:01478] [21] /lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca)[0x7ffffd9a11ca]
+[11e9c566ab2e:01478] [22] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7ffffd9a128b]
+[11e9c566ab2e:01478] [23] solids4Foam(+0x2ba5)[0x555555556ba5]
+[11e9c566ab2e:01478] *** End of error message ***
+--- solid tail ---
+    From bool Foam::checkConvergence(scalar, scalar, scalar, scalar, label, label, scalar, scalar, scalar, scalar, label, bool, bool)
+    in file solidModels/solidModel/checkConvergence.C at line 182.
+
+FOAM aborting
+
+[stack trace]
+=============
+#1  Foam::error::simpleExit(int, bool) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so
+#2  Foam::checkConvergence(double, double, double, double, int, int, double, double, double, double, int, bool, bool) in /opt/of-user/lib/libsolids4FoamModels.so
+#3  Foam::solidModels::linGeomTotalDispSolid::evolveImplicitSegregated() in /opt/of-user/lib/libsolids4FoamModels.so
+#4  ? in /opt/of-user/bin/solids4Foam
+#5  ? in /lib/x86_64-linux-gnu/libc.so.6
+#6  __libc_start_main in /lib/x86_64-linux-gnu/libc.so.6
+#7  ? in /opt/of-user/bin/solids4Foam
+=============
+[11e9c566ab2e:01480] *** Process received signal ***
+[11e9c566ab2e:01480] Signal: Aborted (6)
+[11e9c566ab2e:01480] Signal code:  (-6)
+[11e9c566ab2e:01480] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x45330)[0x7ffffd9bc330]
+[11e9c566ab2e:01480] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x11c)[0x7ffffda15b2c]
+[11e9c566ab2e:01480] [ 2] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x1e)[0x7ffffd9bc27e]
+[11e9c566ab2e:01480] [ 3] /lib/x86_64-linux-gnu/libc.so.6(abort+0xdf)[0x7ffffd99f8ff]
+[11e9c566ab2e:01480] [ 4] /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so(_ZN4Foam5error10simpleExitEib+0x1a4)[0x7ffffe1adfb4]
+[11e9c566ab2e:01480] [ 5] /opt/of-user/lib/libsolids4FoamModels.so(_ZN4Foam16checkConvergenceEddddiiddddibb+0xef)[0x7ffffeb61b2f]
+[11e9c566ab2e:01480] [ 6] /opt/of-user/lib/libsolids4FoamModels.so(_ZN4Foam11solidModels21linGeomTotalDispSolid24evolveImplicitSegregatedEv+0x1508)[0x7ffffec057a8]
+[11e9c566ab2e:01480] [ 7] solids4Foam(+0x270a)[0x55555555670a]
+[11e9c566ab2e:01480] [ 8] /lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca)[0x7ffffd9a11ca]
+[11e9c566ab2e:01480] [ 9] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7ffffd9a128b]
+[11e9c566ab2e:01480] [10] solids4Foam(+0x2ba5)[0x555555556ba5]
+[11e9c566ab2e:01480] *** End of error message ***
+FATAL detectado:
+solid/log.solids4Foam:246:--> FOAM FATAL ERROR: (openfoam-2512)
+solid/log.solids4Foam:252:FOAM aborting
+=== Pc0 EXIT 12 ===

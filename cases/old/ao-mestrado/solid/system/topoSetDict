@@ -1,0 +1,63 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Tampas + lateral FSI (superficie curva da artery_outer, snapeada como
+// artery_surface), z de meshHints.json.
+
+actions
+(
+    {
+        name    artoph_end_back;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name artery_surface; }
+    }
+    {
+        name    artoph_end_back;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1 -1 -0.00545) (1 1 -0.00435); }
+    }
+    {
+        name    artoph_end_front;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name artery_surface; }
+    }
+    {
+        name    artoph_end_front;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1 -1 0.0340) (1 1 0.0350); }
+    }
+    {
+        name    inner_wall_lateral;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name artery_surface; }
+    }
+    {
+        name    inner_wall_lateral;
+        type    faceSet;
+        action  subtract;
+        source  faceToFace;
+        sourceInfo { set artoph_end_back; }
+    }
+    {
+        name    inner_wall_lateral;
+        type    faceSet;
+        action  subtract;
+        source  faceToFace;
+        sourceInfo { set artoph_end_front; }
+    }
+);

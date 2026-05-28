@@ -1,0 +1,31 @@
+#!/bin/bash
+# on-buckling-tube: estudo dedicado de flambagem axial do nervo optico
+# usando solver geometrico NAO-LINEAR (nonLinearGeometryUpdatedLagrangian).
+#
+# Geometria: coluna prismatica 5mm x 5mm x 30mm (homogenea, dura E=3MPa,
+#            neoHookean, nu=0.30) - elimina contraste de modulos que
+#            impedia convergencia do solver NL no caso anatomico de 8 zonas.
+# BCs:       fixed (z=0) | top (z=30) com rampa ate -4 mm em 10 passos |
+#            imperfection (yPlus em z in [12,18] mm) com pressao 1000 Pa.
+# Pcr Euler (K=0.65, EI=1.56e-4 Nm2, L=30mm) = 4.05 N
+#   -> bifurcacao esperada em dz_cr ~ 1.62 mm (t ~ 4).
+
+set -e
+
+cd "$(dirname "$0")"
+
+source $WM_PROJECT_DIR/bin/tools/RunFunctions
+source solids4FoamScripts.sh 2>/dev/null || true
+
+solids4Foam::convertCaseFormat .
+
+solids4Foam::runApplication blockMesh
+solids4Foam::runApplication topoSet
+solids4Foam::runApplication createPatch -overwrite
+
+# Recria os campos com o novo patch "imperfection"
+solids4Foam::runApplication solids4Foam
+
+echo
+echo "=== Concluido ==="
+echo "Curva F_z(dz) em postProcessing/forces_top/0/forces_*.dat"

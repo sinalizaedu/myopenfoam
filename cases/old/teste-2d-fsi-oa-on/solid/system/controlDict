@@ -1,0 +1,63 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on -- controlDict do SOLIDO                                  |
+| Acoplado a pimpleFoam via preCICE (preciceAdapterFunctionObject).            |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// =============================================================================
+//  3 ciclos cardiacos (HR=69 bpm, T = 60/HR = 0.8696 s) -> endTime = 2.609 s.
+//  1o ciclo = transiente; metricas saem do 3o ciclo.
+//  deltaT = 1e-3 (= janela preCICE) coordenado com fluid/system/controlDict.
+//  Para smoke test, basta o 1o ciclo (endTime = 0.87) -- ajustar manualmente.
+//
+//  adjustTimeStep no -- preCICE exige janela fixa.
+// =============================================================================
+
+application     solids4Foam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+// 1 CICLO completo: T = 0.8696 s, deltaT 2ms -> 435 timesteps, ~10 min wall time.
+// Para meio ciclo usar endTime 0.435. Para 3 ciclos: 2.609.
+endTime         0.87;
+deltaT          2e-3;
+
+writeControl    timeStep;
+writeInterval   20;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  6;
+writeCompression off;
+runTimeModifiable yes;
+adjustTimeStep  no;
+
+functions
+{
+    preCICE_Adapter
+    {
+        type            preciceAdapterFunctionObject;
+        libs            ("libpreciceAdapterFunctionObject.so");
+    }
+
+    // Forca integrada sobre lumen_bot (deve casar com integral de Force no
+    // fluido para validar conservacao do mapeamento preCICE).
+    forces_lumen_bot
+    {
+        type            solidForces;
+        historyPatch    lumen_bot;
+    }
+    forces_lumen_top
+    {
+        type            solidForces;
+        historyPatch    lumen_top;
+    }
+}
+
+// ************************************************************************* //

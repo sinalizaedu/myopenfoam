@@ -1,0 +1,215 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : May 26 2026
+Time   : 01:12:19
+Host   : 11e9c566ab2e
+PID    : 1478
+I/O    : uncollated
+Case   : /simulation/on-fsi-2-Pc0/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel fluidModel
+
+Selecting fluidModel pimpleFluid
+Selecting dynamicFvMesh dynamicMotionSolverFvMesh
+Selecting motion solver: displacementLaplacian
+Applying motion to entire mesh
+Selecting motion diffusion: quadratic
+Selecting motion diffusion: inverseDistance
+Selecting patchDistMethod meshWave
+Reading g from constant directory
+No finite volume options present
+
+Selecting incompressible transport model Newtonian
+Selecting turbulence model type laminar
+Selecting laminar stress model Stokes
+
+PIMPLE: Operating solver in PISO mode
+
+Constructing face velocity Uf
+
+Courant Number mean: 0 max: 0
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[precice] [0m This is preCICE version 3.3.1
+---[precice] [0m Revision info: v3.3.1
+---[precice] [0m Build type: Release (without debug log)
+---[precice] [0m Working directory "/simulation/on-fsi-2-Pc0/fluid"
+---[precice] [0m Configuring preCICE with configuration "../precice-config.xml"
+---[precice] [0m I am participant "Fluid"
+---[precice] [0m Setting up primary communication to coupling partner/s
+---[precice] [0m Primary ranks are connected
+---[precice] [0m Setting up preliminary secondary communication to coupling partner/s
+---[precice] [0m Prepare partition for mesh Fluid-Mesh
+---[precice] [0m Receive global mesh Solid-Mesh
+---[precice] [0m Setting up secondary communication to coupling partner/s
+---[precice] [0m Secondary ranks are connected
+---[precice] [0m Automatic RBF mapping alias from mesh "Fluid-Mesh" to mesh "Solid-Mesh" in "write" direction resolves to "partition-of-unity RBF" .
+---[precice] [0m Computing "partition-of-unity RBF" mapping from mesh "Fluid-Mesh" to mesh "Solid-Mesh" in "write" direction.
+---[precice] [0m Mapping "Force" for t=0 from "Fluid-Mesh" to "Solid-Mesh" (skipped zero sample)
+---[precice] [0m Automatic RBF mapping alias from mesh "Solid-Mesh" to mesh "Fluid-Mesh" in "read" direction resolves to "partition-of-unity RBF" .
+---[precice] [0m Computing "partition-of-unity RBF" mapping from mesh "Solid-Mesh" to mesh "Fluid-Mesh" in "read" direction.
+---[precice] [0m Mapping "Displacement" for t=0 from "Solid-Mesh" to "Fluid-Mesh" (skipped zero sample)
+---[precice] [0m it 1 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 9.5038207e-05, Final residual = 3.9442039e-09, No Iterations 5
+DILUPBiCG:  Solving for Uy, Initial residual = 9.5066746e-05, Final residual = 3.9618903e-09, No Iterations 5
+DILUPBiCG:  Solving for Uz, Initial residual = 0.0012688038, Final residual = 8.4299326e-09, No Iterations 6
+GAMG:  Solving for p, Initial residual = 0.33681357, Final residual = 0.32736425, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 0.21755486, Final residual = 0.22664447, No Iterations 1000
+time step continuity errors : sum local = 1.0049173e-10, global = 3.4340288e-12, cumulative = 3.4340288e-12
+GAMG:  Solving for p, Initial residual = 0.24359792, Final residual = 0.22739183, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 0.24986561, Final residual = 0.24762328, No Iterations 1000
+time step continuity errors : sum local = 1.0172615e-10, global = 9.0465905e-12, cumulative = 1.2480619e-11
+GAMG:  Solving for p, Initial residual = 0.28419347, Final residual = 0.26519401, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 0.32064797, Final residual = 0.31270444, No Iterations 1000
+time step continuity errors : sum local = 1.0142336e-10, global = 4.3276593e-12, cumulative = 1.6808279e-11
+ExecutionTime = 6.41 s  ClockTime = 8 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 2 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 9.5038207e-05, Final residual = 3.9442039e-09, No Iterations 5
+DILUPBiCG:  Solving for Uy, Initial residual = 9.5066746e-05, Final residual = 3.9618903e-09, No Iterations 5
+DILUPBiCG:  Solving for Uz, Initial residual = 0.0012688038, Final residual = 8.4299326e-09, No Iterations 6
+GAMG:  Solving for p, Initial residual = 0.33681357, Final residual = 0.32736425, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 0.21755486, Final residual = 0.22664447, No Iterations 1000
+time step continuity errors : sum local = 1.0049173e-10, global = 3.4340288e-12, cumulative = 2.0242307e-11
+GAMG:  Solving for p, Initial residual = 0.24359792, Final residual = 0.22739183, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 0.24986561, Final residual = 0.24762328, No Iterations 1000
+time step continuity errors : sum local = 1.0172615e-10, global = 9.0465905e-12, cumulative = 2.9288898e-11
+GAMG:  Solving for p, Initial residual = 0.28419347, Final residual = 0.26519401, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 0.32064797, Final residual = 0.31270444, No Iterations 1000
+time step continuity errors : sum local = 1.0142336e-10, global = 4.3276593e-12, cumulative = 3.3616557e-11
+ExecutionTime = 11.47 s  ClockTime = 13 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 3 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.9444631e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.9665929e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.1293745e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 0.99999996, Final residual = 1.6528233e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 0.99999996, Final residual = 9.9810572e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 0.99999991, Final residual = 1.660309e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 0.99999876, Final residual = 1.0697454e-06, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 4.7183917e-05, Final residual = 3.251411e-07, No Iterations 3
+time step continuity errors : sum local = 9.8645426e-10, global = -1.3515504e-11, cumulative = 2.0101053e-11
+GAMG:  Solving for p, Initial residual = 0.023130395, Final residual = 8.3564511e-07, No Iterations 106
+GAMG:  Solving for p, Initial residual = 0.00021563743, Final residual = 9.2911305e-07, No Iterations 5
+time step continuity errors : sum local = 5.104572e-10, global = -9.9559392e-11, cumulative = -7.9458339e-11
+GAMG:  Solving for p, Initial residual = 0.011230684, Final residual = 9.0274814e-07, No Iterations 90
+GAMG:  Solving for p, Initial residual = 1.1661174e-05, Final residual = 9.3960998e-07, No Iterations 2
+time step continuity errors : sum local = 4.1552323e-10, global = -8.5885852e-11, cumulative = -1.6534419e-10
+ExecutionTime = 12.67 s  ClockTime = 24 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 4 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 8.0491503e-18, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 6.9620495e-18, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.3103965e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.8023186e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 1.5529563e-09, No Iterations 10
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 1.8320352e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 0.99999998, Final residual = 9.0257601e-07, No Iterations 142
+GAMG:  Solving for p, Initial residual = 0.0038173364, Final residual = 9.3909845e-07, No Iterations 9
+time step continuity errors : sum local = 2.2970038e-07, global = -6.4944646e-08, cumulative = -6.510999e-08
+GAMG:  Solving for p, Initial residual = 0.023336506, Final residual = 8.7034349e-07, No Iterations 104
+GAMG:  Solving for p, Initial residual = 0.017470663, Final residual = 8.7773749e-07, No Iterations 13
+time step continuity errors : sum local = 3.8629531e-08, global = 7.3015193e-09, cumulative = -5.7808471e-08
+GAMG:  Solving for p, Initial residual = 0.011485104, Final residual = 9.174717e-07, No Iterations 88
+GAMG:  Solving for p, Initial residual = 0.00091015569, Final residual = 9.0602476e-07, No Iterations 4
+time step continuity errors : sum local = 3.1987133e-08, global = -4.3029191e-09, cumulative = -6.211139e-08
+ExecutionTime = 13.27 s  ClockTime = 38 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [31mERROR: [0m Receiving data from another participant (using sockets) failed with a system error: read: Connection reset by peer [system:104]. This often means that the other participant exited with an error (look there).
+terminate called after throwing an instance of 'precice::Error'
+  what():  Receiving data from another participant (using sockets) failed with a system error: read: Connection reset by peer [system:104]. This often means that the other participant exited with an error (look there).
+[11e9c566ab2e:01478] *** Process received signal ***
+[11e9c566ab2e:01478] Signal: Aborted (6)
+[11e9c566ab2e:01478] Signal code:  (-6)
+[11e9c566ab2e:01478] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x45330)[0x7ffffd9bc330]
+[11e9c566ab2e:01478] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x11c)[0x7ffffda15b2c]
+[11e9c566ab2e:01478] [ 2] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x1e)[0x7ffffd9bc27e]
+[11e9c566ab2e:01478] [ 3] /lib/x86_64-linux-gnu/libc.so.6(abort+0xdf)[0x7ffffd99f8ff]
+[11e9c566ab2e:01478] [ 4] /lib/x86_64-linux-gnu/libstdc++.so.6(+0xa5ff5)[0x7ffffdd47ff5]
+[11e9c566ab2e:01478] [ 5] /lib/x86_64-linux-gnu/libstdc++.so.6(+0xbb0da)[0x7ffffdd5d0da]
+[11e9c566ab2e:01478] [ 6] /lib/x86_64-linux-gnu/libstdc++.so.6(_ZSt10unexpectedv+0x0)[0x7ffffdd47a55]
+[11e9c566ab2e:01478] [ 7] /lib/x86_64-linux-gnu/libstdc++.so.6(+0xbb391)[0x7ffffdd5d391]
+[11e9c566ab2e:01478] [ 8] /opt/precice/lib/libprecice.so.3(+0x7c1ae)[0x7ffff7a4c1ae]
+[11e9c566ab2e:01478] [ 9] /opt/precice/lib/libprecice.so.3(+0x655d6)[0x7ffff7a355d6]
+[11e9c566ab2e:01478] [10] /opt/precice/lib/libprecice.so.3(+0x1ddb10)[0x7ffff7badb10]
+[11e9c566ab2e:01478] [11] /opt/precice/lib/libprecice.so.3(+0x1fd307)[0x7ffff7bcd307]
+[11e9c566ab2e:01478] [12] /opt/precice/lib/libprecice.so.3(+0x2161ff)[0x7ffff7be61ff]
+[11e9c566ab2e:01478] [13] /opt/precice/lib/libprecice.so.3(+0x217594)[0x7ffff7be7594]
+[11e9c566ab2e:01478] [14] /opt/precice/lib/libprecice.so.3(+0x24dcb7)[0x7ffff7c1dcb7]
+[11e9c566ab2e:01478] [15] /opt/precice/lib/libprecice.so.3(+0x255c39)[0x7ffff7c25c39]
+[11e9c566ab2e:01478] [16] /opt/of-user/lib/libpreciceAdapterFunctionObject.so(_ZN14preciceAdapter7Adapter7executeEv+0xa1)[0x7ffff7ecdaf1]
+[11e9c566ab2e:01478] [17] /opt/of-user/lib/libpreciceAdapterFunctionObject.so(_ZN4Foam15functionObjects28preciceAdapterFunctionObject7executeEv+0x11)[0x7ffff7ef7ea1]
+[11e9c566ab2e:01478] [18] /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so(_ZN4Foam18functionObjectList7executeEb+0xf8)[0x7ffffe37da38]
+[11e9c566ab2e:01478] [19] /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so(_ZNK4Foam4Time3runEv+0x19d)[0x7ffffe39766d]
+[11e9c566ab2e:01478] [20] solids4Foam(+0x27ab)[0x5555555567ab]
+[11e9c566ab2e:01478] [21] /lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca)[0x7ffffd9a11ca]
+[11e9c566ab2e:01478] [22] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7ffffd9a128b]
+[11e9c566ab2e:01478] [23] solids4Foam(+0x2ba5)[0x555555556ba5]
+[11e9c566ab2e:01478] *** End of error message ***

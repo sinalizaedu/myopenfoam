@@ -1,0 +1,24 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       dictionary;
+    location    "constant";
+    object      mechanicalProperties.withDefaultValues;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+planeStress     no;
+
+mechanical      8 ( on { type neoHookeanElastic ; rho rho [ 1 -3 0 0 0 0 0 ] 1000 ; E E [ 1 -1 -2 0 0 0 0 ] 30000 ; nu nu [ 0 0 0 0 0 0 0 ] 0.45 ; solvePressureEqn false ; pressureSmoothingScaleFactor 100 ; } ; pia { type neoHookeanElastic ; rho rho [ 1 -3 0 0 0 0 0 ] 1100 ; E E [ 1 -1 -2 0 0 0 0 ] 3000000 ; nu nu [ 0 0 0 0 0 0 0 ] 0.45 ; solvePressureEqn false ; pressureSmoothingScaleFactor 100 ; } ; sas { type neoHookeanElastic ; rho rho [ 1 -3 0 0 0 0 0 ] 1000 ; E E [ 1 -1 -2 0 0 0 0 ] 100000 ; nu nu [ 0 0 0 0 0 0 0 ] 0.3 ; solvePressureEqn false ; pressureSmoothingScaleFactor 100 ; } ; dura { type neoHookeanElastic ; rho rho [ 1 -3 0 0 0 0 0 ] 1100 ; E E [ 1 -1 -2 0 0 0 0 ] 3000000 ; nu nu [ 0 0 0 0 0 0 0 ] 0.45 ; solvePressureEqn false ; pressureSmoothingScaleFactor 100 ; } ; lc { type neoHookeanElastic ; rho rho [ 1 -3 0 0 0 0 0 ] 1100 ; E E [ 1 -1 -2 0 0 0 0 ] 400000 ; nu nu [ 0 0 0 0 0 0 0 ] 0.45 ; solvePressureEqn false ; pressureSmoothingScaleFactor 100 ; } ; sclera_peri { type neoHookeanElastic ; rho rho [ 1 -3 0 0 0 0 0 ] 1400 ; E E [ 1 -1 -2 0 0 0 0 ] 5000000 ; nu nu [ 0 0 0 0 0 0 0 ] 0.45 ; solvePressureEqn false ; pressureSmoothingScaleFactor 100 ; } ; sclera_ring { type neoHookeanElastic ; rho rho [ 1 -3 0 0 0 0 0 ] 1400 ; E E [ 1 -1 -2 0 0 0 0 ] 5000000 ; nu nu [ 0 0 0 0 0 0 0 ] 0.45 ; solvePressureEqn false ; pressureSmoothingScaleFactor 100 ; } ; globo { type neoHookeanElastic ; rho rho [ 1 -3 0 0 0 0 0 ] 1400 ; E E [ 1 -1 -2 0 0 0 0 ] 5000000 ; nu nu [ 0 0 0 0 0 0 0 ] 0.45 ; solvePressureEqn false ; pressureSmoothingScaleFactor 100 ; } ; );
+
+
+// ************************************************************************* //

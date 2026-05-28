@@ -1,0 +1,58 @@
+#!/bin/bash
+# on-mestrado-3 ANATOMICO - 8 zonas, P_CSF microgravidade (SANS).
+# IDENTICO a on-mestrado-2 EXCETO P_CSF: 2667 Pa (~20 mmHg) em vez de 1333 Pa.
+# Refs: Lawley et al. (2017); Mader et al. (2011) - SANS.
+#
+# Zonas (8 materiais bonded por DOF):
+#   nervo + bainha  (z=0-30 mm):
+#     on          : nervo neural,    r=0    -1.50,  E=30  kPa, nu=0.45
+#     pia         : pia mater,       r=1.50 -1.55,  E=3   MPa, nu=0.45
+#     sas         : SAS (CSF),       r=1.55 -2.35,  E=100 kPa, nu=0.30  (split @ r=2.0)
+#     dura        : dura mater,      r=2.35 -2.50,  E=3   MPa, nu=0.45
+#   junction LC + sclera (z=30-30.30 mm):
+#     lc          : lamina cribrosa, r=0    -1.50,  E=0.4 MPa, nu=0.45
+#     sclera_peri : peripapilar,     r=1.50 -2.00,  E=5   MPa, nu=0.45
+#     sclera_ring : anel escleral,   r=2.00 -2.50,  E=5   MPa, nu=0.45
+#   casca do globo (z=30.30-30.80 mm):
+#     globo       : casca do globo,  r=0    -2.50,  E=5   MPa, nu=0.45
+#
+# Carregamento:
+#   contact_local : P_arteria = 9034 Pa (sys/dia mean, ALPHA=0.6767 do P_lumen)
+#                   carved-out de dura_outer em z=22.5mm, eixo +X
+#   posterior_sas : P_CSF = 3800 Pa (~28.5 mmHg, SANS upper bound)
+#                   coluna do LCR vinda do cerebro empurra axialmente a tampa
+#                   peripapilar da esclera em z=30 (cul-de-sac do SAS).
+#
+# BCs (anatomicamente corretas, lit. Sigal/Power/Wang/Berdahl):
+#   posterior_{on,pia,dura}     : fixedDisplacement (canal optico, ENGASTE)
+#   posterior_sas               : solidTraction P_CSF (continuacao da cisterna)
+#   dura_outer                  : Winkler 200 kPa/m (gordura orbital)
+#   sclera_ring_outer           : livre (transicao p/ globo)
+#   globo_outer                 : fixedDisplacement (EQUADOR, musculos extraoculares)
+#   anterior_globo              : livre (lado vitreo, sem IOP)
+#
+# IMPORTANTE: Cada zona requer system/{nome}Subset/{fvSchemes,fvSolution} com
+# gradSchemes "Gauss linear" (nao leastSquaresS4f) - caso contrario diverge.
+
+set -e
+set -o pipefail
+cd "$(dirname "$0")/solid"
+
+echo "=== on-mestrado-3: blockMesh (8 zonas, ~17400 cells) ==="
+blockMesh | tee log.blockMesh
+
+echo "=== on-mestrado-3: topoSet (extrai contact_local do dura_outer) ==="
+topoSet -dict system/topoSetDict_contact | tee log.topoSet
+
+echo "=== on-mestrado-3: createPatch (cria contact_local) ==="
+createPatch -overwrite -dict system/createPatchDict_contact | tee log.createPatch
+
+echo "=== on-mestrado-3: checkMesh ==="
+checkMesh | tee log.checkMesh
+
+echo "=== on-mestrado-3: solids4Foam ==="
+solids4Foam | tee log.solids4Foam
+
+echo ""
+echo "=== Concluido. Resultado em solid/1/ ==="
+echo "Visualizar: open solid/on-mestrado-3.foam no ParaView"

@@ -1,0 +1,39 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+// preCICE adapter (lado SOLIDO).
+//   Le 'Force' do fluido nas 4 patches FSI (fsi_pia, fsi_dura,
+//   fsi_sclera_peri, fsi_sclera_ring).
+//   Escreve 'Displacement' (do campo D) para o fluido seguir o solido.
+
+preciceConfig "../precice-config.xml";
+
+participant Solid;
+
+modules ( FSI );
+
+interfaces
+{
+    Interface1
+    {
+        mesh              Solid-Mesh;
+        patches           ( fsi_pia fsi_dura fsi_sclera_peri fsi_sclera_ring );
+        locations         faceCenters;
+
+        readData          ( Force );
+        writeData         ( Displacement );
+    };
+};
+
+FSI
+{
+    solverType              solid;
+    namePointDisplacement   pointD;
+    nameCellDisplacement    D;
+    nameForce               solidForce;
+}

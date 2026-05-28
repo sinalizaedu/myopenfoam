@@ -51,6 +51,9 @@ def analytical_nerve_cylinder(radius_mm=1.5, z_min_mm=0.0, z_max_mm=30.0, n=48):
 
 nerve_stl = trimesh.load_mesh(TRI / "nerve.stl")
 artery_stl = trimesh.load_mesh(TRI / "artery.stl")
+artery_orig = trimesh.load_mesh(TRI / "artery_unscaled.stl") if (
+    TRI / "artery_unscaled.stl"
+).exists() else None
 
 fig = plt.figure(figsize=(13, 6))
 
@@ -58,7 +61,9 @@ fig = plt.figure(figsize=(13, 6))
 ax1 = fig.add_subplot(1, 2, 1, projection="3d")
 print("[bounds]")
 add_mesh(ax1, nerve_stl, "tab:blue", 0.20, "nerve.stl (STL)")
-add_mesh(ax1, artery_stl, "tab:red", 0.55, "artery.stl")
+if artery_orig is not None:
+    add_mesh(ax1, artery_orig, "tab:gray", 0.15, "artery (unscaled)")
+add_mesh(ax1, artery_stl, "tab:red", 0.70, "artery.stl (scaled)")
 
 # Cilindro analítico do on-mestrado, transparente, para comparar
 X, Y, Z = analytical_nerve_cylinder()
@@ -75,9 +80,9 @@ ax1.set_title("Artéria curva + nervo óptico (mesmo eixo z agora)")
 ax1.view_init(elev=20, azim=-65)
 # Bounding cube to equalize aspect
 for lim_fn, lim in [
-    (ax1.set_xlim, (-12, 5)),
-    (ax1.set_ylim, (-5, 5)),
-    (ax1.set_zlim, (-2, 32)),
+    (ax1.set_xlim, (-14, 6)),
+    (ax1.set_ylim, (-6, 5)),
+    (ax1.set_zlim, (-4, 35)),
 ]:
     lim_fn(*lim)
 
@@ -92,13 +97,22 @@ ax2.scatter(
     alpha=0.4,
     label="nerve.stl",
 )
+if artery_orig is not None:
+    ax2.scatter(
+        artery_orig.vertices[:, 0] * 1e3,
+        artery_orig.vertices[:, 2] * 1e3,
+        s=1,
+        c="tab:gray",
+        alpha=0.3,
+        label="artery (unscaled)",
+    )
 ax2.scatter(
     artery_stl.vertices[:, 0] * 1e3,
     artery_stl.vertices[:, 2] * 1e3,
     s=2,
     c="tab:red",
-    alpha=0.6,
-    label="artery.stl",
+    alpha=0.7,
+    label="artery.stl (scaled)",
 )
 # Faixa do nervo on-mestrado (vertical em xz: r=1.5 mm, z∈[0,30])
 ax2.fill_betweenx([0, 30], -1.5, 1.5, color="tab:cyan", alpha=0.25,

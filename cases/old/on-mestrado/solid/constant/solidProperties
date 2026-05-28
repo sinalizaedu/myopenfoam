@@ -1,0 +1,51 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// on-mestrado - modelo solido pulsatil quasi-estatico, deformacoes pequenas
+//
+// Cada timestep aplica a pressao instantanea da tabela contact_pressure.dat
+// e converge para o equilibrio estatico correspondente (ddt = steadyState).
+//
+// Para analise pulsatil:
+//   - nCorrectors aumentado para 12000 (pode precisar de mais iter no transient
+//     dado o "warm start" do estado anterior nem sempre ajudar)
+//   - solutionTolerance e alternativeTolerance relaxadas para 5e-4 para
+//     viabilizar 40 passos (vs 1e-4 que dava 4000 iter/passo no quasi-static)
+//   - convergencia pratica: residuo absoluto cai rapido nos primeiros 100-500
+//     iter, depois e a alternativeTolerance que domina o numero de iter
+//
+// Tolerancias para quasi-static (1 passo apenas), mais rigorosas:
+//   solutionTolerance 1e-04; alternativeTolerance 1e-04;
+
+solidModel      linearGeometryTotalDisplacement;
+
+linearGeometryTotalDisplacementCoeffs
+{
+    // Tolerancias REAIS lidas pelo linGeomTotalDispSolid (checkConvergence.C):
+    //   rTol  : residual relativo  (current/initial) - default 1e-6
+    //   aTol  : residual absoluto                     - default 1e-50
+    //   sTol  : step norm relativo (step/xNorm)       - default 1e-10
+    //   nCorrectors : iter maximas                    - default 10000
+    //
+    // Para analise pulsatil:
+    //   Cada timestep usa warm-start do anterior (Init Res ja ~1e-4 nos
+    //   timesteps subsequentes). Tolerancias relativas apertadas (default)
+    //   exigiriam mais reducao que e fisicamente necessario.
+    //
+    //   rTol 1e-3 + aTol 1e-5 da convergencia em ~200-500 iter por timestep
+    //   => ~30 min total (20 timesteps), com precisao adequada para o ciclo.
+    //
+    // Para um run "final" de alta precisao (quasi-static unico), usar:
+    //   rTol 1e-6 (default), nCorrectors 10000
+    nCorrectors             3000;
+    rTol                    1e-3;
+    aTol                    1e-5;
+    sTol                    1e-6;
+    materialTolerance       1e-04;
+    infoFrequency           500;
+}

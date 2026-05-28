@@ -1,0 +1,94 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict
+Date   : May 25 2026
+Time   : 02:10:24
+Host   : 3e665f5d2268
+PID    : 258
+I/O    : uncollated
+Case   : /simulation/teste-2d-fsi-oa-on/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = 0
+
+Reading topoSetDict
+
+Time = 0
+    mesh not changed.
+Created cellSet lowerAll
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1e-06 -1e-06 -1e-06) (0.020001 0.009951 0.001001))
+    cellSet lowerAll now size 800
+Created cellSet on_set
+    Applying source cylinderToCell
+    Adding cells with centres within cylinder, with point1 = (0.01 0.0075 -0.005), point2 = (0.01 0.0075 0.005), radius = 0.00150001
+    cellSet on_set now size 32
+Created cellSet ons_set
+    Applying source cylinderToCell
+    Adding cells with centres within cylinder, with point1 = (0.01 0.0075 -0.005), point2 = (0.01 0.0075 0.005), radius = 0.00250001
+    cellSet ons_set now size 80
+Read set cellSet ons_set size:80
+    Applying source cellToCell
+    Removing all elements of cell sets: (on_set)
+    cellSet ons_set now size 48
+Created cellSet fat_below_set
+    Applying source cellToCell
+    Adding all elements of cell sets: (lowerAll)
+    cellSet fat_below_set now size 800
+Read set cellSet fat_below_set size:800
+    Applying source cellToCell
+    Removing all elements of cell sets: (on_set)
+    cellSet fat_below_set now size 768
+Read set cellSet fat_below_set size:768
+    Applying source cellToCell
+    Removing all elements of cell sets: (ons_set)
+    cellSet fat_below_set now size 720
+Created cellSet oa_wall_set
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1e-06 0.0099999 -1e-06) (0.020001 0.0102 0.001001))
+    cellSet oa_wall_set now size 80
+Read set cellSet oa_wall_set size:80
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1e-06 0.0113 -1e-06) (0.020001 0.0115001 0.001001))
+    cellSet oa_wall_set now size 160
+Created cellSet fat_above_set
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1e-06 0.0115 -1e-06) (0.020001 0.020001 0.001001))
+    cellSet fat_above_set now size 680
+Created cellZoneSet on
+    Applying source setToCellZone
+    Adding all cells from cell set: on_set ...
+    cellZoneSet on now size 32
+Created cellZoneSet ons
+    Applying source setToCellZone
+    Adding all cells from cell set: ons_set ...
+    cellZoneSet ons now size 48
+Created cellZoneSet fat_below
+    Applying source setToCellZone
+    Adding all cells from cell set: fat_below_set ...
+    cellZoneSet fat_below now size 720
+Created cellZoneSet oa_wall
+    Applying source setToCellZone
+    Adding all cells from cell set: oa_wall_set ...
+    cellZoneSet oa_wall now size 160
+Created cellZoneSet fat_above
+    Applying source setToCellZone
+    Adding all cells from cell set: fat_above_set ...
+    cellZoneSet fat_above now size 680
+
+End
+

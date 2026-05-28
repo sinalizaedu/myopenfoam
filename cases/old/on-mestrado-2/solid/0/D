@@ -1,0 +1,139 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// on-mestrado-2 ANATOMICO - 8 zonas (nervo + bainha + LC + sclera + globo).
+// BCs seguindo a literatura biomecanica:
+//
+//   z=0 (canal optico, apice orbital):
+//     posterior_{on,pia,dura} = fixedDisplacement (0 0 0)
+//       Ancoragem rigida ao osso do canal optico via adesoes fibrosas de
+//       colageno (on, pia) e fusao dura<->periosteo (Sigal/Wang).
+//     posterior_sas = solidTraction pressure = P_CSF = 1333 Pa (~10 mmHg)
+//       O SAS nao e fixo: e a continuacao da cisterna quiasmatica, abrindo
+//       para a cavidade craniana. A coluna de LCR vem do cerebro pelo canal
+//       optico, transmite a PIC axialmente atraves do SAS e empurra a tampa
+//       peripapilar da esclera em z=30 (cul-de-sac do SAS).
+//       Ref: Berdahl/Allingham; Killer; Hayreh (transmissao da PIC via ONS).
+//
+//   z=30 (junction nervo<->LC/sclera): SEM BC explicita - continuidade
+//     nodal e DOF compartilhados garantem o tied constraint.
+//
+//   globo_outer (lateral z=30.30-30.80, EQUADOR): fixedDisplacement (0 0 0)
+//     Justificativa: ancoragem dos musculos extraoculares e capsula de Tenon
+//     ao redor do equador do globo (Power et al.; Sigal et al.).
+//
+//   anterior_globo (z=30.80, lado vitreo): livre, sem IOP neste modelo.
+//
+//   sclera_ring_outer (lateral z=30-30.30): livre, transicao p/ globo.
+//
+//   contact_local (carved-out de dura_outer em z~22.5mm, +X axis): pressao
+//     media sistole/diastole da arteria oftalmica. z=22.5mm e 7.5mm do globo,
+//     proximo da entrada anatomica da arteria na bainha.
+//     P_contact_mean = 9034 Pa = (10827 + 7241) / 2
+//     ALPHA = 0.6767 (efficiency factor) aplicada a P_lumen sys/dia.
+//
+//   dura_outer (resto da face lateral z=0-30): Winkler 200 kPa/m
+//     k = E_fat / t_fat = 500 Pa / 0.0025 m = 200000 Pa/m
+//     E_fat: Schoemaker (2006), Yoo (2011); gordura orbital ~0.5 kPa.
+//
+//   *** Modelagem do LCR como solido soft (E_sas=100kPa, nu=0.30) ***
+//   Aproximacao para analise estatica: a SAS e um solido elastico de baixa
+//   rigidez que transmite axialmente a P_CSF aplicada em z=0 ate a tampa
+//   peripapilar em z=30. A transmissao lateral (push da pia interna +
+//   pull da dura externa) e SUBESTIMADA porque um fluido real teria stress
+//   isotropico (sigma_r = sigma_axial = P_CSF), enquanto o solido com
+//   nu=0.30 da sigma_r ~ nu/(1-nu) * P_CSF = 0.43 * P_CSF.
+//   Para a fisica completa do LCR como fluido FSI, ver TODO de proxima fase.
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ----- z=0 mm: canal optico - ENGASTE TOTAL --------------------------
+    posterior_on
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_pia
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- z=0 mm: SAS aberta - coluna do LCR vinda do cerebro ----------
+    //   P_CSF = 1333 Pa (~10 mmHg) - PIC normal supino em adultos saudaveis
+    //     ref: Andresen & Juhler (2014); Czosnyka & Pickard (2004)
+    //   A pressao se transmite axialmente pelo SAS soft solid e empurra a
+    //   tampa peripapilar da esclera em z=30 (cul-de-sac do SAS).
+    posterior_sas
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 1333;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_dura
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- contato local arteria oftalmica (carved-out de dura_outer) ----
+    //   Patch criado por topoSet+createPatch em z=22.5mm, eixo +X.
+    //   Posicao proxima do globo (7.5 mm do globo, 22.5 mm do engaste).
+    //   P_contact = ALPHA * P_lumen, ALPHA = 0.6767 (= 9000/13300)
+    //     P_sist  = 10827 Pa,  P_diast = 7241 Pa,  P_mean = 9034 Pa
+    contact_local
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 9034;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- dura_outer (resto da lateral z=0-30): Winkler 200 kPa/m -------
+    dura_outer
+    {
+        type        solidTractionElasticFoundation;
+        k           200000;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- sclera_ring_outer (lateral z=30-30.30): livre -----------------
+    sclera_ring_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- globo_outer (lateral z=30.30-30.80): EQUADOR engastado --------
+    //   Ancoragem dos musculos extraoculares e capsula de Tenon.
+    globo_outer
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- anterior_globo (z=30.80, lado vitreo): livre, sem IOP ---------
+    anterior_globo
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+}

@@ -1,0 +1,106 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+// Fluid: lúmen (interior da superfície artery_inner.stl).
+// Espessura parietal h = 0.20 mm (ver brunaStuff/build_artoph_hollow_stls.py).
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+geometry
+{
+    artery_inner.stl
+    {
+        type    triSurfaceMesh;
+        name    lumen_surface;
+    }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       2000000;
+    maxGlobalCells      8000000;
+    minRefinementCells  10;
+    nCellsBetweenLevels 2;
+
+    features
+    (
+        { file "artery_inner.eMesh"; level 3; }
+    );
+
+    refinementSurfaces
+    {
+        lumen_surface
+        {
+            level   (2 3);
+            patchInfo { type wall; }
+        }
+    }
+
+    resolveFeatureAngle     45;
+    refinementRegions { }
+
+    // Dentro do lumen — VALIDADO por raycast (build_artoph_hollow_stls.py).
+    // BUG corrigido 2026-05-23: ponto antigo (centroide dos vertices) caia
+    // FORA da arteria por causa da curvatura, e snappy mantinha "tudo menos
+    // arteria" como dominio do fluido (caixa giga com furo).
+    locationInMesh          (-2.910173205180812e-3 2.6981155361419013e-3 1.7528189149150608e-2);
+
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    nSmoothPatch        10;
+    tolerance           2.0;
+    nSolveIter          200;
+    nRelaxIter          15;
+    nFeatureSnapIter    20;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap false;
+}
+
+addLayersControls
+{
+    relativeSizes       true;
+    layers              { }
+    expansionRatio      1.0;
+    finalLayerThickness 0.3;
+    minThickness        0.1;
+    nGrow               0;
+    featureAngle        60;
+    nRelaxIter          3;
+    nSmoothSurfaceNormals 1;
+    nSmoothNormals      3;
+    nSmoothThickness    10;
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle  90;
+    nBufferCellsNoExtrude 0;
+    nLayerIter          50;
+}
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+    relaxed
+    {
+        maxNonOrtho 80;
+        maxBoundarySkewness 25;
+        maxInternalSkewness 6;
+        minVol              1e-15;
+        minTetQuality      -1e-30;
+    }
+    nSmoothScale        6;
+    errorReduction      0.5;
+}
+
+writeFlags ( );
+mergeTolerance 1e-6;

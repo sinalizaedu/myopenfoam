@@ -1,0 +1,79 @@
+#!/bin/bash
+# teste-2d-fsi-oa-on -- FSI one-way (preCICE) + Contato OA x ONS
+# Pipeline: gera blockMeshDicts (solid + fluid) -> blockMesh -> topoSet ->
+# gera onda OMVS -> pimpleFoam + solids4Foam em paralelo via preCICE adapter.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+cd "$ROOT"
+
+# Scripts: prefere ${ROOT}/scripts (sincronizada no container), depois brunaStuff
+if [[ -f "${ROOT}/scripts/gen_teste_2d_fsi_blockmesh.py" ]]; then
+  BRUNA="${ROOT}/scripts"
+elif [[ -f "${ROOT}/../../brunaStuff/gen_teste_2d_fsi_blockmesh.py" ]]; then
+  BRUNA="$(cd "${ROOT}/../../brunaStuff" && pwd)"
+else
+  echo "ERROR: cannot find gen_teste_2d_fsi_blockmesh.py" >&2
+  exit 1
+fi
+
+echo "=== 1) Gerar blockMeshDicts (solid + fluid) ==="
+python3 "${BRUNA}/gen_teste_2d_fsi_blockmesh.py"
+
+echo "=== 2) Gerar onda OMVS de pressao (inlet + outlet) ==="
+python3 "${BRUNA}/gen_teste_2d_fsi_omvs_pressure.py"
+
+# Em ambiente local sem OpenFOAM, parar aqui
+if [[ -z "${WM_PROJECT_DIR:-}" ]]; then
+  echo "SKIP solver: WM_PROJECT_DIR not set."
+  echo "Para rodar: docker compose run --rm openfoam bash -c 'cd /simulation/teste-2d-fsi-oa-on && ./Allrun'"
+  exit 0
+fi
+
+echo "=== 3) blockMesh (solid + fluid) ==="
+( cd solid && blockMesh 2>&1 | tee log.blockMesh ) \
+  || { echo "ERROR: blockMesh failed em solid"; tail -40 solid/log.blockMesh; exit 1; }
+( cd fluid && blockMesh 2>&1 | tee log.blockMesh ) \
+  || { echo "ERROR: blockMesh failed em fluid"; tail -40 fluid/log.blockMesh; exit 1; }
+
+echo "=== 4) topoSet (solid: 5 cellZones) ==="
+( cd solid && topoSet -dict system/topoSetDict 2>&1 | tee log.topoSet ) \
+  || { echo "ERROR: topoSet failed"; tail -40 solid/log.topoSet; exit 1; }
+
+echo "=== 5) checkMesh ==="
+( cd solid && checkMesh -allTopology -allGeometry 2>&1 | tee log.checkMesh \
+    | grep -E "cells:|orthogonal|skewness|Mesh OK|FAILED" || true )
+( cd fluid && checkMesh -allTopology -allGeometry 2>&1 | tee log.checkMesh \
+    | grep -E "cells:|orthogonal|skewness|Mesh OK|FAILED" || true )
+
+echo "=== 6) Coupled solvers (preCICE one-way Force) ==="
+echo "    - Fluid (pimpleFoam) sera o ACCEPTOR (m2n:sockets)"
+echo "    - Solid (solids4Foam) sera o CONNECTOR"
+
+( cd fluid && pimpleFoam > log.pimpleFoam 2>&1 ) &
+PF=$!
+( cd solid && solids4Foam > log.solids4Foam 2>&1 ) &
+PS=$!
+
+RC_F=0; RC_S=0
+wait $PF || RC_F=$?
+wait $PS || RC_S=$?
+
+if (( RC_F != 0 )); then
+  echo "ERROR: pimpleFoam failed (rc=$RC_F)"
+  tail -40 fluid/log.pimpleFoam
+  exit 1
+fi
+if (( RC_S != 0 )); then
+  echo "ERROR: solids4Foam failed (rc=$RC_S)"
+  tail -40 solid/log.solids4Foam
+  exit 1
+fi
+if grep -q "FOAM FATAL\|FOAM aborting" fluid/log.pimpleFoam solid/log.solids4Foam 2>/dev/null; then
+  echo "ERROR: FATAL em algum log"
+  grep -nE "FOAM FATAL|FOAM aborting" fluid/log.pimpleFoam solid/log.solids4Foam | head
+  exit 1
+fi
+
+echo "=== Allrun finished ==="
+echo "    - Logs: solid/log.solids4Foam, fluid/log.pimpleFoam"
+echo "    - preCICE log: precice-Fluid-iterations.log, precice-Solid-iterations.log"

@@ -1,0 +1,174 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on                                                           |
+| Cria as cellZones a partir dos 4 blocos do blockMesh:                        |
+|     on, ons, fat_below, oa_wall (= Blocks B + C), fat_above (= Block D)      |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// =============================================================================
+//  Coordenadas em metros (blockMesh scale = 0.001 -> SI).
+//  Centro da ONS:   (0.010, 0.0075, 0.0005)
+//  Raio ON:         1.5 mm = 0.0015 m
+//  Raio ONS:        2.5 mm = 0.0025 m
+//
+//  Geometria dos blocos (com INITIAL_GAP = 50 um entre Block A e Block B):
+//    Block A (lower):    y in [0,     0.00995]  -> on, ons, fat_below
+//    [ gap inicial vacuo 50 um, y in [0.00995, 0.0100] ]
+//    Block B (wall_inf): y in [0.0100, 0.0102]  -> oa_wall
+//    Block C (wall_sup): y in [0.0113, 0.0115]  -> oa_wall
+//    Block D (fat_above): y in [0.0115, 0.0200] -> fat_above
+//
+//  Lumen (y in [0.0102, 0.0113]) NAO existe no mesh do solido.
+//  oa_wall combina B+C usando 2 sub-boxes (UNION via boxToCell add).
+// =============================================================================
+
+actions
+(
+    // -------- Block A (y in [0, 9.95] mm) -----------------------------------
+    {
+        name    lowerAll;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (-1e-6 -1e-6 -1e-6) (0.020001 0.009951 0.001001);
+        }
+    }
+
+    {
+        name    on_set;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1     (0.010 0.0075 -0.005);
+            p2     (0.010 0.0075  0.005);
+            radius 0.00150001;
+        }
+    }
+
+    {
+        name    ons_set;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        sourceInfo
+        {
+            p1     (0.010 0.0075 -0.005);
+            p2     (0.010 0.0075  0.005);
+            radius 0.00250001;
+        }
+    }
+    {
+        name    ons_set;
+        type    cellSet;
+        action  subtract;
+        source  cellToCell;
+        sourceInfo { set on_set; }
+    }
+
+    {
+        name    fat_below_set;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        sourceInfo { set lowerAll; }
+    }
+    {
+        name    fat_below_set;
+        type    cellSet;
+        action  subtract;
+        source  cellToCell;
+        sourceInfo { set on_set; }
+    }
+    {
+        name    fat_below_set;
+        type    cellSet;
+        action  subtract;
+        source  cellToCell;
+        sourceInfo { set ons_set; }
+    }
+
+    // -------- Blocks B + C (oa_wall: 2 sub-boxes UNION) ---------------------
+    // Block B: y in [10.00, 10.20] mm
+    {
+        name    oa_wall_set;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (-1e-6 0.0099999 -1e-6) (0.020001 0.01020001 0.001001);
+        }
+    }
+    // Block C: y in [11.30, 11.50] mm  (action 'add' = union)
+    {
+        name    oa_wall_set;
+        type    cellSet;
+        action  add;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (-1e-6 0.01129999 -1e-6) (0.020001 0.0115001 0.001001);
+        }
+    }
+
+    // -------- Block D (fat_above, y in [11.5, 20] mm) -----------------------
+    {
+        name    fat_above_set;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (-1e-6 0.01150001 -1e-6) (0.020001 0.020001 0.001001);
+        }
+    }
+
+    // -------- Promove cellSets a cellZones ----------------------------------
+    {
+        name    on;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo { set on_set; }
+    }
+    {
+        name    ons;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo { set ons_set; }
+    }
+    {
+        name    fat_below;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo { set fat_below_set; }
+    }
+    {
+        name    oa_wall;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo { set oa_wall_set; }
+    }
+    {
+        name    fat_above;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo { set fat_above_set; }
+    }
+);
+
+// ************************************************************************* //

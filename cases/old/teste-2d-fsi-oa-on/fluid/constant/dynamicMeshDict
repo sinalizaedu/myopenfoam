@@ -1,0 +1,13 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      dynamicMeshDict;
+}
+
+// One-way FSI: malha fluida fixa, sangue empurra parede arterial mas a
+// parede deformada NAO realimenta o fluido (Δr_parede ~ 50um << Δr_lumen
+// ~ 1100um -> efeito negligible em pressao no smoke test). Para two-way:
+// trocar para dynamicMotionSolverFvMesh + cellDisplacement.
+dynamicFvMesh           staticFvMesh;

@@ -1,0 +1,1318 @@
+=== 1) Copia polyMesh do FLUIDO do ao-mestrado (mesma geometria do lumen) ===
+[fluid] polyMesh copiada de /simulation/sugestao/../ao-mestrado/fluid/constant/polyMesh
+=== 2) Allmesh do FLUIDO (checkMesh) ===
+=== fluid: checkMesh ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh -allTopology -allGeometry
+Date   : May 25 2026
+Time   : 02:04:47
+Host   : 966b8a85630c
+PID    : 1459
+I/O    : uncollated
+Case   : /simulation/sugestao/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+    Enabling all (cell, face, edge, point) topology checks.
+    Enabling all geometry checks.
+
+Time = 0
+
+Mesh stats 
+    points:           25600
+    faces:            66272
+    internal faces:   55840
+    cells:            20352
+    faces per cell:   6
+    boundary patches: 4
+    point zones:      0
+    face zones:       0
+    cell zones:       0
+
+Overall number of cells of each type:
+    hexahedra:     20352
+    prisms:        0
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    0
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Topological cell zip-up check OK.
+    Face-face connectivity OK.
+    Number of regions: 1 (OK).
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology  Bounding box
+    inlet               128      160      ok (non-closed singly connected)   (-0.01375 0.002 -0.00547002) (-0.01265 0.0031 -0.00547002)
+    outlet              128      160      ok (non-closed singly connected)   (-0.00739158 -0.00549776 0.0332776) (-0.00650336 -0.00440224 0.0339189)
+    axis                5088     5120     ok (non-closed singly connected)   (-0.0132275 -0.00497739 -0.00547002) (0.00365359 0.00395572 0.0336143)
+    wall                5088     5120     ok (non-closed singly connected)   (-0.01375 -0.00549776 -0.00547002) (0.00417585 0.00447704 0.0339189)
+    ".*"                10432    10432    ok (closed singly connected)       (-0.01375 -0.00549776 -0.00547002) (0.00417585 0.00447704 0.0339189)
+
+
+Checking faceZone topology for multiply connected surfaces...
+    No faceZones found.
+
+Checking basic cellZone addressing...
+    No cellZones found.
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (-0.01375 -0.00549776 -0.00547002) (0.00417585 0.00447704 0.0339189)
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+    Boundary openness (1.35421e-17 -6.51724e-18 4.09374e-19) OK.
+    Max cell openness = 4.17379e-16 OK.
+    Max aspect ratio = 19.447 OK.
+    Minimum face area = 1.78396e-09. Maximum face area = 5.42207e-08.  Face area magnitudes OK.
+    Min volume = 7.52527e-13. Max volume = 5.12524e-12.  Total volume = 5.20369e-08.  Cell volumes OK.
+    Mesh non-orthogonality Max: 4.43672 average: 0.26124
+    Non-orthogonality check OK.
+    Face pyramids OK.
+    Max skewness = 0.3403 OK.
+    Coupled point location match (average 0) OK.
+    Face tets OK.
+    Min/max edge length = 5.39093e-06 0.000427588 OK.
+    All angles in faces OK.
+    Face flatness (1 = flat, 0 = butterfly) : min = 0.999997  average = 1
+    All face flatness OK.
+    Cell determinant (wellposedness) : minimum: 0.00136688 average: 0.177664
+    Cell determinant check OK.
+    Concave cell check OK.
+    Face interpolation weight : minimum: 0.406217 average: 0.485039
+    Face interpolation weight check OK.
+    Face volume ratio : minimum: 0.393378 average: 0.884835
+    Face volume ratio check OK.
+
+Mesh OK.
+
+End
+
+=== fluid mesh OK ===
+=== 3) Allmesh do SOLIDO (blockMesh + build_arteria + mergeMeshes + ...) ===
+=== solid 1) blockMesh do nervo (staging/nerve) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh
+Date   : May 25 2026
+Time   : 02:04:48
+Host   : 966b8a85630c
+PID    : 1466
+I/O    : uncollated
+Case   : /simulation/sugestao/solid/staging/nerve
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating block mesh from "system/blockMeshDict"
+Creating block edges
+No non-planar block faces defined
+Creating topology blocks
+
+Creating topology patches - from boundary section
+
+Creating block mesh topology - scaling/transform applied later
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 66
+		Number of boundary faces : 30
+		Number of defined boundary faces : 30
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+Creating block offsets
+Creating merge list (topological search)...
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale (0.001 0.001 0.001)
+    Block 0 cell size :
+        i : 0.0001875 .. 0.0001875
+        j : 0.0001875 .. 0.0001875
+        k : 0.001 .. 0.001
+
+    Block 1 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.001 .. 0.001
+
+    Block 2 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.001 .. 0.001
+
+    Block 3 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.001 .. 0.001
+
+    Block 4 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.001 .. 0.001
+
+    Block 5 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.001 .. 0.001
+
+    Block 6 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.001 .. 0.001
+
+    Block 7 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.001 .. 0.001
+
+    Block 8 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.001 .. 0.001
+
+    Block 9 cell size :
+        i : 0.0001875 .. 0.0001875
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 10 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 11 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 12 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 13 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 14 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.0005 .. 0.0005
+
+    Block 15 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.0005 .. 0.0005
+
+    Block 16 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.0005 .. 0.0005
+
+    Block 17 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.0005 .. 0.0005
+
+    Block 18 cell size :
+        i : 0.0001875 .. 0.0001875
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 19 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 20 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 21 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 22 cell size :
+        i : 7.32233e-05 .. 7.32233e-05
+        j : 0.0001875 .. 0.0001875
+        k : 0.0005 .. 0.0005
+
+    Block 23 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.0005 .. 0.0005
+
+    Block 24 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.0005 .. 0.0005
+
+    Block 25 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.0005 .. 0.0005
+
+    Block 26 cell size :
+        i : 0.000125001 .. 0.000125001
+        j : 0.000294051 .. 0.000294051
+        k : 0.0005 .. 0.0005
+
+Adding cell zones
+    0	on
+    1	ons
+    2	lc
+    3	sclera
+    4	globo
+No patch pairs to merge
+
+Writing polyMesh with 5 cellZones
+----------------
+Mesh Information
+----------------
+  boundingBox: (-0.0025 -0.0025 0) (0.0025 0.0025 0.031)
+  nPoints: 17457
+  nCells: 16384
+  nFaces: 50176
+  nInternalFaces: 48128
+----------------
+Cell Zones
+----------------
+  zone 0 (size: 7680) name: on
+  zone 1 (size: 7680) name: ons
+  zone 2 (size: 256) name: lc
+  zone 3 (size: 256) name: sclera
+  zone 4 (size: 512) name: globo
+----------------
+Patches
+----------------
+  patch 0 (start: 48128 size: 256) name: posterior_on
+  patch 1 (start: 48384 size: 256) name: posterior_ons
+  patch 2 (start: 48640 size: 960) name: ons_outer
+  patch 3 (start: 49600 size: 32) name: sclera_outer
+  patch 4 (start: 49632 size: 32) name: globo_outer
+  patch 5 (start: 49664 size: 512) name: anterior_globo
+
+End
+
+=== solid 2) Copia polyMesh da arteria do ao-mestrado (geometria anatomica completa) ===
+[copy-arteria] origem (ao-mestrado): /simulation/sugestao/../ao-mestrado/solid/constant/polyMesh
+[copy-arteria] destino (sugestao staging): /simulation/sugestao/solid/staging/arteria/constant/polyMesh
+[copy-arteria] copiados: ['points', 'faces', 'owner', 'neighbour', 'boundary']
+[copy-arteria] nCells (do owner) = 15264
+[copy-arteria] patch 'lumen' renomeado para 'arteria_lumen'.
+[copy-arteria] cellZones escrito (15264 cells em zona 'arteria').
+[copy-arteria] aplicando translacao radial para criar overlap inicial de 0.0 um com R_ons=2.50 mm...
+[copy-arteria]   r_min ANTES:  2.5068 mm
+[copy-arteria]   r_min DEPOIS: 2.5000 mm
+[copy-arteria]   R_ons:        2.5000 mm
+[copy-arteria]   delta_xy:     (-5.85, +3.49) um
+[copy-arteria]   overlap alvo: 0.0 um
+[copy-arteria]   overlap real: -0.0 um (positivo = interpenetracao)
+[copy-arteria] OK.
+=== solid 3) Copia mesh do nervo para constant/polyMesh (master) ===
+=== solid 4) mergeMeshes  (master <- nerve, added <- arteria) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : mergeMeshes -overwrite . staging/arteria
+Date   : May 25 2026
+Time   : 02:04:48
+Host   : 966b8a85630c
+PID    : 1472
+I/O    : uncollated
+Case   : /simulation/sugestao/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Master:      "/simulation/sugestao/solid"  region region0
+mesh to add: "staging/arteria"  region region0
+
+Create Times
+Reading master mesh for time = 0
+Create mesh
+
+Reading mesh to add for time = 0
+Create mesh
+
+Writing combined mesh to 0
+patch names: 10(posterior_on posterior_ons ons_outer sclera_outer globo_outer anterior_globo inner_cap_back inner_cap_front arteria_lumen arteria_externa)
+patch dicts: 
+10
+(
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          256;
+    startFace       48128;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          256;
+    startFace       48384;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          960;
+    startFace       48640;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          32;
+    startFace       49600;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          32;
+    startFace       49632;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          512;
+    startFace       49664;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          96;
+    startFace       40608;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          96;
+    startFace       40704;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          5088;
+    startFace       40800;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          5088;
+    startFace       45888;
+}
+
+)
+
+point zone names: 0()
+face zone names: 0()
+cell zone names: 6(on ons lc sclera globo arteria)
+Copying old patches
+Adding new patches. 
+Adding new cellZones.
+Reordering processor patches last
+End
+
+=== solid 4b) Gera paralelepipedo de gordura orbital 3D ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh
+Date   : May 25 2026
+Time   : 02:04:49
+Host   : 966b8a85630c
+PID    : 1475
+I/O    : uncollated
+Case   : /simulation/sugestao/solid/staging/orbit_fat
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating block mesh from "system/blockMeshDict"
+Creating block edges
+No non-planar block faces defined
+Creating topology blocks
+
+Creating topology patches - from boundary section
+
+Creating block mesh topology - scaling/transform applied later
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 0
+		Number of boundary faces : 6
+		Number of defined boundary faces : 6
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+Creating block offsets
+Creating merge list (topological search)...
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale (0.001 0.001 0.001)
+    Block 0 cell size :
+        i : 0.000666667 .. 0.000666667
+        j : 0.000666667 .. 0.000666667
+        k : 0.000671875 .. 0.000671875
+
+Adding cell zones
+    0	orbital_fat
+No patch pairs to merge
+
+Writing polyMesh with 1 cellZones
+----------------
+Mesh Information
+----------------
+  boundingBox: (-0.016 -0.008 -0.007) (0.006 0.006 0.036)
+  nPoints: 48620
+  nCells: 44352
+  nFaces: 137205
+  nInternalFaces: 128907
+----------------
+Cell Zones
+----------------
+  zone 0 (size: 44352) name: orbital_fat
+----------------
+Patches
+----------------
+  patch 0 (start: 128907 size: 1344) name: fat_x_min
+  patch 1 (start: 130251 size: 1344) name: fat_x_max
+  patch 2 (start: 131595 size: 2112) name: fat_y_min
+  patch 3 (start: 133707 size: 2112) name: fat_y_max
+  patch 4 (start: 135819 size: 693) name: fat_z_min
+  patch 5 (start: 136512 size: 693) name: fat_z_max
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet
+Date   : May 25 2026
+Time   : 02:04:50
+Host   : 966b8a85630c
+PID    : 1477
+I/O    : uncollated
+Case   : /simulation/sugestao/solid/staging/orbit_fat
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = 0
+
+Reading topoSetDict
+
+Time = 0
+    mesh not changed.
+Created cellSet fat_nerve_holes
+    Applying source cylinderToCell
+    Adding cells with centres within cylinder, with point1 = (0 0 -0.001), point2 = (0 0 0.0305), radius = 0.0025
+    cellSet fat_nerve_holes now size 2068
+Read set cellSet fat_nerve_holes size:2068
+    Applying source cylinderToCell
+    Adding cells with centres within cylinder, with point1 = (0 0 0.03), point2 = (0 0 0.031), radius = 0.0025
+    cellSet fat_nerve_holes now size 2112
+Created cellSet fat_keep_after_nerve
+    Applying source cellToCell
+    Adding all elements of cell sets: (fat_nerve_holes)
+    cellSet fat_keep_after_nerve now size 2112
+Read set cellSet fat_keep_after_nerve size:2112
+    Inverting cellSet
+    cellSet fat_keep_after_nerve now size 42240
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : subsetMesh -overwrite fat_keep_after_nerve -patch fat_inner_nerve
+Date   : May 25 2026
+Time   : 02:04:50
+Host   : 966b8a85630c
+PID    : 1479
+I/O    : uncollated
+Case   : /simulation/sugestao/solid/staging/orbit_fat
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Adding exposed internal faces to new patch: fat_inner_nerve
+
+Using cellSet fat_keep_after_nerve
+
+Subset 42240 of 44352 cells
+
+Reading cellSet: fat_nerve_holes
+Subsetting cellSet fat_nerve_holes
+Writing subsetted mesh and fields to time 0
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict_arteria
+Date   : May 25 2026
+Time   : 02:04:51
+Host   : 966b8a85630c
+PID    : 1481
+I/O    : uncollated
+Case   : /simulation/sugestao/solid/staging/orbit_fat
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = 0
+
+Reading topoSetDict_arteria
+
+Time = 0
+    mesh not changed.
+Created cellSet fat_arteria_holes
+    Applying source surfaceToCell
+    Adding cells in relation to surface "/simulation/sugestao/constant/triSurface/artery.stl" ...
+    Marked inside/outside using surface intersection in = 0.49 s
+
+    cellSet fat_arteria_holes now size 872
+Created cellSet fat_keep_final
+    Applying source cellToCell
+    Adding all elements of cell sets: (fat_arteria_holes)
+    cellSet fat_keep_final now size 872
+Read set cellSet fat_keep_final size:872
+    Inverting cellSet
+    cellSet fat_keep_final now size 41368
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : subsetMesh -overwrite fat_keep_final -patch fat_inner_arteria
+Date   : May 25 2026
+Time   : 02:04:52
+Host   : 966b8a85630c
+PID    : 1483
+I/O    : uncollated
+Case   : /simulation/sugestao/solid/staging/orbit_fat
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Adding exposed internal faces to new patch: fat_inner_arteria
+
+Using cellSet fat_keep_final
+
+Subset 41368 of 42240 cells
+
+Reading cellSet: fat_arteria_holes fat_keep_after_nerve fat_nerve_holes
+Subsetting cellSet fat_arteria_holes
+Subsetting cellSet fat_keep_after_nerve
+Subsetting cellSet fat_nerve_holes
+Writing subsetted mesh and fields to time 0
+
+End
+
+[orbit_fat] patches fat_inner_* convertidos de empty para wall.
+=== solid 4c) mergeMeshes adiciona orbit_fat ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : mergeMeshes -overwrite . staging/orbit_fat
+Date   : May 25 2026
+Time   : 02:04:53
+Host   : 966b8a85630c
+PID    : 1486
+I/O    : uncollated
+Case   : /simulation/sugestao/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Master:      "/simulation/sugestao/solid"  region region0
+mesh to add: "staging/orbit_fat"  region region0
+
+Create Times
+Reading master mesh for time = 0
+Create mesh
+
+Reading mesh to add for time = 0
+Create mesh
+
+Writing combined mesh to 0
+patch names: 
+18
+(
+posterior_on
+posterior_ons
+ons_outer
+sclera_outer
+globo_outer
+anterior_globo
+inner_cap_back
+inner_cap_front
+arteria_lumen
+arteria_externa
+fat_x_min
+fat_x_max
+fat_y_min
+fat_y_max
+fat_z_min
+fat_z_max
+fat_inner_nerve
+fat_inner_arteria
+)
+
+patch dicts: 
+18
+(
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          256;
+    startFace       88736;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          256;
+    startFace       88992;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          960;
+    startFace       89248;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          32;
+    startFace       90208;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          32;
+    startFace       90240;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          512;
+    startFace       90272;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          96;
+    startFace       90784;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          96;
+    startFace       90880;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          5088;
+    startFace       90976;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          5088;
+    startFace       96064;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          1344;
+    startFace       118521;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          1344;
+    startFace       119865;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          2112;
+    startFace       121209;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          2112;
+    startFace       123321;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          693;
+    startFace       125433;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          693;
+    startFace       126126;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          1573;
+    startFace       126819;
+}
+
+
+{
+    type            wall;
+    inGroups        1 ( wall );
+    nFaces          1295;
+    startFace       128392;
+}
+
+)
+
+point zone names: 0()
+face zone names: 0()
+cell zone names: 7(on ons lc sclera globo arteria orbital_fat)
+Copying old patches
+Adding new patches. 
+Adding new cellZones.
+Reordering processor patches last
+End
+
+=== solid 5) topoSet  (cria faceZone csf_interface) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict_csf
+Date   : May 25 2026
+Time   : 02:04:55
+Host   : 966b8a85630c
+PID    : 1488
+I/O    : uncollated
+Case   : /simulation/sugestao/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = 0
+
+Reading topoSetDict_csf
+
+Time = 0
+    mesh not changed.
+Created cellSet on_cells
+    Applying source zoneToCell
+--> FOAM IOWarning :
+    Found [v1806] 'name' entry instead of 'zone' in dictionary "system/topoSetDict_csf/actions/sourceInfo"
+
+    This keyword is 90 months old.
+
+    Adding all cells of cell zones: (on) ...
+    Using zone on with 7680 cells
+    cellSet on_cells now size 7680
+Created cellSet ons_cells
+    Applying source zoneToCell
+--> FOAM IOWarning :
+    Found [v1806] 'name' entry instead of 'zone' in dictionary "system/topoSetDict_csf/actions/sourceInfo"
+
+    This keyword is 90 months old.
+
+    Adding all cells of cell zones: (ons) ...
+    Using zone ons with 7680 cells
+    cellSet ons_cells now size 7680
+Created faceSet csf_interface_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (on_cells)
+    faceSet csf_interface_faces now size 23776
+Read set faceSet csf_interface_faces size:23776
+    Applying source cellToFace
+    Adding faces according to cell sets: (ons_cells)
+    faceSet csf_interface_faces now size 960
+Created faceZoneSet csf_interface
+    Applying source setsToFaceZone
+    Adding all faces from face set: csf_interface_faces; orientation pointing away from cell set: on_cells ...
+    faceZoneSet csf_interface now size 960
+
+End
+
+=== solid 6) createBaffles  (debond ON-ONS: on_outer + ons_inner) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : createBaffles -dict system/createBafflesDict_csf -overwrite
+Date   : May 25 2026
+Time   : 02:04:56
+Host   : 966b8a85630c
+PID    : 1493
+I/O    : uncollated
+Case   : /simulation/sugestao/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Reading baffle criteria from createBafflesDict_csf
+
+Not converting faces on non-coupled patches.
+
+Reading geometric fields
+
+Reading volVectorField: DCreating solidForce boundary condition
+    force is specified as a field
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+ solidForce
+Created zone csf_interface_baffle at index 1 with 960 faces
+Converted 960 faces into boundary faces in patches 2(on_outer ons_inner)
+
+--> FOAM Warning : 
+    From int main(int, char**)
+    in file createBaffles.C at line 861
+    Setting field on boundary faces to zero.
+You might have to edit these fields.
+Writing mesh to 0
+End
+
+=== solid 6b) Restaura 0/D e 0/solidForce templates ===
+=== solid 7) checkMesh ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh -allTopology -allGeometry
+Date   : May 25 2026
+Time   : 02:04:57
+Host   : 966b8a85630c
+PID    : 1498
+I/O    : uncollated
+Case   : /simulation/sugestao/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+    Enabling all (cell, face, edge, point) topology checks.
+    Enabling all geometry checks.
+
+Time = 0
+
+Mesh stats 
+    points:           84849
+    faces:            231799
+    internal faces:   206297
+    cells:            73016
+    faces per cell:   6
+    boundary patches: 20
+    point zones:      0
+    face zones:       2
+    cell zones:       7
+
+Overall number of cells of each type:
+    hexahedra:     73016
+    prisms:        0
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    0
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Topological cell zip-up check OK.
+    Number of identical duplicate faces (baffle faces): 960
+    Face-face connectivity OK.
+  <<Writing 1920 faces with non-standard edge connectivity to set edgeFaces
+  <<Writing 10 cells with two non-boundary faces to set twoInternalFacesCells
+   *Number of regions: 3
+    The mesh has multiple regions which are not connected by any face.
+  <<Writing region information to "0/cellToRegion"
+  <<Writing region 0 (fully disconnected) with 16384 cells to cellSet region0
+  <<Writing region 1 (fully disconnected) with 15264 cells to cellSet region1
+  <<Writing region 2 (fully disconnected) with 41368 cells to cellSet region2
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology  Bounding box
+    posterior_on        256      273      ok (non-closed singly connected)   (-0.0015 -0.0015 0) (0.0015 0.0015 0)
+    posterior_ons       256      288      ok (non-closed singly connected)   (-0.0025 -0.0025 0) (0.0025 0.0025 0)
+    ons_outer           960      992      ok (non-closed singly connected)   (-0.0025 -0.0025 0) (0.0025 0.0025 0.03)
+    sclera_outer        32       64       ok (non-closed singly connected)   (-0.0025 -0.0025 0.03) (0.0025 0.0025 0.0305)
+    globo_outer         32       64       ok (non-closed singly connected)   (-0.0025 -0.0025 0.0305) (0.0025 0.0025 0.031)
+    anterior_globo      512      529      ok (non-closed singly connected)   (-0.0025 -0.0025 0.031) (0.0025 0.0025 0.031)
+    inner_cap_back      96       128      ok (non-closed singly connected)   (-0.0139558 0.00180349 -0.00547002) (-0.0124558 0.00330349 -0.00547002)
+    inner_cap_front     96       128      ok (non-closed singly connected)   (-0.00755892 -0.00569345 0.033161) (-0.00634772 -0.00419956 0.0340355)
+    arteria_lumen       5088     5120     ok (non-closed singly connected)   (-0.0137558 -0.00549427 -0.00547002) (0.00417 0.00448053 0.0339189)
+    arteria_externa     5088     5120     ok (non-closed singly connected)   (-0.0139558 -0.00569345 -0.00547002) (0.00436991 0.00468008 0.0340355)
+    fat_x_min           1344     1430     ok (non-closed singly connected)   (-0.016 -0.008 -0.007) (-0.016 0.006 0.036)
+    fat_x_max           1344     1430     ok (non-closed singly connected)   (0.006 -0.008 -0.007) (0.006 0.006 0.036)
+    fat_y_min           2112     2210     ok (non-closed singly connected)   (-0.016 -0.008 -0.007) (0.006 -0.008 0.036)
+    fat_y_max           2112     2210     ok (non-closed singly connected)   (-0.016 0.006 -0.007) (0.006 0.006 0.036)
+    fat_z_min           693      748      ok (non-closed singly connected)   (-0.016 -0.008 -0.007) (0.006 0.006 -0.007)
+    fat_z_max           693      748      ok (non-closed singly connected)   (-0.016 -0.008 0.036) (0.006 0.006 0.036)
+    fat_inner_nerve     1573     1603     ok (non-closed singly connected)   (-0.00266667 -0.00266667 -0.000953125) (0.00266667 0.00266667 0.0312969)
+    fat_inner_arteria   1295     1325     ok (non-closed singly connected)   (-0.0146667 -0.006 -0.00565625) (0.00466667 0.00466667 0.0339844)
+    on_outer            960      992      ok (non-closed singly connected)   (-0.0015 -0.0015 0) (0.0015 0.0015 0.03)
+    ons_inner           960      992      ok (non-closed singly connected)   (-0.0015 -0.0015 0) (0.0015 0.0015 0.03)
+    ".*"                25502    24539    multiply connected (shared edge)   (-0.016 -0.008 -0.007) (0.006 0.006 0.036)
+
+Detected 1925 bad edges (possibly relevant for finite-area)
+
+Checking faceZone topology for multiply connected surfaces...
+    FaceZone            Faces    Points   Surface topology                   Bounding box
+    csf_interface       0        0        ok (empty)                        
+    csf_interface_baffle1920     992      multiply connected (shared edge)   (-0.0015 -0.0015 0) (0.0015 0.0015 0.03)
+  <<Writing 992 conflicting points to set nonManifoldPoints
+
+Checking basic cellZone addressing...
+    CellZone            Cells        Points       Volume       BoundingBox
+    on                  7680         8463         2.10697e-07  (-0.0015 -0.0015 0) (0.0015 0.0015 0.03)
+    ons                 7680         8928         3.74574e-07  (-0.0025 -0.0025 0) (0.0025 0.0025 0.03)
+    lc                  256          546          3.51162e-09  (-0.0015 -0.0015 0.03) (0.0015 0.0015 0.0305)
+    sclera              256          576          6.24291e-09  (-0.0025 -0.0025 0.03) (0.0025 0.0025 0.0305)
+    globo               512          1058         9.75453e-09  (-0.0025 -0.0025 0.0305) (0.0025 0.0025 0.031)
+    arteria             15264        20480        4.48379e-08  (-0.0139558 -0.00569345 -0.00547002) (0.00436991 0.00468008 0.0340355)
+    orbital_fat         41368        46912        1.23529e-05  (-0.016 -0.008 -0.007) (0.006 0.006 0.036)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (-0.016 -0.008 -0.007) (0.006 0.006 0.036)
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+    Boundary openness (3.62035e-16 -1.60395e-16 -9.54791e-17) OK.
+    Max cell openness = 2.91312e-16 OK.
+    Max aspect ratio = 17.5946 OK.
+    Minimum face area = 7.57815e-09. Maximum face area = 4.90087e-07.  Face area magnitudes OK.
+    Min volume = 1.82734e-12. Max volume = 2.98648e-10.  Total volume = 1.30026e-05.  Cell volumes OK.
+    Mesh non-orthogonality Max: 26.6482 average: 2.03617
+    Non-orthogonality check OK.
+    Face pyramids OK.
+    Max skewness = 1.78672 OK.
+    Coupled point location match (average 0) OK.
+    Face tets OK.
+    Min/max edge length = 6.65727e-05 0.001 OK.
+    All angles in faces OK.
+    Face flatness (1 = flat, 0 = butterfly) : min = 0.999996  average = 1
+    All face flatness OK.
+    Cell determinant (wellposedness) : minimum: 0 average: 0.601891
+ ***Cells with small determinant (< 0.001) found, number of cells: 39
+  <<Writing 39 under-determined cells to set underdeterminedCells
+    Concave cell check OK.
+    Face interpolation weight : minimum: 0.271969 average: 0.497376
+    Face interpolation weight check OK.
+    Face volume ratio : minimum: 0.38683 average: 0.982586
+    Face volume ratio check OK.
+
+Failed 1 mesh checks.
+
+End
+
+=== solid 8) cellZones presentes ===
+on
+ons
+lc
+sclera
+globo
+arteria
+orbital_fat
+OK: cellZones esperadas presentes.
+=== solid 9) patches presentes ===
+  OK   patch arteria_lumen
+  OK   patch arteria_externa
+  OK   patch inner_cap_back
+  OK   patch inner_cap_front
+  OK   patch posterior_on
+  OK   patch posterior_ons
+  OK   patch ons_outer
+  OK   patch sclera_outer
+  OK   patch globo_outer
+  OK   patch anterior_globo
+  OK   patch on_outer
+  OK   patch ons_inner
+  OK   patch fat_x_min
+  OK   patch fat_x_max
+  OK   patch fat_y_min
+  OK   patch fat_y_max
+  OK   patch fat_z_min
+  OK   patch fat_z_max
+  OK   patch fat_inner_arteria
+  OK   patch fat_inner_nerve
+=== solid mesh OK ===
+=== 4) Coupled solvers (preCICE) ===
+Allrun: line 72:  1524 Killed                  solids4Foam > log.solids4Foam 2>&1
+Allrun: line 70:  1523 Killed                  pimpleFoam > log.pimpleFoam 2>&1
+ERROR: pimpleFoam failed (rc=137)
+
+PIMPLE: iteration 1
+DILUPBiCG:  Solving for Ux, Initial residual = 0.00383936, Final residual = 4.34271e-09, No Iterations 8
+DILUPBiCG:  Solving for Uy, Initial residual = 0.00328004, Final residual = 3.83048e-09, No Iterations 8
+DILUPBiCG:  Solving for Uz, Initial residual = 0.00480743, Final residual = 5.70091e-09, No Iterations 8
+GAMG:  Solving for p, Initial residual = 0.268607, Final residual = 9.37363e-07, No Iterations 49
+GAMG:  Solving for p, Initial residual = 0.0088502, Final residual = 7.40323e-07, No Iterations 16
+time step continuity errors : sum local = 1.27554e-09, global = -1.81667e-10, cumulative = -3.76911e-07
+GAMG:  Solving for p, Initial residual = 0.000572482, Final residual = 9.08967e-07, No Iterations 15
+GAMG:  Solving for p, Initial residual = 6.12016e-06, Final residual = 6.77017e-07, No Iterations 3
+time step continuity errors : sum local = 1.16634e-09, global = -1.34653e-10, cumulative = -3.77046e-07
+GAMG:  Solving for p, Initial residual = 9.62524e-05, Final residual = 9.71212e-07, No Iterations 4
+GAMG:  Solving for p, Initial residual = 1.97318e-06, Final residual = 5.34298e-07, No Iterations 1
+time step continuity errors : sum local = 9.20466e-10, global = -9.66626e-11, cumulative = -3.77143e-07
+PIMPLE: iteration 2
+DILUPBiCG:  Solving for Ux, Initial residual = 0.000112501, Final residual = 1.83704e-09, No Iterations 7
+DILUPBiCG:  Solving for Uy, Initial residual = 0.000108075, Final residual = 6.10161e-09, No Iterations 7
+DILUPBiCG:  Solving for Uz, Initial residual = 0.000130896, Final residual = 1.84649e-09, No Iterations 7
+GAMG:  Solving for p, Initial residual = 0.000467829, Final residual = 9.69881e-07, No Iterations 24
+GAMG:  Solving for p, Initial residual = 2.95971e-06, Final residual = 9.48298e-07, No Iterations 1
+time step continuity errors : sum local = 1.6339e-09, global = 2.46258e-10, cumulative = -3.76897e-07
+GAMG:  Solving for p, Initial residual = 0.000278455, Final residual = 9.89549e-07, No Iterations 12
+GAMG:  Solving for p, Initial residual = 1.86827e-06, Final residual = 9.20062e-07, No Iterations 1
+time step continuity errors : sum local = 1.58507e-09, global = -4.44786e-10, cumulative = -3.77341e-07
+GAMG:  Solving for p, Initial residual = 4.80412e-05, Final residual = 9.14991e-07, No Iterations 4
+GAMG:  Solving for p, Initial residual = 9.39623e-07, Final residual = 8.83094e-07, No Iterations 1
+time step continuity errors : sum local = 1.52137e-09, global = -4.20312e-10, cumulative = -3.77762e-07
+ExecutionTime = 440.11 s  ClockTime = 457 s
+
+---[precice] [0m Mapping "Force" for t=0.613 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Time window completed
+---[precice] [0m time-window 614, t 0.613 (max: 0.8696), Dt 0.001, max-dt 0.001
+Courant Number mean: 0.0137291 max: 0.0425259
+Time = 0.614
+
+PIMPLE: iteration 1
+DILUPBiCG:  Solving for Ux, Initial residual = 0.00377307, Final residual = 4.26581e-09, No Iterations 8
+DILUPBiCG:  Solving for Uy, Initial residual = 0.00322303, Final residual = 3.76526e-09, No Iterations 8
+DILUPBiCG:  Solving for Uz, Initial residual = 0.00472279, Final residual = 5.58735e-09, No Iterations 8
+GAMG:  Solving for p, Initial residual = 0.2719, Final residual = 9.17324e-07, No Iterations 49

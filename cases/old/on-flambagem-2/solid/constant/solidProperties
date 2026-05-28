@@ -1,0 +1,31 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// on-flambagem-2 - rampa de deslocamento imposto na tampa anterior.
+//
+// Voltamos para linearGeometryTotalDisplacement: o nonLinearGeometry (tanto
+// TotalLagrangian quanto UpdatedLagrangian) divergiu em NaN no setup
+// multi-zona deste caso, mesmo com material uniforme; o unico tutorial
+// multi-material do s4f (multiMaterial/layeredPipe) tambem usa linearGeometry,
+// sugerindo que NL multi-zone nao esta bem suportado.
+//
+// O preco e nao capturar a bifurcacao real de flambagem - apenas a resposta
+// linear estrutural a rampa de deslocamento imposto. Para flambagem real
+// teremos que ir por analise de bifurcacao linear (autovalor) ou outro solver.
+
+solidModel      linearGeometryTotalDisplacement;
+
+linearGeometryTotalDisplacementCoeffs
+{
+    nCorrectors             20000;
+    rTol                    1e-4;
+    aTol                    1e-6;
+    sTol                    1e-7;
+    materialTolerance       1e-4;
+    infoFrequency           500;
+}

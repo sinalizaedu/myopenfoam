@@ -1,0 +1,24 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+// on-mestrado-1 - cria patch local `contact_local` extraindo faces do
+// pia_outer pelo topoSetDict_contact. As faces movidas saem do pia_outer
+// (fica menor) e passam ao novo patch contact_local; o resto do pia_outer
+// continua com fundacao elastica de Winkler.
+
+pointSync   false;
+
+patches
+(
+    {
+        name            contact_local;
+        patchInfo       { type wall; }
+        constructFrom   set;
+        set             contact_local;
+    }
+);

@@ -1,0 +1,142 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// on-caso-3 - FLAMBAGEM com GORDURA ORBITAL EDEMACIADA (SANS).
+// Derivado do on-caso-2 (mesma malha, mesmas BCs cinematicas, mesmas
+// propriedades materiais do tubo). UNICA diferenca: rigidez da fundacao
+// elastica (mola de Winkler) na parede externa da dura-mater foi
+// aumentada em 10x para emular a gordura orbital edemaciada e rigida
+// da SANS (Reilly et al. 2023).
+//
+//   on-caso-2 (saudavel) : k = 200 kPa/m  (E_fat=500 Pa, G ~ 170 Pa)
+//   on-caso-3 (SANS)     : k = 2000 kPa/m (E_fat=5000 Pa, ~10x stiffer)
+//
+// Justificativa fisiologica:
+//   * Em microgravidade, a gordura orbital acumula fluidos (edema),
+//     incha e se torna muito mais restritiva, aumentando a forca
+//     compressiva sobre o complexo ocular.
+//   * Gordura orbital saudavel: G ~ 900 Pa (Schoemaker 2006).
+//   * Edemaciada: rigidez efetiva sobe varias vezes (Reilly 2023).
+//
+// Hipotese a testar: aumentar k significativamente => o nervo precisa
+// de uma carga axial muito maior para flambar (P_cr sobe) e o modo de
+// flambagem pode mudar de um arco suave para pontos de estrangulamento
+// mais focais (lambda menor = modos de ordem mais alta favorecidos).
+//
+// BCs: IDENTICAS ao on-caso-2 - so muda o k em dura_outer.
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ----- z=0 mm: canal optico - ENGASTE TOTAL --------------------------
+    posterior_on
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_pia
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- z=0 mm: SAS aberta - coluna do LCR vinda do cerebro -----------
+    //   P_CSF = 1333 Pa (~10 mmHg) - PIC normal supino. Igual on-caso-2.
+    posterior_sas
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 1333;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_dura
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- z=30 mm: TAMPA anterior - rampa de Dz imposta nas 4 zonas -----
+    //   Identico ao on-caso-2 - mesma cinematica imposta para isolar o
+    //   efeito da rigidez orbital.
+    anterior_on
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+        displacementSeries
+        {
+            file                "$FOAM_CASE/constant/timeVsDisp";
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+    }
+
+    anterior_pia
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+        displacementSeries
+        {
+            file                "$FOAM_CASE/constant/timeVsDisp";
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+    }
+
+    anterior_sas
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+        displacementSeries
+        {
+            file                "$FOAM_CASE/constant/timeVsDisp";
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+    }
+
+    anterior_dura
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+        displacementSeries
+        {
+            file                "$FOAM_CASE/constant/timeVsDisp";
+            outOfBounds         clamp;
+            interpolationScheme linear;
+        }
+    }
+
+    // ----- dura_outer (lateral, r=2.5 mm): Winkler 2000 kPa/m -----------
+    //   GORDURA ORBITAL EDEMACIADA (SANS) - 10x mais rigida que saudavel.
+    //   k = E_fat / t_fat = 5000 Pa / 0.0025 m = 2.0e6 Pa/m.
+    //   Esta e a UNICA diferenca em relacao ao on-caso-2.
+    dura_outer
+    {
+        type        solidTractionElasticFoundation;
+        k           2000000;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- perturbation_strip (carved-out de dura_outer): quebra simetria -
+    //   Identico ao on-caso-2. Magnitude 10 Pa: ainda << k * deflexao_lateral
+    //   esperada, nao altera P_cr quantitativo, so seleciona o modo.
+    perturbation_strip
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 10;
+        value       uniform ( 0 0 0 );
+    }
+}

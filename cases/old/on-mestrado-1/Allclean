@@ -1,0 +1,13 @@
+#!/bin/bash
+# on-mestrado-1 — limpeza de resultados (preserva condições iniciais em 0/)
+
+cd solid
+
+echo "Limpando on-mestrado-1 (preservando 0/)..."
+rm -rf \
+    $(find . -maxdepth 1 -name '[0-9]*' ! -name '0' -type d) \
+    log.* \
+    precice-* \
+    postProcessing \
+    constant/polyMesh
+echo "Feito."

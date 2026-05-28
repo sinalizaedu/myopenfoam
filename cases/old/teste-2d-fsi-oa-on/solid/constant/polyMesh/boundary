@@ -1,0 +1,128 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+15
+(
+    outer_bottom
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       3119;
+    }
+    outer_top
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       3159;
+    }
+    on_mestrado
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       3199;
+    }
+    oa_mestrado
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       3239;
+    }
+    lumen_bot
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       3279;
+    }
+    lumen_top
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       3319;
+    }
+    outer_left_lower
+    {
+        type            symmetry;
+        inGroups        1(symmetry);
+        nFaces          20;
+        startFace       3359;
+    }
+    outer_left_wall_inf
+    {
+        type            symmetry;
+        inGroups        1(symmetry);
+        nFaces          2;
+        startFace       3379;
+    }
+    outer_left_wall_sup
+    {
+        type            symmetry;
+        inGroups        1(symmetry);
+        nFaces          2;
+        startFace       3381;
+    }
+    outer_left_fat_above
+    {
+        type            symmetry;
+        inGroups        1(symmetry);
+        nFaces          17;
+        startFace       3383;
+    }
+    outer_right_lower
+    {
+        type            symmetry;
+        inGroups        1(symmetry);
+        nFaces          20;
+        startFace       3400;
+    }
+    outer_right_wall_inf
+    {
+        type            symmetry;
+        inGroups        1(symmetry);
+        nFaces          2;
+        startFace       3420;
+    }
+    outer_right_wall_sup
+    {
+        type            symmetry;
+        inGroups        1(symmetry);
+        nFaces          2;
+        startFace       3422;
+    }
+    outer_right_fat_above
+    {
+        type            symmetry;
+        inGroups        1(symmetry);
+        nFaces          17;
+        startFace       3424;
+    }
+    frontAndBack
+    {
+        type            empty;
+        inGroups        1(empty);
+        nFaces          3280;
+        startFace       3441;
+    }
+)
+
+// ************************************************************************* //

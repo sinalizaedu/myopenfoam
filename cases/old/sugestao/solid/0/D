@@ -1,0 +1,172 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      D;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 );
+
+boundaryField
+{
+    arteria_lumen
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform ( 0 0 0 );
+    }
+
+    arteria_externa
+    {
+        // solidContact agora eh entre arteria_externa (master) e
+        // fat_inner_arteria (slave) -- a gordura orbital 3D envolve a arteria
+        // como uma "luva" elastica com paredes externas fixas (orbita ossea).
+        // P_contact sai como tracao normal nesta interface (3a lei de Newton).
+        type            solidContact;
+        master          yes;
+        rigidMaster     no;
+        shadowPatch     fat_inner_arteria;
+        useNewPointDistanceMethod no;
+        usePrevCandidateMasterNeighbors no;
+        writePointDistanceFields false;
+        normalContactModel standardPenalty;
+        standardPenaltyNormalModelDict
+        {
+            penaltyScale     1;
+            relaxationFactor 0.01;
+        }
+        frictionContactModel frictionless;
+        value           uniform ( 0 0 0 );
+    }
+
+    inner_cap_back
+    {
+        // fixedDisplacement total nos dois caps: estabilidade numerica.
+        // Tentei fixedDisplacementZeroShear em ambos -> divergencia (modo de
+        // corpo rigido axial livre, eps_VM explode > 1000%). Aceitar o
+        // stress concentration nos engastes (eps_VM~17% local) como
+        // limitacao do modelo small-strain unsLinearGeometry.
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+
+    inner_cap_front
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+
+    ons_outer
+    {
+        // ons_outer agora faz contato com a gordura (fat_inner_nerve eh
+        // master). A pressao do contato arteria-gordura eh transmitida pelo
+        // volume de gordura ate o ONS, o que deforma o nervo (tortuosidade).
+        type            solidContact;
+        shadowPatch     fat_inner_nerve;
+        master          no;
+        value           uniform ( 0 0 0 );
+    }
+
+    posterior_on
+    {
+        type            solidTraction;
+        traction        uniform ( 0 0 0 );
+        pressure        uniform 0;
+        value           uniform ( 0 0 0 );
+    }
+
+    posterior_ons
+    {
+        type            solidTraction;
+        traction        uniform ( 0 0 0 );
+        pressure        uniform 0;
+        value           uniform ( 0 0 0 );
+    }
+
+    anterior_globo
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+
+    sclera_outer
+    {
+        type            solidTraction;
+        traction        uniform ( 0 0 0 );
+        pressure        uniform 0;
+        value           uniform ( 0 0 0 );
+    }
+
+    globo_outer
+    {
+        type            solidTraction;
+        traction        uniform ( 0 0 0 );
+        pressure        uniform 0;
+        value           uniform ( 0 0 0 );
+    }
+
+    on_outer
+    {
+        type            solidTraction;
+        traction        uniform ( 0 0 0 );
+        pressure        uniform 0;
+        value           uniform ( 0 0 0 );
+    }
+
+    ons_inner
+    {
+        type            solidTraction;
+        traction        uniform ( 0 0 0 );
+        pressure        uniform 0;
+        value           uniform ( 0 0 0 );
+    }
+
+    // === Patches da gordura orbital 3D ============================
+    fat_x_min       { type fixedDisplacement; value uniform (0 0 0); }
+    fat_x_max       { type fixedDisplacement; value uniform (0 0 0); }
+    fat_y_min       { type fixedDisplacement; value uniform (0 0 0); }
+    fat_y_max       { type fixedDisplacement; value uniform (0 0 0); }
+    fat_z_min       { type fixedDisplacement; value uniform (0 0 0); }
+    fat_z_max       { type fixedDisplacement; value uniform (0 0 0); }
+
+    fat_inner_arteria
+    {
+        // Slave do solidContact com arteria_externa (master).
+        type            solidContact;
+        shadowPatch     arteria_externa;
+        master          no;
+        value           uniform ( 0 0 0 );
+    }
+
+    fat_inner_nerve
+    {
+        // Master do solidContact com ons_outer (slave).
+        type            solidContact;
+        master          yes;
+        rigidMaster     no;
+        shadowPatch     ons_outer;
+        useNewPointDistanceMethod no;
+        usePrevCandidateMasterNeighbors no;
+        writePointDistanceFields false;
+        normalContactModel standardPenalty;
+        standardPenaltyNormalModelDict
+        {
+            penaltyScale     1;
+            relaxationFactor 0.01;
+        }
+        frictionContactModel frictionless;
+        value           uniform ( 0 0 0 );
+    }
+
+    ".*"
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+}

@@ -1,0 +1,49 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       pointVectorField;
+    object      pointDisplacement;
+}
+
+// pointDisplacement aciona o motion solver displacementLaplacian.
+// preCICE adapter sobrescreve o valor nas 4 paredes FSI a cada sub-iteracao;
+// inlet fica fixo em zero (cisterna nao se desloca).
+//
+// Nota: dimensions [0 1 -1 0 0 0 0] segue o tutorial s4f-3dTube (e' a taxa
+// de deslocamento, nao o deslocamento absoluto - o solver displacementLaplacian
+// integra durante o passo).
+
+dimensions      [ 0 1 -1 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 );
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+
+    fsi_pia
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    fsi_dura
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    fsi_sclera_peri
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+    fsi_sclera_ring
+    {
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
+    }
+}

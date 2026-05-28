@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict_arteria
+Date   : May 25 2026
+Time   : 02:15:57
+Host   : 966b8a85630c
+PID    : 4604
+I/O    : uncollated
+Case   : /simulation/sugestao/solid/staging/orbit_fat
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = 0
+
+Reading topoSetDict_arteria
+
+Time = 0
+    mesh not changed.
+Created cellSet fat_arteria_holes
+    Applying source surfaceToCell
+    Adding cells in relation to surface "/simulation/sugestao/constant/triSurface/artery.stl" ...
+    Marked inside/outside using surface intersection in = 0.49 s
+
+    cellSet fat_arteria_holes now size 872
+Created cellSet fat_keep_final
+    Applying source cellToCell
+    Adding all elements of cell sets: (fat_arteria_holes)
+    cellSet fat_keep_final now size 872
+Read set cellSet fat_keep_final size:872
+    Inverting cellSet
+    cellSet fat_keep_final now size 41368
+
+End
+

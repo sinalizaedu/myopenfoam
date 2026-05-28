@@ -1,0 +1,20 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on                                                           |
+| Gravidade DESLIGADA (g = 0) -- problema quasi-estatico em pequenas escalas.  |
+| O peso do tecido orbital (~9.8 m/s2 * ~50um de coluna * rho_fat ~ 0.5 Pa)    |
+| eh varias ordens de magnitude menor que a pressao arterial (~12 kPa) e nao  |
+| muda o resultado da FSI/contato.                                            |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       uniformDimensionedVectorField;
+    location    "constant";
+    object      g;
+}
+
+dimensions      [0 1 -2 0 0 0 0];
+value           ( 0 0 0 );
+
+// ************************************************************************* //

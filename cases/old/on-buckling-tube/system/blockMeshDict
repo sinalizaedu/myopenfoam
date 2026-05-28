@@ -1,0 +1,91 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| solids4foam: solid mechanics and fluid-solid interaction simulations        |
+| Version:     v2.3                                                           |
+| Web:         https://solids4foam.github.io                                  |
+| Disclaimer:  This offering is not approved or endorsed by OpenCFD Limited,  |
+|              producer and distributor of the OpenFOAM software via          |
+|              www.openfoam.com, and owner of the OPENFOAM® and OpenCFD®      |
+|              trade marks.                                                   |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Coluna prismatica representando o complexo nervo+pia+dura como elemento
+// estrutural axial equivalente. Geometria: secao quadrada 5mm x 5mm,
+// comprimento L = 30 mm em z.
+//
+// Justificativa do quadrado em vez do anular: contraste de modulos zero
+// (homogeneo) elimina o checkerboard FV. Para flambagem de Euler classica
+// o que importa e EI = E * b * h^3 / 12 (segundo momento da secao).
+//   - b = h = 5 mm
+//   - I = 5e-3 * (5e-3)^3 / 12 = 5.21e-11 m^4
+//   - EI(E=3 MPa) = 1.56e-4 N.m^2
+//   - A = 2.5e-5 m^2, k_axial = EA/L = 2500 N/m
+//   - Pcr(K=0.65) = pi^2*EI/(KL)^2 = 4.05 N -> dz_cr = 1.62 mm
+//
+// Discretizacao: nx=ny=6 (secao), nz=60 (axial). Razao L/h = 6, alongado
+// o suficiente para flambagem de Euler dominante (esbeltez lambda > pi*sqrt(E/sigma)).
+
+scale 1;
+
+vertices
+(
+    ( -0.0025 -0.0025  0.000 )
+    (  0.0025 -0.0025  0.000 )
+    (  0.0025  0.0025  0.000 )
+    ( -0.0025  0.0025  0.000 )
+
+    ( -0.0025 -0.0025  0.030 )
+    (  0.0025 -0.0025  0.030 )
+    (  0.0025  0.0025  0.030 )
+    ( -0.0025  0.0025  0.030 )
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (6 6 60) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+patches
+(
+    patch fixed
+    (
+        (0 3 2 1)
+    )
+    patch top
+    (
+        (4 5 6 7)
+    )
+    patch xMinus
+    (
+        (0 4 7 3)
+    )
+    patch xPlus
+    (
+        (1 2 6 5)
+    )
+    patch yMinus
+    (
+        (0 1 5 4)
+    )
+    patch yPlus
+    (
+        (2 3 7 6)
+    )
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

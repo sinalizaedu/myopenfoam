@@ -1,0 +1,20 @@
+#!/bin/bash
+# Mesh lumen (fluid): polyMesh estruturada extrudada gerada por
+# brunaStuff/build_artoph_tubular_meshes.py (executado no Allrun raiz).
+# Aqui apenas validamos com checkMesh.
+set -eo pipefail
+cd "$(dirname "$0")"
+if [[ -z "${WM_PROJECT_DIR:-}" ]]; then
+  echo "ERROR: OpenFOAM env not loaded (WM_PROJECT_DIR). Use Docker."
+  exit 1
+fi
+
+if [[ ! -f constant/polyMesh/points ]]; then
+  echo "ERROR: constant/polyMesh/points nao encontrado. Rode o builder antes:"
+  echo "  python3 /brunaStuff/build_artoph_tubular_meshes.py"
+  exit 1
+fi
+
+echo "=== fluid: checkMesh ==="
+checkMesh -allTopology -allGeometry 2>&1 | tee log.checkMesh
+echo "=== fluid mesh OK ==="

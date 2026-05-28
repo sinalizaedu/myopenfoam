@@ -1,0 +1,69 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on -- controlDict do FLUIDO                                  |
+| Acoplado a solids4Foam via preCICE (mesma deltaT, mesmo endTime).            |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     pimpleFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+// 1 CICLO completo: T = 0.8696 s, deltaT 2ms -> 435 timesteps, ~10 min wall time.
+endTime         0.87;
+deltaT          2e-3;        // = janela de acoplamento preCICE
+writeControl    timeStep;
+writeInterval   20;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  6;
+writeCompression off;
+runTimeModifiable yes;
+adjustTimeStep  no;
+
+functions
+{
+    preCICE_Adapter
+    {
+        type            preciceAdapterFunctionObject;
+        libs            ("libpreciceAdapterFunctionObject.so");
+    }
+
+    // Vazao volumetrica em inlet e outlet (mass-conservation check)
+    inletQ
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        log             false;
+        writeFields     false;
+        regionType      patch;
+        name            inlet;
+        operation       sum;
+        surfaceFormat   none;
+        fields          ( phi );
+    }
+    outletQ
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        log             false;
+        writeFields     false;
+        regionType      patch;
+        name            outlet;
+        operation       sum;
+        surfaceFormat   none;
+        fields          ( phi );
+    }
+}
+
+// ************************************************************************* //

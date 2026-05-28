@@ -1,0 +1,345 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volVectorField;
+    location    "1";
+    object      D_0;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    posterior_on
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    posterior_pia
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    posterior_sas
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 1333;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           nonuniform List<vector> 
+192
+(
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+(0 0 4.9511429e-06)
+)
+;
+        gradient        uniform (0 0 0);
+    }
+    posterior_dura
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    anterior_on
+    {
+        nonOrthogonalCorrections true;
+        displacementSeries 
+{
+        file            "$FOAM_CASE/constant/timeVsDisp";
+        outOfBounds     clamp;
+}
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    anterior_pia
+    {
+        nonOrthogonalCorrections true;
+        displacementSeries 
+{
+        file            "$FOAM_CASE/constant/timeVsDisp";
+        outOfBounds     clamp;
+}
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    anterior_sas
+    {
+        nonOrthogonalCorrections true;
+        displacementSeries 
+{
+        file            "$FOAM_CASE/constant/timeVsDisp";
+        outOfBounds     clamp;
+}
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    anterior_dura
+    {
+        nonOrthogonalCorrections true;
+        displacementSeries 
+{
+        file            "$FOAM_CASE/constant/timeVsDisp";
+        outOfBounds     clamp;
+}
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    dura_outer
+    {
+        type            solidTractionElasticFoundation;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           uniform (0 0 0);
+        gradient        uniform (0 0 0);
+        k               200000;
+    }
+    perturbation_strip
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 10;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           nonuniform List<vector> 
+12
+(
+(-3.2472264e-11 3.1982386e-12 0)
+(-3.2472264e-11 -3.1982386e-12 0)
+(-3.2472264e-11 3.1982386e-12 0)
+(-3.2472264e-11 -3.1982386e-12 0)
+(-3.2472264e-11 3.1982386e-12 0)
+(-3.2472264e-11 -3.1982386e-12 0)
+(-3.2472264e-11 3.1982386e-12 0)
+(-3.2472264e-11 -3.1982386e-12 0)
+(-3.2472264e-11 3.1982386e-12 0)
+(-3.2472264e-11 -3.1982386e-12 0)
+(-3.2472264e-11 3.1982386e-12 0)
+(-3.2472264e-11 -3.1982386e-12 0)
+)
+;
+        gradient        uniform (0 0 0);
+    }
+}
+
+
+// ************************************************************************* //

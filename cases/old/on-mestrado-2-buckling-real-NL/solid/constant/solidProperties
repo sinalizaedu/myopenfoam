@@ -1,0 +1,37 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// on-mestrado-2-buckling-real: PROVA NUMERICA da flambagem anatomica.
+//
+// Solver LINEAR e' usado como BASELINE - sabemos que o NL nao converge
+// em 8 zonas com contraste E_dura/E_on=100 (testado exaustivamente em
+// on-mestrado-2-buckling-NL e -homog). Com o solver linear:
+//
+//   1. Extraimos a curva dz_globo(P_fat) em funcao do tempo: como o
+//      globo nao esta engastado, mas pressurizado por orbital_fat_pressure,
+//      o encurtamento axial e' resposta passiva ao carregamento.
+//   2. Calculamos k_axial_anatomico = P_fat * A_globo / dz_globo
+//      e comparamos com k_axial_dura_only ~ 233 N/m (analitico).
+//   3. Cruzamos com Pcr Euler para a configuracao anatomica real
+//      (raio efetivo ~ 1.5 mm da dura, K = 0.5 pela continuidade
+//      nodal no apice + Winkler 200 kPa/m).
+//   4. Quantificamos se o encurtamento alcanca dz_cr realista
+//      (~0.5-1.0 mm) dentro do range SANS de P_fat (0-3000 Pa).
+
+// Total Lagrangian (campo D em vez de DD): necessario para que o Winkler
+// elasticFoundation leia displacement TOTAL, nao incremental.
+solidModel      nonLinearGeometryTotalLagrangianTotalDisplacement;
+
+"nonLinearGeometryTotalLagrangianTotalDisplacementCoeffs"
+{
+    nCorrectors             20000;
+    solutionTolerance       1e-06;
+    alternativeTolerance    1e-07;
+    materialTolerance       1e-05;
+    infoFrequency           200;
+}

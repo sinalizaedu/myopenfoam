@@ -1,0 +1,26 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    "D|DD"
+    {
+        solver          PCG;
+        preconditioner  FDIC;
+        tolerance       1e-09;
+        relTol          0.1;
+    }
+}
+
+relaxationFactors
+{
+    fields
+    {
+        D       0.7;
+    }
+}

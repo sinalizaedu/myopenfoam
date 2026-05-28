@@ -1,0 +1,40 @@
+#!/bin/bash
+# on-mestrado-2-buckling: estudo de flambagem axial via shift cefalico.
+#
+# IDENTICO a on-mestrado-2 EXCETO por DUAS modificacoes:
+#   Mod. 1: globo_outer recebe deslocamento axial imposto -z (shift cefalico
+#           progressivo: 0.1, 0.5, 1.0, 2.0, 4.0 mm) via tableFile,
+#           comprimindo o nervo entre canal e globo.
+#   Mod. 2: solidModel = nonLinearGeometryUpdatedLagrangian (em vez de
+#           linearGeometryTotalDisplacement) - inclui a matriz de rigidez
+#           geometrica K_sigma necessaria para detectar bifurcacao
+#           de flambagem.
+#
+# OBJETIVO: extrair F_reaction(globo_outer)_z vs dz, identificar o ponto
+# onde a relacao perde linearidade (= P_cr numerico), e comparar com a
+# previsao de Euler analitica para K=0.65 (P_cr ~ 0.87 N).
+
+set -e
+set -o pipefail
+cd "$(dirname "$0")/solid"
+
+echo "=== on-mestrado-2-buckling: blockMesh (8 zonas) ==="
+blockMesh | tee log.blockMesh
+
+echo "=== topoSet (extrai contact_local) ==="
+topoSet -dict system/topoSetDict_contact | tee log.topoSet
+
+echo "=== createPatch (cria contact_local) ==="
+createPatch -overwrite -dict system/createPatchDict_contact | tee log.createPatch
+
+echo "=== checkMesh ==="
+checkMesh | tee log.checkMesh
+
+echo "=== solids4Foam (5 passos com displacement ramped) ==="
+solids4Foam | tee log.solids4Foam
+
+echo ""
+echo "=== Concluido. Resultados em solid/{1,2,3,4,5}/ ==="
+echo ""
+echo "Curva F_z(dz) em postProcessing/forces_globo_outer/0/forces_*.dat"
+echo "Visualizar deformacao em ParaView: solid/on-mestrado-2.foam"

@@ -1,0 +1,145 @@
+#!/bin/bash
+# sugestao/solid - pipeline de geracao da malha unificada arteria + nervo.
+#
+# Etapas:
+#   1) blockMesh em staging/nerve/  -> polyMesh do nervo+ONS+lc+sclera+globo
+#      (cellZones nomeadas: on, ons, lc, sclera, globo)
+#   2) build_sugestao_solid_arteria.py -> polyMesh da arteria em
+#      staging/arteria/constant/polyMesh com cellZone "arteria" (todas as cells)
+#   3) cp staging/nerve/constant/polyMesh -> constant/polyMesh (master)
+#   4) mergeMeshes -overwrite . staging/arteria  -> mesh unificada com TODAS
+#      as 6 cellZones (on, ons, lc, sclera, globo, arteria)
+#   5) topoSet -dict system/topoSetDict_csf -> faceSet csf_interface
+#      (interface ON-ONS, prep para FASE 2 com CSF)
+#   6) createPatch -dict system/createPatchDict_csf -overwrite -> on_outer +
+#      ons_inner expostos como patches separados
+#   7) checkMesh para validacao final
+set -eo pipefail
+cd "$(dirname "$0")"
+SOLID_DIR="$(pwd)"
+CASE_DIR="$(cd .. && pwd)"
+
+if [[ -z "${WM_PROJECT_DIR:-}" ]]; then
+  echo "ERROR: OpenFOAM env not loaded (WM_PROJECT_DIR). Use Docker."
+  exit 1
+fi
+
+echo "=== solid 1) blockMesh do nervo (staging/nerve) ==="
+( cd staging/nerve && blockMesh 2>&1 | tee log.blockMesh )
+
+if [[ ! -f staging/nerve/constant/polyMesh/points ]]; then
+  echo "ERROR: blockMesh do nervo falhou."; exit 1
+fi
+
+echo "=== solid 2) Copia polyMesh da arteria do ao-mestrado (geometria anatomica completa) ==="
+# IMPORTANTE: NAO regerar a malha da arteria no sugestao. A polyMesh do
+# ao-mestrado eh extrudada da centerline da artery.stl ANATOMICA inteira
+# (15264 cells, cobre toda a curva da arteria oftalmica). Reusa-la garante
+# que sugestao tenha a MESMA geometria validada visualmente.
+COPY_SCRIPT="${CASE_DIR}/scripts/copy_arteria_mesh_from_ao_mestrado.py"
+if [[ ! -f "$COPY_SCRIPT" ]]; then
+  echo "ERROR: copy_arteria_mesh_from_ao_mestrado.py nao encontrado em ${COPY_SCRIPT}"
+  exit 1
+fi
+
+# Garante que a malha do ao-mestrado existe; se nao, sintetiza-la primeiro.
+AO_MESH="${CASE_DIR}/../ao-mestrado/solid/constant/polyMesh"
+if [[ ! -f "${AO_MESH}/points" ]]; then
+  echo "[solid] polyMesh do ao-mestrado nao encontrada em ${AO_MESH}; gerando..."
+  ( cd "${CASE_DIR}/../ao-mestrado" && bash Allrun 2>&1 | tail -20 ) || \
+    { echo "ERROR: falha gerando malha do ao-mestrado para reutilizar"; exit 1; }
+fi
+
+python3 "$COPY_SCRIPT" \
+  --ao-mestrado-mesh "${AO_MESH}" \
+  --target-staging  "${SOLID_DIR}/staging/arteria/constant/polyMesh" \
+  --overlap-um 0
+
+if [[ ! -f staging/arteria/constant/polyMesh/points ]]; then
+  echo "ERROR: copy da arteria falhou."; exit 1
+fi
+
+echo "=== solid 3) Copia mesh do nervo para constant/polyMesh (master) ==="
+rm -rf constant/polyMesh
+mkdir -p constant
+cp -r staging/nerve/constant/polyMesh constant/polyMesh
+
+echo "=== solid 4) mergeMeshes  (master <- nerve, added <- arteria) ==="
+mergeMeshes -overwrite . staging/arteria 2>&1 | tee log.mergeMeshes
+
+echo "=== solid 4b) Gera paralelepipedo de gordura orbital 3D ==="
+# 1. blockMesh do paralelepipedo (-16,-8,-7) a (6,6,36) mm
+# 2. topoSet: identifica cells dentro do nervo+ONS+globo
+# 3. subsetMesh: remove essas cells -> patch fat_inner_nerve
+# 4. topoSet: identifica cells dentro da arteria
+# 5. subsetMesh: remove essas cells -> patch fat_inner_arteria
+( cd staging/orbit_fat && \
+  blockMesh 2>&1 | tee log.blockMesh && \
+  topoSet 2>&1 | tee log.topoSet_nerve && \
+  subsetMesh -overwrite fat_keep_after_nerve -patch fat_inner_nerve 2>&1 | tee log.subsetMesh_nerve && \
+  topoSet -dict system/topoSetDict_arteria 2>&1 | tee log.topoSet_arteria && \
+  subsetMesh -overwrite fat_keep_final -patch fat_inner_arteria 2>&1 | tee log.subsetMesh_arteria )
+
+# subsetMesh cria os patches com type=empty. Em 3D nao funciona; troca por wall.
+python3 - <<'PY'
+from pathlib import Path
+p = Path("staging/orbit_fat/constant/polyMesh/boundary")
+txt = p.read_text()
+for name in ("fat_inner_nerve", "fat_inner_arteria"):
+    # Substitui type empty por wall apenas nos blocos desses patches
+    import re
+    pat = re.compile(rf"({name}\s*\{{\s*type\s+)empty(\s*;)", re.MULTILINE)
+    txt = pat.sub(r"\1wall\2", txt)
+    pat2 = re.compile(rf"({name}\s*\{{[^}}]*?inGroups\s+1\(\s*)empty(\s*\))",
+                      re.MULTILINE | re.DOTALL)
+    txt = pat2.sub(r"\1wall\2", txt)
+p.write_text(txt)
+print("[orbit_fat] patches fat_inner_* convertidos de empty para wall.")
+PY
+
+echo "=== solid 4c) mergeMeshes adiciona orbit_fat ==="
+mergeMeshes -overwrite . staging/orbit_fat 2>&1 | tee log.mergeMeshes_fat
+
+echo "=== solid 5) topoSet  (cria faceZone csf_interface) ==="
+topoSet -dict system/topoSetDict_csf 2>&1 | tee log.topoSet
+
+echo "=== solid 6) createBaffles  (debond ON-ONS: on_outer + ons_inner) ==="
+# createBaffles sobrescreve 0/D adicionando BCs 'calculated' nos novos patches.
+# Salva template ANTES, restaura depois (com BCs corretas para on_outer/ons_inner).
+mkdir -p 0.orig
+cp 0/D 0.orig/D
+cp 0/solidForce 0.orig/solidForce
+createBaffles -dict system/createBafflesDict_csf -overwrite 2>&1 | tee log.createBaffles
+echo "=== solid 6b) Restaura 0/D e 0/solidForce templates ==="
+cp 0.orig/D 0/D
+cp 0.orig/solidForce 0/solidForce
+rm -rf 0.orig
+
+echo "=== solid 7) checkMesh ==="
+checkMesh -allTopology -allGeometry 2>&1 | tee log.checkMesh
+
+# Conferencia explicita dos cellZones esperados
+echo "=== solid 8) cellZones presentes ==="
+if grep -E '^[[:space:]]*(arteria|on|ons|lc|sclera|globo|orbital_fat)[[:space:]]*$' \
+       constant/polyMesh/cellZones; then
+  echo "OK: cellZones esperadas presentes."
+else
+  echo "WARNING: alguma cellZone esperada nao encontrada."
+fi
+
+# Conferencia dos patches esperados (boundary)
+echo "=== solid 9) patches presentes ==="
+EXPECTED_PATCHES=(arteria_lumen arteria_externa inner_cap_back inner_cap_front
+                  posterior_on posterior_ons ons_outer sclera_outer globo_outer
+                  anterior_globo on_outer ons_inner
+                  fat_x_min fat_x_max fat_y_min fat_y_max fat_z_min fat_z_max
+                  fat_inner_arteria fat_inner_nerve)
+for p in "${EXPECTED_PATCHES[@]}"; do
+  if grep -qE "^[[:space:]]*${p}\$" constant/polyMesh/boundary; then
+    echo "  OK   patch ${p}"
+  else
+    echo "  MISS patch ${p}"
+  fi
+done
+
+echo "=== solid mesh OK ==="

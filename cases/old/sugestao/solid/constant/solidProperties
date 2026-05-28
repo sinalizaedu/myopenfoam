@@ -1,0 +1,25 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// sugestao - solidModel = unsLinearGeometry (Cardiff 2014 recomenda para
+// solidContact + multi-zona heterogenea). Mais robusto que
+// linearGeometryTotalDisplacement para problemas de contato com penalty.
+
+solidModel      unsLinearGeometry;
+
+unsLinearGeometryCoeffs
+{
+    // Tolerancias relaxadas para viabilizar contato penalty + multi-zona.
+    // Cada janela de acoplamento (1 ms) e quasi-estatica do ponto de vista
+    // do solido — convergencia agressiva por passo e desnecessaria.
+    nCorrectors             300;
+    solutionTolerance       5e-02;
+    alternativeTolerance    1e-04;
+    materialTolerance       1e-04;
+    infoFrequency           50;
+}

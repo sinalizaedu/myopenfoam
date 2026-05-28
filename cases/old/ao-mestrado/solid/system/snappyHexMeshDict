@@ -1,0 +1,118 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+// Solid: "arteria cheia" (interior de artery_outer.stl).
+//
+// NOTA DE MODELAGEM (2026-05-23): tentativa de gerar annulus de parede fina
+// (0.2 mm entre inner e outer) via snappy gerou malha degenerada (volumes
+// negativos, nonOrtho 179°, ~50k concave cells) porque a espessura da
+// parede e' comparavel ao cell size de background. Como alternativa, o
+// solido e' tratado como CILINDRO COMPLETO (artery_outer.stl preenchido).
+// A interface FSI 'lumen' coincide com a superficie externa da artery_outer;
+// o RBF Thin-Plate Spline do preCICE mapeia forcas do `wall` do fluido
+// (artery_inner.stl, raio interno) para o `lumen` do solido (artery_outer.stl,
+// raio externo), com offset radial de 0.2 mm (espessura da parede).
+//
+// Limitacao a documentar na metodologia: parede arterial modelada como cilin-
+// dro elastico macico em vez de annulus oco; deformacao radial superestima
+// momento de inercia. Para hemodinamica realista usar extrudeMesh
+// (trabalho futuro).
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+geometry
+{
+    artery_outer.stl
+    {
+        type    triSurfaceMesh;
+        name    artery_surface;
+    }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       2000000;
+    maxGlobalCells      2000000;
+    minRefinementCells  10;
+    nCellsBetweenLevels 2;
+
+    features
+    (
+        { file "artery_outer.eMesh"; level 3; }
+    );
+
+    refinementSurfaces
+    {
+        artery_surface
+        {
+            level   (2 3);
+            patchInfo { type wall; }
+        }
+    }
+
+    resolveFeatureAngle     45;
+    refinementRegions { }
+
+    // Dentro da artery_outer.stl — pega o ponto centroide-validado pelo
+    // raycast (que tambem cai dentro de outer, embora destinado ao annulus).
+    locationInMesh          (-2.7629559005906555e-3 2.2602609721247085e-3 1.7336850585346748e-2);
+
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    nSmoothPatch        10;
+    tolerance           2.0;
+    nSolveIter          200;
+    nRelaxIter          15;
+    nFeatureSnapIter    20;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap false;
+}
+
+addLayersControls
+{
+    relativeSizes       true;
+    layers              { }
+    expansionRatio      1.0;
+    finalLayerThickness 0.3;
+    minThickness        0.1;
+    nGrow               0;
+    featureAngle        60;
+    nRelaxIter          3;
+    nSmoothSurfaceNormals 1;
+    nSmoothNormals      3;
+    nSmoothThickness    10;
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle  90;
+    nBufferCellsNoExtrude 0;
+    nLayerIter          50;
+}
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+    relaxed
+    {
+        maxNonOrtho 80;
+        maxBoundarySkewness 25;
+        maxInternalSkewness 6;
+        minVol              1e-15;
+        minTetQuality      -1e-30;
+    }
+    nSmoothScale        6;
+    errorReduction      0.5;
+}
+
+writeFlags ( );
+mergeTolerance 1e-6;

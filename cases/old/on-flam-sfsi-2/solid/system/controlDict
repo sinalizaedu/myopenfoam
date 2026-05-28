@@ -1,0 +1,79 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// on-flam-sfsi-2 - rampa de deslocamento imposto na tampa anterior.
+// 40 timesteps de 1 s cada (pseudo-tempo: cada step uma configuracao
+// quasi-estatica). A tabela constant/timeVsDisp interpola linearmente
+// entre os 41 pares (Dz de 0 a -1 mm).
+
+application     solids4Foam;
+
+startFrom       latestTime;
+startTime       0;
+stopAt          endTime;
+endTime         40.0;
+
+deltaT          1.0;
+
+writeControl    timeStep;
+writeInterval   1;
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
+
+// Carrega a BC customizada solidTractionElasticFoundation (mola de Winkler).
+// Compilada em cases/on-mestrado/src/elasticFoundation/Allwmake.
+libs ("$FOAM_CASE/../src/elasticFoundation/libsolidTractionElasticFoundation.so");
+
+// ------------------------------ FUNCTION OBJECTS ----------------------------
+// Extraem a reacao axial F_z(t) na tampa anterior (signature da bifurcacao:
+// pico da curva F_z(Dz) = P_cr). solidForcesDisplacements e o FO canonico
+// do solids4Foam para extrair forca composta integrada por patch.
+//
+// forces_anterior_dura : F na camada estrutural dominante (dura, E=3 MPa).
+// forces_anterior_pia  : F na pia (cinta de contencao).
+// forces_anterior_on   : F no nervo neural (deve ser ~0 - macio demais).
+// forces_anterior_sas  : F no SAS soft (deve ser ~0 - quase incompressivel).
+
+functions
+{
+    forces_anterior_dura
+    {
+        type            solidForcesDisplacements;
+        libs            ("libsolids4FoamModels.so");
+        historyPatch    anterior_dura;
+    }
+
+    forces_anterior_pia
+    {
+        type            solidForcesDisplacements;
+        libs            ("libsolids4FoamModels.so");
+        historyPatch    anterior_pia;
+    }
+
+    forces_anterior_on
+    {
+        type            solidForcesDisplacements;
+        libs            ("libsolids4FoamModels.so");
+        historyPatch    anterior_on;
+    }
+
+    forces_anterior_sas
+    {
+        type            solidForcesDisplacements;
+        libs            ("libsolids4FoamModels.so");
+        historyPatch    anterior_sas;
+    }
+}

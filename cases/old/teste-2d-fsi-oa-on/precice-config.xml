@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  teste-2d-fsi-oa-on : preCICE config (one-way FSI)
+
+  Acoplamento:
+    Fluid (pimpleFoam, lumen)  >>> Force >>> Solid (solids4Foam, OA wall + ONS + fat)
+    One-way: malha fluida estatica (staticFvMesh). Para two-way, mudar
+    coupling-scheme para serial-implicit/parallel-implicit + Aitken/IQN-ILS
+    e dynamicFvMesh no fluido.
+
+  Tempo:
+    HR = 69 bpm => T = 60/69 = 0.8696 s.
+    3 ciclos => 2.6087 s. max-time = 2.609 com 0.3ms de folga.
+    Janela de acoplamento = passo = 1 ms.
+
+  Geometria 2D:
+    OpenFOAM nao tem suporte nativo a 2D (1-cell-thick em z, empty patches).
+    preCICE precisa de dimensions="3"; os pontos das interfaces FSI ficam
+    todos em z=0.0005 m (mid-plane do mesh).
+    Como NX=80 em ambos lados e os centroides x sao identicos, nearest-neighbor
+    mapping basta : nao precisa de RBF (nem o mesh fica mal-condicionado).
+-->
+<precice-configuration>
+  <log>
+    <sink
+      filter="%Severity% > debug and %Rank% = 0"
+      format="---[precice] %ColorizedSeverity% %Message%"
+      enabled="true" />
+  </log>
+
+  <data:vector name="Force" />
+
+  <mesh name="Fluid-Mesh" dimensions="3">
+    <use-data name="Force" />
+  </mesh>
+
+  <mesh name="Solid-Mesh" dimensions="3">
+    <use-data name="Force" />
+  </mesh>
+
+  <participant name="Fluid">
+    <provide-mesh name="Fluid-Mesh" />
+    <receive-mesh name="Solid-Mesh" from="Solid" />
+    <write-data name="Force" mesh="Fluid-Mesh" />
+    <!-- Mapping conservative: preserva integral de Force ao mapear face-center
+         do Fluid (160 faces totais nos 2 patches FSI) para o Solid (160 faces
+         identicas em x; coincidem 1:1 quando NX_fluid = NX_solid = 80). -->
+    <mapping:nearest-neighbor direction="write"
+                              from="Fluid-Mesh" to="Solid-Mesh"
+                              constraint="conservative" />
+  </participant>
+
+  <participant name="Solid">
+    <provide-mesh name="Solid-Mesh" />
+    <read-data name="Force" mesh="Solid-Mesh" />
+    <!-- Watch-point no centro da parede inferior (x=10 mm, y=10.1 mm).
+         Permite plotar deslocamento da parede em fase com a pressao no inlet. -->
+    <watch-point mesh="Solid-Mesh" name="wallBotCenter" coordinate="0.010;0.0101;0.0005" />
+    <watch-point mesh="Solid-Mesh" name="wallTopCenter" coordinate="0.010;0.0114;0.0005" />
+  </participant>
+
+  <m2n:sockets acceptor="Fluid" connector="Solid" exchange-directory=".." />
+
+  <coupling-scheme:serial-explicit>
+    <time-window-size value="2e-3" />
+    <!-- 1 CICLO completo: max-time 0.87 (435 janelas, ~10 min wall time).
+         Para meio ciclo: 0.435. Para 3 ciclos: 2.609 -->
+    <max-time value="0.87" />
+    <participants first="Fluid" second="Solid" />
+    <exchange data="Force" mesh="Solid-Mesh" from="Fluid" to="Solid" />
+  </coupling-scheme:serial-explicit>
+</precice-configuration>

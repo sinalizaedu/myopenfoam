@@ -1,0 +1,40 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// on-mestrado-2-buckling-NL: SOLVER NAO-LINEAR para detectar flambagem.
+//
+// Combina 4 estrategias para destravar a convergencia (que falhou em
+// on-mestrado-2-buckling com nonLinearGeometryTotalLag):
+//
+//   1) Incrementos pequenos (10 passos de 0.4 mm em vez de 5 de 0.8 mm)
+//   2) Imperfeicao lateral via contact_local reduzido (1000 Pa) - quebra
+//      simetria axial, da direcao preferencial para a bifurcacao
+//   3) Lei hiperelastica neoHookean (mais estavel sob finite strain que
+//      StVenantKirchhoffElastic)
+//   4) Solver UNSTRUCTURED (unsNonLinearGeometryTotalLagrangian) em vez
+//      do estruturado (nonLinearGeometryTotalLagrangianTotalDisplacement),
+//      potencialmente mais robusto a contraste de modulos em multi-zona.
+
+solidModel      unsNonLinearGeometryTotalLagrangian;
+
+unsNonLinearGeometryTotalLagrangianCoeffs
+{
+    nCorrectors             20000;
+    solutionTolerance       1e-04;
+    alternativeTolerance    1e-06;
+    materialTolerance       1e-04;
+    infoFrequency           200;
+
+    // Rhie-Chow stabilisation com scaleFactor maior (0.5 em vez de 0.1)
+    // para combater oscilacoes em multi-zona com contraste E_dura/E_on=100.
+    stabilisation
+    {
+        type        RhieChow;
+        scaleFactor 0.5;
+    }
+}

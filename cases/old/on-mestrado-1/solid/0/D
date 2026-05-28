@@ -1,0 +1,132 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// on-mestrado-1 - 5 zonas (on + pia lumped + lc + sclera lumped + globo).
+//
+// "Pia expandida" (Sigal 2004): pia + SAS + dura fundidas num unico anel.
+// SAS sem materializacao geometrica, mas P_CSF aplicada em posterior_pia.
+// "Sclera lumped": sclera_peri + sclera_ring fundidas (E=5 MPa).
+// "Globo": copiado integralmente do on-mestrado-2 (cap z=30.30-30.80,
+// disco r=0-2.50, E=5 MPa). Ancoragem migrou para o equador do globo.
+//
+// BCs DE SUPORTE espelhando on-mestrado-2:
+//   z=0 (canal optico):
+//     posterior_on  : fixedDisplacement   (analogo ao posterior_on/_pia/_dura
+//                                          do -2, tudo engastado no canal)
+//     posterior_pia : solidTraction P_CSF (analogo ao posterior_sas do -2,
+//                                          unica face com CSF axial)
+//   z=30.30-30.80 (cap do globo - copiado de -2):
+//     globo_outer   : fixedDisplacement   (EQUADOR engastado: Tenon + EOMs)
+//     anterior_globo: solidTraction P=0   (lado vitreo livre, sem IOP)
+//   lateral:
+//     pia_outer    : Winkler k=200 kPa/m  (gordura orbital;
+//                                          contact_local carved-out depois)
+//     sclera_outer : solidTraction P=0    (livre, analog sclera_ring_outer)
+//
+// Cargas (espelham on-mestrado-2):
+//   - P_CSF=1333 Pa em posterior_pia      (analog do posterior_sas de -2)
+//   - P_contact=9034 Pa em contact_local  (artieria oftalmica, igual -2)
+//   - Winkler k=200 kPa/m em pia_outer    (gordura orbital, igual -2)
+//
+// Familia comparativa (mesmas cargas, BCs e cap do globo; materializacao
+// da bainha diferente):
+//   on-mestrado-1: 5 zonas (on + pia lumped + lc + sclera lumped + globo) <-- este
+//   on-mestrado-2: 8 zonas anatomicas (on/pia/sas/dura/lc/sclera_*/globo)
+//   on-mestrado-3: 8 zonas anatomicas, P_CSF=2667 Pa
+//
+// -1 vs -2 isola o efeito de modelar SAS/dura/sclera_peri/sclera_ring
+// como camadas separadas vs lumpear pia+SAS+dura e sclera_peri+sclera_ring.
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ----- z=0 (posterior, lado do canal optico) ----------------------
+    // Tecido neural engastado no canal optico (igual posterior_on de -2).
+    // Justificativa: adesoes fibrosas de colageno do nervo no anel osseo.
+    posterior_on
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Bainha (pia expandida) na traseira - CSF axial.
+    //   P_CSF = 1333 Pa (~10 mmHg, normotenso supino).
+    //   Equivalente ao posterior_sas de on-mestrado-2.
+    //   Refs: Andresen & Juhler (2014); Czosnyka & Pickard (2004).
+    posterior_pia
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 1333;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- superficie externa cilindrica da pia (sem o contact_local) ----
+    // Fundacao elastica de Winkler representando a gordura orbital:
+    //   t_n = -k * (D . n)
+    //   k = E_fat / t_fat = 500 Pa / 0.0025 m = 200000 Pa/m
+    //
+    // Para sensibilidade com Yoo et al. (2011), trocar k para 280000.
+    pia_outer
+    {
+        type        solidTractionElasticFoundation;
+        k           200000;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- contact_local (arteria oftalmica) ---------------------------
+    // Patch carved de pia_outer pelo topoSet + createPatch (~1mm x 0.5mm
+    // em z=22.5mm, eixo +X). P_contact = ALPHA * P_lumen_med = 9034 Pa.
+    //   ALPHA = 0.6767 (= 9000 / 13300)
+    //   P_sist  = 10827 Pa,  P_diast = 7241 Pa,  P_mean = 9034 Pa
+    // Identico ao contact_local de on-mestrado-2.
+    contact_local
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 9034;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- sclera_outer (lateral z=30-30.30): livre --------------------
+    // Analog do sclera_ring_outer de on-mestrado-2. Sem Winkler aqui
+    // (transicao para o globo, area pequena e externa a gordura orbital).
+    sclera_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- globo_outer (lateral z=30.30-30.80): EQUADOR engastado -----
+    // IDENTICO ao globo_outer de on-mestrado-2. Ancoragem dos musculos
+    // extraoculares e capsula de Tenon ao redor do equador do globo
+    // (Power et al.; Sigal et al.).
+    globo_outer
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- anterior_globo (z=30.80, lado vitreo): livre, sem IOP ------
+    // IDENTICO ao anterior_globo de on-mestrado-2. Pressao intraocular
+    // (IOP) NAO modelada nesta fase (foco no SAS+contact local).
+    anterior_globo
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+}

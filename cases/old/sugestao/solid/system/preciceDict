@@ -1,0 +1,41 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+preciceConfig "../precice-config.xml";
+
+participant Solid;
+
+modules (FSI);
+
+interfaces
+{
+    Interface1
+    {
+        // Patch arteria_lumen = interface FSI sangue<->parede arterial
+        // (renomeado vs ao-mestrado por consistencia com presenca de mais
+        // patches no caso unificado)
+        mesh              Solid-Mesh;
+        patches           (arteria_lumen);
+        locations         faceCenters;
+
+        readData
+        (
+            Force
+        );
+
+        writeData         ();
+    };
+};
+
+FSI
+{
+    solverType              solid;
+    namePointDisplacement   pointD;
+    nameCellDisplacement    D;
+    nameForce               solidForce;
+}

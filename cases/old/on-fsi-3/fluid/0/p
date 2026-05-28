@@ -1,0 +1,36 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      p;
+}
+
+// Pressao cinematica p/rho (pimpleFluid e' incompressivel).
+// P_CSF = 3800 Pa  =>  p_kinematic = 3800 / 1000 = 3.800 m^2/s^2
+//   (microgravidade SANS upper bound, ~28.5 mmHg).
+//   Refs: Lawley et al. (2017, J Physiol);
+//         Mader et al. (2011, Ophthalmology) - faixa documentada 20-28.5 mmHg
+//         (2667-3800 Pa) em puncao lombar pos-voo Long Duration.
+//
+// inlet (z=0, anel SAS r=1.55-2.35): cisterna quiasmatica = PIC elevada SANS
+// 4 paredes FSI: zeroGradient (cul-de-sac fechado, p quase uniforme).
+
+dimensions      [ 0 2 -2 0 0 0 0 ];
+
+internalField   uniform 3.800;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 3.800;
+    }
+
+    fsi_pia          { type zeroGradient; }
+    fsi_dura         { type zeroGradient; }
+    fsi_sclera_peri  { type zeroGradient; }
+    fsi_sclera_ring  { type zeroGradient; }
+}

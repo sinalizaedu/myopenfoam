@@ -1,0 +1,22 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      dynamicMeshDict;
+}
+
+// Two-way FSI: malha do fluido segue deformacao do solido nas 4 patches FSI.
+// preCICE escreve pointDisplacement nas patches (movimento dos vertices),
+// e o motion solver displacementLaplacian propaga para o interior da malha
+// suavizando com diffusivity proporcional a 1/dist^2 (quadratic inverseDistance)
+// das paredes FSI.
+
+dynamicFvMesh           dynamicMotionSolverFvMesh;
+
+motionSolverLibs        ( "libfvMotionSolvers.so" );
+
+"solver|motionSolver"   displacementLaplacian;
+
+// OPEN-SAS TEST: fsi_sclera_peri agora e' patch fixa (outlet), nao FSI
+diffusivity             quadratic inverseDistance 3 ( fsi_pia fsi_dura fsi_sclera_ring );

@@ -1,0 +1,38 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    "D|DD"
+    {
+        solver          PCG;
+        preconditioner  FDIC;
+        tolerance       1e-09;
+        relTol          0.1;
+    }
+
+    sigmaHyd
+    {
+        solver          PCG;
+        preconditioner  FDIC;
+        tolerance       1e-09;
+        relTol          0.1;
+    }
+}
+
+// Sub-relaxacao agressiva para o solver NL com SAS quase-incompressivel.
+// alpha_D=0.9 explode (NaN logo no Time=1, vide on-flambagem-2); 0.3 e o
+// minimo conhecido estavel para esta combinacao neoHookean + nu_sas=0.30.
+// Plano B se ainda divergir: reduzir para 0.2 (eventualmente 0.1).
+relaxationFactors
+{
+    fields
+    {
+        D       0.3;
+    }
+}

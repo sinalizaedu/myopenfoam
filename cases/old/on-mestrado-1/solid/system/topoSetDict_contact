@@ -1,0 +1,48 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// on-mestrado-1 - carve do patch contact_local (artria oftalmica) a partir de
+// pia_outer. Mesma posicao e dimensoes do contact_local do on-mestrado-2
+// (so muda o source patch: pia_outer no -1, dura_outer no -2 - ambos sao a
+// face cilindrica externa em r=2.5 mm).
+//
+// Geometria: eixo +X, plano y=0, z=22.5 mm (7.5 mm do globo, 22.5 mm
+// do canal optico). Patch ~1 mm x ~0.5 mm.
+//
+// O O-grid tem 8 celulas tangenciais por quadrante (delta_theta=11.25 deg).
+// Centros de celula em E-quadrante:
+//    theta = +/- 5.625, +/- 16.875, +/- 28.125, +/- 39.375 deg
+// Pegando theta = +/- 5.625 deg:
+//    x_face = 2.5 * cos(5.625) = 2.488 mm
+//    y_face = 2.5 * sin(5.625) = +/- 0.245 mm
+//
+// Box selecionado (em metros):
+//   x : [+2.40e-3, +2.65e-3]   (filtra theta = +/- 5.625 deg)
+//   y : [-0.50e-3, +0.50e-3]   (ambos os lados de y=0)
+//   z : [+22.0e-3, +23.0e-3]   (1 mm em z, centrado em z=22.5 mm)
+
+actions
+(
+    {
+        name    contact_local;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name pia_outer; }
+    }
+    {
+        name    contact_local;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo
+        {
+            box (2.40e-3  -0.50e-3  22.0e-3) (2.65e-3  +0.50e-3  23.0e-3);
+        }
+    }
+);

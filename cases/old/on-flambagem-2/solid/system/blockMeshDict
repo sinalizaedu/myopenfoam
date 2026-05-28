@@ -1,0 +1,260 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// on-flambagem-2 - tubo simples nervo + bainha (4 zonas concentricas), z=0-30 mm.
+//
+// Geometria (scale 0.001 -> mm; ver brunaStuff/gen_on_flambagem_2_blockmesh.py):
+//   on   : r=0    -1.50, z=0-30   (E=30  kPa, nu=0.45)
+//   pia  : r=1.50 -1.55, z=0-30   (E=3   MPa, nu=0.45)
+//   sas  : r=1.55 -2.35, z=0-30   (E=100 kPa, nu=0.30)   CSF soft solid igual on-mestrado-2
+//   dura : r=2.35 -2.50, z=0-30   (E=3   MPa, nu=0.45)
+//
+// Sem esclera, sem LC, sem globo, sem contact_local. Base do estudo de flambagem.
+//
+// Continuidade nodal: blocos compartilham vertices em z=0 e z=30 (bonded por DOF).
+//
+// Patches (9):
+//   posterior_on    -> z=0,  ON central + 4 quadrantes ON     (fixedDisplacement)
+//   posterior_pia   -> z=0,  4 quadrantes pia                 (fixedDisplacement)
+//   posterior_sas   -> z=0,  4 quadrantes sas                 (solidTraction P_CSF=1333)
+//   posterior_dura  -> z=0,  4 quadrantes dura                (fixedDisplacement)
+//   anterior_on     -> z=30, ON central + 4 quadrantes ON     (fixedDisplacement)
+//   anterior_pia    -> z=30, 4 quadrantes pia                 (fixedDisplacement)
+//   anterior_sas    -> z=30, 4 quadrantes sas                 (fixedDisplacement)
+//   anterior_dura   -> z=30, 4 quadrantes dura                (fixedDisplacement)
+//   dura_outer      -> r=2.50, z=0-30 (4 quadrantes)          (Winkler 200 kPa/m)
+
+scale   0.001;
+
+
+vertices
+(
+    (    0.750000     0.750000    0.00 )  //   0
+    (   -0.750000     0.750000    0.00 )  //   1
+    (   -0.750000    -0.750000    0.00 )  //   2
+    (    0.750000    -0.750000    0.00 )  //   3
+    (    1.060660     1.060660    0.00 )  //   4
+    (   -1.060660     1.060660    0.00 )  //   5
+    (   -1.060660    -1.060660    0.00 )  //   6
+    (    1.060660    -1.060660    0.00 )  //   7
+    (    1.096016     1.096016    0.00 )  //   8
+    (   -1.096016     1.096016    0.00 )  //   9
+    (   -1.096016    -1.096016    0.00 )  //  10
+    (    1.096016    -1.096016    0.00 )  //  11
+    (    1.661701     1.661701    0.00 )  //  12
+    (   -1.661701     1.661701    0.00 )  //  13
+    (   -1.661701    -1.661701    0.00 )  //  14
+    (    1.661701    -1.661701    0.00 )  //  15
+    (    1.767767     1.767767    0.00 )  //  16
+    (   -1.767767     1.767767    0.00 )  //  17
+    (   -1.767767    -1.767767    0.00 )  //  18
+    (    1.767767    -1.767767    0.00 )  //  19
+    (    0.750000     0.750000   30.00 )  //  20
+    (   -0.750000     0.750000   30.00 )  //  21
+    (   -0.750000    -0.750000   30.00 )  //  22
+    (    0.750000    -0.750000   30.00 )  //  23
+    (    1.060660     1.060660   30.00 )  //  24
+    (   -1.060660     1.060660   30.00 )  //  25
+    (   -1.060660    -1.060660   30.00 )  //  26
+    (    1.060660    -1.060660   30.00 )  //  27
+    (    1.096016     1.096016   30.00 )  //  28
+    (   -1.096016     1.096016   30.00 )  //  29
+    (   -1.096016    -1.096016   30.00 )  //  30
+    (    1.096016    -1.096016   30.00 )  //  31
+    (    1.661701     1.661701   30.00 )  //  32
+    (   -1.661701     1.661701   30.00 )  //  33
+    (   -1.661701    -1.661701   30.00 )  //  34
+    (    1.661701    -1.661701   30.00 )  //  35
+    (    1.767767     1.767767   30.00 )  //  36
+    (   -1.767767     1.767767   30.00 )  //  37
+    (   -1.767767    -1.767767   30.00 )  //  38
+    (    1.767767    -1.767767   30.00 )  //  39
+);
+
+blocks
+(
+    // ===== z=0 a 30 mm: 4 zonas cilindricas concentricas =====
+    hex (   0   1   2   3   20  21  22  23 )  on    ( 8 8 30 )  simpleGrading ( 1 1 1 )  // ON central
+    hex (   3   7   4   0   23  27  24  20 )  on    ( 6 8 30 )  simpleGrading ( 1 1 1 )  // ON_E
+    hex (   0   4   5   1   20  24  25  21 )  on    ( 6 8 30 )  simpleGrading ( 1 1 1 )  // ON_N
+    hex (   1   5   6   2   21  25  26  22 )  on    ( 6 8 30 )  simpleGrading ( 1 1 1 )  // ON_W
+    hex (   2   6   7   3   22  26  27  23 )  on    ( 6 8 30 )  simpleGrading ( 1 1 1 )  // ON_S
+    hex (   7  11   8   4   27  31  28  24 )  pia   ( 1 8 30 )  simpleGrading ( 1 1 1 )  // pia_E
+    hex (   4   8   9   5   24  28  29  25 )  pia   ( 1 8 30 )  simpleGrading ( 1 1 1 )  // pia_N
+    hex (   5   9  10   6   25  29  30  26 )  pia   ( 1 8 30 )  simpleGrading ( 1 1 1 )  // pia_W
+    hex (   6  10  11   7   26  30  31  27 )  pia   ( 1 8 30 )  simpleGrading ( 1 1 1 )  // pia_S
+    hex (  11  15  12   8   31  35  32  28 )  sas   ( 6 8 30 )  simpleGrading ( 1 1 1 )  // sas_E
+    hex (   8  12  13   9   28  32  33  29 )  sas   ( 6 8 30 )  simpleGrading ( 1 1 1 )  // sas_N
+    hex (   9  13  14  10   29  33  34  30 )  sas   ( 6 8 30 )  simpleGrading ( 1 1 1 )  // sas_W
+    hex (  10  14  15  11   30  34  35  31 )  sas   ( 6 8 30 )  simpleGrading ( 1 1 1 )  // sas_S
+    hex (  15  19  16  12   35  39  36  32 )  dura  ( 2 8 30 )  simpleGrading ( 1 1 1 )  // dura_E
+    hex (  12  16  17  13   32  36  37  33 )  dura  ( 2 8 30 )  simpleGrading ( 1 1 1 )  // dura_N
+    hex (  13  17  18  14   33  37  38  34 )  dura  ( 2 8 30 )  simpleGrading ( 1 1 1 )  // dura_W
+    hex (  14  18  19  15   34  38  39  35 )  dura  ( 2 8 30 )  simpleGrading ( 1 1 1 )  // dura_S
+);
+
+edges
+(
+    // ---- ON   r=1.50  @ z=0.00 mm ----
+    arc   4   7  (   1.50000    0.00000    0.00 )
+    arc   4   5  (   0.00000    1.50000    0.00 )
+    arc   5   6  (  -1.50000    0.00000    0.00 )
+    arc   6   7  (   0.00000   -1.50000    0.00 )
+    // ---- pia  r=1.55  @ z=0.00 mm ----
+    arc   8  11  (   1.55000    0.00000    0.00 )
+    arc   8   9  (   0.00000    1.55000    0.00 )
+    arc   9  10  (  -1.55000    0.00000    0.00 )
+    arc  10  11  (   0.00000   -1.55000    0.00 )
+    // ---- sas  r=2.35  @ z=0.00 mm ----
+    arc  12  15  (   2.35000    0.00000    0.00 )
+    arc  12  13  (   0.00000    2.35000    0.00 )
+    arc  13  14  (  -2.35000    0.00000    0.00 )
+    arc  14  15  (   0.00000   -2.35000    0.00 )
+    // ---- dura r=2.50  @ z=0.00 mm ----
+    arc  16  19  (   2.50000    0.00000    0.00 )
+    arc  16  17  (   0.00000    2.50000    0.00 )
+    arc  17  18  (  -2.50000    0.00000    0.00 )
+    arc  18  19  (   0.00000   -2.50000    0.00 )
+
+    // ---- ON   r=1.50  @ z=30.00 mm ----
+    arc  24  27  (   1.50000    0.00000   30.00 )
+    arc  24  25  (   0.00000    1.50000   30.00 )
+    arc  25  26  (  -1.50000    0.00000   30.00 )
+    arc  26  27  (   0.00000   -1.50000   30.00 )
+    // ---- pia  r=1.55  @ z=30.00 mm ----
+    arc  28  31  (   1.55000    0.00000   30.00 )
+    arc  28  29  (   0.00000    1.55000   30.00 )
+    arc  29  30  (  -1.55000    0.00000   30.00 )
+    arc  30  31  (   0.00000   -1.55000   30.00 )
+    // ---- sas  r=2.35  @ z=30.00 mm ----
+    arc  32  35  (   2.35000    0.00000   30.00 )
+    arc  32  33  (   0.00000    2.35000   30.00 )
+    arc  33  34  (  -2.35000    0.00000   30.00 )
+    arc  34  35  (   0.00000   -2.35000   30.00 )
+    // ---- dura r=2.50  @ z=30.00 mm ----
+    arc  36  39  (   2.50000    0.00000   30.00 )
+    arc  36  37  (   0.00000    2.50000   30.00 )
+    arc  37  38  (  -2.50000    0.00000   30.00 )
+    arc  38  39  (   0.00000   -2.50000   30.00 )
+
+);
+
+boundary
+(
+    posterior_on
+    {
+        type wall;
+        faces
+        (
+            (   0   1   2   3 )   // ON central
+            (   3   7   4   0 )   // ON_E
+            (   0   4   5   1 )   // ON_N
+            (   1   5   6   2 )   // ON_W
+            (   2   6   7   3 )   // ON_S
+        );
+    }
+
+    posterior_pia
+    {
+        type wall;
+        faces
+        (
+            (   7  11   8   4 )   // pia_E
+            (   4   8   9   5 )   // pia_N
+            (   5   9  10   6 )   // pia_W
+            (   6  10  11   7 )   // pia_S
+        );
+    }
+
+    posterior_sas
+    {
+        type wall;
+        faces
+        (
+            (  11  15  12   8 )   // sas_E
+            (   8  12  13   9 )   // sas_N
+            (   9  13  14  10 )   // sas_W
+            (  10  14  15  11 )   // sas_S
+        );
+    }
+
+    posterior_dura
+    {
+        type wall;
+        faces
+        (
+            (  15  19  16  12 )   // dura_E
+            (  12  16  17  13 )   // dura_N
+            (  13  17  18  14 )   // dura_W
+            (  14  18  19  15 )   // dura_S
+        );
+    }
+
+    anterior_on
+    {
+        type wall;
+        faces
+        (
+            (  20  21  22  23 )   // ON central
+            (  23  27  24  20 )   // ON_E
+            (  20  24  25  21 )   // ON_N
+            (  21  25  26  22 )   // ON_W
+            (  22  26  27  23 )   // ON_S
+        );
+    }
+
+    anterior_pia
+    {
+        type wall;
+        faces
+        (
+            (  27  31  28  24 )   // pia_E
+            (  24  28  29  25 )   // pia_N
+            (  25  29  30  26 )   // pia_W
+            (  26  30  31  27 )   // pia_S
+        );
+    }
+
+    anterior_sas
+    {
+        type wall;
+        faces
+        (
+            (  31  35  32  28 )   // sas_E
+            (  28  32  33  29 )   // sas_N
+            (  29  33  34  30 )   // sas_W
+            (  30  34  35  31 )   // sas_S
+        );
+    }
+
+    anterior_dura
+    {
+        type wall;
+        faces
+        (
+            (  35  39  36  32 )   // dura_E
+            (  32  36  37  33 )   // dura_N
+            (  33  37  38  34 )   // dura_W
+            (  34  38  39  35 )   // dura_S
+        );
+    }
+
+    dura_outer
+    {
+        type wall;
+        faces
+        (
+            (  19  16  36  39 )   // dura_outer_E
+            (  16  17  37  36 )   // dura_outer_N
+            (  17  18  38  37 )   // dura_outer_W
+            (  18  19  39  38 )   // dura_outer_S
+        );
+    }
+
+);
+

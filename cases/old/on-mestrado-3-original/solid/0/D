@@ -1,0 +1,132 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// on-mestrado-3 - CSF em condicoes SANS (microgravidade)
+//
+// Familia comparativa P_CSF (3 casos com mesma malha e BCs, exceto a pressao
+// aplicada na face posterior_on - abertura do espaco subaracnoide em z=0):
+//   on-mestrado-1: P_CSF = 0     Pa  (sem CSF, baseline)
+//   on-mestrado-2: P_CSF = 1333  Pa  (~10 mmHg, normotenso supino, terra)
+//   on-mestrado-3: P_CSF = 2667  Pa  (~20 mmHg, microgravidade, SANS)  <-- este
+//
+// Convencao do solidTraction: pressure > 0 = compressao normal entrando na
+// face, ou seja, P_CSF empurra a face posterior_on (-z) no sentido +z (do
+// quiasma para o globo).
+//
+// Carregamentos pulsateis em microgravidade (SANS - foco em tortuosidade):
+//
+//   contact_local  : tracao da arteria oftalmica APLICADA NA POSIcao REAL
+//     do contato (setor +Y, z~18mm, ~1mm x 1mm), conforme geometria do caso
+//     artoph-curva-mestrado (scale 1.3x). Patch criado por topoSet+createPatch
+//     a partir do `ons_outer` original.
+//     P_contact = 9000 Pa - derivado do artoph-mestrado (P_micro = 13300 Pa)
+//
+//   ons_outer_E   : antigo `contact_artoph` (setor +X uniforme) -- agora recebe
+//     mola de Winkler (gordura orbital), pois nao havia contato real na +X.
+//
+//   anterior_globo : face z=31.0mm - parede orbital rigida = deslocamento zero
+//   posterior_ons  : face z=0, ONS - fixedDisplacement (bainha ancorada no
+//                    canal optico; a dura-mater funde-se com o periosteo)
+//   posterior_on   : face z=0, ON  - solidTraction com P_CSF (sentido +z)
+//
+// Gordura orbital: BC customizada solidTractionElasticFoundation (Winkler).
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // Tecido neural na traseira (z=0) - CSF em microgravidade (SANS).
+    //   P_CSF = 2667 Pa (~20 mmHg) - PIC cronicamente elevada em astronautas
+    //   referencia: Sigal et al. (2004); Lawley et al. (2017, J Physiol)
+    posterior_on
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 2667;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Bainha na traseira (z=0) - ancorada no canal optico
+    // A dura-mater do ONS funde-se com o periosteo da abertura ossea
+    posterior_ons
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Contato local arteria oftalmica - ONS (setor +Y, z~18 mm, ~1mm x 1mm)
+    // Carregamento pulsatil:
+    //   p_contact(t) = 0.6767 * P_lumen(t)    (ALPHA = 9000/13300)
+    //   variando de ~7240 Pa (diastole) a ~10827 Pa (sistole)
+    //   ciclo cardiaco T = 0.5 s (HR ~ 120 bpm), 5 ciclos completos
+    // Tabela: constant/contact_pressure.dat
+    //   (gerada por brunaStuff/gen_contact_pressure_table.py)
+    contact_local
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressureSeries
+        {
+            "fileName|file"    "$FOAM_CASE/constant/contact_pressure.dat";
+            outOfBounds        clamp;
+        }
+        value       uniform ( 0 0 0 );
+    }
+
+    // Antigo `contact_artoph` (+X uniforme, sem contato real) -- agora Winkler
+    ons_outer_E
+    {
+        type        solidTractionElasticFoundation;
+        k           200000;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Superficie externa da ONS (setores N/W/S) - mola de Winkler (gordura orbital)
+    //   t_n = -k * (D . n)
+    //   k = E_fat / t_fat = 500 Pa / 2.5e-3 m = 200000 Pa/m
+    //   E_fat = 0.5 kPa (Schoemaker 2006), t_fat = 2.5 mm
+    // Implementacao: BC customizada solidTractionElasticFoundation
+    //   (cases/on-mestrado/src/elasticFoundation/, carregada via controlDict)
+    ons_outer
+    {
+        type        solidTractionElasticFoundation;
+        k           200000;             // Pa/m
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;          // sobrescrito a cada iteracao
+        value       uniform ( 0 0 0 );
+    }
+
+    // Parede orbital anterior (z=31.0mm) - ancora rigida do globo ocular
+    anterior_globo
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Borda cilindrica da esclera posterior (r=2.5mm, z=30 a 30.5mm) - livre
+    sclera_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // Borda cilindrica do globo (r=2.5mm, z=30.5 a 31.0mm) - livre
+    globo_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+}

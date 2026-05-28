@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      D;
+}
+// Linear elastic arterial wall.
+// 'lumen' (R_int) = interface FSI (solidForce do preCICE adapter).
+// 'arteria_externa' (R_ext) = mola de Winkler (gordura orbital).
+//    t_n = -k * (D . n)
+//    k = E_fat / t_fat = 800 Pa / 2.5e-3 m = 320 000 Pa/m
+//    E_fat = 800 Pa (gordura orbital, faixa 700-900 Pa, OMVS)
+//    t_fat = 2.5 mm (espessura efetiva da gordura ate estrutura rigida)
+// 'inner_cap_back/front' = caps engastadas (fixedDisplacement = 0).
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 );
+
+boundaryField
+{
+    lumen
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform ( 0 0 0 );
+    }
+    inner_cap_back
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+    inner_cap_front
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+    arteria_externa
+    {
+        type            solidTractionElasticFoundation;
+        k               320000;             // Pa/m  (E_fat=800 Pa, t_fat=2.5mm)
+        traction        uniform ( 0 0 0 );
+        pressure        uniform 0;          // sobrescrito a cada iteracao
+        value           uniform ( 0 0 0 );
+    }
+    ".*"
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+}

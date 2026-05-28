@@ -1,0 +1,138 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// on-flambagem-2 - FLAMBAGEM por deslocamento imposto na tampa anterior.
+// Tubo 4 zonas (on/pia/sas/dura), z=0-30 mm. Sem esclera/LC/globo/contact.
+//
+// Sem o globo orbital pra transmitir a compressao axial da gordura orbital,
+// aplicamos diretamente o encurtamento como cinematica imposta na "tampa"
+// anterior (z=30) do solido (on, pia, dura). O ramping vai de Dz=0 a Dz=-1 mm
+// em 20 steps (ver constant/timeVsDisp). Em algum ponto da rampa esperamos
+// detectar a bifurcacao de flambagem (kinking lateral).
+//
+// BCs:
+//   z=0 (canal optico, BASE engastada - nao desliza nem gira):
+//     posterior_{on,pia,dura}  = fixedDisplacement (0 0 0)
+//     posterior_sas            = solidTraction P_CSF = 1333 Pa (~10 mmHg)
+//       PIC normal supino mantida como carregamento de fundo.
+//
+//   z=30 (TAMPA anterior - cinematica imposta nas 4 zonas - "tampa rigida"):
+//     anterior_{on,pia,sas,dura} = fixedDisplacement via displacementSeries
+//       Tabela constant/timeVsDisp rampando D=(0,0,0) -> (0,0,-1e-3) em 20 s.
+//       Inclui anterior_sas para garantir continuidade radial entre patches
+//       no NL geometry (deixar anterior_sas fixo enquanto os solidos andam
+//       cria descontinuidade nas arestas r=1.55, r=2.35 -> NaN imediato).
+//       Fisicamente equivale a esclera+globo empurrando todo o anel uniforme.
+//
+//   dura_outer (parede lateral, r=2.5 mm):
+//     solidTractionElasticFoundation k=700 Pa/m  (gordura orbital Winkler MOLE)
+//       Mola lateral muito macia para permitir o kinking lateral livre.
+//
+// CSF (zona sas) como solido soft 'fluid-like': E=10 kPa, nu=0.49
+//   (K=167 kPa, G=3.4 kPa - quase-incompressivel, estavel numericamente).
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ----- z=0 mm: canal optico - ENGASTE --------------------------------
+    posterior_on
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_pia
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- z=0 mm: SAS aberta - coluna do LCR vinda do cerebro -----------
+    //   P_CSF = 1333 Pa (~10 mmHg) - PIC normal supino, igual on-mestrado-2.
+    posterior_sas
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 1333;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_dura
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ----- z=30 mm: TAMPA anterior com cinematica imposta ----------------
+    //   D_z(t) rampando 0 -> -1 mm em 20 s. Tabela constant/timeVsDisp.
+    //   "outOfBounds clamp" = mantem o ultimo valor se t > 20.
+    anterior_on
+    {
+        type            fixedDisplacement;
+        displacementSeries
+        {
+            "fileName|file"   "$FOAM_CASE/constant/timeVsDisp";
+            outOfBounds       clamp;
+        }
+        value           uniform ( 0 0 0 );
+    }
+
+    anterior_pia
+    {
+        type            fixedDisplacement;
+        displacementSeries
+        {
+            "fileName|file"   "$FOAM_CASE/constant/timeVsDisp";
+            outOfBounds       clamp;
+        }
+        value           uniform ( 0 0 0 );
+    }
+
+    // ----- z=30 mm: SAS acompanha a tampa (continuidade radial) ----------
+    //   Empurrado pela mesma rampa que as 3 zonas solidas. Equivale a uma
+    //   "tampa rigida" anatomica (esclera+globo) comprimindo todo o anel
+    //   uniformemente. Necessario para evitar descontinuidade entre patches
+    //   no NL geometry (gera Jacobiano patologico e NaN).
+    anterior_sas
+    {
+        type            fixedDisplacement;
+        displacementSeries
+        {
+            "fileName|file"   "$FOAM_CASE/constant/timeVsDisp";
+            outOfBounds       clamp;
+        }
+        value           uniform ( 0 0 0 );
+    }
+
+    anterior_dura
+    {
+        type            fixedDisplacement;
+        displacementSeries
+        {
+            "fileName|file"   "$FOAM_CASE/constant/timeVsDisp";
+            outOfBounds       clamp;
+        }
+        value           uniform ( 0 0 0 );
+    }
+
+    // ----- dura_outer (lateral r=2.5 mm): Winkler 700 Pa/m ---------------
+    //   Mola lateral propositalmente macia para liberar o kinking; valor
+    //   acordado para o estudo de flambagem SANS (vs. 200 kPa/m do
+    //   on-mestrado-2 que era a rigidez nominal da gordura orbital).
+    dura_outer
+    {
+        type        solidTractionElasticFoundation;
+        k           700;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+}

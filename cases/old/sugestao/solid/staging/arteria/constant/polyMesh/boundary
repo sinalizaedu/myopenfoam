@@ -1,0 +1,40 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+    note        "";
+}
+4
+(
+    inner_cap_back
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          96;
+        startFace       40608;
+    }
+    inner_cap_front
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          96;
+        startFace       40704;
+    }
+    arteria_lumen
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          5088;
+        startFace       40800;
+    }
+    arteria_externa
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          5088;
+        startFace       45888;
+    }
+)

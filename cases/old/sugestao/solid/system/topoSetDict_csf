@@ -1,0 +1,67 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict_csf;
+}
+
+// sugestao/solid - cria FACEZONE csf_interface a partir das faces internas
+// entre as zonas `on` e `ons` (cilindro radial r=1.5mm, z=0–30mm).
+//
+// O faceZone e usado em seguida pelo `createBaffles -dict createBafflesDict_csf`
+// para duplicar a face interna em duas faces de fronteira: on_outer (lado ON)
+// e ons_inner (lado ONS), permitindo aplicar pressao CSF independente em cada
+// lado na FASE 2 (DBON, microgravidade).
+//
+// FASE ATUAL (validacao P_contact): on_outer e ons_inner ficam com
+// solidTraction(0) — placeholder. Na FASE 2 trocar por pressure=2667 (20 mmHg).
+
+actions
+(
+    // 1. cellSet zona "on" e zona "ons"
+    {
+        name    on_cells;
+        type    cellSet;
+        action  new;
+        source  zoneToCell;
+        sourceInfo { name on; }
+    }
+    {
+        name    ons_cells;
+        type    cellSet;
+        action  new;
+        source  zoneToCell;
+        sourceInfo { name ons; }
+    }
+
+    // 2. faceSet csf_interface_faces = faces vizinhas de on_cells E de ons_cells
+    {
+        name    csf_interface_faces;
+        type    faceSet;
+        action  new;
+        source  cellToFace;
+        sourceInfo { set on_cells; option all; }
+    }
+    {
+        name    csf_interface_faces;
+        type    faceSet;
+        action  subset;
+        source  cellToFace;
+        sourceInfo { set ons_cells; option all; }
+    }
+
+    // 3. faceZone csf_interface a partir do faceSet, orientacao definida por
+    //    on_cells como master (normal aponta de ON pra ONS)
+    {
+        name    csf_interface;
+        type    faceZoneSet;
+        action  new;
+        source  setsToFaceZone;
+        sourceInfo
+        {
+            faceSet csf_interface_faces;
+            cellSet on_cells;
+        }
+    }
+);

@@ -1,0 +1,148 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh -allTopology -allGeometry
+Date   : May 25 2026
+Time   : 02:16:03
+Host   : 966b8a85630c
+PID    : 4622
+I/O    : uncollated
+Case   : /simulation/sugestao/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+    Enabling all (cell, face, edge, point) topology checks.
+    Enabling all geometry checks.
+
+Time = 0
+
+Mesh stats 
+    points:           84849
+    faces:            231799
+    internal faces:   206297
+    cells:            73016
+    faces per cell:   6
+    boundary patches: 20
+    point zones:      0
+    face zones:       2
+    cell zones:       7
+
+Overall number of cells of each type:
+    hexahedra:     73016
+    prisms:        0
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    0
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Topological cell zip-up check OK.
+    Number of identical duplicate faces (baffle faces): 960
+    Face-face connectivity OK.
+  <<Writing 1920 faces with non-standard edge connectivity to set edgeFaces
+  <<Writing 10 cells with two non-boundary faces to set twoInternalFacesCells
+   *Number of regions: 3
+    The mesh has multiple regions which are not connected by any face.
+  <<Writing region information to "0/cellToRegion"
+  <<Writing region 0 (fully disconnected) with 16384 cells to cellSet region0
+  <<Writing region 1 (fully disconnected) with 15264 cells to cellSet region1
+  <<Writing region 2 (fully disconnected) with 41368 cells to cellSet region2
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology  Bounding box
+    posterior_on        256      273      ok (non-closed singly connected)   (-0.0015 -0.0015 0) (0.0015 0.0015 0)
+    posterior_ons       256      288      ok (non-closed singly connected)   (-0.0025 -0.0025 0) (0.0025 0.0025 0)
+    ons_outer           960      992      ok (non-closed singly connected)   (-0.0025 -0.0025 0) (0.0025 0.0025 0.03)
+    sclera_outer        32       64       ok (non-closed singly connected)   (-0.0025 -0.0025 0.03) (0.0025 0.0025 0.0305)
+    globo_outer         32       64       ok (non-closed singly connected)   (-0.0025 -0.0025 0.0305) (0.0025 0.0025 0.031)
+    anterior_globo      512      529      ok (non-closed singly connected)   (-0.0025 -0.0025 0.031) (0.0025 0.0025 0.031)
+    inner_cap_back      96       128      ok (non-closed singly connected)   (-0.0139558 0.00180349 -0.00547002) (-0.0124558 0.00330349 -0.00547002)
+    inner_cap_front     96       128      ok (non-closed singly connected)   (-0.00755892 -0.00569345 0.033161) (-0.00634772 -0.00419956 0.0340355)
+    arteria_lumen       5088     5120     ok (non-closed singly connected)   (-0.0137558 -0.00549427 -0.00547002) (0.00417 0.00448053 0.0339189)
+    arteria_externa     5088     5120     ok (non-closed singly connected)   (-0.0139558 -0.00569345 -0.00547002) (0.00436991 0.00468008 0.0340355)
+    fat_x_min           1344     1430     ok (non-closed singly connected)   (-0.016 -0.008 -0.007) (-0.016 0.006 0.036)
+    fat_x_max           1344     1430     ok (non-closed singly connected)   (0.006 -0.008 -0.007) (0.006 0.006 0.036)
+    fat_y_min           2112     2210     ok (non-closed singly connected)   (-0.016 -0.008 -0.007) (0.006 -0.008 0.036)
+    fat_y_max           2112     2210     ok (non-closed singly connected)   (-0.016 0.006 -0.007) (0.006 0.006 0.036)
+    fat_z_min           693      748      ok (non-closed singly connected)   (-0.016 -0.008 -0.007) (0.006 0.006 -0.007)
+    fat_z_max           693      748      ok (non-closed singly connected)   (-0.016 -0.008 0.036) (0.006 0.006 0.036)
+    fat_inner_nerve     1573     1603     ok (non-closed singly connected)   (-0.00266667 -0.00266667 -0.000953125) (0.00266667 0.00266667 0.0312969)
+    fat_inner_arteria   1295     1325     ok (non-closed singly connected)   (-0.0146667 -0.006 -0.00565625) (0.00466667 0.00466667 0.0339844)
+    on_outer            960      992      ok (non-closed singly connected)   (-0.0015 -0.0015 0) (0.0015 0.0015 0.03)
+    ons_inner           960      992      ok (non-closed singly connected)   (-0.0015 -0.0015 0) (0.0015 0.0015 0.03)
+    ".*"                25502    24539    multiply connected (shared edge)   (-0.016 -0.008 -0.007) (0.006 0.006 0.036)
+
+Detected 1925 bad edges (possibly relevant for finite-area)
+
+Checking faceZone topology for multiply connected surfaces...
+    FaceZone            Faces    Points   Surface topology                   Bounding box
+    csf_interface       0        0        ok (empty)                        
+    csf_interface_baffle1920     992      multiply connected (shared edge)   (-0.0015 -0.0015 0) (0.0015 0.0015 0.03)
+  <<Writing 992 conflicting points to set nonManifoldPoints
+
+Checking basic cellZone addressing...
+    CellZone            Cells        Points       Volume       BoundingBox
+    on                  7680         8463         2.10697e-07  (-0.0015 -0.0015 0) (0.0015 0.0015 0.03)
+    ons                 7680         8928         3.74574e-07  (-0.0025 -0.0025 0) (0.0025 0.0025 0.03)
+    lc                  256          546          3.51162e-09  (-0.0015 -0.0015 0.03) (0.0015 0.0015 0.0305)
+    sclera              256          576          6.24291e-09  (-0.0025 -0.0025 0.03) (0.0025 0.0025 0.0305)
+    globo               512          1058         9.75453e-09  (-0.0025 -0.0025 0.0305) (0.0025 0.0025 0.031)
+    arteria             15264        20480        4.48379e-08  (-0.0139558 -0.00569345 -0.00547002) (0.00436991 0.00468008 0.0340355)
+    orbital_fat         41368        46912        1.23529e-05  (-0.016 -0.008 -0.007) (0.006 0.006 0.036)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (-0.016 -0.008 -0.007) (0.006 0.006 0.036)
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+    Boundary openness (3.62035e-16 -1.60395e-16 -9.54791e-17) OK.
+    Max cell openness = 2.91312e-16 OK.
+    Max aspect ratio = 17.5946 OK.
+    Minimum face area = 7.57815e-09. Maximum face area = 4.90087e-07.  Face area magnitudes OK.
+    Min volume = 1.82734e-12. Max volume = 2.98648e-10.  Total volume = 1.30026e-05.  Cell volumes OK.
+    Mesh non-orthogonality Max: 26.6482 average: 2.03617
+    Non-orthogonality check OK.
+    Face pyramids OK.
+    Max skewness = 1.78672 OK.
+    Coupled point location match (average 0) OK.
+    Face tets OK.
+    Min/max edge length = 6.65727e-05 0.001 OK.
+    All angles in faces OK.
+    Face flatness (1 = flat, 0 = butterfly) : min = 0.999996  average = 1
+    All face flatness OK.
+    Cell determinant (wellposedness) : minimum: 0 average: 0.601891
+ ***Cells with small determinant (< 0.001) found, number of cells: 39
+  <<Writing 39 under-determined cells to set underdeterminedCells
+    Concave cell check OK.
+    Face interpolation weight : minimum: 0.271969 average: 0.497376
+    Face interpolation weight check OK.
+    Face volume ratio : minimum: 0.38683 average: 0.982586
+    Face volume ratio check OK.
+
+Failed 1 mesh checks.
+
+End
+

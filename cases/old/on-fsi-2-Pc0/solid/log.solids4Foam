@@ -1,0 +1,278 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : May 26 2026
+Time   : 01:12:19
+Host   : 11e9c566ab2e
+PID    : 1480
+I/O    : uncollated
+Case   : /simulation/on-fsi-2-Pc0/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel linearGeometryTotalDisplacement
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+    Winkler stiffness k = 200000 Pa/m
+Creating solidTraction boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Number of cells in new mesh : 7680
+Number of faces in new mesh : 23776
+Number of points in new mesh: 8463
+    oldInternalFaces : 1216
+Number of cells in new mesh : 960
+Number of faces in new mesh : 3872
+Number of points in new mesh: 1984
+    oldInternalFaces : 992
+Number of cells in new mesh : 1920
+Number of faces in new mesh : 6784
+Number of points in new mesh: 2976
+    oldInternalFaces : 64
+Number of cells in new mesh : 256
+Number of faces in new mesh : 1040
+Number of points in new mesh: 546
+    oldInternalFaces : 544
+Number of cells in new mesh : 128
+Number of faces in new mesh : 544
+Number of points in new mesh: 320
+    oldInternalFaces : 224
+Number of cells in new mesh : 160
+Number of faces in new mesh : 672
+Number of points in new mesh: 384
+    oldInternalFaces : 256
+Number of cells in new mesh : 544
+Number of faces in new mesh : 2192
+Number of points in new mesh: 1122
+    oldInternalFaces : 544
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+solvePressure = false
+    Setting `extrapolateValue` to `true` on the dura_outer patch of the D field
+    Setting `extrapolateValue` to `true` on the sclera_ring_outer patch of the D field
+    Setting `extrapolateValue` to `true` on the anterior_globo patch of the D field
+    Setting `extrapolateValue` to `true` on the fsi_pia patch of the D field
+    Setting `extrapolateValue` to `true` on the fsi_dura patch of the D field
+    Setting `extrapolateValue` to `true` on the fsi_sclera_peri patch of the D field
+    Setting `extrapolateValue` to `true` on the fsi_sclera_ring patch of the D field
+    Setting `extrapolateValue` to `true` on the contact_local patch of the D field
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[precice] [0m This is preCICE version 3.3.1
+---[precice] [0m Revision info: v3.3.1
+---[precice] [0m Build type: Release (without debug log)
+---[precice] [0m Working directory "/simulation/on-fsi-2-Pc0/solid"
+---[precice] [0m Configuring preCICE with configuration "../precice-config.xml"
+---[precice] [0m I am participant "Solid"
+---[precice] [0m Setting up primary communication to coupling partner/s
+---[precice] [0m Primary ranks are connected
+---[precice] [0m Setting up preliminary secondary communication to coupling partner/s
+---[precice] [0m Prepare partition for mesh Solid-Mesh
+---[precice] [0m Gather mesh Solid-Mesh
+---[precice] [0m Send global mesh Solid-Mesh
+---[precice] [0m Setting up secondary communication to coupling partner/s
+---[precice] [0m Secondary ranks are connected
+---[precice] [0m it 1 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+setCellDisplacements: reading cellDisplacements
+Initial Residual Norm = 0
+Initial Solution Norm = 0
+ Iteration       Residual Norm           Step Norm
+         1: Converged - Absolute residual tolerance met.
+Max epsilonEq = 0
+Max sigmaEq (von Mises stress) = 0
+ExecutionTime = 0.87 s  ClockTime = 2 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = inf, limit = 1.00e-04, normalization = 0.00e+00, conv = true
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 1.00e+00, limit = 1.00e-03, normalization = 2.28e-02, conv = false
+---[precice] [0m it 2 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320379
+Initial Solution Norm = 2.7739929e-05
+ Iteration       Residual Norm           Step Norm
+       100        0.0079810361        4.667457e-07
+       200        0.0027031947       6.5663445e-08
+       300         0.001631785       4.2246635e-08
+       400       0.00066510939       2.8660962e-08
+       500       0.00040712697       1.9261386e-08
+       600       0.00026397225        1.330615e-08
+       700       0.00020779285        8.708114e-09
+       713: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.00054755652
+Max sigmaEq (von Mises stress) = 1406.965
+ExecutionTime = 15.92 s  ClockTime = 23 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.00e+00, limit = 1.00e-04, normalization = 2.06e-05, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 9.00e-01, limit = 1.00e-03, normalization = 2.28e-02, conv = false
+---[precice] [0m it 3 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320495
+Initial Solution Norm = 0.00027739929
+ Iteration       Residual Norm           Step Norm
+       100        0.0061822694       1.4173589e-06
+       200        0.0043257285        3.813136e-06
+       300        0.0015043492       4.6439088e-07
+       400       0.00087793743        3.097009e-07
+       500        0.0005024707         1.94907e-07
+       600       0.00028045544       1.3822307e-07
+       700       0.00018391409       9.6056019e-08
+       716: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.005445513
+Max sigmaEq (von Mises stress) = 14066.413
+ExecutionTime = 30.59 s  ClockTime = 38 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 9.88e-01, limit = 1.00e-04, normalization = 2.06e-04, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 2.60e-05, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 4 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027738652
+ Iteration       Residual Norm           Step Norm
+       100         0.037250895       1.2001328e-05
+       200        0.0058897187       1.7034866e-06
+       300         0.002315678       7.0270824e-07
+       400        0.0012526592       3.5373629e-07
+       500       0.00073009738       2.1327527e-07
+       600       0.00046524522       1.4538668e-07
+       700       0.00034982828       1.1093969e-07
+       800       0.00028805434       9.2684466e-08
+       900       0.00024395387        7.914778e-08
+      1000        0.0012550459       4.9064457e-07
+      1100        0.0039677978       1.5835716e-06
+      1200         0.012296326       4.9281591e-06
+      1300         0.038173015        1.532365e-05
+      1400          0.11935774       4.8104473e-05
+      1500          0.34093422       0.00015171075
+      1600          0.73141906       0.00047784323
+      1700            1.103785        0.0015084039
+      1800           1.2993797        0.0047441431
+      1900           1.3742751         0.014904386
+      2000           1.3990324         0.047046272
+      2100            1.406751          0.14831205
+      2200           1.4088323          0.46479753
+      2300           1.4094891           1.4595343
+      2400           1.4096742           4.5920793
+      2500           1.4097017           14.403831
+      2600           1.4097101           45.276436
+      2700           1.4096073           142.51267
+      2800            1.409688           448.92962
+      2900           1.4095973           1410.3651
+      3000           1.4096718           4438.5596
+      3100           1.4095082           13909.818
+      3200           1.4095887            43666.93
+      3300           1.4095932              137077
+      3400           1.4090706           445482.29
+      3500            1.408426           1525287.9
+      3600           1.4095722           4858401.5
+      3700           1.4095903            15288507
+      3800           1.4096119            48175968
+      3900           1.4096009       1.5138068e+08
+      4000           1.4096226       4.7609027e+08
+      4100           1.4096528       1.4947515e+09
+      4200           1.4096328       4.6847561e+09
+      4300           1.4096961       1.4723448e+10
+      4400           1.4096123       4.6274402e+10
+      4500           1.4096525       1.4570271e+11
+      4600           1.4096131       4.5826748e+11
+      4700           1.4096518        1.438874e+12
+      4800           1.4096026        4.516882e+12
+      4900           1.4096383       1.4211793e+13
+      5000           1.4096364       4.4527716e+13
+
+
+--> FOAM FATAL ERROR: (openfoam-2512)
+Iteration 5000: Failed - Maximum iterations reached.
+
+    From bool Foam::checkConvergence(scalar, scalar, scalar, scalar, label, label, scalar, scalar, scalar, scalar, label, bool, bool)
+    in file solidModels/solidModel/checkConvergence.C at line 182.
+
+FOAM aborting
+
+[stack trace]
+=============
+#1  Foam::error::simpleExit(int, bool) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so
+#2  Foam::checkConvergence(double, double, double, double, int, int, double, double, double, double, int, bool, bool) in /opt/of-user/lib/libsolids4FoamModels.so
+#3  Foam::solidModels::linGeomTotalDispSolid::evolveImplicitSegregated() in /opt/of-user/lib/libsolids4FoamModels.so
+#4  ? in /opt/of-user/bin/solids4Foam
+#5  ? in /lib/x86_64-linux-gnu/libc.so.6
+#6  __libc_start_main in /lib/x86_64-linux-gnu/libc.so.6
+#7  ? in /opt/of-user/bin/solids4Foam
+=============
+[11e9c566ab2e:01480] *** Process received signal ***
+[11e9c566ab2e:01480] Signal: Aborted (6)
+[11e9c566ab2e:01480] Signal code:  (-6)
+[11e9c566ab2e:01480] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x45330)[0x7ffffd9bc330]
+[11e9c566ab2e:01480] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x11c)[0x7ffffda15b2c]
+[11e9c566ab2e:01480] [ 2] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0x1e)[0x7ffffd9bc27e]
+[11e9c566ab2e:01480] [ 3] /lib/x86_64-linux-gnu/libc.so.6(abort+0xdf)[0x7ffffd99f8ff]
+[11e9c566ab2e:01480] [ 4] /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so(_ZN4Foam5error10simpleExitEib+0x1a4)[0x7ffffe1adfb4]
+[11e9c566ab2e:01480] [ 5] /opt/of-user/lib/libsolids4FoamModels.so(_ZN4Foam16checkConvergenceEddddiiddddibb+0xef)[0x7ffffeb61b2f]
+[11e9c566ab2e:01480] [ 6] /opt/of-user/lib/libsolids4FoamModels.so(_ZN4Foam11solidModels21linGeomTotalDispSolid24evolveImplicitSegregatedEv+0x1508)[0x7ffffec057a8]
+[11e9c566ab2e:01480] [ 7] solids4Foam(+0x270a)[0x55555555670a]
+[11e9c566ab2e:01480] [ 8] /lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca)[0x7ffffd9a11ca]
+[11e9c566ab2e:01480] [ 9] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7ffffd9a128b]
+[11e9c566ab2e:01480] [10] solids4Foam(+0x2ba5)[0x555555556ba5]
+[11e9c566ab2e:01480] *** End of error message ***

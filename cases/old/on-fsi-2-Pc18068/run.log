@@ -1,0 +1,69 @@
+=== Limpando antigos ===
+=== solid: blockMesh + topoSet + createPatch + checkMesh ===
+=== fluid: blockMesh + checkMesh ===
+=== Iniciando solvers em paralelo (preCICE) ===
+    Fluid PID=6282, Solid PID=6284
+=== Done. RC_F=0 RC_S=0 ===
+--- fluid tail ---
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.0383522e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.8401675e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.2250604e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 2.8796392e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 1.8654557e-09, No Iterations 10
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 3.5685153e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 8.6834375e-07, No Iterations 122
+GAMG:  Solving for p, Initial residual = 0.11206534, Final residual = 8.288002e-07, No Iterations 46
+time step continuity errors : sum local = 2.882797e-07, global = 4.5106312e-08, cumulative = 1.9034924e-06
+GAMG:  Solving for p, Initial residual = 0.14463573, Final residual = 9.0177854e-07, No Iterations 104
+GAMG:  Solving for p, Initial residual = 0.24846455, Final residual = 8.6585139e-07, No Iterations 54
+time step continuity errors : sum local = 1.0261864e-07, global = -1.5986697e-08, cumulative = 1.8875057e-06
+GAMG:  Solving for p, Initial residual = 0.083249341, Final residual = 9.6727707e-07, No Iterations 84
+GAMG:  Solving for p, Initial residual = 0.044905839, Final residual = 8.3238552e-07, No Iterations 34
+time step continuity errors : sum local = 6.3478374e-08, global = -1.0184094e-08, cumulative = 1.8773216e-06
+ExecutionTime = 50.51 s  ClockTime = 1710 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Time window completed
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m Reached end at: final time-window: 1, final time: 1
+---[preciceAdapter] The coupling timestep completed. Writing the updated results.
+---[preciceAdapter] The coupling completed.
+---[precice] [0m Close communication channels
+---[preciceAdapter] The simulation was ended by preCICE. Calling the end() methods of any functionObject explicitly.
+---[preciceAdapter] Great that you are using the OpenFOAM-preCICE adapter! Next to the preCICE library and any other components, please also cite this adapter. Find how on https://precice.org/adapter-openfoam-overview.html.
+
+End
+
+I/O    : uncollated
+--- solid tail ---
+       500        0.0015100896       2.4013114e-06
+       600        0.0011288239       1.9637028e-06
+       700       0.00087801557       1.6879778e-06
+       800       0.00069297101       1.4660689e-06
+       900       0.00055814253       1.2206284e-06
+      1000       0.00045106058       1.0924928e-06
+      1100       0.00038385527       9.0826126e-07
+      1200       0.00030003169       7.7986545e-07
+      1300       0.00024685514       6.6423625e-07
+      1400       0.00020642751       5.6414495e-07
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0098472119
+Max sigmaEq (von Mises stress) = 30560.313
+ExecutionTime = 1717.69 s  ClockTime = 1726 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 7.40e-04, limit = 1.00e-04, normalization = 2.38e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 1.53e-07, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m Time window completed
+---[precice] [0m Reached end at: final time-window: 1, final time: 1
+---[preciceAdapter] The coupling timestep completed. Writing the updated results.
+---[preciceAdapter] The coupling completed.
+---[precice] [0m Close communication channels
+---[preciceAdapter] The simulation was ended by preCICE. Calling the end() methods of any functionObject explicitly.
+---[preciceAdapter] Great that you are using the OpenFOAM-preCICE adapter! Next to the preCICE library and any other components, please also cite this adapter. Find how on https://precice.org/adapter-openfoam-overview.html.
+The momentum equation converged in all time-steps
+
+
+End
+
+I/O    : uncollated
+=== Pc18068 EXIT 0 ===

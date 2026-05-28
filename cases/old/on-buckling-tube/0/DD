@@ -1,0 +1,83 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| solids4foam: solid mechanics and fluid-solid interaction simulations        |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      DD;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    fixed
+    {
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+
+    top
+    {
+        type            fixedDisplacement;
+        displacementSeries
+        {
+            "fileName|file"     "$FOAM_CASE/constant/timeVsDisp";
+            outOfBounds         clamp;
+        }
+        value           uniform (0 0 0);
+    }
+
+    // Imperfeicao inicial: pressao lateral PEQUENA aplicada apenas na metade
+    // axial (controlada via topoSet -> faceZone). Aqui fica em zero;
+    // a imperfeicao e' aplicada via patch dedicado "imperfection" criada
+    // no topoSet.
+    xMinus
+    {
+        type            solidTraction;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        value           uniform (0 0 0);
+    }
+    xPlus
+    {
+        type            solidTraction;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        value           uniform (0 0 0);
+    }
+    yMinus
+    {
+        type            solidTraction;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        value           uniform (0 0 0);
+    }
+    yPlus
+    {
+        type            solidTraction;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        value           uniform (0 0 0);
+    }
+
+    // Imperfeicao inicial: criada por topoSet, recebe tracao lateral
+    // pequena para quebrar simetria axial e indicar direcao de bifurcacao.
+    imperfection
+    {
+        type            solidTraction;
+        // Pressao 10 Pa em area de ~ 5e-3 * 6e-3 = 3e-5 m^2 -> 3e-4 N
+        // (~ 0.0074% de Pcr K=0.65, ou 7 ppm de Pcr K=0.5). Perturba
+        // a simetria axial sem alterar quantitativamente Pcr.
+        traction        uniform (0 0 0);
+        pressure        uniform 10;
+        value           uniform (0 0 0);
+    }
+}
+
+// ************************************************************************* //

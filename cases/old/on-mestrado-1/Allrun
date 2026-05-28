@@ -1,0 +1,58 @@
+#!/bin/bash
+# on-mestrado-1 - 5 zonas: on + pia lumped + lc + sclera lumped + globo.
+#
+# Pia expandida = pia + SAS + dura fundidas num unico anel a E=3 MPa,
+# nu=0.49 (Sigal et al. 2004). Sclera lumped = sclera_peri+sclera_ring
+# fundidos num unico anel a E=5 MPa, nu=0.45. SAS sem camada geometrica,
+# mas P_CSF=1333 Pa em posterior_pia (analog do posterior_sas de -2).
+# Globo: copiado integralmente de on-mestrado-2 (z=30.30-30.80, E=5 MPa).
+# Ancoragem fica em globo_outer (equador, Tenon+EOMs); anterior_globo livre.
+# Gordura orbital: Winkler em pia_outer (k=200 kPa/m, Schoemaker 2006).
+# Contato local arteria: P_contact=9034 Pa em contact_local carved.
+# Quasi-estatico, 1 timestep.
+#
+# Familia comparativa (mesmas cargas, materializacao diferente):
+#   on-mestrado-1: 5 zonas (on + pia lumped + lc + sclera lumped + globo) <-- este
+#   on-mestrado-2: 8 zonas anatomicas (on/pia/sas/dura/lc/sclera_*/globo)
+#   on-mestrado-3: 8 zonas anatomicas, P_CSF=2667 Pa
+#
+# Pre-requisito (so na primeira vez ou apos rebuild da imagem):
+#   cd solid/../src/elasticFoundation && ./Allwmake
+#
+# Uso (dentro do container):
+#   cd /simulation/on-mestrado-1
+#   chmod +x Allrun Allclean
+#   ./Allrun
+
+set -e
+set -o pipefail
+cd "$(dirname "$0")/solid"
+
+# Compilar BC customizada se ainda nao existir
+SPRING_LIB="../src/elasticFoundation/libsolidTractionElasticFoundation.so"
+if [ ! -f "$SPRING_LIB" ]; then
+    echo "=== Compilando BC customizada (mola de Winkler) ==="
+    ( cd ../src/elasticFoundation && ./Allwmake )
+fi
+
+echo "=== on-mestrado-1 (pia lumped, P_CSF=1333 + P_contact=9034): blockMesh ==="
+blockMesh | tee log.blockMesh
+
+echo "=== on-mestrado-1: topoSet (carve contact_local de pia_outer) ==="
+topoSet -dict system/topoSetDict_contact | tee log.topoSet
+
+echo "=== on-mestrado-1: createPatch (cria contact_local) ==="
+createPatch -overwrite -dict system/createPatchDict_contact | tee log.createPatch
+
+echo "=== on-mestrado-1: checkMesh ==="
+checkMesh | tee log.checkMesh
+
+echo "=== on-mestrado-1: solids4Foam (quasi-estatico, 1 timestep) ==="
+solids4Foam | tee log.solids4Foam
+
+echo ""
+echo "=== Concluido. Resultado em solid/1/ ==="
+echo "Visualizar: open solid/on-mestrado-1.foam no ParaView"
+echo ""
+echo "Esperado: deformacao radial localizada em contact_local (z=22.5mm, +X) +"
+echo "          deformacao axial na bainha por P_CSF=1333 Pa em posterior_pia"

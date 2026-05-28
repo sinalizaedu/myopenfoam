@@ -1,0 +1,24 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       dictionary;
+    location    "constant";
+    object      mechanicalProperties.withDefaultValues;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+planeStress     no;
+
+mechanical      1 ( arteria { type linearElastic ; rho rho [ 1 -3 0 0 0 0 0 ] 1050 ; E E [ 1 -1 -2 0 0 0 0 ] 300000 ; nu nu [ 0 0 0 0 0 0 0 ] 0.49 ; solvePressureEqn false ; pressureSmoothingScaleFactor 100 ; } ; );
+
+
+// ************************************************************************* //

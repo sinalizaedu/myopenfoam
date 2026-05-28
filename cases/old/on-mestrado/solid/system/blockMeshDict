@@ -1,0 +1,307 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// on-mestrado — nervo óptico + bainha + lâmina cribrosa + esclera + globo
+//
+// Geometria: O-grid com 5 zonas concêntricas/axiais (gordura é fundação elástica)
+//
+//   ON     (optic nerve)         : cilindro sólido,  r = 1.5 mm,  L = 30 mm
+//   ONS    (optic nerve sheath)  : anel,  r = 1.5–2.5 mm,  L = 30 mm
+//   lc     (lâmina cribrosa)     : disco, r = 0–1.5 mm, t = 0.5 mm  (z=30–30.5mm)
+//   sclera (esclera posterior)   : anel,  r = 1.5–2.5mm, t = 0.5 mm (z=30–30.5mm)
+//   globo  (casca do globo)      : disco, r = 0–2.5 mm, t = 0.5 mm  (z=30.5–31.0mm)
+//
+// A gordura orbital NAO e modelada como solido — entra como mola de Winkler
+// no patch ons_outer (codedFixedValue: t = -k * D, k = 200 kPa/m).
+// Vantagem: evita razao de rigidez extrema (E_fat/E_ons = 6000:1) que tornava
+// a convergencia muito lenta.
+//
+// Patches:
+//   posterior_on    — face z=0, ON zone      → fixedDisplacement
+//   posterior_ons   — face z=0, ONS zone     → solidTraction P_CSF = 2667 Pa
+//   contact_artoph  — ONS_E i_max (z=0–30)   → tração da artéria = 9000 Pa
+//   ons_outer       — ONS N/W/S i_max        → mola de Winkler (gordura orbital)
+//   sclera_outer    — sclera r=2.5mm (z=30–30.5) → solidTraction = 0
+//   globo_outer     — globo r=2.5mm (z=30.5–31.0) → solidTraction = 0
+//   anterior_globo  — face z=31.0mm (k_max globo) → fixedDisplacement (órbita)
+//
+// scale 0.001 → dimensões em mm
+
+scale   0.001;
+
+// ── Vértices ──────────────────────────────────────────────────────────────
+// Índices 0–35: ON + ONS + lc + sclera (z=0, 30, 30.5)
+// Índices 36–47: globo (z=31.0mm)
+
+vertices
+(
+    //  ── Face z=0 (posterior) ─────────────────────────────────────────────
+    //  Quadrado central (a=0.75 mm)
+    (  0.75    0.75    0  )  //  0  sq_NE
+    ( -0.75    0.75    0  )  //  1  sq_NW
+    ( -0.75   -0.75    0  )  //  2  sq_SW
+    (  0.75   -0.75    0  )  //  3  sq_SE
+
+    //  ON circle diagonal (r=1.5mm)  R_on/√2 = 1.06066 mm
+    (  1.06066   1.06066   0  )  //  4  on_NE
+    ( -1.06066   1.06066   0  )  //  5  on_NW
+    ( -1.06066  -1.06066   0  )  //  6  on_SW
+    (  1.06066  -1.06066   0  )  //  7  on_SE
+
+    //  ── Face z=30 (junção ON-lc) ─────────────────────────────────────────
+    (  0.75    0.75    30 )  //  8  sq_NE_b
+    ( -0.75    0.75    30 )  //  9  sq_NW_b
+    ( -0.75   -0.75    30 )  // 10  sq_SW_b
+    (  0.75   -0.75    30 )  // 11  sq_SE_b
+
+    (  1.06066   1.06066   30 )  // 12  on_NE_b
+    ( -1.06066   1.06066   30 )  // 13  on_NW_b
+    ( -1.06066  -1.06066   30 )  // 14  on_SW_b
+    (  1.06066  -1.06066   30 )  // 15  on_SE_b
+
+    //  ONS circle diagonal z=0 (r=2.5mm)  R_ons/√2 = 1.76777 mm
+    (  1.76777   1.76777   0  )  // 16  ons_NE
+    ( -1.76777   1.76777   0  )  // 17  ons_NW
+    ( -1.76777  -1.76777   0  )  // 18  ons_SW
+    (  1.76777  -1.76777   0  )  // 19  ons_SE
+
+    //  ONS circle diagonal z=30
+    (  1.76777   1.76777   30 )  // 20  ons_NE_b
+    ( -1.76777   1.76777   30 )  // 21  ons_NW_b
+    ( -1.76777  -1.76777   30 )  // 22  ons_SW_b
+    (  1.76777  -1.76777   30 )  // 23  ons_SE_b
+
+    //  ── Camada lc+sclera z=30.5 (t=0.5 mm) ──────────────────────────────
+    (  0.75    0.75    30.5 )  // 24  sq_NE_s
+    ( -0.75    0.75    30.5 )  // 25  sq_NW_s
+    ( -0.75   -0.75    30.5 )  // 26  sq_SW_s
+    (  0.75   -0.75    30.5 )  // 27  sq_SE_s
+
+    (  1.06066   1.06066   30.5 )  // 28  on_NE_s
+    ( -1.06066   1.06066   30.5 )  // 29  on_NW_s
+    ( -1.06066  -1.06066   30.5 )  // 30  on_SW_s
+    (  1.06066  -1.06066   30.5 )  // 31  on_SE_s
+
+    (  1.76777   1.76777   30.5 )  // 32  ons_NE_s
+    ( -1.76777   1.76777   30.5 )  // 33  ons_NW_s
+    ( -1.76777  -1.76777   30.5 )  // 34  ons_SW_s
+    (  1.76777  -1.76777   30.5 )  // 35  ons_SE_s
+
+    //  ── Casca do globo z=31.0 (t_globo=0.5mm) ────────────────────────────
+    (  0.75    0.75    31.0 )  // 36  sq_NE_g
+    ( -0.75    0.75    31.0 )  // 37  sq_NW_g
+    ( -0.75   -0.75    31.0 )  // 38  sq_SW_g
+    (  0.75   -0.75    31.0 )  // 39  sq_SE_g
+
+    (  1.06066   1.06066   31.0 )  // 40  on_NE_g
+    ( -1.06066   1.06066   31.0 )  // 41  on_NW_g
+    ( -1.06066  -1.06066   31.0 )  // 42  on_SW_g
+    (  1.06066  -1.06066   31.0 )  // 43  on_SE_g
+
+    (  1.76777   1.76777   31.0 )  // 44  ons_NE_g
+    ( -1.76777   1.76777   31.0 )  // 45  ons_NW_g
+    ( -1.76777  -1.76777   31.0 )  // 46  ons_SW_g
+    (  1.76777  -1.76777   31.0 )  // 47  ons_SE_g
+);
+
+// ── Blocos ────────────────────────────────────────────────────────────────
+blocks
+(
+    // ── Zona ON (cilindro, r=0–1.5mm, z=0–30mm) ─────────────────────────
+    hex (  0  1  2  3    8  9 10 11 )  on   (  8  8  30 )  simpleGrading ( 1 1 1 )
+    hex (  3  7  4  0   11 15 12  8 )  on   (  6  8  30 )  simpleGrading ( 1 1 1 )  // ON_E
+    hex (  0  4  5  1    8 12 13  9 )  on   (  6  8  30 )  simpleGrading ( 1 1 1 )  // ON_N
+    hex (  1  5  6  2    9 13 14 10 )  on   (  6  8  30 )  simpleGrading ( 1 1 1 )  // ON_W
+    hex (  2  6  7  3   10 14 15 11 )  on   (  6  8  30 )  simpleGrading ( 1 1 1 )  // ON_S
+
+    // ── Zona ONS (anel, r=1.5–2.5mm, z=0–30mm) ──────────────────────────
+    // ONS_E: i_max → contact_artoph (artéria, setor +X)
+    hex (  7 19 16  4   15 23 20 12 )  ons  (  8  8  30 )  simpleGrading ( 1 1 1 )  // ONS_E
+    // ONS N,W,S: i_max → ons_outer (mola de Winkler — gordura orbital)
+    hex (  4 16 17  5   12 20 21 13 )  ons  (  8  8  30 )  simpleGrading ( 1 1 1 )  // ONS_N
+    hex (  5 17 18  6   13 21 22 14 )  ons  (  8  8  30 )  simpleGrading ( 1 1 1 )  // ONS_W
+    hex (  6 18 19  7   14 22 23 15 )  ons  (  8  8  30 )  simpleGrading ( 1 1 1 )  // ONS_S
+
+    // ── Zona lc (lâmina cribrosa, r=0–1.5mm, z=30–30.5mm) ───────────────
+    hex (  8  9 10 11   24 25 26 27 )  lc   (  8  8  1 )  simpleGrading ( 1 1 1 )  // lc central
+    hex ( 11 15 12  8   27 31 28 24 )  lc   (  6  8  1 )  simpleGrading ( 1 1 1 )  // lc_E
+    hex (  8 12 13  9   24 28 29 25 )  lc   (  6  8  1 )  simpleGrading ( 1 1 1 )  // lc_N
+    hex (  9 13 14 10   25 29 30 26 )  lc   (  6  8  1 )  simpleGrading ( 1 1 1 )  // lc_W
+    hex ( 10 14 15 11   26 30 31 27 )  lc   (  6  8  1 )  simpleGrading ( 1 1 1 )  // lc_S
+
+    // ── Zona sclera (anel escleral, r=1.5–2.5mm, z=30–30.5mm) ────────────
+    hex ( 15 23 20 12   31 35 32 28 )  sclera  (  8  8  1 )  simpleGrading ( 1 1 1 )  // sclera_E
+    hex ( 12 20 21 13   28 32 33 29 )  sclera  (  8  8  1 )  simpleGrading ( 1 1 1 )  // sclera_N
+    hex ( 13 21 22 14   29 33 34 30 )  sclera  (  8  8  1 )  simpleGrading ( 1 1 1 )  // sclera_W
+    hex ( 14 22 23 15   30 34 35 31 )  sclera  (  8  8  1 )  simpleGrading ( 1 1 1 )  // sclera_S
+
+    // ── Zona globo (casca do globo ocular, z=30.5–31.0mm) ────────────────
+    hex ( 24 25 26 27   36 37 38 39 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )  // globo central
+    hex ( 27 31 28 24   39 43 40 36 )  globo  (  6  8  1 )  simpleGrading ( 1 1 1 )  // globo_ON_E
+    hex ( 24 28 29 25   36 40 41 37 )  globo  (  6  8  1 )  simpleGrading ( 1 1 1 )  // globo_ON_N
+    hex ( 25 29 30 26   37 41 42 38 )  globo  (  6  8  1 )  simpleGrading ( 1 1 1 )  // globo_ON_W
+    hex ( 26 30 31 27   38 42 43 39 )  globo  (  6  8  1 )  simpleGrading ( 1 1 1 )  // globo_ON_S
+    hex ( 31 35 32 28   43 47 44 40 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )  // globo_ONS_E
+    hex ( 28 32 33 29   40 44 45 41 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )  // globo_ONS_N
+    hex ( 29 33 34 30   41 45 46 42 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )  // globo_ONS_W
+    hex ( 30 34 35 31   42 46 47 43 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )  // globo_ONS_S
+);
+
+// ── Arestas curvas ────────────────────────────────────────────────────────
+edges
+(
+    //  ── ON circle (r=1.5mm), face z=0 ───────────────────────────────────
+    arc  4  7  (  1.5    0      0  )
+    arc  4  5  (  0      1.5    0  )
+    arc  5  6  ( -1.5    0      0  )
+    arc  6  7  (  0     -1.5    0  )
+
+    //  ── ON circle (r=1.5mm), face z=30 ──────────────────────────────────
+    arc 12 15  (  1.5    0      30 )
+    arc 12 13  (  0      1.5    30 )
+    arc 13 14  ( -1.5    0      30 )
+    arc 14 15  (  0     -1.5    30 )
+
+    //  ── ONS circle (r=2.5mm), face z=0 ──────────────────────────────────
+    arc 16 19  (  2.5    0      0  )
+    arc 16 17  (  0      2.5    0  )
+    arc 17 18  ( -2.5    0      0  )
+    arc 18 19  (  0     -2.5    0  )
+
+    //  ── ONS circle (r=2.5mm), face z=30 ─────────────────────────────────
+    arc 20 23  (  2.5    0      30 )
+    arc 20 21  (  0      2.5    30 )
+    arc 21 22  ( -2.5    0      30 )
+    arc 22 23  (  0     -2.5    30 )
+
+    //  ── ON circle (r=1.5mm), face z=30.5 (lc/sclera) ────────────────────
+    arc 28 31  (  1.5    0      30.5 )
+    arc 28 29  (  0      1.5    30.5 )
+    arc 29 30  ( -1.5    0      30.5 )
+    arc 30 31  (  0     -1.5    30.5 )
+
+    //  ── ONS circle (r=2.5mm), face z=30.5 ───────────────────────────────
+    arc 32 35  (  2.5    0      30.5 )
+    arc 32 33  (  0      2.5    30.5 )
+    arc 33 34  ( -2.5    0      30.5 )
+    arc 34 35  (  0     -2.5    30.5 )
+
+    //  ── ON circle (r=1.5mm), face z=31.0 (globo) ─────────────────────────
+    arc 40 43  (  1.5    0      31.0 )
+    arc 40 41  (  0      1.5    31.0 )
+    arc 41 42  ( -1.5    0      31.0 )
+    arc 42 43  (  0     -1.5    31.0 )
+
+    //  ── ONS circle (r=2.5mm), face z=31.0 (globo) ───────────────────────
+    arc 44 47  (  2.5    0      31.0 )
+    arc 44 45  (  0      2.5    31.0 )
+    arc 45 46  ( -2.5    0      31.0 )
+    arc 46 47  (  0     -2.5    31.0 )
+);
+
+// ── Contornos ─────────────────────────────────────────────────────────────
+boundary
+(
+    // ─ Posterior z=0 ────────────────────────────────────────────────────
+    // Zona ON: osso do canal óptico → deslocamento zero
+    posterior_on
+    {
+        type wall;
+        faces
+        (
+            (  0  1  2  3 )   // Central ON  k_min
+            (  3  7  4  0 )   // ON_E        k_min
+            (  0  4  5  1 )   // ON_N        k_min
+            (  1  5  6  2 )   // ON_W        k_min
+            (  2  6  7  3 )   // ON_S        k_min
+        );
+    }
+
+    // Zona ONS: abertura do espaço subaracnoide → P_CSF = 2667 Pa
+    posterior_ons
+    {
+        type wall;
+        faces
+        (
+            (  7 19 16  4 )   // ONS_E  k_min
+            (  4 16 17  5 )   // ONS_N  k_min
+            (  5 17 18  6 )   // ONS_W  k_min
+            (  6 18 19  7 )   // ONS_S  k_min
+        );
+    }
+
+    // ─ Contato arterial ─────────────────────────────────────────────────
+    // ONS_E i_max — tração lateral da artéria oftálmica (setor +X)
+    contact_artoph
+    {
+        type wall;
+        faces
+        (
+            ( 19 16 20 23 )   // ONS_E i_max (+X)
+        );
+    }
+
+    // ─ Superficie externa da ONS (setores N/W/S) ────────────────────────
+    // Mola de Winkler (gordura orbital): t = -k * D, k = 200 kPa/m
+    // Aplicada via codedFixedValue/codedTraction no campo 0/D
+    ons_outer
+    {
+        type wall;
+        faces
+        (
+            ( 16 17 21 20 )   // ONS_N i_max (+Y)
+            ( 17 18 22 21 )   // ONS_W i_max (-X)
+            ( 18 19 23 22 )   // ONS_S i_max (-Y)
+        );
+    }
+
+    // ─ Esclera posterior (r=1.5–2.5mm, z=30–30.5mm) ─────────────────────
+    sclera_outer
+    {
+        type wall;
+        faces
+        (
+            ( 23 20 32 35 )   // sclera_E i_max
+            ( 20 21 33 32 )   // sclera_N i_max
+            ( 21 22 34 33 )   // sclera_W i_max
+            ( 22 23 35 34 )   // sclera_S i_max
+        );
+    }
+
+    // ─ Globo ocular (z=30.5–31.0mm) ─────────────────────────────────────
+    // Borda cilíndrica (r=2.5mm) — livre
+    globo_outer
+    {
+        type wall;
+        faces
+        (
+            ( 35 32 44 47 )   // globo_ONS_E i_max
+            ( 32 33 45 44 )   // globo_ONS_N i_max
+            ( 33 34 46 45 )   // globo_ONS_W i_max
+            ( 34 35 47 46 )   // globo_ONS_S i_max
+        );
+    }
+
+    // Face anterior z=31.0mm — parede orbital rígida → fixedDisplacement
+    anterior_globo
+    {
+        type wall;
+        faces
+        (
+            ( 36 37 38 39 )   // globo central  k_max
+            ( 39 43 40 36 )   // globo_ON_E     k_max
+            ( 36 40 41 37 )   // globo_ON_N     k_max
+            ( 37 41 42 38 )   // globo_ON_W     k_max
+            ( 38 42 43 39 )   // globo_ON_S     k_max
+            ( 43 47 44 40 )   // globo_ONS_E    k_max
+            ( 40 44 45 41 )   // globo_ONS_N    k_max
+            ( 41 45 46 42 )   // globo_ONS_W    k_max
+            ( 42 46 47 43 )   // globo_ONS_S    k_max
+        );
+    }
+);

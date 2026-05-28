@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       dictionary;
+    location    "constant";
+    object      solidProperties.withDefaultValues;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solidModel      unsLinearGeometry;
+
+unsLinearGeometryCoeffs
+{
+    nCorrectors     150;
+    solutionTolerance 0.05;
+    alternativeTolerance 0.0001;
+    materialTolerance 0.0001;
+    infoFrequency   25;
+    dampingCoeff    dampingCoeff [ 0 0 -1 0 0 0 0 ] 0;
+    minCorrectors   1;
+    writeResidualField false;
+    relaxationMethod fixed;
+    restart         false;
+    residualFile    false;
+    stabilisation
+    {
+        type            RhieChow;
+        scaleFactor     0.1;
+    }
+}
+
+
+// ************************************************************************* //

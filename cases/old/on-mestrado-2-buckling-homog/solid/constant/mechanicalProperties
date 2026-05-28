@@ -1,0 +1,95 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// on-mestrado-2-buckling-homog: HOMOGENEIZACAO de materiais.
+//
+// Todas as 8 zonas (on, pia, sas, dura, lc, sclera_peri, sclera_ring, globo)
+// recebem o MESMO material: E = 3 MPa (dura), nu = 0.30, neoHookean.
+//
+// Justificativa: o solver nao-linear segregado (FVM) do solids4foam diverge
+// na configuracao com 8 zonas + contraste de modulos E_dura/E_on = 100 +
+// nu = 0.45 (quase-incompressivel, locking volumetrico). Removendo o
+// contraste, o problema reduz-se ao caso classico de Euler:
+//   - cilindro composto de modulo uniforme E = 3 MPa
+//   - geometria preservada (rd = 2.4mm, rs = 2.55mm, ON externo 2.55mm)
+//   - L = 30 mm
+//   - Pcr_Euler(K=0.65) ainda valido (depende so de E*I da dura, que e' a
+//     camada externa portante; aqui aplicada a TODA a estrutura)
+//
+// nu = 0.30 (vs 0.45 original): elimina locking volumetrico em FV segregado.
+// E' uma simplificacao para destravar a convergencia; o estudo principal
+// usa nu = 0.45 nas 8 zonas anatomicas (on-mestrado-2/3).
+
+planeStress     no;
+
+mechanical
+(
+    on
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+
+    pia
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+
+    sas
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+
+    dura
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+
+    lc
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+
+    sclera_peri
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+
+    sclera_ring
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+
+    globo
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+);

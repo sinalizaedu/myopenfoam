@@ -1,0 +1,334 @@
+% =============================================================================
+%  Seção de Metodologia — Mestrado Bruna
+%  Trabalho: Interação fluido-estrutura entre a artéria oftálmica (AO)
+%            e o nervo óptico (NO) no segmento intraorbitário.
+% -----------------------------------------------------------------------------
+%  Como usar:
+%    \input{metodologia.tex}  no seu main.tex
+%
+%  Pacotes mínimos esperados no preâmbulo do main.tex:
+%    \usepackage[utf8]{inputenc}
+%    \usepackage[T1]{fontenc}
+%    \usepackage[brazil]{babel}
+%    \usepackage{amsmath, amssymb}
+%    \usepackage{siunitx}
+%    \usepackage{graphicx}
+%    \usepackage{booktabs}
+%    \usepackage{makecell}            % células multilinha em tabelas
+%    \usepackage{listings}
+%    \usepackage[round]{natbib}     % autor-ano (troque por [numbers] para Vancouver)
+%
+%  Citações usadas (substitua pelas chaves do seu .bib):
+%    \citep{Lee2020NPJ}        — Lee et al., npj Microgravity 2020
+%    \citep{Chiang2025ONT}     — Chiang et al., arXiv:2502.13147 (2025)
+%    \citep{Chourdakis2022}    — preCICE v2/v3, JOSS 2022
+%    \citep{Jasak1996}         — OpenFOAM / FVM
+%    \citep{Cardiff2018s4f}    — solids4foam, CMAME 2018
+%    \citep{Holzapfel2000}     — parede arterial hiperelástica
+%    \citep{Pedley1980}        — escoamento sanguíneo / Newtoniano
+%    \citep{Michalinos2015}    — anatomia da artéria oftálmica (diâmetro)
+% =============================================================================
+
+\section{Metodologia}
+\label{sec:metodologia}
+
+\subsection{Visão geral da abordagem}
+\label{sec:metodologia-visao}
+
+A motivação clínica do presente trabalho é a Síndrome Neuro-ocular Associada ao Voo Espacial (\emph{Spaceflight-Associated Neuro-ocular Syndrome}, SANS), na qual a exposição prolongada à microgravidade promove um deslocamento cefálico de fluidos, elevação crônica da pressão intracraniana (PIC) e alterações mecânicas no nervo óptico (NO), entre as quais o aumento de tortuosidade documentado em astronautas no pré- e pós-voo \citep{Lee2020NPJ}. Nesse contexto, hipotetiza-se que a pulsação da artéria oftálmica (AO) sobre o NO, somada à alteração do estado pressórico do espaço subaracnoide em microgravidade, contribua para a deformação observada. Para avaliar essa hipótese de forma quantitativa, foram conduzidas duas famílias de simulações tridimensionais complementares. A primeira isola o lado arterial e consiste em uma simulação de interação fluido-estrutura (FSI) acoplando o escoamento sanguíneo no lúmen da AO à parede arterial elástica, de modo a recuperar, a partir da hemodinâmica, a carga radial efetivamente exercida sobre o NO no ponto de cruzamento. A segunda foca a região do NO em contato com a AO e é resolvida em duas variantes: (i) uma análise puramente estrutural por método dos elementos finitos (FEM), em que o NO está cercado apenas pela bainha sólida, sem representação explícita do líquido cefalorraquidiano (LCR) no espaço subaracnoide, e a carga arterial é aplicada como pressão prescrita sobre uma patch local de contato, varrida em cinco níveis --- da pressão arterial média basal até regimes hipertensivos análogos ao observado em microgravidade --- para mapear parametricamente a resposta mecânica do NO; e (ii) uma análise FSI em que o espaço subaracnoide é tratado como zona de fluido (LCR), permitindo que a pressão arterial seja transmitida ao NO através desse meio e quantificando seu papel amortecedor sobre a deformação do nervo nos cenários de PIC basal e de PIC elevada característica da microgravidade. Todos os casos foram implementados no pacote \textsc{OpenFOAM}~v2512 \citep{Jasak1996}, com a biblioteca de mecânica dos sólidos \texttt{solids4foam} \citep{Cardiff2018s4f} e acoplamento fluido-estrutura via \textsc{preCICE}~v3.3.1 \citep{Chourdakis2022}.
+
+\subsection{Geometria e domínio computacional}
+\label{sec:metodologia-geometria}
+
+A geometria tridimensional de partida da AO foi construída no \textsc{Ansys SpaceClaim 2022 R1}, representando o trecho curvo intraorbitário da artéria próximo ao cruzamento com o NO, e exportada no formato triangulado (\texttt{artery.stl}) para ser consumida pelo \textsc{OpenFOAM}. A partir dessa superfície externa, a parede arterial oca foi gerada por deslocamento \emph{vertex-a-vertex} ao longo das normais da superfície, com espessura nominal \(h = \SI{0,20}{\milli\meter}\), de modo que o diâmetro externo total da AO no trecho cilíndrico predominante resulta em \(D_{\mathrm{ext}} \approx \SI{1,5}{\milli\meter}\) (com diâmetro luminal correspondente \(D_{\mathrm{int}} \approx \SI{1,1}{\milli\meter}\)) --- valores compatíveis com a faixa anatômica reportada na literatura para a artéria oftálmica humana adulta \citep{Michalinos2015}. Esse procedimento, implementado no \emph{script} Python \texttt{build\_artoph\_hollow\_stls.py}, produziu dois subdomínios: a superfície interna \texttt{artery\_inner.stl}, que delimita o lúmen, e a superfície externa \texttt{artery\_outer.stl}, que delimita a parede.
+
+O NO foi modelado como um cilindro deformável de comprimento \(L_{\mathrm{NO}} = \SI{20}{\milli\meter}\) (segmento intraorbitário), em contato local com a AO em um patch denominado \texttt{contact\_local}, cujo posicionamento foi obtido pela rotina \texttt{artoph\_closest\_point\_to\_nerve.py} (coordenadas armazenadas em \texttt{closest\_to\_ON\_ref.json}).
+
+\subsection{Geração da malha}
+\label{sec:metodologia-malha}
+
+Duas estratégias de geração de malha foram empregadas, segundo a natureza da geometria de cada caso. No caso da AO (geometria curva oriunda do \textsc{SpaceClaim}), a malha volumétrica foi gerada com o utilitário \texttt{snappyHexMesh} do \textsc{OpenFOAM} a partir de uma malha de fundo cartesiana criada por \texttt{blockMesh}, com arestas relevantes (\emph{features}) extraídas por \texttt{surfaceFeatureExtract} (ângulo de feature \(\SI{45}{\degree}\)) e empregadas no refinamento direcionado --- níveis \((2, 3)\) sobre a superfície \texttt{lumen\_surface} e nível 3 nas arestas de feature. Já no caso do NO (geometria de revolução com zonas concêntricas), a malha foi gerada inteiramente por \texttt{blockMesh}, com blocos hexaédricos estruturados particionando radial e azimutalmente o nervo (\texttt{on}), a bainha (\texttt{ons}), a lâmina cribrosa (\texttt{lc}), a esclera (\texttt{sclera}) e o globo (\texttt{globo}), o que produz uma malha de qualidade analítica (ortogonalidade nula, \emph{skewness} desprezível) ao custo de aceitar razões de aspecto axiais mais elevadas.
+
+\subsection{Análise de qualidade da malha}
+\label{sec:metodologia-malha-qualidade}
+
+A qualidade das malhas foi verificada com \texttt{checkMesh -allTopology -allGeometry}: na AO, o lúmen totalizou \(\num{211532}\) células (\(86{,}0\%\) hexaédricas) e a parede \(\num{59466}\) células (\(76{,}8\%\) hexaédricas), com não-ortogonalidade máxima de \(37{,}9^{\circ}\) e \(39{,}3^{\circ}\) (média de \(10{,}4^{\circ}\) e \(12{,}4^{\circ}\)) e \emph{skewness} máximo de \(1{,}32\) e \(1{,}26\), respectivamente --- dentro das faixas recomendadas para os solvers utilizados; persistiram \(\num{16000}\) e \(\num{4637}\) células classificadas como côncavas (ângulo máximo \(\approx 45^{\circ}\)) em regiões de alta curvatura da superfície \emph{snapeada}, o que motivou o afrouxamento da tolerância do solver sólido (Seção~\ref{sec:metodologia-solido}). No NO, a malha estruturada gerada por \texttt{blockMesh} agrega \(\num{16384}\) células hexaédricas distribuídas em cinco zonas anatômicas (\texttt{on}, \texttt{ons}, \texttt{lc}, \texttt{sclera}, \texttt{globo}), com ortogonalidade nula e \emph{skewness} desprezível por construção, e razão de aspecto axial máxima em torno de \(14\) decorrente do espaçamento \(\Delta z \in [0{,}5;\,1{,}0]\,\si{\milli\meter}\) frente ao \(\Delta r \in [73;\,294]\,\si{\micro\meter}\).
+
+\subsection{Modelagem do fluido (sangue)}
+\label{sec:metodologia-fluido}
+
+O escoamento sanguíneo no lúmen foi resolvido com o solver
+\texttt{pimpleFoam} (incompressível, transitório). O sangue foi modelado como
+fluido Newtoniano \citep{Pedley1980}, hipótese razoável em vasos arteriais
+para taxas de cisalhamento moderadas, com massa específica
+\(\rho = \SI{1050}{\kilogram\per\meter\cubed}\) e viscosidade cinemática
+\(\nu = \SI{3,5e-6}{\square\meter\per\second}\) (\(T \approx \SI{37}{\celsius}\)).
+O regime foi tratado como laminar, consistente com o número de Reynolds
+esperado na AO,
+\begin{equation}
+  \mathrm{Re} = \frac{\bar U\, D_{\mathrm{int}}}{\nu} \;\lesssim\; 150,
+  \label{eq:Re}
+\end{equation}
+para diâmetro luminal \(D_{\mathrm{int}} \approx \SI{1,1}{\milli\meter}\) e
+velocidade média \(\bar U\) da ordem de algumas dezenas de
+\si{\centi\meter\per\second} --- bem abaixo da transição laminar-turbulenta
+em escoamento em duto (\(\mathrm{Re} \approx 2300\)).
+
+\paragraph{Condições de contorno.}
+Nas extremidades do lúmen foi imposta uma onda sistêmica pulsátil de pressão, representativa do ciclo cardíaco humano: pressão arterial média (PAM) de \SI{13,3}{\kilo\pascal} (\(\approx \SI{100}{\milli\meter\of\mercury}\)), faixa de \SIrange{10,7}{16}{\kilo\pascal} (\(\approx 80\text{--}120\) mmHg) e período \(T = \SI{0,8}{\second}\) (frequência cardíaca de \SI{75}{bpm}). A onda foi sintetizada como uma série de Fourier truncada de quatro harmônicos, calibrada para reproduzir o pico sistólico, o \emph{dicrotic notch} e o vale diastólico característicos de uma artéria sistêmica de pequeno calibre, e tabulada com passo de \SI{4}{\milli\second} em \texttt{constant/inlet\_pressure.dat} e \texttt{constant/outlet\_pressure.dat} pelo \emph{script} \texttt{brunaStuff/gen\_artoph\_pressure\_waveform.py}. Os primeiros \SI{100}{\milli\second} da onda são suavizados por uma janela de Hann (rampa de \(0\) à amplitude nominal preservando a PAM), evitando \emph{water-hammer} numérico no instante inicial. As BCs foram aplicadas via \texttt{uniformFixedValue + tableFile}, idênticas nas duas extremidades a menos de um desnível residual \(\Delta p_{\mathrm{drive}} = \SI{10}{\pascal}\) (\(\approx \SI{0,08}{\milli\meter\of\mercury}\)) introduzido apenas para quebrar a singularidade matemática do sistema de pressão que ocorre quando as duas BCs são exatamente iguais (degeneração: qualquer \(p\) constante satisfaz a equação de Poisson interna). Esse \(\Delta p\) é hidrodinamicamente desprezível em comparação com a faixa pulsátil de \SI{5,3}{\kilo\pascal}, de modo que a presente simulação caracteriza essencialmente a \emph{carga radial pulsátil sobre a parede arterial} (sem escoamento médio significativo). A velocidade nas extremidades foi tratada como \texttt{pressureInletOutletVelocity} e a parede como \texttt{noSlip}; a interface FSI é gerenciada pelo adaptador \textsc{preCICE} (Seção~\ref{sec:metodologia-fsi}). A obtenção de um regime hemodinâmico realista (com \(\bar U \sim \SIrange{10}{15}{\centi\meter\per\second}\)) requer aumentar \(\Delta p_{\mathrm{drive}}\) para a faixa \SIrange{200}{500}{\pascal} e reduzir o passo de tempo a \(\Delta t < \SI{5e-5}{\second}\) (Co \(< 1\)), com custo computacional substancialmente maior --- deixado para trabalhos futuros.
+
+\subsection{Modelagem do sólido (parede arterial)}
+\label{sec:metodologia-solido}
+
+A parede arterial foi resolvida com o solver \texttt{solids4Foam}, modelo
+\texttt{unsLinearGeometry} (formulação \emph{unstructured} de elasticidade
+linear infinitesimal). Adotou-se um material linear elástico isotrópico
+\citep{Holzapfel2000}, com módulo de Young \(E = \SI{1{,}0}{\mega\pascal}\),
+coeficiente de Poisson \(\nu = 0{,}30\) e massa específica
+\(\rho = \SI{1050}{\kilogram\per\meter\cubed}\). A escolha de \(E\) representa
+um valor médio reportado na literatura para artérias musculares de pequeno
+calibre na faixa fisiológica de pressão; trata-se de uma simplificação que
+desconsidera a hiperelasticidade anisotrópica do tecido arterial real e cujas
+implicações são discutidas na Seção~\ref{sec:limitacoes}.
+
+\paragraph{Geometria efetivamente discretizada.}
+Tentativas iniciais de gerar a parede anular oca (espessura nominal \(h = \SI{0,20}{\milli\meter}\)) diretamente via \texttt{snappyHexMesh}, com as duas superfícies (\texttt{artery\_outer} e \texttt{artery\_inner}) atuando simultaneamente como superfícies de corte, produziram malha degenerada (volumes negativos, não-ortogonalidade máxima de \(179^{\circ}\) e cerca de \num{47000} células côncavas) em razão da espessura da parede ser comparável ao tamanho mínimo de célula do \emph{background mesh} refinado. Para contornar essa limitação intrínseca dos métodos de \emph{cut-cell} em paredes finas, adotou-se uma estratégia de \emph{malha estruturada extrudada ao longo da centerline}: a centerline da artéria foi reconstruída a partir da \texttt{artery.stl} via decomposição em componentes principais (PCA) seguida de relaxação iterativa por centroide local, suavizada e reamostrada em \(N_z = 160\) seções uniformes em comprimento de arco (\(L \approx \SI{40}{\milli\meter}\)). Em cada seção, frames ortonormais \((T,N,B)\) foram propagados por \emph{parallel transport} (rotação mínima entre tangentes consecutivas, estável em pontos de inflexão), e duas malhas foram geradas em coordenadas locais: (i) o \emph{lúmen} (fluido) como cilindro polar de raio \(R_{\mathrm{int}} = \SI{0,55}{\milli\meter}\) com \(N_{\mathrm{circ}} = 32\) setores e \(N_{r}^{\mathrm{lum}} = 4\) anéis radiais; (ii) o \emph{annulus} (sólido) como anel polar puro de \(R_{\mathrm{int}}\) a \(R_{\mathrm{ext}} = \SI{0,75}{\milli\meter}\) com \(N_{r}^{\mathrm{wall}} = 3\) anéis radiais. As células são hexaedros estruturados, com conectividade explicitamente construída (categorias axial, radial e angular) e orientação validada face a face. O resultado é uma malha de qualidade muito superior: não-ortogonalidade máxima de \(7,3^{\circ}\) (fluido) e \(9,5^{\circ}\) (sólido), aspect ratio máximo \(10,6\) e \(4,5\), skewness inferior a \(0,46\), e nenhuma célula com volume negativo ou côncava. A geometria do annulus reproduz fielmente a parede arterial fisiológica, eliminando o offset radial residual da abordagem anterior.
+
+\paragraph{Condições de contorno.}
+As extremidades anterior e posterior da parede arterial
+(\texttt{inner\_cap\_front} e \texttt{inner\_cap\_back}) foram engastadas
+(\texttt{fixedDisplacement} \(= \mathbf{0}\)). A superfície interna do annulus
+(patch \texttt{lumen}, raio \(R_{\mathrm{int}}\)) é a interface FSI,
+recebendo o campo de força \texttt{solidForce} mapeado pelo \textsc{preCICE}
+via RBF \emph{thin-plate splines}. A superfície externa
+(patch \texttt{arteria\_externa}, raio \(R_{\mathrm{ext}}\)) é livre de
+tração (\texttt{solidTraction} \(= \mathbf{0}\)), representando a ausência
+de contato com o nervo óptico nesta etapa.
+
+\paragraph{Tolerâncias.}
+Com a nova malha estruturada (sem células côncavas), as tolerâncias do
+solver puderam ser mantidas em \(1\times 10^{-2}\) (residual relativo do
+balanço de momento), \(1\times 10^{-5}\) (residual material) e
+\(N_{\mathrm{corr}} = 150\) corretores por passo. A integração de um ciclo
+cardíaco completo (\(T = \SI{0,8}{\second}\), \SI{800} passos de \(\Delta t = \SI{1}{\milli\second}\))
+executa em tempo de máquina da ordem de \(\sim\!\SI{30}{\minute}\) (Apple M2,
+serial), com convergência quadrática típica do solver de Newton acoplado.
+
+\subsection{Acoplamento fluido-estrutura via preCICE}
+\label{sec:metodologia-fsi}
+
+O acoplamento entre os participantes \texttt{Fluid} (\texttt{pimpleFoam}) e
+\texttt{Solid} (\texttt{solids4Foam}) foi realizado através do adaptador
+\texttt{OpenFOAM-preCICE} v1.3.1 \citep{Chourdakis2022}. Adotou-se um
+esquema \emph{serial explícito} com janela de tempo
+\(\Delta t_{\mathrm{cpl}} = \SI{1e-3}{\second}\) e tempo final
+\(t_{\max} = \SI{0,8}{\second}\), cobrindo exatamente um ciclo cardíaco
+completo a \SI{75}{bpm}. O único campo trocado foi o vetor de força
+\textbf{Force}, escrito pelo participante \texttt{Fluid} e lido pelo
+participante \texttt{Solid}.
+
+\paragraph{Mapeamento entre malhas.}
+O mapeamento da carga entre a malha fluida e a malha sólida foi realizado
+por funções de base radial do tipo \emph{thin-plate splines} (TPS), com
+restrição \emph{conservative} para preservar a resultante de força, em
+analogia ao princípio de igualdade de trabalhos virtuais entre as duas
+malhas:
+\begin{equation}
+  \sum_{f \in \Gamma^{\mathrm{F}}} \mathbf{F}^{\mathrm{F}}_f
+  \;=\;
+  \sum_{f \in \Gamma^{\mathrm{S}}} \mathbf{F}^{\mathrm{S}}_f.
+  \label{eq:conservative}
+\end{equation}
+
+\paragraph{Justificativa do acoplamento unidirecional.}
+Foi adotado acoplamento \emph{one-way} (fluido \(\to\) sólido), com malha
+fluida estática (\texttt{staticFvMesh}). Essa escolha se apoia na observação
+de que o deslocamento radial esperado da parede arterial sob carga
+fisiológica é da ordem de unidades de \si{\micro\meter}, isto é, muito
+inferior ao raio luminal (\(\delta_r/R \ll 1\)), de modo que a retroação
+sobre a hemodinâmica é desprezível em primeira aproximação. A extensão para
+acoplamento bidirecional fica como trabalho futuro.
+
+\paragraph{Ponto de monitoramento.}
+Um \texttt{watch-point} do \textsc{preCICE} foi posicionado no nó da malha
+sólida mais próximo do NO (coordenadas em \texttt{closest\_to\_ON\_ref.json}),
+permitindo o monitoramento contínuo do deslocamento da parede arterial no
+ponto de interesse.
+
+\subsection{Estudo paramétrico de pressão (caso \texttt{on-mestrado})}
+\label{sec:metodologia-sweep}
+
+Para caracterizar a sensibilidade do NO à magnitude da carga arterial de
+forma isolada do escoamento, foi construído um caso simplificado em que uma
+pressão uniforme e constante é aplicada diretamente na patch local de contato
+(\texttt{contact\_local}), em regime quasi-estático
+(\(t_{\mathrm{end}} = \Delta t = \SI{0{,}05}{\second}\), um passo de carga).
+Foram simulados cinco níveis de pressão, definidos como
+\begin{equation}
+  P_k = P_0 + k\, \Delta P,
+  \qquad
+  P_0 = \SI{9000}{\pascal},
+  \qquad
+  \Delta P = 0{,}20\,P_0,
+  \qquad
+  k = 0, 1, \dots, 4,
+  \label{eq:sweep}
+\end{equation}
+cobrindo a faixa \(\{9{,}0;\; 10{,}8;\; 12{,}6;\; 14{,}4;\; 16{,}2\}\;\si{\kilo\pascal}\)
+e abrangendo desde a pressão arterial média basal até regimes
+hipertensivos. O pipeline foi automatizado no \emph{script}
+\texttt{run\_on\_mestrado\_pressure\_sweep.py}, que executa o
+\texttt{solids4Foam} sequencialmente para cada \(P_k\), preservando o
+\texttt{controlDict} e a tabela de pressão original através de cópias de
+\emph{backup}.
+
+\subsection{Métricas extraídas}
+\label{sec:metodologia-metricas}
+
+\subsubsection{Força e deslocamento na região de contato}
+
+A força resultante exercida pela carga uniforme sobre a patch de contato
+\(\Gamma_c\) foi calculada como
+\begin{equation}
+  \lvert \mathbf{F} \rvert
+  \;=\;
+  p(t)\,
+  \left\lVert \sum_{f \in \Gamma_c} \mathbf{S}_f \right\rVert,
+  \label{eq:forca}
+\end{equation}
+onde \(\mathbf{S}_f\) é o vetor de área da face \(f\). O deslocamento normal
+médio na patch, ponderado por área, foi definido por
+\begin{equation}
+  \bar{u}_n
+  \;=\;
+  \frac{\displaystyle \sum_{f \in \Gamma_c} a_f \, \bigl(\mathbf{D}_f \cdot \hat{\mathbf{n}}_f\bigr)}
+       {\displaystyle \sum_{f \in \Gamma_c} a_f},
+  \label{eq:un}
+\end{equation}
+onde \(\mathbf{D}_f\) é o campo de deslocamento na face, \(\hat{\mathbf{n}}_f\)
+sua normal externa e \(a_f = \lVert \mathbf{S}_f \rVert\) sua área. Essas
+grandezas são extraídas pelo script
+\texttt{plot\_on\_mestrado\_force\_displacement\_contact.py}.
+
+\subsubsection{Centerline deformada do NO}
+
+A linha de centro do NO foi reconstruída a partir dos centróides das células
+da \texttt{cellZone "on"}. Sendo \(\mathbf{x}_i^{0}\) o centróide da célula
+\(i\) e \(\mathbf{D}_i\) seu deslocamento, a posição deformada é
+\begin{equation}
+  \mathbf{x}_i \;=\; \mathbf{x}_i^{0} + \mathbf{D}_i.
+\end{equation}
+Os centróides foram agrupados em \(N_z = 60\) faixas ao longo do eixo
+longitudinal \(z\), e em cada faixa tomou-se a média aritmética das posições
+deformadas, gerando a curva discreta
+\(\mathcal{C} = \{ \mathbf{c}_j \}_{j=1}^{N_z}\).
+
+\subsubsection{Métricas clínicas de tortuosidade}
+
+Sobre o trecho de \SI{20}{\milli\meter} (segmento intraorbitário do NO),
+foram calculadas duas métricas estabelecidas na literatura:
+
+\paragraph{(i) Desvio máximo ortogonal à corda} \citep{Lee2020NPJ}.
+Sendo \(\mathbf{c}_1\) e \(\mathbf{c}_{N_z}\) os extremos da centerline,
+\(\hat{\mathbf{t}} = (\mathbf{c}_{N_z}-\mathbf{c}_1)/L_{\mathrm{corda}}\)
+o versor da corda e
+\(\mathbf{r}_j = \mathbf{c}_j - \mathbf{c}_1\), define-se
+\begin{equation}
+  d_{\max}
+  \;=\;
+  \max_{j}\;
+  \bigl\lVert \mathbf{r}_j - (\mathbf{r}_j \cdot \hat{\mathbf{t}})\,\hat{\mathbf{t}} \bigr\rVert.
+  \label{eq:dmax}
+\end{equation}
+
+\paragraph{(ii) Índice de tortuosidade do NO (ONT)}
+\citep{Chiang2025ONT}, definido como a razão entre o comprimento de arco da
+centerline e o comprimento da corda:
+\begin{equation}
+  \mathrm{ONT}
+  \;=\;
+  \frac{L_{\mathrm{arco}}}{L_{\mathrm{corda}}}
+  \;=\;
+  \frac{\displaystyle \sum_{j=1}^{N_z - 1} \lVert \mathbf{c}_{j+1} - \mathbf{c}_j \rVert}
+       {\lVert \mathbf{c}_{N_z} - \mathbf{c}_1 \rVert}.
+  \label{eq:ont}
+\end{equation}
+
+Ambas as métricas são implementadas no módulo
+\texttt{on\_mestrado\_centerline\_metrics.py} e comparadas, na
+Seção~\ref{sec:resultados}, com a faixa de referência clínica pré-voo
+reportada por \citet{Lee2020NPJ}
+(\(d_{\max} \in [\SI{1{,}10}{},\,\SI{1{,}72}{}]\;\si{\milli\meter}\),
+média \(\approx \SI{1{,}41}{\milli\meter}\)) e com o valor típico
+\(\mathrm{ONT} \approx 1{,}02\) reportado por \citet{Chiang2025ONT}.
+
+\subsection{Ambiente computacional e reprodutibilidade}
+\label{sec:metodologia-ambiente}
+
+A construção da geometria CAD foi realizada no
+\textsc{Ansys SpaceClaim 2022 R1}. As simulações numéricas foram executadas
+em um ambiente \textsc{Docker} baseado em Ubuntu 24.04 LTS, com a seguinte
+pilha de software: \textsc{OpenFOAM}~v2512 (ESI/OpenCFD), \textsc{preCICE}~v3.3.1,
+\texttt{OpenFOAM-preCICE adapter}~v1.3.1, \texttt{solids4foam} (\emph{master},
+\(\geq\) v2.3) e Python~3.12 com NumPy, SciPy e Matplotlib para
+pré- e pós-processamento. As características de hardware utilizadas foram
+[\emph{descrever máquina: modelo, processador, número de núcleos, memória}],
+com tempo de parede total de aproximadamente [\emph{preencher}] por
+configuração. O conjunto completo de dicionários, \emph{scripts} de
+geração de malha, automação do \emph{sweep} e pós-processamento encontra-se
+versionado no repositório do trabalho [\emph{citar URL/DOI ou apêndice}],
+garantindo a reprodutibilidade integral dos casos descritos.
+
+\subsection{Síntese dos parâmetros adotados}
+\label{sec:metodologia-tabela}
+
+A Tabela~\ref{tab:parametros} consolida os principais parâmetros físicos
+e numéricos utilizados nas simulações.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Parâmetros físicos e numéricos adotados nas simulações.}
+  \label{tab:parametros}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Grupo} & \textbf{Parâmetro} & \textbf{Valor} \\
+    \midrule
+    \multicolumn{3}{l}{\emph{Fluido (sangue)}} \\
+    & Modelo de transporte               & Newtoniano \\
+    & Massa específica \(\rho\)          & \SI{1050}{\kilogram\per\meter\cubed} \\
+    & Viscosidade cinemática \(\nu\)     & \SI{3,5e-6}{\square\meter\per\second} \\
+    & Pressão arterial média \(P_{\mathrm{art}}\) & \SI{13,3}{\kilo\pascal} \\
+    & Regime                             & Laminar \\
+    \midrule
+    \multicolumn{3}{l}{\emph{Sólido (parede arterial)}} \\
+    & Modelo constitutivo                & Linear elástico isotrópico \\
+    & Módulo de Young \(E\)              & \SI{1,0}{\mega\pascal} \\
+    & Coeficiente de Poisson \(\nu\)     & \(0{,}30\) \\
+    & Massa específica \(\rho\)          & \SI{1050}{\kilogram\per\meter\cubed} \\
+    & Espessura da parede \(h\)          & \SI{0,20}{\milli\meter} \\
+    \midrule
+    \multicolumn{3}{l}{\emph{Solvers}} \\
+    & Fluido                             & \texttt{pimpleFoam} (OpenFOAM v2512) \\
+    & Sólido                             & \texttt{solids4Foam} / \texttt{unsLinearGeometry} \\
+    & Acoplamento                        & \textsc{preCICE} v3.3.1, serial explícito \\
+    & Mapeamento                         & RBF Thin-Plate Splines (conservativo) \\
+    \midrule
+    \multicolumn{3}{l}{\emph{Discretização temporal}} \\
+    & Janela de acoplamento \(\Delta t_{\mathrm{cpl}}\) & \SI{1e-3}{\second} \\
+    & Passo de tempo do fluido \(\Delta t\)             & \SI{1e-3}{\second} \\
+    & Tempo final \(t_{\max}\) (1 ciclo cardíaco)       & \SI{0,8}{\second} \\
+    & Per\'iodo / freq.\ card\'iaca                     & \(T = \SI{0,8}{\second}\) / \SI{75}{bpm} \\
+    \midrule
+    \multicolumn{3}{l}{\emph{Sweep de pressão (\texttt{on-mestrado})}} \\
+    & \(P_0\)                            & \SI{9,0}{\kilo\pascal} \\
+    & \(\Delta P\)                       & \SI{1,8}{\kilo\pascal} (\(20\%\) de \(P_0\)) \\
+    & Número de níveis                   & \(5\) \\
+    & Faixa coberta                      & \SIrange{9,0}{16,2}{\kilo\pascal} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =============================================================================
+%  Fim do arquivo metodologia.tex
+% =============================================================================

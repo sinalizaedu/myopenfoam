@@ -1,0 +1,49 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on -- campo de forca FSI                                     |
+| Escrito pelo preCICE OpenFOAM adapter nos patches lumen_bot e lumen_top.     |
+| BCs por patch explicitamente (catch-all .* falha com type symmetry).         |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      solidForce;
+}
+
+dimensions      [ 1 1 -2 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 );
+
+boundaryField
+{
+    lumen_bot
+    {
+        type            calculated;
+        value           uniform ( 0 0 0 );
+    }
+    lumen_top
+    {
+        type            calculated;
+        value           uniform ( 0 0 0 );
+    }
+
+    outer_top              { type zeroGradient; }
+    outer_bottom           { type zeroGradient; }
+    on_mestrado            { type zeroGradient; }
+    oa_mestrado            { type zeroGradient; }
+
+    outer_left_lower       { type symmetry; }
+    outer_left_wall_inf    { type symmetry; }
+    outer_left_wall_sup    { type symmetry; }
+    outer_left_fat_above   { type symmetry; }
+    outer_right_lower      { type symmetry; }
+    outer_right_wall_inf   { type symmetry; }
+    outer_right_wall_sup   { type symmetry; }
+    outer_right_fat_above  { type symmetry; }
+
+    frontAndBack           { type empty; }
+}
+
+// ************************************************************************* //

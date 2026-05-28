@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<precice-configuration>
+  <log>
+    <sink
+      filter="%Severity% > debug and %Rank% = 0"
+      format="---[precice] %ColorizedSeverity% %Message%"
+      enabled="true" />
+  </log>
+
+  <data:vector name="Force" />
+
+  <mesh name="Fluid-Mesh" dimensions="3">
+    <use-data name="Force" />
+  </mesh>
+
+  <mesh name="Solid-Mesh" dimensions="3">
+    <use-data name="Force" />
+  </mesh>
+
+  <participant name="Fluid">
+    <provide-mesh name="Fluid-Mesh" />
+    <receive-mesh name="Solid-Mesh" from="Solid" />
+    <write-data name="Force" mesh="Fluid-Mesh" />
+    <mapping:rbf direction="write" from="Fluid-Mesh" to="Solid-Mesh" constraint="conservative">
+      <basis-function:thin-plate-splines />
+    </mapping:rbf>
+  </participant>
+
+  <participant name="Solid">
+    <provide-mesh name="Solid-Mesh" />
+    <read-data name="Force" mesh="Solid-Mesh" />
+    <watch-point mesh="Solid-Mesh" name="arteryNearestON" coordinate="0.002220591;-0.001218236;0.02476221" />
+  </participant>
+
+  <m2n:sockets acceptor="Fluid" connector="Solid" exchange-directory=".." />
+
+  <!-- One-way: forças do sangue na parede; malha fluida fixa (staticFvMesh).
+       3 ciclos cardiacos (T = 60/69 = 0.8696 s) -> 3*T = 2.6087 s.
+       max-time = 2.609 cobre exato com 0.3ms de folga.
+       Janela de acoplamento = passo = 1 ms.
+       Outlet defasado em 5ms vs inlet -> gradiente longitudinal pulsatil. -->
+  <coupling-scheme:serial-explicit>
+    <time-window-size value="1e-3" />
+    <max-time value="2.609" />
+    <participants first="Fluid" second="Solid" />
+    <exchange data="Force" mesh="Solid-Mesh" from="Fluid" to="Solid" />
+  </coupling-scheme:serial-explicit>
+</precice-configuration>

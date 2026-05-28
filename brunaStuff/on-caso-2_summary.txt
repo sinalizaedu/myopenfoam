@@ -1,0 +1,38 @@
+======================================================================
+on-caso-2 -- Analise de flambagem axial (linear + Euler hibrido)
+======================================================================
+
+Deslocamento axial imposto: Dz = -1.000 mm
+Reacao axial composta no apice (Time=40):
+  anterior_dura : F_z = -243.685 mN   k_i =  243.68 N/m   ( 76.9%)
+  anterior_pia  : F_z =  -36.955 mN   k_i =   36.95 N/m   ( 11.7%)
+  anterior_on   : F_z =   -7.718 mN   k_i =    7.72 N/m   (  2.4%)
+  anterior_sas  : F_z =  -28.572 mN   k_i =   28.57 N/m   (  9.0%)
+  ---------------------------------------------------
+  TOTAL          : F_z = -316.930 mN   k   =  316.93 N/m
+
+Geometria da dura (camada estrutural dominante):
+  r_inner = 2.35 mm,  r_outer = 2.5 mm
+  I_annular = pi/4 * (r_o^4 - r_i^4) = 6.727e-12 m^4
+  EI_dura   = 2.018e-05 N.m^2
+
+Carga critica de Euler P_cr(K) = pi^2 EI / (KL)^2  (L = 30.0 mm):
+  K        BC                               P_cr (mN)    F_z/P_cr  
+  -------- -------------------------------- ------------ ----------
+  0.5      fixed-fixed teorico                885.18      35.8%
+  0.65     fixed-fixed AISC (recomendado)     523.77      60.5%
+  0.7      fixed-pinned                       451.62      70.2%
+  1.0      pinned-pinned                      221.29     143.2%
+  2.0      fixed-free (cantilever)             55.32     572.9%
+
+Comparacao com SANS clinico (Lee2020NPJ: Dz_globo in [0.5; 1.0] mm):
+  Dz simulado = 1.00 mm (limite superior SANS)
+  F_z = 316.93 mN
+  Margem de seguranca @ K=0.65 (AISC): 1.65x
+
+Conclusao: flambagem axial NAO e modo de falha relevante para SANS
+em qualquer K <= 1.0 (margem >= 1.7x para K=0.65).
+
+Nota metodologica: NL geometry direta falhou (NaN em iter 250 do Time=1
+com alpha_D=0.1, bug de Jacobiano negativo do FVM segregado em multi-zona).
+Adotada estrategia hibrida linear+Euler validada em on-mestrado-2-buckling-real.

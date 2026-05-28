@@ -1,0 +1,128 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// on-caso-1 - SOLIDO de 7 zonas com FSI two-way (preCICE).
+// Identico ao on-fsi-2 EXCETO pelas patches fsi_sclera_peri e fsi_sclera_ring:
+// no on-caso-1 elas DEIXAM de ser FSI (o fluido nao tem walls nelas - viraram
+// faces internas entre SAS regular e o lid poroso). Aqui ficam com BC livre
+// (solidTraction pressure 0): perdem a carga direta do LCR no cul-de-sac,
+// pois agora a drenagem distal e' absorvida pelo lid poroso a montante.
+//
+// FSI ativas (preCICE): fsi_pia, fsi_dura
+//
+// BCs:
+//   z=0 (canal optico): posterior_{on,pia,dura} fixedDisplacement (0 0 0)
+//   z=30 (sclera_peri/ring caps): solidTraction free (era FSI no on-fsi-2)
+//   dura_outer:    Winkler 200 kPa/m (gordura orbital)
+//   contact_local: pressao arteria oftalmica 9034 Pa
+//   sclera_ring_outer, anterior_globo: livre
+//   globo_outer:   fixedDisplacement (equador, musculos extraoculares)
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    posterior_on
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_pia
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_dura
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- FSI ativas (preCICE le solidForce do fluido) -------------------
+    fsi_pia
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform ( 0 0 0 );
+    }
+
+    fsi_dura
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- z=30 caps: NAO sao mais FSI (o lid poroso esta acima delas) ---
+    // Mas a pressao do LCR ainda atua nelas estaticamente. Com d=1e15 no lid
+    // poroso, o gradiente cai todo no lid e o SAS bulk fica em P_CSF=1333 Pa
+    // ~uniforme. Aplicamos essa pressao estatica nas caps via solidTraction
+    // (sem FSI dinamico) para manter a mesma loading estrutural do on-fsi-2
+    // e evitar a divergencia da malha sólida segregada quando essa face
+    // ficava livre (traction 0).
+    fsi_sclera_peri
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 1333;
+        value       uniform ( 0 0 0 );
+    }
+
+    fsi_sclera_ring
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 1333;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- contato local arteria oftalmica (carved-out de dura_outer) ----
+    contact_local
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 9034;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- dura_outer: Winkler 200 kPa/m (gordura orbital) ---------------
+    dura_outer
+    {
+        type        solidTractionElasticFoundation;
+        k           200000;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    sclera_ring_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    globo_outer
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    anterior_globo
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+}

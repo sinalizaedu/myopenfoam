@@ -1,0 +1,25 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| solids4foam                                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      solidProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solidModel     nonLinearGeometryUpdatedLagrangian;
+
+"nonLinearGeometryUpdatedLagrangianCoeffs"
+{
+    nCorrectors             20000;
+    solutionTolerance       1e-06;
+    alternativeTolerance    1e-07;
+    materialTolerance       1e-05;
+    infoFrequency           500;
+}
+
+// ************************************************************************* //

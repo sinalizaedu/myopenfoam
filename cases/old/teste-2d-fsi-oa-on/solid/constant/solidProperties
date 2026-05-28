@@ -1,0 +1,51 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on                                                           |
+| Solver de mecanica solida -- linearGeometry com contato + FSI via preCICE    |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// =============================================================================
+//  Modelo: linearGeometryTotalDisplacement (igual ao caso solid-only e ao
+//          tutorial contactPatchTest do solids4foam). Suporta solidContact
+//          com normalContactModel standardPenalty validado.
+//
+//  Tolerancias relaxadas porque a cada janela de acoplamento (deltaT = 1 ms)
+//  a forca preCICE muda discretamente -- nao adianta convergir a 1e-12 dentro
+//  de uma janela; o equilibrio quasi-estatico se aproxima ao longo dos
+//  ciclos cardiacos.
+//
+//  Combina os 2 desafios numericos:
+//    1. Contato penalty (limit cycle em ~0.005-0.01)
+//    2. Carga pulsatil via preCICE (Force impulsiva no inicio do passo)
+//  Compromisso: rTol 1e-2, nCorrectors 5000, stopOnError false.
+// =============================================================================
+
+solidModel     linearGeometryTotalDisplacement;
+
+// PERF v3 (2026-05-25): observado em run real -- a solucao ESTABILIZA em
+// Step Norm = 0.0020664 ja na iter 50 e FICA preso ate o teto. Reduzir
+// nCorrectors 800 -> 100 da resultado equivalente com 8x menos custo.
+// minCorrectors mantido em 20 (suficiente pra warm-up do penalty).
+linearGeometryTotalDisplacementCoeffs
+{
+    nCorrectors             100;
+    minCorrectors           20;
+    rTol                    1e-2;
+    aTol                    1e-8;
+    sTol                    1e-15;
+    divTol                  1e8;
+    stopOnError             false;
+
+    solutionTolerance       1e-04;
+    alternativeTolerance    1e-05;
+    materialTolerance       1e-04;
+    infoFrequency           20;
+}
+
+// ************************************************************************* //

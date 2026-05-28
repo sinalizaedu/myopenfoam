@@ -1,0 +1,18 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// Sangue Newtoniano ~37 C (literatura): rho = 1050 kg/m³, nu = 3.5e-6 m²/s
+// (dynamic viscosity mu = rho*nu = 3.675e-3 Pa.s)
+// Atualizado a partir de revisao de literatura — Bruna, 2026-05-23.
+
+transportModel  Newtonian;
+
+nu              nu [0 2 -1 0 0 0 0] 3.5e-6;
+
+// ************************************************************************* //

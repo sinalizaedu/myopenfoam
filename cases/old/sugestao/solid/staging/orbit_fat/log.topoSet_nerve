@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet
+Date   : May 25 2026
+Time   : 02:15:56
+Host   : 966b8a85630c
+PID    : 4600
+I/O    : uncollated
+Case   : /simulation/sugestao/solid/staging/orbit_fat
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = 0
+
+Reading topoSetDict
+
+Time = 0
+    mesh not changed.
+Created cellSet fat_nerve_holes
+    Applying source cylinderToCell
+    Adding cells with centres within cylinder, with point1 = (0 0 -0.001), point2 = (0 0 0.0305), radius = 0.0025
+    cellSet fat_nerve_holes now size 2068
+Read set cellSet fat_nerve_holes size:2068
+    Applying source cylinderToCell
+    Adding cells with centres within cylinder, with point1 = (0 0 0.03), point2 = (0 0 0.031), radius = 0.0025
+    cellSet fat_nerve_holes now size 2112
+Created cellSet fat_keep_after_nerve
+    Applying source cellToCell
+    Adding all elements of cell sets: (fat_nerve_holes)
+    cellSet fat_keep_after_nerve now size 2112
+Read set cellSet fat_keep_after_nerve size:2112
+    Inverting cellSet
+    cellSet fat_keep_after_nerve now size 42240
+
+End
+

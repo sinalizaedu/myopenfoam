@@ -1,0 +1,88 @@
+#!/bin/bash
+# sugestao - FSI artéria-nervo com contato fisico real (solidContact).
+#
+# Pipeline:
+#   1) Compila lib custom solidTractionElasticFoundation (Winkler) se faltar.
+#   2) Gera mesh do FLUIDO (lumen extrudado) via build_artoph_tubular_meshes.py
+#      (escreve fluid/constant/polyMesh + solid/constant/polyMesh — este ultimo
+#      sera SOBRESCRITO pelo Allmesh do solido logo em seguida).
+#   3) Allmesh do solido: blockMesh nervo + build_sugestao_solid_arteria +
+#      mergeMeshes + topoSet+createPatch (CSF).
+#   4) checkMesh do fluido.
+#   5) Roda preCICE + pimpleFoam (fluido) + solids4Foam (solido) acoplados.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+cd "$ROOT"
+
+# Localiza scripts brunaStuff (host ou container)
+if   [[ -f "${ROOT}/scripts/build_artoph_tubular_meshes.py" ]]; then
+  BRUNA="${ROOT}/scripts"
+elif [[ -f "${ROOT}/../../brunaStuff/build_artoph_tubular_meshes.py" ]]; then
+  BRUNA="$(cd "${ROOT}/../../brunaStuff" && pwd)"
+else
+  echo "ERROR: cannot find build_artoph_tubular_meshes.py" >&2
+  exit 1
+fi
+
+# 1) Lib Winkler (mola de gordura orbital) - so dentro de Docker (precisa s4f)
+SPRING_LIB="${ROOT}/src/elasticFoundation/libsolidTractionElasticFoundation.so"
+if [[ -n "${WM_PROJECT_DIR:-}" && ! -f "$SPRING_LIB" ]]; then
+  echo "=== 0) Compilando BC custom (Winkler) ==="
+  ( cd "${ROOT}/src/elasticFoundation" && ./Allwmake )
+fi
+
+echo "=== 1) Copia polyMesh do FLUIDO do ao-mestrado (mesma geometria do lumen) ==="
+# IMPORTANTE: NAO regerar a malha do lumen aqui. O preCICE faz mapping
+# face-a-face entre o patch 'wall' do fluid e o patch 'arteria_lumen' do
+# solid; se as duas malhas forem geradas independentemente (mesmo com a
+# mesma STL) os vertices nao casam exatamente e o rbf-pum mapping aborta.
+# Reusa a polyMesh do fluido do ao-mestrado, que foi extrudada pela MESMA
+# centerline que vai gerar o solid (que tambem eh copiado do ao-mestrado).
+AO_FLUID_MESH="${ROOT}/../ao-mestrado/fluid/constant/polyMesh"
+if [[ ! -f "${AO_FLUID_MESH}/points" ]]; then
+  echo "[fluid] polyMesh do ao-mestrado nao encontrada; gerando antes..."
+  ( cd "${ROOT}/../ao-mestrado" && bash Allrun 2>&1 | tail -10 ) || \
+    { echo "ERROR: falha gerando malha do ao-mestrado"; exit 1; }
+fi
+mkdir -p "${ROOT}/fluid/constant"
+rm -rf "${ROOT}/fluid/constant/polyMesh"
+cp -r "${AO_FLUID_MESH}" "${ROOT}/fluid/constant/polyMesh"
+echo "[fluid] polyMesh copiada de ${AO_FLUID_MESH}"
+
+if [[ -z "${WM_PROJECT_DIR:-}" ]]; then
+  echo "SKIP mesh/solve: WM_PROJECT_DIR not set. Inside Docker run:"
+  echo "  cd /simulation/sugestao && ./Allrun"
+  exit 0
+fi
+
+echo "=== 2) Allmesh do FLUIDO (checkMesh) ==="
+chmod +x fluid/Allmesh solid/Allmesh 2>/dev/null || true
+( cd fluid && bash ./Allmesh ) || { echo "ERROR: fluid Allmesh failed"; exit 1; }
+
+echo "=== 3) Allmesh do SOLIDO (blockMesh + build_arteria + mergeMeshes + ...) ==="
+( cd solid && bash ./Allmesh ) || { echo "ERROR: solid Allmesh failed"; exit 1; }
+
+for d in fluid/constant/polyMesh/points solid/constant/polyMesh/points; do
+  [[ -f "$d" ]] || { echo "ERROR: meshing did not produce $d"; exit 1; }
+done
+
+echo "=== 4) Coupled solvers (preCICE) ==="
+(cd fluid && pimpleFoam > log.pimpleFoam 2>&1) &
+PF=$!
+(cd solid && solids4Foam > log.solids4Foam 2>&1) &
+PS=$!
+RC_F=0; RC_S=0
+wait $PF || RC_F=$?
+wait $PS || RC_S=$?
+if (( RC_F != 0 )); then
+  echo "ERROR: pimpleFoam failed (rc=$RC_F)"; tail -40 fluid/log.pimpleFoam; exit 1
+fi
+if (( RC_S != 0 )); then
+  echo "ERROR: solids4Foam failed (rc=$RC_S)"; tail -40 solid/log.solids4Foam; exit 1
+fi
+if grep -q "FOAM FATAL\|FOAM aborting" fluid/log.pimpleFoam solid/log.solids4Foam 2>/dev/null; then
+  echo "ERROR: FATAL in solver log"
+  grep -nE "FOAM FATAL|FOAM aborting" fluid/log.pimpleFoam solid/log.solids4Foam | head
+  exit 1
+fi
+echo "=== Allrun finished ==="

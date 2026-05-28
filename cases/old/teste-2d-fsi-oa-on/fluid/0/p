@@ -1,0 +1,60 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on -- pressao cinematica (p / rho) no lumen                  |
+|                                                                              |
+| Onda OMVS 6-piece (Sala 2019 / Guidoboni): 80-120 mmHg, T=0.8696 s, HR=69bpm |
+| (gerada por brunaStuff/gen_teste_2d_fsi_omvs_pressure.py).                   |
+| Inlet defasado 5ms vs outlet para gerar gradiente longitudinal pulsatil.     |
+| Rampa Hann TOTAL nos primeiros 100 ms para evitar overshoot inercial.        |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      p;
+}
+
+dimensions      [ 0 2 -2 0 0 0 0 ];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    inlet
+    {
+        type            uniformFixedValue;
+        uniformValue
+        {
+            type        tableFile;
+            file        "constant/inlet_pressure.dat";
+            outOfBounds clamp;
+        }
+        value           uniform 0;
+    }
+    outlet
+    {
+        type            uniformFixedValue;
+        uniformValue
+        {
+            type        tableFile;
+            file        "constant/outlet_pressure.dat";
+            outOfBounds clamp;
+        }
+        value           uniform 0;
+    }
+    wall_bot
+    {
+        type            zeroGradient;
+    }
+    wall_top
+    {
+        type            zeroGradient;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //

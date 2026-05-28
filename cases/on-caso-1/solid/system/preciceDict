@@ -1,0 +1,42 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+// on-caso-1 preCICE adapter (lado SOLIDO).
+//   Le 'Force' do fluido em 2 patches FSI (fsi_pia, fsi_dura).
+//   Escreve 'Displacement' (do campo D) para o fluido seguir o solido.
+//
+// fsi_sclera_peri e fsi_sclera_ring NAO sao mais FSI: no on-caso-1 o lid
+// poroso do fluido cobre a regiao distal e nao expoe essas patches como
+// walls FSI. As patches existem no solido com BC solidTraction livre.
+
+preciceConfig "../precice-config.xml";
+
+participant Solid;
+
+modules ( FSI );
+
+interfaces
+{
+    Interface1
+    {
+        mesh              Solid-Mesh;
+        patches           ( fsi_pia fsi_dura );
+        locations         faceCenters;
+
+        readData          ( Force );
+        writeData         ( Displacement );
+    };
+};
+
+FSI
+{
+    solverType              solid;
+    namePointDisplacement   pointD;
+    nameCellDisplacement    D;
+    nameForce               solidForce;
+}

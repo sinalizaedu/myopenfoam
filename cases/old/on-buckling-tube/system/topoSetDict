@@ -1,0 +1,38 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| solids4foam                                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Cria face set "imperfection" : faixa de faces no patch yPlus,
+// no terco medio axial (z entre 12 e 18 mm), para servir como ponto
+// de aplicacao da imperfeicao lateral que quebra a simetria.
+
+actions
+(
+    {
+        name    imperfectionFaceSet;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name yPlus; }
+    }
+    {
+        name    imperfectionFaceSet;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo
+        {
+            box (-1.0 -1.0 0.012) (1.0 1.0 0.018);
+        }
+    }
+);
+
+// ************************************************************************* //

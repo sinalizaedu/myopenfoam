@@ -1,0 +1,689 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : May 26 2026
+Time   : 01:20:17
+Host   : 11e9c566ab2e
+PID    : 1755
+I/O    : uncollated
+Case   : /simulation/on-fsi-2-openSAS/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel linearGeometryTotalDisplacement
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidTraction boundary condition
+Creating solidForce boundary condition
+    force is specified as a field
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+    Winkler stiffness k = 200000 Pa/m
+Creating solidTraction boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Number of cells in new mesh : 7680
+Number of faces in new mesh : 23776
+Number of points in new mesh: 8463
+    oldInternalFaces : 1216
+Number of cells in new mesh : 960
+Number of faces in new mesh : 3872
+Number of points in new mesh: 1984
+    oldInternalFaces : 992
+Number of cells in new mesh : 1920
+Number of faces in new mesh : 6784
+Number of points in new mesh: 2976
+    oldInternalFaces : 64
+Number of cells in new mesh : 256
+Number of faces in new mesh : 1040
+Number of points in new mesh: 546
+    oldInternalFaces : 544
+Number of cells in new mesh : 128
+Number of faces in new mesh : 544
+Number of points in new mesh: 320
+    oldInternalFaces : 224
+Number of cells in new mesh : 160
+Number of faces in new mesh : 672
+Number of points in new mesh: 384
+    oldInternalFaces : 256
+Number of cells in new mesh : 544
+Number of faces in new mesh : 2192
+Number of points in new mesh: 1122
+    oldInternalFaces : 544
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+solvePressure = false
+    Setting `extrapolateValue` to `true` on the dura_outer patch of the D field
+    Setting `extrapolateValue` to `true` on the sclera_ring_outer patch of the D field
+    Setting `extrapolateValue` to `true` on the anterior_globo patch of the D field
+    Setting `extrapolateValue` to `true` on the fsi_pia patch of the D field
+    Setting `extrapolateValue` to `true` on the fsi_dura patch of the D field
+    Setting `extrapolateValue` to `true` on the fsi_sclera_peri patch of the D field
+    Setting `extrapolateValue` to `true` on the fsi_sclera_ring patch of the D field
+    Setting `extrapolateValue` to `true` on the contact_local patch of the D field
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[precice] [0m This is preCICE version 3.3.1
+---[precice] [0m Revision info: v3.3.1
+---[precice] [0m Build type: Release (without debug log)
+---[precice] [0m Working directory "/simulation/on-fsi-2-openSAS/solid"
+---[precice] [0m Configuring preCICE with configuration "../precice-config.xml"
+---[precice] [0m I am participant "Solid"
+---[precice] [0m Setting up primary communication to coupling partner/s
+---[precice] [0m Primary ranks are connected
+---[precice] [0m Setting up preliminary secondary communication to coupling partner/s
+---[precice] [0m Prepare partition for mesh Solid-Mesh
+---[precice] [0m Gather mesh Solid-Mesh
+---[precice] [0m Send global mesh Solid-Mesh
+---[precice] [0m Setting up secondary communication to coupling partner/s
+---[precice] [0m Secondary ranks are connected
+---[precice] [0m it 1 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+setCellDisplacements: reading cellDisplacements
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 5.03974e-05
+ Iteration       Residual Norm           Step Norm
+       100        0.0093728513       1.1340631e-06
+       200        0.0034037771       1.5782238e-06
+       300        0.0020624024       1.1893407e-06
+       400        0.0016286264       1.1443194e-06
+       500        0.0012248131       9.4915936e-07
+       600         0.000874309       7.4794387e-07
+       700       0.00066299102       6.0385824e-07
+       800       0.00053010391       5.1114516e-07
+       900       0.00042987949       4.2908901e-07
+      1000       0.00035479358       3.5527028e-07
+      1100        0.0002915134       2.9657296e-07
+      1200       0.00023962263       2.4905991e-07
+      1300       0.00019668975       2.1224857e-07
+      1372: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0049231146
+Max sigmaEq (von Mises stress) = 15278.632
+ExecutionTime = 16.84 s  ClockTime = 18 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.00e+00, limit = 1.00e-04, normalization = 1.19e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 1.00e+00, limit = 1.00e-03, normalization = 2.28e-02, conv = false
+---[precice] [0m it 2 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 5.7490155e-05
+ Iteration       Residual Norm           Step Norm
+       100         0.016793126       1.7684733e-05
+       200        0.0050833272       9.8467751e-06
+       300        0.0027245541       1.6472988e-06
+       400        0.0018655191       6.7062822e-06
+       500        0.0013870809       1.1171534e-06
+       600        0.0010461178       9.1998966e-07
+       700       0.00080454262       4.7163752e-06
+       800        0.0006468448       6.9536973e-07
+       900       0.00052233952       5.8784186e-07
+      1000       0.00042801278       4.8761892e-07
+      1100       0.00034701111       4.3269899e-07
+      1200       0.00028614286       3.6716663e-07
+      1300       0.00023635592       3.1365417e-07
+      1400       0.00019449378       2.5695502e-07
+      1407: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0049235769
+Max sigmaEq (von Mises stress) = 15280.066
+ExecutionTime = 33.28 s  ClockTime = 34 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 9.00e-01, limit = 1.00e-04, normalization = 1.19e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 9.00e-01, limit = 1.00e-03, normalization = 2.28e-02, conv = false
+---[precice] [0m it 3 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027890876
+ Iteration       Residual Norm           Step Norm
+       100         0.021357744       1.1370853e-05
+       200        0.0076917333       1.3553334e-05
+       300        0.0049249688       6.3978704e-06
+       400        0.0027174148       8.8089144e-06
+       500        0.0020183235       8.7227265e-06
+       600        0.0011965699       9.7158623e-07
+       700       0.00096711888       8.6430171e-07
+       800        0.0007433797       1.0360532e-06
+       900       0.00060154581       9.1577478e-07
+      1000       0.00043667666       4.3702954e-07
+      1100       0.00034725278       3.7939577e-07
+      1200       0.00028137889       3.1354443e-07
+      1300       0.00023292753       2.5861276e-07
+      1400       0.00019247143       2.2005674e-07
+      1454: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073350223
+Max sigmaEq (von Mises stress) = 15286.614
+ExecutionTime = 50.62 s  ClockTime = 52 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.80e-02, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 2.21e-03, limit = 1.00e-03, normalization = 2.28e-02, conv = false
+---[precice] [0m it 4 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027789319
+ Iteration       Residual Norm           Step Norm
+       100         0.028825463         2.01548e-05
+       200        0.0095087872       5.2371711e-06
+       300        0.0050404086       1.7192663e-06
+       400        0.0024277865       1.2857372e-06
+       500         0.001887201       1.5870559e-06
+       600        0.0012683981       1.0917121e-06
+       700       0.00095916651       9.2896249e-07
+       800       0.00074385747       8.0765988e-07
+       900       0.00058496019       6.7804869e-07
+      1000       0.00048280413       5.8228333e-07
+      1100       0.00039035194        4.905184e-07
+      1200       0.00031809516       4.2077663e-07
+      1300       0.00026172516       3.6044258e-07
+      1400       0.00021197559       2.9631459e-07
+      1461: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073299557
+Max sigmaEq (von Mises stress) = 15286.751
+ExecutionTime = 67.5 s  ClockTime = 69 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 2.67e-03, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 7.23e-05, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 5 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787425
+ Iteration       Residual Norm           Step Norm
+       100         0.027952421       1.8021397e-05
+       200         0.009787953       1.6372187e-06
+       300        0.0058022616       7.6292974e-06
+       400        0.0026735629       8.0068833e-06
+       500        0.0015112405       6.1297322e-07
+       600        0.0011433717        4.894512e-07
+       700       0.00095673849       4.3451618e-07
+       800       0.00070523555       3.5050579e-07
+       900       0.00063297359       7.0635969e-07
+      1000       0.00049161899       6.1991337e-07
+      1100       0.00039092631       5.0903954e-07
+      1200       0.00032127818       4.1675912e-07
+      1300       0.00026592824       3.6020886e-07
+      1400        0.0002194635       1.9163252e-06
+      1465: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073200567
+Max sigmaEq (von Mises stress) = 15286.842
+ExecutionTime = 84.42 s  ClockTime = 86 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 3.67e-03, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 3.58e-05, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 6 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787431
+ Iteration       Residual Norm           Step Norm
+       100           0.0288788       1.8472574e-05
+       200        0.0095146234       1.4177981e-05
+       300        0.0052396975       6.6711692e-06
+       400        0.0027016255       1.3655729e-06
+       500        0.0017342599       1.3056439e-06
+       600        0.0011463948        9.117078e-07
+       700       0.00085668388       7.8803756e-07
+       800       0.00067242023       6.4066234e-07
+       900        0.0005356285       5.4243481e-07
+      1000       0.00043216119       4.5505933e-07
+      1100       0.00035183813       3.8143944e-07
+      1200       0.00028769872       3.1995679e-07
+      1300       0.00023728061       2.6796381e-07
+      1400       0.00020690986       2.1338394e-07
+      1466: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073270076
+Max sigmaEq (von Mises stress) = 15285.9
+ExecutionTime = 101.41 s  ClockTime = 103 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 2.63e-03, limit = 1.00e-04, normalization = 1.20e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 1.25e-05, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 7 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787495
+ Iteration       Residual Norm           Step Norm
+       100         0.029766373       2.0475145e-05
+       200        0.0090842386        3.547229e-06
+       300        0.0053270411       7.0262368e-06
+       400        0.0024214702        8.185287e-06
+       500        0.0016450315       1.1236739e-06
+       600        0.0011922338       5.4526481e-06
+       700       0.00080088872       7.5723261e-07
+       800       0.00062837289       6.2275317e-07
+       900       0.00053402401       4.9839402e-07
+      1000       0.00040929178        4.343882e-07
+      1100       0.00033515101       3.6429332e-07
+      1200       0.00027409865       3.0579847e-07
+      1300       0.00022539753       2.5629151e-07
+      1400       0.00019086831       2.2045328e-07
+      1440: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073223508
+Max sigmaEq (von Mises stress) = 15285.88
+ExecutionTime = 118.14 s  ClockTime = 119 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 9.80e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 3.76e-06, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 8 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787437
+ Iteration       Residual Norm           Step Norm
+       100            0.029811       2.0472177e-05
+       200        0.0090823623       3.5459304e-06
+       300        0.0034390741       1.3262689e-05
+       400        0.0020518313       8.4518056e-07
+       500        0.0014666965       1.2026096e-06
+       600        0.0011690791       5.8022715e-06
+       700       0.00087979653       8.7662046e-07
+       800       0.00068825306       7.4509467e-07
+       900       0.00055239755       6.4508894e-07
+      1000       0.00044897727       5.3733655e-07
+      1100       0.00036086564       4.7611782e-07
+      1200       0.00029964862       3.9853217e-07
+      1300         0.000245914       3.4767236e-07
+      1400       0.00021465806       2.7457236e-07
+      1427: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073223553
+Max sigmaEq (von Mises stress) = 15286.501
+ExecutionTime = 135.38 s  ClockTime = 137 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.11e-03, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 2.29e-06, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 9 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.0002778744
+ Iteration       Residual Norm           Step Norm
+       100         0.029807448       2.0475172e-05
+       200        0.0090818019       3.5459884e-06
+       300        0.0034386027       1.3262912e-05
+       400        0.0020517045       8.4515253e-07
+       500        0.0014665754       1.2025585e-06
+       600        0.0011690245       5.8023382e-06
+       700        0.0008797481       8.7658764e-07
+       800       0.00068820917       7.4506568e-07
+       900       0.00055235648       6.4506328e-07
+      1000       0.00044895293       5.3731785e-07
+      1100       0.00036098809       4.7631146e-07
+      1200       0.00029525245       4.0599528e-07
+      1300       0.00025512059       3.3321226e-07
+      1400       0.00021466693       2.7497396e-07
+      1427: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073226343
+Max sigmaEq (von Mises stress) = 15286.353
+ExecutionTime = 153.11 s  ClockTime = 155 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 6.63e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 1.62e-06, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 10 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787457
+ Iteration       Residual Norm           Step Norm
+       100         0.029807895       2.0474838e-05
+       200        0.0090816642       3.5460633e-06
+       300        0.0034385951       1.3262822e-05
+       400         0.002051627       8.4520497e-07
+       500        0.0014665079       1.2026496e-06
+       600        0.0011690095       5.8023115e-06
+       700       0.00087974536       8.7664949e-07
+       800       0.00068821915       7.4511805e-07
+       900       0.00055237369       6.4510711e-07
+      1000       0.00044895571       5.3734963e-07
+      1100       0.00036085036       4.7612508e-07
+      1200       0.00029963603       3.9853621e-07
+      1300       0.00024590308       3.4767344e-07
+      1400       0.00021464896       2.7457269e-07
+      1427: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073219877
+Max sigmaEq (von Mises stress) = 15286.5
+ExecutionTime = 169.85 s  ClockTime = 171 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.50e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 5.37e-07, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 11 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787461
+ Iteration       Residual Norm           Step Norm
+       100         0.029808268       2.0473725e-05
+       200        0.0090818862       3.5460598e-06
+       300        0.0034387758       1.3262789e-05
+       400        0.0020516561       8.4522721e-07
+       500        0.0014665334       1.2026909e-06
+       600        0.0011690276       5.8023091e-06
+       700       0.00087976298       8.7667636e-07
+       800       0.00068823788       7.4514115e-07
+       900       0.00055239195       6.4512699e-07
+      1000       0.00044896541       5.3736426e-07
+      1100       0.00036090712       4.7614298e-07
+      1200       0.00029873077       4.0597733e-07
+      1300       0.00024366702       2.1219524e-06
+      1400       0.00020378941       1.7895394e-06
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073228355
+Max sigmaEq (von Mises stress) = 15286.565
+ExecutionTime = 186.48 s  ClockTime = 188 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 2.47e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 6.17e-07, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 12 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787462
+ Iteration       Residual Norm           Step Norm
+       100         0.029808167       2.0474101e-05
+       200        0.0090819415       3.5460951e-06
+       300        0.0034387632       1.3262815e-05
+       400        0.0020516576       8.4523018e-07
+       500        0.0014665316       1.2026905e-06
+       600        0.0011690288       5.8023121e-06
+       700       0.00087976396       8.7667799e-07
+       800       0.00068823829       7.4514257e-07
+       900       0.00055239202       6.4512779e-07
+      1000       0.00044896568       5.3736533e-07
+      1100       0.00036090752       4.7614411e-07
+      1200       0.00029873148       4.0597801e-07
+      1300       0.00024366735       2.1219564e-06
+      1400       0.00020378992       1.7895431e-06
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073228416
+Max sigmaEq (von Mises stress) = 15286.564
+ExecutionTime = 203.21 s  ClockTime = 205 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 2.53e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 6.35e-07, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 13 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787462
+ Iteration       Residual Norm           Step Norm
+       100         0.029808228       2.0474101e-05
+       200        0.0090819378       3.5460946e-06
+       300        0.0034387588        1.326281e-05
+       400        0.0020516572       8.4522998e-07
+       500        0.0014665313       1.2026902e-06
+       600        0.0011690286       5.8023101e-06
+       700       0.00087976381       8.7667782e-07
+       800       0.00068823815       7.4514242e-07
+       900       0.00055239192       6.4512763e-07
+      1000        0.0004489656       5.3736519e-07
+      1100       0.00036090745       4.7614397e-07
+      1200       0.00029873144       4.0597788e-07
+      1300       0.00024366731       2.1219553e-06
+      1400       0.00020378989        1.789542e-06
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073228413
+Max sigmaEq (von Mises stress) = 15286.564
+ExecutionTime = 219.86 s  ClockTime = 222 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 2.49e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 6.45e-07, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 14 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787469
+ Iteration       Residual Norm           Step Norm
+       100         0.029808191       2.0474099e-05
+       200        0.0090819334       3.5460913e-06
+       300        0.0034387542       1.3262806e-05
+       400        0.0020516566       8.4522792e-07
+       500        0.0014665289       1.2026865e-06
+       600        0.0011690281       5.8023071e-06
+       700       0.00087976294       8.7667521e-07
+       800       0.00068823701       7.4514011e-07
+       900        0.0005523907       6.4512557e-07
+      1000       0.00044896502       5.3736361e-07
+      1100       0.00036090674        4.761428e-07
+      1200       0.00029873088       4.0597693e-07
+      1300       0.00024366693       2.1219503e-06
+      1400       0.00020378957        1.789537e-06
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.007322855
+Max sigmaEq (von Mises stress) = 15286.564
+ExecutionTime = 236.46 s  ClockTime = 238 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.64e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 7.13e-08, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 15 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.00027787469
+ Iteration       Residual Norm           Step Norm
+       100         0.029808333       2.0474122e-05
+       200        0.0090819213       3.5460889e-06
+       300        0.0034387407       1.3262797e-05
+       400        0.0020516569       8.4522659e-07
+       500        0.0014665302       1.2026846e-06
+       600        0.0011690279        5.802303e-06
+       700       0.00087976282       8.7667388e-07
+       800       0.00068823674       7.4513902e-07
+       900       0.00055239042       6.4512461e-07
+      1000       0.00044896497       5.3736289e-07
+      1100       0.00036090664       4.7614229e-07
+      1200       0.00029873082       4.0597655e-07
+      1300       0.00024366692       2.1219497e-06
+      1400       0.00020378957       1.7895367e-06
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073228566
+Max sigmaEq (von Mises stress) = 15286.564
+ExecutionTime = 253.14 s  ClockTime = 255 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.44e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 3.26e-08, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 16 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.0002778747
+ Iteration       Residual Norm           Step Norm
+       100          0.02980829        2.047413e-05
+       200         0.009081923       3.5460895e-06
+       300        0.0034387431         1.32628e-05
+       400         0.002051657       8.4522678e-07
+       500        0.0014665303       1.2026849e-06
+       600         0.001169028       5.8023045e-06
+       700       0.00087976287       8.7667408e-07
+       800       0.00068823682        7.451392e-07
+       900       0.00055239049       6.4512479e-07
+      1000       0.00044896501       5.3736304e-07
+      1100       0.00036090668       4.7614243e-07
+      1200       0.00029873085       4.0597668e-07
+      1300       0.00024366695       2.1219508e-06
+      1400       0.00020378959       1.7895377e-06
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073228552
+Max sigmaEq (von Mises stress) = 15286.564
+ExecutionTime = 269.83 s  ClockTime = 272 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.30e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 9.05e-09, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 17 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.0002778747
+ Iteration       Residual Norm           Step Norm
+       100         0.029808285       2.0474129e-05
+       200        0.0090819248       3.5460897e-06
+       300        0.0034387447       1.3262801e-05
+       400        0.0020516572       8.4522693e-07
+       500        0.0014665306       1.2026851e-06
+       600        0.0011690281       5.8023049e-06
+       700       0.00087976297       8.7667425e-07
+       800       0.00068823691       7.4513935e-07
+       900       0.00055239057       6.4512493e-07
+      1000       0.00044896505       5.3736315e-07
+      1100       0.00036090673       4.7614252e-07
+      1200       0.00029873089       4.0597675e-07
+      1300       0.00024366697       2.1219513e-06
+      1400       0.00020378961       1.7895382e-06
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073228544
+Max sigmaEq (von Mises stress) = 15286.564
+ExecutionTime = 286.53 s  ClockTime = 288 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.13e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 2.47e-09, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 18 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.0002778747
+ Iteration       Residual Norm           Step Norm
+       100         0.029808277       2.0474129e-05
+       200        0.0090819253       3.5460898e-06
+       300        0.0034387453       1.3262801e-05
+       400        0.0020516572       8.4522697e-07
+       500        0.0014665306       1.2026852e-06
+       600        0.0011690281       5.8023052e-06
+       700       0.00087976297       8.7667429e-07
+       800       0.00068823691       7.4513938e-07
+       900       0.00055239058       6.4512496e-07
+      1000       0.00044896505       5.3736318e-07
+      1100       0.00036090673       4.7614254e-07
+      1200       0.00029873088       4.0597677e-07
+      1300       0.00024366697       2.1219514e-06
+      1400       0.00020378961       1.7895383e-06
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073228543
+Max sigmaEq (von Mises stress) = 15286.564
+ExecutionTime = 303.22 s  ClockTime = 305 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 1.03e-04, limit = 1.00e-04, normalization = 1.21e-03, conv = false
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 2.26e-09, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m it 19 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.0002778747
+ Iteration       Residual Norm           Step Norm
+       100         0.029808278       2.0474129e-05
+       200        0.0090819251       3.5460898e-06
+       300        0.0034387452       1.3262801e-05
+       400        0.0020516571       8.4522697e-07
+       500        0.0014665305       1.2026852e-06
+       600         0.001169028       5.8023051e-06
+       700       0.00087976294       8.7667429e-07
+       800       0.00068823689       7.4513939e-07
+       900       0.00055239056       6.4512496e-07
+      1000       0.00044896503       5.3736318e-07
+      1100       0.00036090671       4.7614254e-07
+      1200       0.00029873087       4.0597677e-07
+      1300       0.00024366696       2.1219514e-06
+      1400        0.0002037896       1.7895383e-06
+      1429: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.0073228542
+Max sigmaEq (von Mises stress) = 15286.564
+ExecutionTime = 319.87 s  ClockTime = 322 s
+
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Displacement" = 8.59e-05, limit = 1.00e-04, normalization = 1.21e-03, conv = true
+---[precice] [0m relative convergence measure: relative two-norm diff of data "Force" = 1.51e-09, limit = 1.00e-03, normalization = 2.28e-02, conv = true
+---[precice] [0m All converged
+---[precice] [0m Time window completed
+---[precice] [0m Reached end at: final time-window: 1, final time: 1
+---[preciceAdapter] The coupling timestep completed. Writing the updated results.
+---[preciceAdapter] The coupling completed.
+---[precice] [0m Close communication channels
+---[preciceAdapter] The simulation was ended by preCICE. Calling the end() methods of any functionObject explicitly.
+---[preciceAdapter] Great that you are using the OpenFOAM-preCICE adapter! Next to the preCICE library and any other components, please also cite this adapter. Find how on https://precice.org/adapter-openfoam-overview.html.
+The momentum equation converged in all time-steps
+
+
+End
+
+I/O    : uncollated

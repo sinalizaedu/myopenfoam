@@ -1,0 +1,52 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// artoph-fsi-curva-mestrado/solid — background mesh for snappyHexMesh
+// Solid wall annulus: artery_outer.stl (snapped via snappyHexMeshDict)
+//
+// Bounding box from constant/meshHints.json (bounds_outer_m, with ~1 mm pad).
+// Identical background as fluid (also matches artoph-curva-mestrado/solid):
+//   x: [-0.0145, +0.0065]  →  21 mm
+//   y: [-0.0075, +0.0050]  →  12.5 mm
+//   z: [-0.0055, +0.0355]  →  41 mm
+//
+// Background cell size ~0.5 mm. snappy refinementSurfaces level (1 2) →
+// near-wall cell size 0.5/2^2 ≈ 125 µm. Wall thickness h=200 µm gives ~2
+// cells across the wall in the snapped solid (kept small intentionally —
+// solid model is unsLinearGeometry and the FSI patch is the inner-wall side).
+
+scale   1;
+
+vertices
+(
+    (-0.0145  -0.0075  -0.0055 )   //  0
+    ( 0.0065  -0.0075  -0.0055 )   //  1
+    ( 0.0065   0.0050  -0.0055 )   //  2
+    (-0.0145   0.0050  -0.0055 )   //  3
+    (-0.0145  -0.0075   0.0355 )   //  4
+    ( 0.0065  -0.0075   0.0355 )   //  5
+    ( 0.0065   0.0050   0.0355 )   //  6
+    (-0.0145   0.0050   0.0355 )   //  7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7)  (42 25 82)  simpleGrading (1 1 1)
+);
+
+edges ();
+
+boundary
+(
+    bg_xmin { type patch; faces ( (0 4 7 3) ); }
+    bg_xmax { type patch; faces ( (1 2 6 5) ); }
+    bg_ymin { type patch; faces ( (0 1 5 4) ); }
+    bg_ymax { type patch; faces ( (3 7 6 2) ); }
+    bg_zmin { type patch; faces ( (0 3 2 1) ); }
+    bg_zmax { type patch; faces ( (4 5 6 7) ); }
+);

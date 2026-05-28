@@ -1,0 +1,138 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// =====================================================================
+// on-mestrado-2-buckling-real: ESTUDO DE FLAMBAGEM ANATOMICO
+//
+// Diferenca-chave vs on-mestrado-2: o globo_outer DEIXA DE SER ENGASTADO
+// e passa a ser pressurizado em rampa, simulando expansao volumetrica
+// da gordura orbital edemaciada em microgravidade.
+//
+// As 4 BCs criticas (Lee 2020, Pardon 2024):
+//   (1) Apice orbital (z=0): engaste de on, pia, dura.
+//   (2) Motor da SANS: solidTraction pressureSeries em globo_outer
+//       (0 -> 3000 Pa em rampa de 10 passos).
+//   (3) Contencao lateral: Winkler 200 kPa/m em dura_outer
+//       (k = E_fat / t_fat = 500 Pa / 0.0025 m).
+//   (4) Carga interna IOP em anterior_globo: 2667 Pa (~20 mmHg).
+//   (5) ICP base 1333 Pa via posterior_sas (~10 mmHg).
+//   (+) Imperfeicao lateral em contact_local: 100 Pa (~1% do nominal),
+//       quebra a simetria axial sem alterar P_cr.
+//
+// O sistema decide quanto encurtar - encurtamento dz e RESPOSTA, nao
+// imposicao. Se flambar antes de P_fat=3000Pa, capturamos o evento.
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ====== BC (1): APICE ORBITAL = ENGASTE TOTAL =======================
+    posterior_on
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+    posterior_pia
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+    posterior_dura
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ====== BC (5): ICP BASE 1333 Pa via posterior_sas ==================
+    //   Coluna do LCR vinda da cisterna quiasmatica, transmite a PIC
+    //   normal supino (10 mmHg) ao longo da SAS solid soft.
+    posterior_sas
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 1333;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ====== IMPERFEICAO via contact_local (reduzida a 100 Pa) ===========
+    //   Magnitude e' 1% do P_OA nominal (9034 Pa): pequena o suficiente
+    //   para nao dominar a resposta, mas direcionalmente coerente com a
+    //   pulsacao arterial real (+x). Substitui a "imperfeicao ficticia"
+    //   por uma perturbacao FISIOLOGICAMENTE JUSTIFICADA.
+    contact_local
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 100;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ====== BC (3): CONTENCAO LATERAL - Winkler 200 kPa/m ===============
+    //   Representa o "berco elastico" da gordura retrobulbar que envolve
+    //   a bainha dural e resiste a deflexao lateral. Sem isto o nervo
+    //   flambaria como um cilindro livre (Pcr fisicamente baixo demais).
+    //
+    //   k = E_fat / t_fat = 500 / 0.0025 = 200000 Pa/m
+    //     E_fat: Schoemaker (2006), Yoo (2011); gordura ~ 0.5 kPa
+    //     t_fat: espessura caracteristica do leito de gordura ~ 2.5 mm
+    dura_outer
+    {
+        type        solidTractionElasticFoundation;
+        k           200000;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ====== sclera_ring_outer: livre, transicao geometrica ==============
+    sclera_ring_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ====== globo_outer: livre (lateral, sem cargas externas neste BC) ===
+    //   Em on-mestrado-2 estava engastado (musculos extraoculares); aqui
+    //   liberamos para que o globo possa transladar em -z sob a forca da
+    //   gordura orbital aplicada na face anterior.
+    globo_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ====== BC (2)+(4): MOTOR + IOP em anterior_globo (face axial +z) ===
+    //   A pressao na face ANTERIOR do globo (z=30.80, normal +z) gera
+    //   forca em -z (compressao do nervo contra o apice). Combina:
+    //     (i) IOP basal 2667 Pa (constante)
+    //    (ii) P_fat rampa 0->3000 Pa (motor da SANS)
+    //   Total: 2667 + 0..3000 = 2667..5667 Pa
+    //
+    //   Justificativa fisica: a gordura orbital edemaciada empurra o
+    //   polo POSTERIOR do globo para a frente (anterior), gerando um
+    //   diferencial liquido de pressao na face anterior. Esse modelo
+    //   captura essa forca liquida sem precisar modelar a gordura
+    //   explicitamente como dominio.
+    anterior_globo
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressureSeries
+        {
+            "fileName|file"     "$FOAM_CASE/constant/iop_plus_fat_pressure.dat";
+            outOfBounds         clamp;
+        }
+        value       uniform ( 0 0 0 );
+    }
+}

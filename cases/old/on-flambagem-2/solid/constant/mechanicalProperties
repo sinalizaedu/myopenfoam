@@ -1,0 +1,69 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// on-flambagem-2 - 4 zonas tuneadas para capturar flambagem (kinking) na
+// janela SANS (~0.5-1.0 mm de deflexao lateral).
+//
+// linearElastic: lei hiperelastica para nonLinearGeometryUpdatedLagrangian,
+// mais robusta que SVK em compressao e em contrastes de rigidez extremos.
+// Reduz ao Hooke linear para pequenas deformacoes; usa mesma sintaxe (E, nu).
+//
+//   on    : nucleo neural quase incompressivel. O miolo macio, ao ser
+//           encurtado axialmente, tenta expandir radialmente (ballooning).
+//           Esse esforco radial empurra a pia/dura e dispara o entortamento.
+//           E=30 kPa, nu=0.49.
+//   pia   : casca cilindrica fina (50 um). Cinta de contencao elastica do
+//           miolo. Bonded por DOF com on (interface r=1.5 mm tied).
+//           E=3 MPa, nu=0.45.
+//   sas   : "fluido" CSF como solido soft quase-incompressivel - amortecedor
+//           isolado entre pia e dura. Cuidado: nu muito proximo de 0.5 pode
+//           dar locking em linearGeometry; comecamos com nu=0.499.
+//           E=5 Pa, nu=0.499.
+//   dura  : parede externa rigida. E=3 MPa, nu=0.45.
+
+planeStress     no;
+
+mechanical
+(
+    on
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 30e3;
+        // nu=0.45 (e nao 0.49) - SVK perde monotonicidade em compressao com
+        // nu proximo de 0.5 -> NaN. 0.45 ainda capta o ballooning suficiente.
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+
+    pia
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+
+    sas
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        // SAS amortecedor leve. nu=0.45 (nao 0.49) para SVK ser estavel em
+        // compressao no NL geometry; perde um pouco da analogia "fluido
+        // incompressivel" mas mantem o efeito de soft annulus entre pia/dura.
+        E       E   [ 1 -1 -2 0 0 0 0 ] 10e3;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+
+    dura
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+);

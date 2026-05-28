@@ -1,0 +1,61 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Tampas do lúmen em z (ajustar se regenerar STLs).
+actions
+(
+    {
+        name    fluid_end_back;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name lumen_surface; }
+    }
+    {
+        name    fluid_end_back;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1 -1 -0.00545) (1 1 -0.00435); }
+    }
+    {
+        name    fluid_end_front;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name lumen_surface; }
+    }
+    {
+        name    fluid_end_front;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1 -1 0.0340) (1 1 0.0350); }
+    }
+    {
+        name    fluid_lateral;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name lumen_surface; }
+    }
+    {
+        name    fluid_lateral;
+        type    faceSet;
+        action  subtract;
+        source  faceToFace;
+        sourceInfo { set fluid_end_back; }
+    }
+    {
+        name    fluid_lateral;
+        type    faceSet;
+        action  subtract;
+        source  faceToFace;
+        sourceInfo { set fluid_end_front; }
+    }
+);

@@ -1,0 +1,3224 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : May 25 2026
+Time   : 02:16:05
+Host   : 966b8a85630c
+PID    : 4673
+I/O    : uncollated
+Case   : /simulation/sugestao/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel unsLinearGeometry
+Creating solidForce boundary condition
+    force is specified as a field
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Number of cells in new mesh : 15264
+Number of faces in new mesh : 50976
+Number of points in new mesh: 20480
+Number of cells in new mesh : 7680
+Number of faces in new mesh : 23776
+Number of points in new mesh: 8463
+    oldInternalFaces : 256
+Number of cells in new mesh : 7680
+Number of faces in new mesh : 24256
+Number of points in new mesh: 8928
+    oldInternalFaces : 256
+Number of cells in new mesh : 256
+Number of faces in new mesh : 1040
+Number of points in new mesh: 546
+    oldInternalFaces : 544
+Number of cells in new mesh : 256
+Number of faces in new mesh : 1056
+Number of points in new mesh: 576
+    oldInternalFaces : 544
+Number of cells in new mesh : 512
+Number of faces in new mesh : 2064
+Number of points in new mesh: 1058
+    oldInternalFaces : 512
+Number of cells in new mesh : 41368
+Number of faces in new mesh : 129687
+Number of points in new mesh: 46912
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Reading individual shadowPatch
+    Normal contact model: standardPenalty
+    Initialising stored previous normalPenaltyFactors
+    Friction contact model: frictionless
+Reading individual shadowPatch
+    Normal contact model: standardPenalty
+    Initialising stored previous normalPenaltyFactors
+    Friction contact model: frictionless
+    normal penalty factor: 1.12586e+07
+    normal penalty factor: 1.78816e+07
+Creating dispNearContact function object
+    region = region0
+    distance from specified point is 4.6767e-05
+Creating solidForcesInner function object
+Creating solidForcesOuter function object
+Creating solidForcesONS function object
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[precice] [0m This is preCICE version 3.3.1
+---[precice] [0m Revision info: v3.3.1
+---[precice] [0m Build type: Release (without debug log)
+---[precice] [0m Working directory "/simulation/sugestao/solid"
+---[precice] [0m Configuring preCICE with configuration "../precice-config.xml"
+---[precice] [0m I am participant "Solid"
+---[precice] [0m Setting up primary communication to coupling partner/s
+---[precice] [0m Primary ranks are connected
+---[precice] [0m Setting up preliminary secondary communication to coupling partner/s
+---[precice] [0m Prepare partition for mesh Solid-Mesh
+---[precice] [0m Gather mesh Solid-Mesh
+---[precice] [0m Send global mesh Solid-Mesh
+---[precice] [0m Setting up secondary communication to coupling partner/s
+---[precice] [0m Secondary ranks are connected
+---[precice] [0m time-window 1, t 0 (max: 0.25), Dt 0.001, max-dt 0.001
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+Time = 0.001
+
+Evolving solid solver
+Solving the momentum equation for D
+setCellDisplacements: reading cellDisplacements
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    12, 0.0389423, 0.0439951, 0, 100
+
+ExecutionTime = 10.81 s  ClockTime = 13 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 2, t 0.001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.002
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    15, 0.0219975, 0.0433487, 0, 177
+
+ExecutionTime = 34.3 s  ClockTime = 36 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 3, t 0.002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.003
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    14, 0.0166602, 0.045123, 0, 174
+
+ExecutionTime = 59.49 s  ClockTime = 62 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 4, t 0.003 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.004
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    16, 0.0180282, 0.0483053, 0, 174
+
+ExecutionTime = 84.17 s  ClockTime = 86 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 5, t 0.004 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.005
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    15, 0.0161961, 0.0488522, 0, 124
+
+ExecutionTime = 98.54 s  ClockTime = 101 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 6, t 0.005 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.006
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    17, 0.015129, 0.0484541, 0, 69
+
+ExecutionTime = 110.6 s  ClockTime = 113 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 7, t 0.006 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.007
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    19, 0.0132858, 0.0483699, 0, 66
+
+ExecutionTime = 122.49 s  ClockTime = 125 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 8, t 0.007 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.008
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    18, 0.0115789, 0.046404, 0, 66
+
+ExecutionTime = 133.63 s  ClockTime = 136 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 9, t 0.008 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.009
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    18, 0.0102241, 0.0496937, 0, 66
+
+ExecutionTime = 145.03 s  ClockTime = 147 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 10, t 0.009000000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.01
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    15, 0.0097637, 0.0452497, 0, 65
+
+Max epsilonEq = 0.3014
+Max sigmaEq (von Mises stress) = 1855.31
+ExecutionTime = 157.81 s  ClockTime = 160 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 11, t 0.01 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.011
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    20, 0.0084116, 0.047304, 0, 65
+
+ExecutionTime = 171 s  ClockTime = 173 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 12, t 0.011 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.012
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    18, 0.00717611, 0.0471901, 0, 164
+
+ExecutionTime = 182.86 s  ClockTime = 185 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 13, t 0.012 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.013
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    18, 0.00638787, 0.0486567, 0, 139
+
+ExecutionTime = 198.78 s  ClockTime = 201 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 14, t 0.013000000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.014
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    17, 0.00622693, 0.0495252, 0, 65
+
+ExecutionTime = 207.58 s  ClockTime = 210 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 15, t 0.014 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.015
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    18, 0.00584304, 0.0494108, 0, 64
+
+ExecutionTime = 216.59 s  ClockTime = 219 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 16, t 0.015 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.016
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    17, 0.00556352, 0.0482132, 0, 62
+
+ExecutionTime = 224.99 s  ClockTime = 227 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 17, t 0.016 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.017
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    17, 0.00528072, 0.0487967, 0, 62
+
+ExecutionTime = 233.69 s  ClockTime = 236 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 18, t 0.017 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.018
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    18, 0.00506063, 0.0461564, 0, 62
+
+ExecutionTime = 242.27 s  ClockTime = 245 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 19, t 0.018000000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.019
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    17, 0.00503265, 0.0477343, 0, 61
+
+ExecutionTime = 250.51 s  ClockTime = 253 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 20, t 0.019 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.02
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    26, 0.00409836, 0.0370893, 0, 74
+
+Max epsilonEq = 0.303235
+Max sigmaEq (von Mises stress) = 3362.47
+ExecutionTime = 266.43 s  ClockTime = 269 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 21, t 0.02 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.021
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    44, 0.00255672, 0.0496188, 0, 168
+
+ExecutionTime = 302.57 s  ClockTime = 305 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 22, t 0.021 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.022
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    18, 0.0030998, 0.0436329, 0, 63
+
+ExecutionTime = 313.82 s  ClockTime = 317 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 23, t 0.022 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.023
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.003149, 0.0487554, 0, 61
+
+ExecutionTime = 325.03 s  ClockTime = 328 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 24, t 0.023 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.024
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    8, 0.00417904, 0.025993, 0, 9
+
+ExecutionTime = 328.87 s  ClockTime = 332 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 25, t 0.024 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.025
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.00208254, 0.0735957, 0, 161
+    Both residuals have converged
+    58, 0.00185211, 0.0457645, 0, 160
+
+ExecutionTime = 368.17 s  ClockTime = 371 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 26, t 0.025 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.026
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    40, 0.00169704, 0.0496767, 0, 150
+
+ExecutionTime = 400.37 s  ClockTime = 403 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 27, t 0.026000000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.027
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    25, 0.00208765, 0.0384976, 0, 62
+
+ExecutionTime = 413.45 s  ClockTime = 416 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 28, t 0.027 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.028
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    48, 0.00148681, 0.0498026, 0, 150
+
+ExecutionTime = 446.47 s  ClockTime = 449 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 29, t 0.028 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.029
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    15, 0.00221183, 0.0371919, 0, 60
+
+ExecutionTime = 453.87 s  ClockTime = 457 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 30, t 0.029 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.03
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.00136107, 0.398812, 0, 140
+    Both residuals have converged
+    57, 0.00123035, 0.0417936, 0, 139
+
+Max epsilonEq = 0.309708
+Max sigmaEq (von Mises stress) = 7776.07
+ExecutionTime = 494.17 s  ClockTime = 497 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 31, t 0.03 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.031
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    32, 0.00145938, 0.0458264, 0, 63
+
+ExecutionTime = 510.95 s  ClockTime = 514 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 32, t 0.031 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.032
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.00114577, 0.0540853, 0, 65
+    Both residuals have converged
+    58, 0.00102316, 0.0391506, 0, 75
+
+ExecutionTime = 548.57 s  ClockTime = 552 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 33, t 0.032 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.033
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    47, 0.000999848, 0.0493496, 0, 147
+
+ExecutionTime = 581.81 s  ClockTime = 585 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 34, t 0.033 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.034
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    14, 0.00173707, 0.040365, 0, 9
+
+ExecutionTime = 588.45 s  ClockTime = 592 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 35, t 0.034 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.035
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    31, 0.00156464, 0.0429422, 0, 60
+
+ExecutionTime = 601.8 s  ClockTime = 605 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 36, t 0.035 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.036
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    47, 0.00111448, 0.0484778, 0, 61
+
+ExecutionTime = 624.37 s  ClockTime = 628 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 37, t 0.036000000000000004 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.037
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    33, 0.00121675, 0.0365303, 0, 60
+
+ExecutionTime = 639.85 s  ClockTime = 643 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 38, t 0.037 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.038
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    33, 0.00123796, 0.036785, 0, 60
+
+ExecutionTime = 655.23 s  ClockTime = 659 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 39, t 0.038 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.039
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000899719, 0.105775, 0, 69
+    Both residuals have converged
+    58, 0.000791635, 0.0437688, 0, 70
+
+ExecutionTime = 688.51 s  ClockTime = 692 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 40, t 0.039 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.04
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    44, 0.000855975, 0.049413, 0, 64
+
+Max epsilonEq = 0.313758
+Max sigmaEq (von Mises stress) = 13219.2
+ExecutionTime = 715.02 s  ClockTime = 719 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 41, t 0.04 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.041
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    9, 0.00169388, 0.0351616, 0, 8
+
+ExecutionTime = 719.59 s  ClockTime = 723 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 42, t 0.041 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.042
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    22, 0.00175131, 0.0444648, 0, 6
+
+ExecutionTime = 728.57 s  ClockTime = 732 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 43, t 0.042 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.043
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000988164, 0.228436, 0, 61
+    Both residuals have converged
+    58, 0.000857699, 0.0441424, 0, 64
+
+ExecutionTime = 755.94 s  ClockTime = 760 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 44, t 0.043000000000000003 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.044
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.00119312, 0.0434198, 0, 8
+
+ExecutionTime = 766.24 s  ClockTime = 770 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 45, t 0.044 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.045
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    31, 0.00119259, 0.0490371, 0, 60
+
+ExecutionTime = 779.09 s  ClockTime = 783 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 46, t 0.045 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.046
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    49, 0.000815163, 0.0491753, 0, 81
+
+ExecutionTime = 802.59 s  ClockTime = 806 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 47, t 0.046 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.047
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000673372, 0.123523, 0, 72
+    Both residuals have converged
+    59, 0.000585033, 0.046944, 0, 149
+
+ExecutionTime = 840.18 s  ClockTime = 844 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 48, t 0.047 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.048
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000596955, 0.0799939, 0, 149
+    Both residuals have converged
+    58, 0.000530156, 0.046064, 0, 149
+
+ExecutionTime = 878.7 s  ClockTime = 882 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 49, t 0.048 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.049
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    16, 0.00109763, 0.0396357, 0, 8
+
+ExecutionTime = 886.14 s  ClockTime = 890 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 50, t 0.049 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.05
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    27, 0.00115073, 0.0442631, 0, 7
+
+Max epsilonEq = 0.318434
+Max sigmaEq (von Mises stress) = 19331.6
+ExecutionTime = 899.58 s  ClockTime = 904 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 51, t 0.05 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.051
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.00126664, 0.0375693, 0, 6
+
+ExecutionTime = 908.9 s  ClockTime = 913 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 52, t 0.051000000000000004 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.052
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    26, 0.00123005, 0.0468019, 0, 6
+
+ExecutionTime = 919.3 s  ClockTime = 923 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 53, t 0.052000000000000005 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.053
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    45, 0.000826221, 0.0392902, 0, 63
+
+ExecutionTime = 938.49 s  ClockTime = 943 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 54, t 0.053 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.054
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    29, 0.00092675, 0.0404534, 0, 9
+
+ExecutionTime = 950.72 s  ClockTime = 955 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 55, t 0.054 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.055
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    49, 0.000639669, 0.049291, 0, 63
+
+ExecutionTime = 973.35 s  ClockTime = 978 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 56, t 0.055 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.056
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    25, 0.000861351, 0.0346341, 0, 8
+
+ExecutionTime = 984.07 s  ClockTime = 988 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 57, t 0.056 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.057
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    21, 0.00106698, 0.0457983, 0, 6
+
+ExecutionTime = 992.57 s  ClockTime = 997 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 58, t 0.057 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.058
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    30, 0.000961124, 0.0406945, 0, 6
+
+ExecutionTime = 1004.49 s  ClockTime = 1009 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 59, t 0.058 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.059
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.00105162, 0.0309484, 0, 6
+
+ExecutionTime = 1013.73 s  ClockTime = 1018 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 60, t 0.059000000000000004 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.06
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    41, 0.000769706, 0.049178, 0, 64
+
+Max epsilonEq = 0.322549
+Max sigmaEq (von Mises stress) = 26374.9
+ExecutionTime = 1033.28 s  ClockTime = 1038 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 61, t 0.06 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.061
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    11, 0.0011798, 0.043208, 0, 6
+
+ExecutionTime = 1038.26 s  ClockTime = 1043 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 62, t 0.061 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.062
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    47, 0.000694717, 0.0451086, 0, 67
+
+ExecutionTime = 1058.25 s  ClockTime = 1063 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 63, t 0.062 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.063
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    22, 0.000850619, 0.0419184, 0, 6
+
+ExecutionTime = 1067.69 s  ClockTime = 1072 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 64, t 0.063 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.064
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    25, 0.000886866, 0.0286079, 0, 6
+
+ExecutionTime = 1077.83 s  ClockTime = 1082 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 65, t 0.064 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.065
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    46, 0.00060888, 0.0459123, 0, 68
+
+ExecutionTime = 1098.68 s  ClockTime = 1103 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 66, t 0.065 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.066
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    49, 0.00047871, 0.0479317, 0, 87
+
+ExecutionTime = 1128.28 s  ClockTime = 1133 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 67, t 0.066 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.067
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    50, 0.000415852, 0.0401489, 0, 87
+
+ExecutionTime = 1159.39 s  ClockTime = 1164 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 68, t 0.067 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.068
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    37, 0.000477627, 0.0483847, 0, 72
+
+ExecutionTime = 1177.33 s  ClockTime = 1182 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 69, t 0.068 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.069
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000393169, 0.0755626, 0, 149
+    Both residuals have converged
+    53, 0.000376652, 0.0499764, 0, 149
+
+ExecutionTime = 1209.97 s  ClockTime = 1215 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 70, t 0.069 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.07
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000359104, 0.0554676, 0, 149
+    Both residuals have converged
+    65, 0.000290077, 0.0460555, 0, 150
+
+Max epsilonEq = 0.327161
+Max sigmaEq (von Mises stress) = 33291.1
+ExecutionTime = 1263.74 s  ClockTime = 1269 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 71, t 0.07 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.071
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    26, 0.000464814, 0.0482872, 0, 63
+
+ExecutionTime = 1275.77 s  ClockTime = 1281 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 72, t 0.07100000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.072
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000366033, 0.0898008, 0, 139
+    Both residuals have converged
+    62, 0.000305486, 0.0491784, 0, 149
+
+ExecutionTime = 1317.66 s  ClockTime = 1323 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 73, t 0.07200000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.073
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    6, 0.000721101, 0.038563, 0, 8
+
+ExecutionTime = 1321.2 s  ClockTime = 1326 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 74, t 0.073 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.074
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.000733812, 0.0442371, 0, 7
+
+ExecutionTime = 1330.39 s  ClockTime = 1336 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 75, t 0.074 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.075
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000409449, 0.0887323, 0, 79
+    Both residuals have converged
+    64, 0.000323159, 0.0468127, 0, 139
+
+ExecutionTime = 1366.59 s  ClockTime = 1372 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 76, t 0.075 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.076
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.00028892, 0.0840681, 0, 147
+    Both residuals have converged
+    53, 0.000277189, 0.04412, 0, 148
+
+ExecutionTime = 1403.35 s  ClockTime = 1408 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 77, t 0.076 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.077
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    16, 0.000495489, 0.043342, 0, 8
+
+ExecutionTime = 1410.83 s  ClockTime = 1416 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 78, t 0.077 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.078
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000337943, 0.0765308, 0, 65
+    Both residuals have converged
+    66, 0.000258972, 0.0403739, 0, 79
+
+ExecutionTime = 1451.72 s  ClockTime = 1457 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 79, t 0.078 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.079
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    22, 0.000388432, 0.0486793, 0, 47
+
+ExecutionTime = 1462.24 s  ClockTime = 1467 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 80, t 0.079 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.08
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000279441, 0.0660348, 0, 58
+    Both residuals have converged
+    66, 0.000217305, 0.0407193, 0, 151
+
+Max epsilonEq = 0.329944
+Max sigmaEq (von Mises stress) = 38563.9
+ExecutionTime = 1511.46 s  ClockTime = 1517 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 81, t 0.08 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.081
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    48, 0.000231046, 0.0484176, 0, 149
+
+ExecutionTime = 1546.4 s  ClockTime = 1552 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 82, t 0.081 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.082
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    14, 0.000417742, 0.0324633, 0, 7
+
+ExecutionTime = 1553.02 s  ClockTime = 1559 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 83, t 0.082 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.083
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000269688, 0.0799116, 0, 75
+    Both residuals have converged
+    68, 0.000204284, 0.0380824, 0, 149
+
+ExecutionTime = 1599.14 s  ClockTime = 1605 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 84, t 0.083 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.084
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.000290117, 0.0499468, 0, 65
+
+ExecutionTime = 1611.22 s  ClockTime = 1617 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 85, t 0.084 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.085
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    42, 0.000244343, 0.0482232, 0, 77
+
+ExecutionTime = 1635.39 s  ClockTime = 1641 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 86, t 0.085 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.086
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    45, 0.000214439, 0.0393987, 0, 65
+
+ExecutionTime = 1664.59 s  ClockTime = 1670 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 87, t 0.08600000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.087
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    40, 0.000218345, 0.0377883, 0, 63
+
+ExecutionTime = 1689.94 s  ClockTime = 1696 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 88, t 0.08700000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.088
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    43, 0.000186473, 0.0488519, 0, 68
+
+ExecutionTime = 1719.58 s  ClockTime = 1725 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 89, t 0.088 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.089
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    43, 0.000175824, 0.048628, 0, 73
+
+ExecutionTime = 1751.36 s  ClockTime = 1757 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 90, t 0.089 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.09
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    42, 0.000172422, 0.0328279, 0, 70
+
+Max epsilonEq = 0.332328
+Max sigmaEq (von Mises stress) = 41961.7
+ExecutionTime = 1782.17 s  ClockTime = 1788 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 91, t 0.09 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.091
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    41, 0.00017241, 0.0488048, 0, 66
+
+ExecutionTime = 1810.24 s  ClockTime = 1816 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 92, t 0.091 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.092
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.000205137, 0.0432671, 0, 63
+
+ExecutionTime = 1824.32 s  ClockTime = 1830 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 93, t 0.092 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.093
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    41, 0.000165949, 0.0489054, 0, 67
+
+ExecutionTime = 1854 s  ClockTime = 1860 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 94, t 0.093 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.094
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    17, 0.00021456, 0.0475415, 0, 59
+
+ExecutionTime = 1864.64 s  ClockTime = 1871 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 95, t 0.094 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.095
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    27, 0.000204832, 0.041081, 0, 63
+
+ExecutionTime = 1880.08 s  ClockTime = 1886 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 96, t 0.095 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.096
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    15, 0.000243693, 0.0293818, 0, 46
+
+ExecutionTime = 1887.94 s  ClockTime = 1894 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 97, t 0.096 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.097
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    22, 0.00021777, 0.0468679, 0, 63
+
+ExecutionTime = 1899.98 s  ClockTime = 1906 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 98, t 0.097 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.098
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    42, 0.000153047, 0.0351376, 0, 147
+
+ExecutionTime = 1932.21 s  ClockTime = 1938 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 99, t 0.098 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.099
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    19, 0.00017749, 0.0450922, 0, 65
+
+ExecutionTime = 1947.14 s  ClockTime = 1953 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 100, t 0.099 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.1
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    42, 0.000140028, 0.031539, 0, 75
+
+Max epsilonEq = 0.332989
+Max sigmaEq (von Mises stress) = 43664.3
+ExecutionTime = 1981.71 s  ClockTime = 1988 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 101, t 0.1 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.101
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    22, 0.000163636, 0.0463815, 0, 75
+
+ExecutionTime = 1999.51 s  ClockTime = 2006 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 102, t 0.101 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.102
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    40, 0.000137023, 0.0483656, 0, 75
+
+ExecutionTime = 2030.26 s  ClockTime = 2037 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 103, t 0.10200000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.103
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000118096, 0.102504, 0, 77
+    Both residuals have converged
+    60, 0.000110896, 0.0390826, 0, 125
+
+ExecutionTime = 2081.19 s  ClockTime = 2088 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 104, t 0.10300000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.104
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000109168, 0.105392, 0, 151
+    The solver residual has converged
+    73, 9.98782e-05, 0.0718416, 0, 158
+
+ExecutionTime = 2150.97 s  ClockTime = 2158 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 105, t 0.10400000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.105
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    9, 0.000160858, 0.0424091, 0, 64
+
+ExecutionTime = 2156.62 s  ClockTime = 2163 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 106, t 0.105 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.106
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.000177942, 0.0454207, 0, 63
+
+ExecutionTime = 2167.33 s  ClockTime = 2174 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 107, t 0.106 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.107
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    20, 0.000194807, 0.0486317, 0, 62
+
+ExecutionTime = 2176.16 s  ClockTime = 2183 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 108, t 0.107 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.108
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000128924, 0.143269, 0, 75
+    The solver residual has converged
+    75, 9.9228e-05, 0.312776, 0, 76
+
+ExecutionTime = 2229.12 s  ClockTime = 2236 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 109, t 0.108 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.109
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    5, 0.000191404, 0.0358142, 0, 30
+
+ExecutionTime = 2232.31 s  ClockTime = 2239 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 110, t 0.109 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.11
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000134112, 0.142256, 0, 145
+    Both residuals have converged
+    61, 0.000117523, 0.0337311, 0, 155
+
+Max epsilonEq = 0.334895
+Max sigmaEq (von Mises stress) = 45219.6
+ExecutionTime = 2280.81 s  ClockTime = 2288 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 111, t 0.11 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.111
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    20, 0.000170109, 0.0489347, 0, 65
+
+ExecutionTime = 2291.2 s  ClockTime = 2298 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 112, t 0.111 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.112
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    19, 0.000204895, 0.0390596, 0, 30
+
+ExecutionTime = 2299.8 s  ClockTime = 2307 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 113, t 0.112 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.113
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000132229, 0.918543, 0, 68
+    Both residuals have converged
+    58, 0.00011903, 0.0425202, 0, 128
+
+ExecutionTime = 2335.58 s  ClockTime = 2343 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 114, t 0.113 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.114
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000111537, 0.125695, 0, 128
+    The solver residual has converged
+    60, 9.96504e-05, 0.150006, 0, 157
+
+ExecutionTime = 2382.5 s  ClockTime = 2390 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 115, t 0.114 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.115
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    42, 0.000116969, 0.037084, 0, 73
+
+ExecutionTime = 2408.26 s  ClockTime = 2415 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 116, t 0.115 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.116
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000106941, 0.138328, 0, 128
+    The solver residual has converged
+    57, 9.84098e-05, 0.122711, 0, 130
+
+ExecutionTime = 2446.91 s  ClockTime = 2454 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 117, t 0.116 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.117
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000101727, 0.18096, 0, 125
+    The solver residual has converged
+    52, 9.99823e-05, 0.145179, 0, 75
+
+ExecutionTime = 2481.7 s  ClockTime = 2489 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 118, t 0.117 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.118
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000103883, 0.199762, 0, 73
+    The solver residual has converged
+    53, 9.84721e-05, 0.0603437, 0, 128
+
+ExecutionTime = 2515.15 s  ClockTime = 2522 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 119, t 0.11800000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.119
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000103035, 0.120449, 0, 129
+    The solver residual has converged
+    51, 9.99305e-05, 1.0778, 0, 130
+
+ExecutionTime = 2546.58 s  ClockTime = 2554 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 120, t 0.11900000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.12
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    6, 0.000226254, 0.0431404, 0, 8
+
+Max epsilonEq = 0.336026
+Max sigmaEq (von Mises stress) = 47203.2
+ExecutionTime = 2552.51 s  ClockTime = 2560 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 121, t 0.12 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.121
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000138533, 0.156029, 0, 63
+    The solver residual has converged
+    70, 9.94035e-05, 0.110214, 0, 72
+
+ExecutionTime = 2590.91 s  ClockTime = 2599 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 122, t 0.121 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.122
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    8, 0.000213506, 0.0372904, 0, 7
+
+ExecutionTime = 2594.85 s  ClockTime = 2602 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 123, t 0.122 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.123
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.00013319, 0.144339, 0, 63
+    The solver residual has converged
+    69, 9.9266e-05, 0.0846369, 0, 73
+
+ExecutionTime = 2632.62 s  ClockTime = 2640 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 124, t 0.123 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.124
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    49, 0.000102417, 0.0405255, 0, 65
+
+ExecutionTime = 2661.5 s  ClockTime = 2669 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 125, t 0.124 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.125
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000101984, 0.136248, 0, 65
+    The solver residual has converged
+    52, 9.91783e-05, 0.114545, 0, 65
+
+ExecutionTime = 2691.67 s  ClockTime = 2699 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 126, t 0.125 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.126
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    26, 0.000147806, 0.0449742, 0, 27
+
+ExecutionTime = 2703.3 s  ClockTime = 2711 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 127, t 0.126 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.127
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000112107, 0.159917, 0, 63
+    The solver residual has converged
+    57, 9.99999e-05, 0.223322, 0, 64
+
+ExecutionTime = 2734.54 s  ClockTime = 2742 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 128, t 0.127 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.128
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    48, 9.99819e-05, 0.267359, 0, 65
+
+ExecutionTime = 2760.59 s  ClockTime = 2768 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 129, t 0.128 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.129
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    12, 0.000193338, 0.0375175, 0, 8
+
+ExecutionTime = 2766.04 s  ClockTime = 2774 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 130, t 0.129 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.13
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000122165, 0.108782, 0, 61
+    The solver residual has converged
+    63, 9.83452e-05, 0.137855, 0, 64
+
+Max epsilonEq = 0.336839
+Max sigmaEq (von Mises stress) = 49758.4
+ExecutionTime = 2800.45 s  ClockTime = 2809 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 131, t 0.13 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.131
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    10, 0.000195124, 0.044331, 0, 9
+
+ExecutionTime = 2804.95 s  ClockTime = 2813 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 132, t 0.131 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.132
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    21, 0.000212722, 0.0437074, 0, 8
+
+ExecutionTime = 2813.36 s  ClockTime = 2821 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 133, t 0.132 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.133
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000129927, 0.754365, 0, 63
+    The solver residual has converged
+    66, 9.84817e-05, 0.158525, 0, 65
+
+ExecutionTime = 2849.27 s  ClockTime = 2857 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 134, t 0.133 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.134
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    28, 0.000135984, 0.0492084, 0, 62
+
+ExecutionTime = 2862.27 s  ClockTime = 2870 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 135, t 0.134 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.135
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    50, 0.000103105, 0.139628, 0, 116
+    The solver residual has converged
+    53, 9.77931e-05, 0.0959856, 0, 65
+
+ExecutionTime = 2893.15 s  ClockTime = 2901 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 136, t 0.135 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.136
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    24, 0.000133689, 0.048453, 0, 32
+
+ExecutionTime = 2903.89 s  ClockTime = 2912 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 137, t 0.136 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.137
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    48, 9.99619e-05, 0.135275, 0, 63
+
+ExecutionTime = 2929.52 s  ClockTime = 2938 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 138, t 0.137 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.138
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    27, 0.000127145, 0.0479418, 0, 61
+
+ExecutionTime = 2941.41 s  ClockTime = 2949 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 139, t 0.138 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.139
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    20, 0.000164472, 0.0429684, 0, 9
+
+ExecutionTime = 2949.98 s  ClockTime = 2958 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 140, t 0.139 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.14
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    20, 0.000176494, 0.0418836, 0, 7
+
+Max epsilonEq = 0.338213
+Max sigmaEq (von Mises stress) = 51754.4
+ExecutionTime = 2960.79 s  ClockTime = 2969 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 141, t 0.14 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.141
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    22, 0.000174294, 0.043575, 0, 7
+
+ExecutionTime = 2969.62 s  ClockTime = 2978 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 142, t 0.14100000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.142
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    22, 0.000172683, 0.0463694, 0, 7
+
+ExecutionTime = 2978.45 s  ClockTime = 2987 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 143, t 0.14200000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.143
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    25, 0.000162176, 0.0401844, 0, 32
+
+ExecutionTime = 2988.7 s  ClockTime = 2997 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 144, t 0.14300000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.144
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    33, 0.000129825, 0.0325546, 0, 106
+
+ExecutionTime = 3004.3 s  ClockTime = 3013 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 145, t 0.14400000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.145
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    24, 0.000130674, 0.0331092, 0, 115
+
+ExecutionTime = 3016.27 s  ClockTime = 3025 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 146, t 0.145 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.146
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    19, 0.000139038, 0.0429416, 0, 62
+
+ExecutionTime = 3025.38 s  ClockTime = 3034 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 147, t 0.146 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.147
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    40, 0.000103152, 0.0468278, 0, 127
+
+ExecutionTime = 3049.64 s  ClockTime = 3058 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 148, t 0.147 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.148
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    17, 0.000128455, 0.0448534, 0, 115
+
+ExecutionTime = 3059.13 s  ClockTime = 3068 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 149, t 0.148 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.149
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    33, 9.93666e-05, 0.0640107, 0, 72
+
+ExecutionTime = 3080.62 s  ClockTime = 3089 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 150, t 0.149 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.15
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    9, 0.000137872, 0.0394505, 0, 152
+
+Max epsilonEq = 0.339465
+Max sigmaEq (von Mises stress) = 53281.7
+ExecutionTime = 3090.64 s  ClockTime = 3100 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 151, t 0.15 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.151
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    38, 9.95431e-05, 0.113201, 0, 145
+
+ExecutionTime = 3124.25 s  ClockTime = 3133 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 152, t 0.151 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.152
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    26, 9.83765e-05, 0.157917, 0, 145
+
+ExecutionTime = 3146.49 s  ClockTime = 3156 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 153, t 0.152 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.153
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    17, 9.68232e-05, 0.0877048, 0, 152
+
+ExecutionTime = 3161.47 s  ClockTime = 3170 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 154, t 0.153 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.154
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    14, 9.98675e-05, 0.294078, 0, 139
+
+ExecutionTime = 3173.7 s  ClockTime = 3183 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 155, t 0.154 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.155
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    16, 9.8542e-05, 1.04131, 0, 101
+
+ExecutionTime = 3187.86 s  ClockTime = 3197 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 156, t 0.155 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.156
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    5, 0.000113064, 0.0474213, 0, 66
+
+ExecutionTime = 3191.31 s  ClockTime = 3200 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 157, t 0.156 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.157
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    17, 9.86686e-05, 0.310717, 0, 100
+
+ExecutionTime = 3203.61 s  ClockTime = 3213 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 158, t 0.157 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.158
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 9.86857e-05, 0.289847, 0, 135
+
+ExecutionTime = 3206.47 s  ClockTime = 3215 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 159, t 0.158 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.159
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    4, 9.89714e-05, 0.36029, 0, 104
+
+ExecutionTime = 3211.03 s  ClockTime = 3220 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 160, t 0.159 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.16
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    4, 9.96604e-05, 0.217855, 0, 75
+
+Max epsilonEq = 0.340207
+Max sigmaEq (von Mises stress) = 53862.5
+ExecutionTime = 3218.07 s  ClockTime = 3228 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 161, t 0.16 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.161
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 9.91027e-05, 2.30887, 0, 101
+
+ExecutionTime = 3220.72 s  ClockTime = 3230 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 162, t 0.161 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.162
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 8.97719e-05, 0.221828, 0, 89
+
+ExecutionTime = 3223.52 s  ClockTime = 3233 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 163, t 0.162 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.163
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 8.15665e-05, 0.209753, 0, 147
+
+ExecutionTime = 3226.95 s  ClockTime = 3236 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 164, t 0.163 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.164
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 7.53251e-05, 0.433412, 0, 155
+
+ExecutionTime = 3230.69 s  ClockTime = 3240 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 165, t 0.164 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.165
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 7.17154e-05, 0.36698, 0, 150
+
+ExecutionTime = 3234.63 s  ClockTime = 3244 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 166, t 0.165 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.166
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 6.87025e-05, 0.349929, 0, 160
+
+ExecutionTime = 3238.35 s  ClockTime = 3248 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 167, t 0.166 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.167
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 6.97577e-05, 0.2307, 0, 133
+
+ExecutionTime = 3241.55 s  ClockTime = 3251 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 168, t 0.167 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.168
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 7.43483e-05, 0.22428, 0, 133
+
+ExecutionTime = 3244.64 s  ClockTime = 3254 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 169, t 0.168 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.169
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 8.25778e-05, 0.414678, 0, 73
+
+ExecutionTime = 3247.16 s  ClockTime = 3257 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 170, t 0.169 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.17
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    2, 9.48113e-05, 0.56679, 0, 31
+
+Max epsilonEq = 0.340203
+Max sigmaEq (von Mises stress) = 53895.5
+ExecutionTime = 3251.65 s  ClockTime = 3262 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 171, t 0.17 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.171
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    11, 9.88114e-05, 0.102943, 0, 28
+
+ExecutionTime = 3257.78 s  ClockTime = 3268 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 172, t 0.171 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.172
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    12, 9.99094e-05, 0.178899, 0, 30
+
+ExecutionTime = 3264.18 s  ClockTime = 3274 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 173, t 0.17200000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.173
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    12, 9.95755e-05, 0.185747, 0, 37
+
+ExecutionTime = 3270.17 s  ClockTime = 3280 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 174, t 0.17300000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.174
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    15, 9.47303e-05, 0.128541, 0, 66
+
+ExecutionTime = 3278.98 s  ClockTime = 3289 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 175, t 0.17400000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.175
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    15, 9.97328e-05, 0.41322, 0, 66
+
+ExecutionTime = 3287.29 s  ClockTime = 3297 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 176, t 0.17500000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.176
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    14, 0.000101212, 0.031196, 0, 65
+
+ExecutionTime = 3294.42 s  ClockTime = 3304 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 177, t 0.176 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.177
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    17, 9.92696e-05, 0.215542, 0, 65
+
+ExecutionTime = 3303.66 s  ClockTime = 3314 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 178, t 0.177 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.178
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    15, 9.88231e-05, 0.409887, 0, 64
+
+ExecutionTime = 3311.17 s  ClockTime = 3321 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 179, t 0.178 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.179
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    18, 9.91997e-05, 0.228809, 0, 10
+
+ExecutionTime = 3319.63 s  ClockTime = 3330 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 180, t 0.179 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.18
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    18, 9.91974e-05, 0.119627, 0, 65
+
+Max epsilonEq = 0.340111
+Max sigmaEq (von Mises stress) = 53437.8
+ExecutionTime = 3331.12 s  ClockTime = 3342 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 181, t 0.18 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.181
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    18, 9.96249e-05, 0.266509, 0, 65
+
+ExecutionTime = 3340.88 s  ClockTime = 3351 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 182, t 0.181 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.182
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    10, 0.000117436, 0.0464997, 0, 27
+
+ExecutionTime = 3345.74 s  ClockTime = 3356 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 183, t 0.182 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.183
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    25, 9.90201e-05, 0.112455, 0, 65
+
+ExecutionTime = 3357.99 s  ClockTime = 3368 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 184, t 0.183 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.184
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    21, 9.86711e-05, 0.242547, 0, 63
+
+ExecutionTime = 3368.81 s  ClockTime = 3379 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 185, t 0.184 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.185
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    21, 9.72992e-05, 0.166929, 0, 64
+
+ExecutionTime = 3379.79 s  ClockTime = 3390 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 186, t 0.185 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.186
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    20, 9.90489e-05, 1.19241, 0, 63
+
+ExecutionTime = 3389.77 s  ClockTime = 3400 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 187, t 0.186 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.187
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    6, 0.000132497, 0.0268602, 0, 7
+
+ExecutionTime = 3392.68 s  ClockTime = 3403 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 188, t 0.187 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.188
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    24, 0.00011585, 0.037319, 0, 62
+
+ExecutionTime = 3403.05 s  ClockTime = 3413 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 189, t 0.188 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.189
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    27, 9.9096e-05, 0.111277, 0, 64
+
+ExecutionTime = 3416.34 s  ClockTime = 3427 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 190, t 0.189 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.19
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    23, 9.87537e-05, 0.109374, 0, 63
+
+Max epsilonEq = 0.339615
+Max sigmaEq (von Mises stress) = 52640.8
+ExecutionTime = 3430.76 s  ClockTime = 3442 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 191, t 0.19 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.191
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    21, 9.99526e-05, 1.44662, 0, 63
+
+ExecutionTime = 3440.58 s  ClockTime = 3452 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 192, t 0.191 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.192
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    6, 0.000143254, 0.0484862, 0, 7
+
+ExecutionTime = 3443.57 s  ClockTime = 3455 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 193, t 0.192 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.193
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    27, 0.000115374, 0.0497258, 0, 22
+
+ExecutionTime = 3454.56 s  ClockTime = 3466 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 194, t 0.193 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.194
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    28, 9.90874e-05, 0.402495, 0, 63
+
+ExecutionTime = 3467.18 s  ClockTime = 3478 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 195, t 0.194 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.195
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    24, 9.86214e-05, 0.110958, 0, 63
+
+ExecutionTime = 3478.49 s  ClockTime = 3490 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 196, t 0.195 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.196
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    5, 0.000146871, 0.0432741, 0, 39
+
+ExecutionTime = 3481.15 s  ClockTime = 3492 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 197, t 0.196 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.197
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    18, 0.000144807, 0.0454422, 0, 7
+
+ExecutionTime = 3488.59 s  ClockTime = 3500 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 198, t 0.197 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.198
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    24, 0.00012628, 0.0366241, 0, 39
+
+ExecutionTime = 3498.43 s  ClockTime = 3509 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 199, t 0.198 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.199
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    32, 9.93252e-05, 0.15002, 0, 63
+
+ExecutionTime = 3513.12 s  ClockTime = 3524 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 200, t 0.199 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.2
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    7, 0.000144453, 0.0490833, 0, 7
+
+Max epsilonEq = 0.339245
+Max sigmaEq (von Mises stress) = 51692.2
+ExecutionTime = 3519.17 s  ClockTime = 3531 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 201, t 0.2 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.201
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    37, 9.81781e-05, 0.336295, 0, 62
+
+ExecutionTime = 3535.2 s  ClockTime = 3547 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 202, t 0.201 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.202
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    27, 9.92072e-05, 0.0823134, 0, 62
+
+ExecutionTime = 3548.02 s  ClockTime = 3560 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 203, t 0.202 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.203
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    26, 9.81613e-05, 0.111706, 0, 61
+
+ExecutionTime = 3560.23 s  ClockTime = 3572 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 204, t 0.203 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.204
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    26, 9.91669e-05, 0.083843, 0, 22
+
+ExecutionTime = 3572.47 s  ClockTime = 3584 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 205, t 0.20400000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.205
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    27, 0.000100077, 0.0336186, 0, 61
+
+ExecutionTime = 3585.58 s  ClockTime = 3597 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 206, t 0.20500000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.206
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    27, 9.79955e-05, 0.314028, 0, 61
+
+ExecutionTime = 3599.05 s  ClockTime = 3611 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 207, t 0.20600000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.207
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    27, 9.8174e-05, 0.785931, 0, 61
+
+ExecutionTime = 3611.78 s  ClockTime = 3623 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 208, t 0.20700000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.208
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    27, 9.97778e-05, 0.0470522, 0, 63
+
+ExecutionTime = 3624.76 s  ClockTime = 3636 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 209, t 0.20800000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.209
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    27, 9.91851e-05, 0.109868, 0, 63
+
+ExecutionTime = 3638.95 s  ClockTime = 3651 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 210, t 0.209 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.21
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    8, 0.000147248, 0.0441392, 0, 7
+
+Max epsilonEq = 0.338838
+Max sigmaEq (von Mises stress) = 50535.2
+ExecutionTime = 3645.45 s  ClockTime = 3657 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 211, t 0.21 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.211
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    39, 9.57373e-05, 0.45386, 0, 64
+
+ExecutionTime = 3663.33 s  ClockTime = 3675 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 212, t 0.211 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.212
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    6, 0.000153104, 0.0266357, 0, 7
+
+ExecutionTime = 3666.41 s  ClockTime = 3678 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 213, t 0.212 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.213
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.000137919, 0.0450318, 0, 9
+
+ExecutionTime = 3676.44 s  ClockTime = 3688 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 214, t 0.213 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.214
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    36, 9.9716e-05, 0.146774, 0, 22
+
+ExecutionTime = 3692.5 s  ClockTime = 3705 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 215, t 0.214 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.215
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    28, 9.99506e-05, 0.0964554, 0, 62
+
+ExecutionTime = 3706.99 s  ClockTime = 3719 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 216, t 0.215 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.216
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    27, 9.86008e-05, 0.184842, 0, 61
+
+ExecutionTime = 3720.16 s  ClockTime = 3732 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 217, t 0.216 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.217
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    28, 9.79602e-05, 0.923627, 0, 22
+
+ExecutionTime = 3733.91 s  ClockTime = 3746 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 218, t 0.217 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.218
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    6, 0.000151733, 0.0441407, 0, 7
+
+ExecutionTime = 3737.09 s  ClockTime = 3749 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 219, t 0.218 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.219
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    40, 9.74114e-05, 0.103895, 0, 61
+
+ExecutionTime = 3755.31 s  ClockTime = 3767 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 220, t 0.219 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.22
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    26, 9.91978e-05, 0.146324, 0, 61
+
+Max epsilonEq = 0.337714
+Max sigmaEq (von Mises stress) = 49290
+ExecutionTime = 3770.37 s  ClockTime = 3783 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 221, t 0.22 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.221
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    27, 9.87969e-05, 0.0817954, 0, 61
+
+ExecutionTime = 3782.64 s  ClockTime = 3795 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 222, t 0.221 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.222
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    8, 0.000145146, 0.0371623, 0, 7
+
+ExecutionTime = 3786.68 s  ClockTime = 3799 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 223, t 0.222 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.223
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    24, 0.000128339, 0.0383207, 0, 7
+
+ExecutionTime = 3796.8 s  ClockTime = 3809 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 224, t 0.223 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.224
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    34, 9.77378e-05, 0.422663, 0, 62
+
+ExecutionTime = 3812.38 s  ClockTime = 3825 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 225, t 0.224 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.225
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    26, 9.86751e-05, 0.173416, 0, 61
+
+ExecutionTime = 3824.28 s  ClockTime = 3837 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 226, t 0.225 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.226
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    27, 9.71076e-05, 0.335162, 0, 22
+
+ExecutionTime = 3836.77 s  ClockTime = 3849 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 227, t 0.226 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.227
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    25, 9.88318e-05, 0.115417, 0, 61
+
+ExecutionTime = 3849.21 s  ClockTime = 3862 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 228, t 0.227 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.228
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    25, 9.82613e-05, 0.205805, 0, 22
+
+ExecutionTime = 3860.47 s  ClockTime = 3873 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 229, t 0.228 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.229
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    25, 9.8627e-05, 0.227984, 0, 22
+
+ExecutionTime = 3871.51 s  ClockTime = 3884 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 230, t 0.229 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.23
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    25, 0.000101613, 0.0380236, 0, 61
+
+Max epsilonEq = 0.336985
+Max sigmaEq (von Mises stress) = 48190.7
+ExecutionTime = 3885.65 s  ClockTime = 3899 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 231, t 0.23 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.231
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    24, 9.90114e-05, 0.104815, 0, 22
+
+ExecutionTime = 3896.44 s  ClockTime = 3909 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 232, t 0.231 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.232
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    24, 9.86806e-05, 0.139966, 0, 60
+
+ExecutionTime = 3907.84 s  ClockTime = 3921 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 233, t 0.232 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.233
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    8, 0.000134784, 0.0447839, 0, 7
+
+ExecutionTime = 3912.12 s  ClockTime = 3925 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 234, t 0.233 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.234
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    27, 0.000110279, 0.0350605, 0, 47
+
+ExecutionTime = 3924.79 s  ClockTime = 3938 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 235, t 0.234 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.235
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    23, 0.000105057, 0.0489895, 0, 28
+
+ExecutionTime = 3936.03 s  ClockTime = 3949 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 236, t 0.23500000000000001 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.236
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    21, 0.000105441, 0.0420282, 0, 60
+
+ExecutionTime = 3946.72 s  ClockTime = 3960 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 237, t 0.23600000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.237
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    23, 9.86966e-05, 0.252551, 0, 60
+
+ExecutionTime = 3958.43 s  ClockTime = 3971 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 238, t 0.23700000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.238
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    14, 0.00011471, 0.0314555, 0, 9
+
+ExecutionTime = 3965.44 s  ClockTime = 3978 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 239, t 0.23800000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.239
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    25, 0.000100994, 0.0363233, 0, 60
+
+ExecutionTime = 3977.97 s  ClockTime = 3991 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 240, t 0.23900000000000002 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.24
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    20, 9.85043e-05, 0.122423, 0, 60
+
+Max epsilonEq = 0.336726
+Max sigmaEq (von Mises stress) = 47279.4
+ExecutionTime = 3990.33 s  ClockTime = 4004 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 241, t 0.24 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.241
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    19, 9.91153e-05, 0.24838, 0, 22
+
+ExecutionTime = 3999.46 s  ClockTime = 4013 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 242, t 0.241 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.242
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    20, 9.71376e-05, 0.529321, 0, 61
+
+ExecutionTime = 4009.35 s  ClockTime = 4023 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 243, t 0.242 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.243
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    19, 9.81561e-05, 0.476405, 0, 22
+
+ExecutionTime = 4018.17 s  ClockTime = 4032 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 244, t 0.243 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.244
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    17, 9.96708e-05, 0.186887, 0, 46
+
+ExecutionTime = 4026.2 s  ClockTime = 4040 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 245, t 0.244 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.245
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    16, 9.97786e-05, 0.165177, 0, 60
+
+ExecutionTime = 4033.78 s  ClockTime = 4047 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 246, t 0.245 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.246
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    10, 0.000112372, 0.0479735, 0, 9
+
+ExecutionTime = 4038.88 s  ClockTime = 4052 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 247, t 0.246 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.247
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    21, 9.95321e-05, 0.14605, 0, 22
+
+ExecutionTime = 4048.74 s  ClockTime = 4062 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 248, t 0.247 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.248
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    15, 9.93643e-05, 0.131578, 0, 22
+
+ExecutionTime = 4055.75 s  ClockTime = 4069 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 249, t 0.248 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.249
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    Both residuals have converged
+    7, 0.000111788, 0.032267, 0, 9
+
+ExecutionTime = 4059.56 s  ClockTime = 4073 s
+
+---[precice] [0m Time window completed
+---[precice] [0m time-window 250, t 0.249 (max: 0.25), Dt 0.001, max-dt 0.001
+Time = 0.25
+
+Evolving solid solver
+Solving the momentum equation for D
+    Corr, res, relRes, matRes, iters
+    The solver residual has converged
+    17, 9.94733e-05, 0.345378, 0, 22
+
+Max epsilonEq = 0.335867
+Max sigmaEq (von Mises stress) = 46634.1
+ExecutionTime = 4070.18 s  ClockTime = 4084 s
+
+---[precice] [0m Time window completed
+---[precice] [0m Reached end at: final time-window: 250, final time: 0.25
+---[preciceAdapter] The coupling completed.
+---[precice] [0m Close communication channels
+---[preciceAdapter] The simulation was ended by preCICE. Calling the end() methods of any functionObject explicitly.
+---[preciceAdapter] Great that you are using the OpenFOAM-preCICE adapter! Next to the preCICE library and any other components, please also cite this adapter. Find how on https://precice.org/adapter-openfoam-overview.html.
+The momentum equation converged in all time-steps
+
+
+End
+
+I/O    : uncollated

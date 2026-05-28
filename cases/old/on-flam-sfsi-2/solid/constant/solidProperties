@@ -1,0 +1,29 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// on-flam-sfsi-2 - FLAMBAGEM por deslocamento axial imposto na tampa anterior,
+// SEM FSI (solido puro). Solver NL geometry obrigatorio para capturar K_sigma
+// (matriz de rigidez geometrica) e revelar a bifurcacao de flambagem.
+//
+// nonLinearGeometryTotalLagrangianTotalDisplacement: campo D total (drop-in
+// do solver linear). Necessario para Winkler em dura_outer ler deslocamento
+// total (nao incremental) e para displacementSeries nas tampas anteriores.
+//
+// Toleracoes mais frouxas (1e-04) e nCorrectors=20000 para acomodar a
+// sub-relaxacao agressiva (alpha_D=0.3) e os ~40 passos quasi-estaticos.
+
+solidModel      nonLinearGeometryTotalLagrangianTotalDisplacement;
+
+nonLinearGeometryTotalLagrangianTotalDisplacementCoeffs
+{
+    nCorrectors             20000;
+    solutionTolerance       1e-04;
+    alternativeTolerance    1e-04;
+    materialTolerance       1e-04;
+    infoFrequency           200;
+}

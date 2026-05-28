@@ -1,0 +1,114 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : May 25 2026
+Time   : 15:50:02
+Host   : 1c2b5ee2ac5f
+PID    : 235
+I/O    : uncollated
+Case   : /simulation/on-mestrado-1/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel linearGeometryTotalDisplacement
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+    Winkler stiffness k = 200000 Pa/m
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Number of cells in new mesh : 7680
+Number of faces in new mesh : 23776
+Number of points in new mesh: 8463
+    oldInternalFaces : 1216
+Number of cells in new mesh : 8640
+Number of faces in new mesh : 27168
+Number of points in new mesh: 9920
+    oldInternalFaces : 1248
+Number of cells in new mesh : 256
+Number of faces in new mesh : 1040
+Number of points in new mesh: 546
+    oldInternalFaces : 544
+Number of cells in new mesh : 288
+Number of faces in new mesh : 1184
+Number of points in new mesh: 640
+    oldInternalFaces : 608
+Number of cells in new mesh : 544
+Number of faces in new mesh : 2192
+Number of points in new mesh: 1122
+Cannot read "/simulation/on-mestrado-1/solid/system/globoSubset".  Copy from base
+Cannot read "/simulation/on-mestrado-1/solid/system/globoSubset".  Copy from base
+    oldInternalFaces : 544
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+solvePressure = false
+    Setting `extrapolateValue` to `true` on the posterior_pia patch of the D field
+    Setting `extrapolateValue` to `true` on the pia_outer patch of the D field
+    Setting `extrapolateValue` to `true` on the sclera_outer patch of the D field
+    Setting `extrapolateValue` to `true` on the anterior_globo patch of the D field
+    Setting `extrapolateValue` to `true` on the contact_local patch of the D field
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+setCellDisplacements: reading cellDisplacements
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 5.2834541e-05
+ Iteration       Residual Norm           Step Norm
+       200        0.0051534304       4.5618023e-06
+       400        0.0024318539       3.0812268e-06
+       600        0.0016575441        2.305446e-06
+       800        0.0012091627       1.7920349e-06
+      1000       0.00093072232       1.4340979e-06
+      1200       0.00073830727       1.1672569e-06
+      1400       0.00059974843       9.6433322e-07
+      1600       0.00049724589       8.0930228e-07
+      1800       0.00041778678       6.8522131e-07
+      2000       0.00035747401       5.8741944e-07
+      2200       0.00030895674       5.0581375e-07
+      2400       0.00026931314       4.4336485e-07
+      2600       0.00023638013       3.8932198e-07
+      2800       0.00020892393       3.4442869e-07
+      3000       0.00018554509       3.0574216e-07
+      3129: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.024592928
+Max sigmaEq (von Mises stress) = 7660.1116
+ExecutionTime = 218.22 s  ClockTime = 219 s
+
+The momentum equation converged in all time-steps
+
+
+End
+

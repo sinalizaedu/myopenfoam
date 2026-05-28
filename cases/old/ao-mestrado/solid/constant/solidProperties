@@ -1,0 +1,22 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+solidModel      unsLinearGeometry;
+
+unsLinearGeometryCoeffs
+{
+    // Limites afrouxados (Bruna, 2026-05-23) para viabilizar 1 ciclo
+    // cardiaco completo no FSI puls\u00e1til. Em cada janela de acoplamento
+    // (100 us), a carga \u00e9 quasi-est\u00e1tica do ponto de vista do s\u00f3lido,
+    // entao convergencia agressiva por passo \u00e9 desnecess\u00e1ria.
+    nCorrectors             150;
+    solutionTolerance       5e-02;
+    alternativeTolerance    1e-04;
+    materialTolerance       1e-04;
+    infoFrequency           25;
+}

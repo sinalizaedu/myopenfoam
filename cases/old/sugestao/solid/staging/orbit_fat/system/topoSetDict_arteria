@@ -1,0 +1,40 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// PASSO 2 do furo da gordura (apos remover nerve_holes via subsetMesh):
+// identifica cells dentro do volume da arteria. fat_keep_final = mesh - arteria.
+
+actions
+(
+    {
+        name    fat_arteria_holes;
+        type    cellSet;
+        action  new;
+        source  surfaceToCell;
+        file    "/simulation/sugestao/constant/triSurface/artery.stl";
+        outsidePoints   ((-0.015 -0.007 -0.006));
+        includeInside   true;
+        includeOutside  false;
+        includeCut      true;
+        nearDistance    -1;
+        curvature       -100;
+    }
+
+    {
+        name    fat_keep_final;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        set     fat_arteria_holes;
+    }
+    {
+        name    fat_keep_final;
+        type    cellSet;
+        action  invert;
+    }
+);

@@ -1,0 +1,57 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     solids4Foam;
+
+// Carrega BC custom solidTractionElasticFoundation (mola de Winkler para
+// gordura orbital na superficie externa da arteria). Lib compilada em
+// src/elasticFoundation/Allwmake (chamado pelo Allrun na primeira vez).
+libs ("$FOAM_CASE/../src/elasticFoundation/libsolidTractionElasticFoundation.so");
+
+// Match endTime/deltaT do fluido — preCICE one-way; o s\u00f3lido recebe Force
+// puls\u00e1til a cada janela de acoplamento (1 ms). 3 ciclos cardiacos
+// (HR=69 bpm, T=0.8696 s) -> 2.6087 s. endTime=2.609 cobre exato com
+// 0.3ms de folga. 1o ciclo = transiente; metricas saem do 3o (t in [1.74, 2.609]).
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         2.609;
+deltaT          1e-3;
+writeControl    timeStep;
+writeInterval   20;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  6;
+writeCompression off;
+runTimeModifiable yes;
+adjustTimeStep  no;
+
+functions
+{
+    dispNearestON
+    {
+        // Ponto na meso-parede (raio medio (R_in+R_out)/2 = 0.65 mm) numa
+        // posicao representativa da nova centerline (~25% do arc).
+        type            solidPointDisplacement;
+        point           (0.002220591 -0.001218236 0.02476221);
+    }
+    solidForcesInner
+    {
+        type            solidForces;
+        historyPatch   lumen;
+    }
+    preCICE_Adapter
+    {
+        type            preciceAdapterFunctionObject;
+        libs            ("libpreciceAdapterFunctionObject.so");
+    }
+}
+
+// ************************************************************************* //

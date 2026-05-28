@@ -1,0 +1,68 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// on-mestrado-2-buckling: 5 passos quasi-estaticos com displacement
+// imposto crescente em globo_outer (-z).
+//
+// passo  t      dz_globo (mm)   strain axial (%)
+//   1   1.0      -0.1            0.33
+//   2   2.0      -0.5            1.67
+//   3   3.0      -1.0            3.33  <-- valor SANS realista
+//   4   4.0      -2.0            6.67
+//   5   5.0      -4.0           13.33  <-- proximo do P_cr de Euler
+//
+// O ramp permite extrair a curva F_reaction(dz) e detectar
+// o ponto onde a resposta deixa de ser linear (= flambagem).
+
+application     solids4Foam;
+
+startFrom       latestTime;
+startTime       0;
+stopAt          endTime;
+endTime         5.0;
+
+deltaT          1.0;
+
+writeControl    timeStep;
+writeInterval   1;
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
+
+libs ("$FOAM_CASE/../src/elasticFoundation/libsolidTractionElasticFoundation.so");
+
+// Function objects: registra forca de reacao em globo_outer (= F_z aplicada
+// para impor o shift cefalico) e em posterior_{on,pia,dura} (= reacao no
+// canal optico). Comparando F_globo_z(t) vs dz(t) extraimos a curva
+// que detecta P_cr (ponto onde a inclinacao perde linearidade).
+functions
+{
+    forces_globo_outer
+    {
+        type            solidForcesDisplacements;
+        libs            ("libsolids4FoamModels.so");
+        historyPatch    globo_outer;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+    forces_posterior_dura
+    {
+        type            solidForcesDisplacements;
+        libs            ("libsolids4FoamModels.so");
+        historyPatch    posterior_dura;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+}

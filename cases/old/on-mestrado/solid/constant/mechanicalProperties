@@ -1,0 +1,75 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// on-mestrado — propriedades mecânicas multi-zona (padrão-ouro SANS FEA)
+//
+// Zona "on"     — tecido neural do nervo óptico
+//   E  = 30 kPa,  nu = 0.49   Sigal et al. (2004)
+//
+// Zona "ons"    — bainha do nervo óptico (pia + dura máter + espaço subaracnoide)
+//   E  = 3 MPa,   nu = 0.49   Sigal et al. (2004) — ~100× mais rígida que ON
+//
+// Zona "lc"     — lâmina cribrosa (disco poroso homogeneizado, t=0.5mm)
+//   E  = 0.4 MPa, nu = 0.49   Sigal et al. (2004) — propriedades efetivas
+//   Ponto de articulação: controla transmissão de carga ON→globo
+//
+// Zona "sclera" — anel escleral posterior (r=1.5–2.5mm, t=0.5mm)
+//   E  = 5 MPa,   nu = 0.45   Friberg & Lace (1988); Palko et al. (2014)
+//
+// Zona "globo"  — casca do globo ocular (disco, r=0–2.5mm, t=0.5mm)
+//   E  = 5 MPa,   nu = 0.45   mesmas propriedades da esclera
+//
+// Gordura orbital — NAO modelada como solido.
+//   Entra como mola de Winkler na superficie ons_outer (codedFixedValue).
+//   k_winkler = E_fat / t_fat = 500 Pa / 2.5e-3 m = 200 kPa/m
+//   Ref material: Schoemaker et al. (2006), E_fat ≈ 0.5 kPa, t_fat ≈ 2.5 mm
+
+planeStress     no;
+
+mechanical
+(
+    on
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 30e3;    // 30 kPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+
+    ons
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;     // 3 MPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+
+    lc
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 0.4e6;   // 0.4 MPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+
+    sclera
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 5e6;     // 5 MPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+
+    globo
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 5e6;     // 5 MPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+);

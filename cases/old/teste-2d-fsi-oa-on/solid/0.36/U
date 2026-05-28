@@ -1,0 +1,94 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volVectorField;
+    location    "0.36";
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    outer_bottom
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    outer_top
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    on_mestrado
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    oa_mestrado
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    lumen_bot
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    lumen_top
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    outer_left_lower
+    {
+        type            symmetry;
+    }
+    outer_left_wall_inf
+    {
+        type            symmetry;
+    }
+    outer_left_wall_sup
+    {
+        type            symmetry;
+    }
+    outer_left_fat_above
+    {
+        type            symmetry;
+    }
+    outer_right_lower
+    {
+        type            symmetry;
+    }
+    outer_right_wall_inf
+    {
+        type            symmetry;
+    }
+    outer_right_wall_sup
+    {
+        type            symmetry;
+    }
+    outer_right_fat_above
+    {
+        type            symmetry;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //

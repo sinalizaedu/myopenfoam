@@ -1,0 +1,48 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| solids4foam                                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+d2dt2Schemes
+{
+    default            Euler;
+}
+
+ddtSchemes
+{
+    default            Euler;
+}
+
+gradSchemes
+{
+    default            pointCellsLeastSquares;
+}
+
+divSchemes
+{
+    default            Gauss linear;
+}
+
+laplacianSchemes
+{
+    default            Gauss linear corrected;
+}
+
+snGradSchemes
+{
+    default            corrected;
+}
+
+interpolationSchemes
+{
+    default            linear;
+}
+
+// ************************************************************************* //

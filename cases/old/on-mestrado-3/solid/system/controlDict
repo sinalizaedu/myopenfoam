@@ -1,0 +1,39 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// on-mestrado-2 SIMPLES - apenas nervo + bainha (4 zonas), sem contact_artoph.
+// Carga estatica unica: P_CSF = 1333 Pa em posterior_sas.
+//
+// 1 unico timestep (analise quasi-estatica unica). Se convergir, expande depois.
+
+application     solids4Foam;
+
+startFrom       latestTime;
+startTime       0;
+stopAt          endTime;
+endTime         1.0;
+
+deltaT          1.0;
+
+writeControl    timeStep;
+writeInterval   1;
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
+
+// Carrega a BC customizada solidTractionElasticFoundation (mola de Winkler).
+// Compilada uma vez em cases/on-mestrado/src/elasticFoundation/Allwmake;
+// cases/on-mestrado-2/src e symlink para o mesmo diretorio.
+libs ("$FOAM_CASE/../src/elasticFoundation/libsolidTractionElasticFoundation.so");

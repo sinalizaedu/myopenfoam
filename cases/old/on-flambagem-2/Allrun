@@ -1,0 +1,42 @@
+#!/bin/bash
+# on-flambagem-2 - FLAMBAGEM por cinematica imposta na tampa anterior.
+# Tubo 4 zonas (on/pia/sas/dura), z=0-30 mm. Rampa de deslocamento axial em
+# anterior_{on,pia,dura}: Dz = 0 -> -1 mm em 20 timesteps (NL geometry).
+#
+# Zonas (4 materiais bonded por DOF):
+#   on   : nervo neural,    r=0    -1.50,  E=30  kPa, nu=0.45
+#   pia  : pia mater,       r=1.50 -1.55,  E=3   MPa, nu=0.45
+#   sas  : SAS (CSF soft),  r=1.55 -2.35,  E=100 kPa, nu=0.30   identica on-mestrado-2
+#   dura : dura mater,      r=2.35 -2.50,  E=3   MPa, nu=0.45
+#
+# SEM esclera, SEM LC, SEM globo, SEM contact_local (sem p_contact da arteria).
+#
+# Carregamento:
+#   posterior_sas : P_CSF = 1333 Pa (~10 mmHg) - coluna de LCR vinda do cerebro.
+#   dura_outer    : Winkler 200 kPa/m (gordura orbital).
+#
+# BCs anatomicamente coerentes:
+#   posterior_{on,pia,dura}    : fixedDisplacement (canal optico, ENGASTE)
+#   posterior_sas              : solidTraction P_CSF
+#   anterior_{on,pia,sas,dura} : fixedDisplacement (surrogate da parede do globo)
+#   dura_outer                 : Winkler 200 kPa/m
+#
+# IMPORTANTE: cada zona requer system/{nome}Subset/{fvSchemes,fvSolution} com
+# gradSchemes "Gauss linear" (nao leastSquaresS4f) - caso contrario diverge.
+
+set -e
+set -o pipefail
+cd "$(dirname "$0")/solid"
+
+echo "=== on-flambagem-2: blockMesh (4 zonas, ~16320 cells) ==="
+blockMesh | tee log.blockMesh
+
+echo "=== on-flambagem-2: checkMesh ==="
+checkMesh | tee log.checkMesh
+
+echo "=== on-flambagem-2: solids4Foam ==="
+solids4Foam | tee log.solids4Foam
+
+echo ""
+echo "=== Concluido. Resultado em solid/1/ ... solid/20/ ==="
+echo "Visualizar: open solid/on-flambagem-2.foam no ParaView"

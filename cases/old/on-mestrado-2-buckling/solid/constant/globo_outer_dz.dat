@@ -1,0 +1,19 @@
+// Tabela de deslocamento imposto em globo_outer (-z = shift cefalico).
+// Formato interpolationTable<vector>: ( (t (Dx Dy Dz)) ... )
+//
+// Ramp ate' 4 mm (acima do P_cr de Euler estimado em ~2.75 mm de dz)
+// para forcar deteccao de buckling. L = 30 mm:
+//   t=0  ->  Dz=0       (estado inicial)
+//   t=1  ->  Dz=-5e-4   (0.5 mm, 1.67% strain - SANS realista)
+//   t=2  ->  Dz=-1e-3   (1 mm, 3.33% strain - SANS upper bound clinico)
+//   t=3  ->  Dz=-2e-3   (2 mm, 6.67% strain)
+//   t=4  ->  Dz=-3e-3   (3 mm, 10% strain - cruza P_cr da dura)
+//   t=5  ->  Dz=-4e-3   (4 mm, 13.3% strain - regime pos-buckling)
+(
+    (0.0  (0          0          0       ))
+    (1.0  (0          0         -5.0e-4  ))
+    (2.0  (0          0         -1.0e-3  ))
+    (3.0  (0          0         -2.0e-3  ))
+    (4.0  (0          0         -3.0e-3  ))
+    (5.0  (0          0         -4.0e-3  ))
+)

@@ -1,0 +1,47 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// PASSO 1 do furo da gordura: identifica cells dentro do nervo+ONS+globo.
+// fat_keep_after_nerve = mesh - nerve_holes.
+
+actions
+(
+    // === Cells dentro do cilindro nervo+ONS+LC (R=2.5mm) ===
+    {
+        name    fat_nerve_holes;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      (0 0 -0.001);
+        p2      (0 0  0.0305);
+        radius  0.0025;
+    }
+    {
+        name    fat_nerve_holes;
+        type    cellSet;
+        action  add;
+        source  cylinderToCell;
+        p1      (0 0  0.0300);
+        p2      (0 0  0.0310);
+        radius  0.0025;
+    }
+
+    // fat_keep_after_nerve = todas - nerve_holes
+    {
+        name    fat_keep_after_nerve;
+        type    cellSet;
+        action  new;
+        source  cellToCell;
+        set     fat_nerve_holes;
+    }
+    {
+        name    fat_keep_after_nerve;
+        type    cellSet;
+        action  invert;
+    }
+);

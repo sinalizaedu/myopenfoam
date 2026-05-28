@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+// Fluid: blood (rho ~ 1050 kg/m^3, nu = 3.5e-6 m^2/s). One-way FSI:
+// pressao pulsatil aplicada nas extremidades; parede curvada (FSI interface).
+// Axis = parede virtual no eixo (R*0.05, artefato da malha polar), BC slip.
+
+dimensions      [ 0 1 -1 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 );
+
+boundaryField
+{
+    inlet
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform ( 0 0 0 );
+    }
+    outlet
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform ( 0 0 0 );
+    }
+    wall
+    {
+        type            noSlip;
+    }
+    axis
+    {
+        type            slip;
+    }
+    ".*"
+    {
+        type            noSlip;
+    }
+}

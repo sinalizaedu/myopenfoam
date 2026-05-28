@@ -1,0 +1,83 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+
+// on-caso-1 - zona porosa DarcyForchheimer no lid distal (z=[30, 30.5]).
+//
+// Modelo: a extremidade distal do espaco subaracnoideo perioptico (proximo
+// a lamina cribrosa) drena LCR via vilositosidades aracnoideas / vias
+// linfaticas perineurais. A resistencia desse percurso e' representada como
+// uma zona porosa Darcy-Forchheimer:
+//
+//   grad(p)/rho = -nu * d * U     (creeping flow, Forchheimer f=0)
+//
+// onde d [m^-2] e' o coeficiente de resistencia viscosa de Darcy.
+//
+// Calibracao do d inicial (1e15 m^-2):
+//   Area anular do outlet:    A = pi(R_sas^2 - R_pia^2) = pi(2.35^2-1.55^2)e-6
+//                               ~= 9.80e-6 m^2
+//   Espessura do lid:         L = 0.5e-3 m
+//   nu (CSF water-like):      nu = 1e-6 m^2/s
+//   Q fisiologico ONSAS:      ~3e-11 m^3/s (~0.5% turnover cerebral CSF)
+//   U = Q/A                   ~= 3e-6 m/s
+//   Δp_kin_alvo                = p_inlet = 1.333 m^2/s^2 (~ 1333 Pa)
+//                                (todo o gradiente de pressao do sistema
+//                                 cai atraves do lid Darcy, ja que o bulk
+//                                 SAS tem perda viscosa desprezivel)
+//   Equacao Darcy kinematic:   Δp_kin = nu * d * L * U
+//                              1.333 = 1e-6 * d * 0.5e-3 * 3e-6
+//                              d     = 1.333 / 1.5e-15
+//                                    ~= 8.9e14 m^-2  ~ 1e15 (arredondado)
+//
+// Regimes via d (mantendo geometria + BCs):
+//   d ~ 1e13     compartimentalizacao MINIMA (lid quase aberto, U alto)
+//   d ~ 1e15     SAUDAVEL  (compartimentalizacao parcial fisiologica)
+//   d ~ 1e17     IIH-like  (compartimentalizacao quase total, U ~ 0)
+//   d -> inf     equivalente ao cul-de-sac fechado (= on-fsi-2)
+//   active false equivalente ao outlet livre (= on-fsi-2-openSAS)
+//
+// NOTA: a primeira calibracao tentou d=1e12 mas isso correspondia a
+// resistencia desprezivel (U ~ 2.7 m/s, irrealista) e desestabilizou o
+// acoplamento IQN-ILS. d=1e15 e' o ponto de partida fisiologico.
+//
+// IMPORTANTE - sobre calibracao final do d:
+//   No smoke run inicial (d=1e15) o solver pimpleFluid + Darcy converge mas
+//   produz U_outlet ~ 4.7 m/s (Re ~ 7500, dinamica dominada por inercia mais
+//   que Darcy). O smoke valida que (i) a malha + cellZone funcionam, (ii)
+//   IQN-ILS converge em ~21 iter, (iii) p e' diferenciado entre SAS bulk
+//   (~1.1 m^2/s^2) e outlet (0). Para U_outlet ~ fisiologico (~ um/s) sera'
+//   necessario elevar d em ~3-4 ordens (d ~ 1e18-1e19) - calibracao apos
+//   o primeiro mapeamento de regimes que e' o objetivo cientifico do caso.
+//
+// Referencia: cases/old/eye-fsi-tc0/fluid/system/fvOptions (TM/vitreous Darcy).
+
+peri_porous
+{
+    type            explicitPorositySource;
+    active          true;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        peri_porous;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            d   d [0 -2 0 0 0 0 0] (1e15 1e15 1e15);
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                coordinateRotation { type axesRotation; e1 (1 0 0); e2 (0 1 0); }
+            }
+        }
+    }
+}

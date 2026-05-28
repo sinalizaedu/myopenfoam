@@ -1,0 +1,351 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volVectorField;
+    location    "1";
+    object      D_0;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    posterior_on
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    posterior_pia
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    posterior_dura
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    dura_outer
+    {
+        type            solidTractionElasticFoundation;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           uniform (0 0 0);
+        gradient        uniform (0 0 0);
+        k               200000;
+    }
+    sclera_ring_outer
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           uniform (0 0 0);
+        gradient        uniform (0 0 0);
+    }
+    globo_outer
+    {
+        nonOrthogonalCorrections true;
+        type            fixedDisplacement;
+        value           uniform (0 0 0);
+    }
+    anterior_globo
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 0;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           uniform (0 0 0);
+        gradient        uniform (0 0 0);
+    }
+    fsi_pia
+    {
+        type            solidForce;
+        force           uniform (0 0 0);
+        value           uniform (0 0 0);
+        gradient        uniform (0 0 0);
+    }
+    fsi_dura
+    {
+        type            solidForce;
+        force           uniform (0 0 0);
+        value           uniform (0 0 0);
+        gradient        uniform (0 0 0);
+    }
+    fsi_sclera_peri
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 1333;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           nonuniform List<vector> 
+96
+(
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+)
+;
+        gradient        uniform (0 0 0);
+    }
+    fsi_sclera_ring
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 1333;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           nonuniform List<vector> 
+96
+(
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+(0 0 1.0542818e-08)
+)
+;
+        gradient        uniform (0 0 0);
+    }
+    contact_local
+    {
+        type            solidTraction;
+        nonOrthogonalCorrections true;
+        useUndeformedArea false;
+        traction        uniform (0 0 0);
+        pressure        uniform 9034;
+        secondOrder     false;
+        extrapolateValue false;
+        setEffectiveTraction false;
+        relaxationFactor 1;
+        value           nonuniform List<vector> 2((-2.9335444e-08 2.8892888e-09 0) (-2.9335444e-08 -2.8892888e-09 0));
+        gradient        uniform (0 0 0);
+    }
+}
+
+
+// ************************************************************************* //

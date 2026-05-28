@@ -1,0 +1,40 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+// preCICE adapter (lado FLUIDO).
+//   Escreve 'Force' = integral de pressao * area + tensao viscosa nas
+//   patches wall_bot e wall_top -> mapeado para Solid-Mesh (lumen_bot/top).
+
+preciceConfig "../precice-config.xml";
+
+participant Fluid;
+
+modules (FSI);
+
+interfaces
+{
+  Interface1
+  {
+    mesh              Fluid-Mesh;
+    patches           (wall_bot wall_top);
+    locations         faceCenters;
+
+    readData          ();
+
+    writeData
+    (
+      Force
+    );
+  };
+};
+
+FSI
+{
+  // rho usado pelo adapter para converter p_cinematico * rho * S em Force
+  rho rho [1 -3 0 0 0 0 0] 1050;
+}

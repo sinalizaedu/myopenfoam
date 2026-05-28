@@ -1,0 +1,61 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      p;
+}
+// Kinematic pressure p = P_static / rho  [m^2 / s^2].
+// Onda OMVS 6-piece (Sala 2019 / Guidoboni et al.) gerada por
+// brunaStuff/gen_ao_mestrado_omvs_pressure.py:
+//   SP = 120 mmHg = 15998.7 Pa  (p/rho = 15.237 m^2/s^2)
+//   DP =  80 mmHg = 10665.8 Pa  (p/rho = 10.158 m^2/s^2)
+//   PAM ~ 96 mmHg = 12787   Pa  (p/rho = 12.178 m^2/s^2)
+//   T   = 60/HR   = 0.870 s     (HR = 69 bpm)
+// Hann ramp TOTAL nos primeiros 100 ms (zero -> p_raw): a media tambem
+// rampa, evitando o overshoot inercial do solido na inicializacao.
+// internalField = 0 (consistente com rampa total: comeca com p=0).
+
+dimensions      [ 0 2 -2 0 0 0 0 ];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    inlet
+    {
+        type            uniformFixedValue;
+        uniformValue
+        {
+            type        tableFile;
+            file        "constant/inlet_pressure.dat";
+            outOfBounds clamp;
+        }
+        value           uniform 0;
+    }
+    outlet
+    {
+        type            uniformFixedValue;
+        uniformValue
+        {
+            type        tableFile;
+            file        "constant/outlet_pressure.dat";
+            outOfBounds clamp;
+        }
+        value           uniform 0;
+    }
+    wall
+    {
+        type            zeroGradient;
+    }
+    axis
+    {
+        type            zeroGradient;
+    }
+    ".*"
+    {
+        type            zeroGradient;
+    }
+}

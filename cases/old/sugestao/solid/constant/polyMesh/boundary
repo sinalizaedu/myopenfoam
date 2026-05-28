@@ -1,0 +1,163 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+20
+(
+    posterior_on
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          256;
+        startFace       206297;
+    }
+    posterior_ons
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          256;
+        startFace       206553;
+    }
+    ons_outer
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          960;
+        startFace       206809;
+    }
+    sclera_outer
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          32;
+        startFace       207769;
+    }
+    globo_outer
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          32;
+        startFace       207801;
+    }
+    anterior_globo
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          512;
+        startFace       207833;
+    }
+    inner_cap_back
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          96;
+        startFace       208345;
+    }
+    inner_cap_front
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          96;
+        startFace       208441;
+    }
+    arteria_lumen
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          5088;
+        startFace       208537;
+    }
+    arteria_externa
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          5088;
+        startFace       213625;
+    }
+    fat_x_min
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          1344;
+        startFace       218713;
+    }
+    fat_x_max
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          1344;
+        startFace       220057;
+    }
+    fat_y_min
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          2112;
+        startFace       221401;
+    }
+    fat_y_max
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          2112;
+        startFace       223513;
+    }
+    fat_z_min
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          693;
+        startFace       225625;
+    }
+    fat_z_max
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          693;
+        startFace       226318;
+    }
+    fat_inner_nerve
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          1573;
+        startFace       227011;
+    }
+    fat_inner_arteria
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          1295;
+        startFace       228584;
+    }
+    on_outer
+    {
+        type            wall;
+        inGroups        2(wall csf_interface_baffle);
+        nFaces          960;
+        startFace       229879;
+    }
+    ons_inner
+    {
+        type            wall;
+        inGroups        2(wall csf_interface_baffle);
+        nFaces          960;
+        startFace       230839;
+    }
+)
+
+// ************************************************************************* //

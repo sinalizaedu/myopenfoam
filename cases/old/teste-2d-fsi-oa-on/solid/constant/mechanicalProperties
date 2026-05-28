@@ -1,0 +1,76 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on                                                           |
+| Mechanical properties (5 zonas: on, ons, fat_below, fat_above, oa_wall)      |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// =============================================================================
+//  Cinco zonas (criadas por topoSetDict apos blockMesh):
+//
+//    on         : tecido neural,  disco r <= 1.5 mm em torno de (10, 7.5) mm
+//    ons        : bainha,         annulus 1.5 < r <= 2.5 mm
+//    fat_below  : gordura abaixo, complemento em Block A (y in [0, 10])
+//    fat_above  : gordura acima,  Block D (y in [11.5, 20])
+//    oa_wall    : parede arterial, Blocks B+C (y in [10,10.2] U [11.3,11.5])
+//
+//  No FSI:
+//    - oa_wall recebe forcas pulsateis na superficie do lumen (preCICE)
+//    - on/ons/fat_below interagem via solidContact com oa_mestrado (base de B)
+//
+//  Valores E identicos ao caso solid-only para consistencia.
+//  E_fat = 100 kPa (fat confinado, in vivo, NAO os 500 Pa de Schoemaker
+//  "free fat") -- ver justificativa no caso solid-only.
+// =============================================================================
+
+planeStress     no;
+
+mechanical
+(
+    on
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3.0e4;   // 30 kPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+
+    ons
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3.0e6;   // 3 MPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+
+    fat_below
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ]  900;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1.0e5;   // 100 kPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+
+    fat_above
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ]  900;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1.0e5;   // 100 kPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+
+    oa_wall
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1050;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3.0e5;   // 0.3 MPa (igual ao ao-mestrado)
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+);
+
+// ************************************************************************* //

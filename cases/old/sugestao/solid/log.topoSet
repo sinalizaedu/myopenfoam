@@ -1,0 +1,66 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict_csf
+Date   : May 25 2026
+Time   : 02:16:00
+Host   : 966b8a85630c
+PID    : 4612
+I/O    : uncollated
+Case   : /simulation/sugestao/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = 0
+
+Reading topoSetDict_csf
+
+Time = 0
+    mesh not changed.
+Created cellSet on_cells
+    Applying source zoneToCell
+--> FOAM IOWarning :
+    Found [v1806] 'name' entry instead of 'zone' in dictionary "system/topoSetDict_csf/actions/sourceInfo"
+
+    This keyword is 90 months old.
+
+    Adding all cells of cell zones: (on) ...
+    Using zone on with 7680 cells
+    cellSet on_cells now size 7680
+Created cellSet ons_cells
+    Applying source zoneToCell
+--> FOAM IOWarning :
+    Found [v1806] 'name' entry instead of 'zone' in dictionary "system/topoSetDict_csf/actions/sourceInfo"
+
+    This keyword is 90 months old.
+
+    Adding all cells of cell zones: (ons) ...
+    Using zone ons with 7680 cells
+    cellSet ons_cells now size 7680
+Created faceSet csf_interface_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (on_cells)
+    faceSet csf_interface_faces now size 23776
+Read set faceSet csf_interface_faces size:23776
+    Applying source cellToFace
+    Adding faces according to cell sets: (ons_cells)
+    faceSet csf_interface_faces now size 960
+Created faceZoneSet csf_interface
+    Applying source setsToFaceZone
+    Adding all faces from face set: csf_interface_faces; orientation pointing away from cell set: on_cells ...
+    faceZoneSet csf_interface now size 960
+
+End
+

@@ -1,0 +1,38 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+// on-mestrado — cria patch local `contact_local` (faces extraidas do ons_outer
+// pelo topoSetDict_contact).  As faces movidas saem do ons_outer e passam a
+// pertencer ao novo patch contact_local; o restante do ons_outer continua na
+// sua zona com mola de Winkler.
+//
+// Tambem renomeamos o antigo `contact_artoph` (face uniforme do setor +X que
+// nao corresponde mais ao contato real) para `ons_outer_E`, e aplicamos
+// Winkler tambem nele atraves do 0/D.  Nao precisamos mover faces — basta
+// renomear via `constructFrom patches`.
+
+pointSync   false;
+
+patches
+(
+    // Novo patch de contato local (artéria → ONS na posição real do toque)
+    {
+        name            contact_local;
+        patchInfo       { type wall; }
+        constructFrom   set;
+        set             contact_local;
+    }
+
+    // Renomeia o antigo +X uniforme para deixar claro que vira parte do Winkler
+    {
+        name            ons_outer_E;
+        patchInfo       { type wall; }
+        constructFrom   patches;
+        patches         ( contact_artoph );
+    }
+);

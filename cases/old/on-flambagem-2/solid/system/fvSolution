@@ -1,0 +1,27 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+// Setup linear funcional (igual run anterior que convergiu em 602 iter).
+solvers
+{
+    "D|DD"
+    {
+        solver          PCG;
+        preconditioner  FDIC;
+        tolerance       1e-12;
+        relTol          0.1;
+    }
+}
+
+relaxationFactors
+{
+    fields
+    {
+        D       0.3;
+    }
+}

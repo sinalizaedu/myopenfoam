@@ -1,0 +1,32 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      p;
+}
+
+// Pressao cinematica p/rho (pimpleFluid e' incompressivel).
+// P_CSF = 1333 Pa  =>  p_kinematic = 1333 / 1000 = 1.333 m^2/s^2
+//
+// inlet (z=0, anel SAS r=1.55-2.35): cisterna quiasmatica = PIC normal
+// 4 paredes FSI: zeroGradient (cul-de-sac fechado, p quase uniforme).
+
+dimensions      [ 0 2 -2 0 0 0 0 ];
+
+internalField   uniform 1.333;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 1.333;
+    }
+
+    fsi_pia          { type zeroGradient; }
+    fsi_dura         { type zeroGradient; }
+    fsi_sclera_peri  { type zeroGradient; }
+    fsi_sclera_ring  { type zeroGradient; }
+}

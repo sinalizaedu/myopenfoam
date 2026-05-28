@@ -1,0 +1,43 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createBafflesDict_csf;
+}
+
+// sugestao/solid - duplica as faces internas ON-ONS (faceZone csf_interface,
+// criada por topoSetDict_csf) em dois patches externos:
+//   on_outer  (lado da zona ON, normal aponta para fora, +radial)
+//   ons_inner (lado da zona ONS, normal aponta para dentro, -radial)
+//
+// Esse "debonding" controlado prepara o caso para a FASE 2 (CSF), na qual
+// pressao CSF pode ser aplicada independentemente em cada lado da interface
+// para modelar a expansao diametral da bainha (DBON).
+//
+// FASE ATUAL: ambos os patches recebem solidTraction(0) em solid/0/D.
+
+internalFacesOnly true;
+
+baffles
+{
+    csf_interface_baffle
+    {
+        type        faceZone;
+        zoneName    csf_interface;
+
+        patches
+        {
+            master
+            {
+                name            on_outer;
+                type            wall;
+            }
+            slave
+            {
+                name            ons_inner;
+                type            wall;
+            }
+        }
+    }
+}

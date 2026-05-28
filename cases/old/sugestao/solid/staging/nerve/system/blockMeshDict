@@ -1,0 +1,265 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// sugestao/solid/staging/nerve — nervo optico + bainha + lc + sclera + globo.
+// Versao adaptada do on-mestrado/solid/system/blockMeshDict, com unificacao do
+// patch contact_artoph em ons_outer (todo o perimetro ONS i_max). O setor de
+// contato com a arteria emerge dinamicamente do solver de contato no caso
+// unificado, em vez de ser pre-definido geometricamente.
+//
+// cellZones criadas pelo blockMesh (via blockName): on, ons, lc, sclera, globo
+//
+// Patches:
+//   posterior_on    — z=0 ON          → fixedDisplacement (canal optico)
+//   posterior_ons   — z=0 ONS         → solidTraction(0)  (placeholder CSF)
+//   ons_outer       — i_max ONS (todo perimetro, z=0-30) → solidContact slave
+//                                                          + Winkler nas faces
+//                                                          nao-contato
+//   sclera_outer    — i_max sclera    → solidTraction(0)
+//   globo_outer     — i_max globo     → solidTraction(0)
+//   anterior_globo  — z=31.0 globo    → fixedDisplacement (orbita)
+//
+// Patch ons_inner (interface radial ON-ONS) e criado a posteriori via
+// topoSet+createPatch (preparacao FASE 2 com CSF).
+
+scale   0.001;
+
+vertices
+(
+    //  ── Face z=0 (posterior) ─────────────────────────────────────────────
+    (  0.75    0.75    0  )  //  0  sq_NE
+    ( -0.75    0.75    0  )  //  1  sq_NW
+    ( -0.75   -0.75    0  )  //  2  sq_SW
+    (  0.75   -0.75    0  )  //  3  sq_SE
+
+    (  1.06066   1.06066   0  )  //  4  on_NE
+    ( -1.06066   1.06066   0  )  //  5  on_NW
+    ( -1.06066  -1.06066   0  )  //  6  on_SW
+    (  1.06066  -1.06066   0  )  //  7  on_SE
+
+    //  ── Face z=30 (juncao ON-lc) ─────────────────────────────────────────
+    (  0.75    0.75    30 )  //  8  sq_NE_b
+    ( -0.75    0.75    30 )  //  9  sq_NW_b
+    ( -0.75   -0.75    30 )  // 10  sq_SW_b
+    (  0.75   -0.75    30 )  // 11  sq_SE_b
+
+    (  1.06066   1.06066   30 )  // 12  on_NE_b
+    ( -1.06066   1.06066   30 )  // 13  on_NW_b
+    ( -1.06066  -1.06066   30 )  // 14  on_SW_b
+    (  1.06066  -1.06066   30 )  // 15  on_SE_b
+
+    (  1.76777   1.76777   0  )  // 16  ons_NE
+    ( -1.76777   1.76777   0  )  // 17  ons_NW
+    ( -1.76777  -1.76777   0  )  // 18  ons_SW
+    (  1.76777  -1.76777   0  )  // 19  ons_SE
+
+    (  1.76777   1.76777   30 )  // 20  ons_NE_b
+    ( -1.76777   1.76777   30 )  // 21  ons_NW_b
+    ( -1.76777  -1.76777   30 )  // 22  ons_SW_b
+    (  1.76777  -1.76777   30 )  // 23  ons_SE_b
+
+    //  ── Camada lc+sclera z=30.5 ─────────────────────────────────────────
+    (  0.75    0.75    30.5 )  // 24
+    ( -0.75    0.75    30.5 )  // 25
+    ( -0.75   -0.75    30.5 )  // 26
+    (  0.75   -0.75    30.5 )  // 27
+
+    (  1.06066   1.06066   30.5 )  // 28
+    ( -1.06066   1.06066   30.5 )  // 29
+    ( -1.06066  -1.06066   30.5 )  // 30
+    (  1.06066  -1.06066   30.5 )  // 31
+
+    (  1.76777   1.76777   30.5 )  // 32
+    ( -1.76777   1.76777   30.5 )  // 33
+    ( -1.76777  -1.76777   30.5 )  // 34
+    (  1.76777  -1.76777   30.5 )  // 35
+
+    //  ── Casca do globo z=31.0 ────────────────────────────────────────────
+    (  0.75    0.75    31.0 )  // 36
+    ( -0.75    0.75    31.0 )  // 37
+    ( -0.75   -0.75    31.0 )  // 38
+    (  0.75   -0.75    31.0 )  // 39
+
+    (  1.06066   1.06066   31.0 )  // 40
+    ( -1.06066   1.06066   31.0 )  // 41
+    ( -1.06066  -1.06066   31.0 )  // 42
+    (  1.06066  -1.06066   31.0 )  // 43
+
+    (  1.76777   1.76777   31.0 )  // 44
+    ( -1.76777   1.76777   31.0 )  // 45
+    ( -1.76777  -1.76777   31.0 )  // 46
+    (  1.76777  -1.76777   31.0 )  // 47
+);
+
+blocks
+(
+    // ── Zona ON (cilindro, r=0–1.5mm, z=0–30mm) ─────────────────────────
+    hex (  0  1  2  3    8  9 10 11 )  on   (  8  8  30 )  simpleGrading ( 1 1 1 )
+    hex (  3  7  4  0   11 15 12  8 )  on   (  6  8  30 )  simpleGrading ( 1 1 1 )
+    hex (  0  4  5  1    8 12 13  9 )  on   (  6  8  30 )  simpleGrading ( 1 1 1 )
+    hex (  1  5  6  2    9 13 14 10 )  on   (  6  8  30 )  simpleGrading ( 1 1 1 )
+    hex (  2  6  7  3   10 14 15 11 )  on   (  6  8  30 )  simpleGrading ( 1 1 1 )
+
+    // ── Zona ONS (anel, r=1.5–2.5mm, z=0–30mm) — todos i_max em ons_outer
+    hex (  7 19 16  4   15 23 20 12 )  ons  (  8  8  30 )  simpleGrading ( 1 1 1 )  // ONS_E
+    hex (  4 16 17  5   12 20 21 13 )  ons  (  8  8  30 )  simpleGrading ( 1 1 1 )  // ONS_N
+    hex (  5 17 18  6   13 21 22 14 )  ons  (  8  8  30 )  simpleGrading ( 1 1 1 )  // ONS_W
+    hex (  6 18 19  7   14 22 23 15 )  ons  (  8  8  30 )  simpleGrading ( 1 1 1 )  // ONS_S
+
+    // ── Zona lc (lamina cribrosa, r=0–1.5mm, z=30–30.5mm) ───────────────
+    hex (  8  9 10 11   24 25 26 27 )  lc   (  8  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 11 15 12  8   27 31 28 24 )  lc   (  6  8  1 )  simpleGrading ( 1 1 1 )
+    hex (  8 12 13  9   24 28 29 25 )  lc   (  6  8  1 )  simpleGrading ( 1 1 1 )
+    hex (  9 13 14 10   25 29 30 26 )  lc   (  6  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 10 14 15 11   26 30 31 27 )  lc   (  6  8  1 )  simpleGrading ( 1 1 1 )
+
+    // ── Zona sclera (anel, r=1.5–2.5mm, z=30–30.5mm) ────────────────────
+    hex ( 15 23 20 12   31 35 32 28 )  sclera  (  8  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 12 20 21 13   28 32 33 29 )  sclera  (  8  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 13 21 22 14   29 33 34 30 )  sclera  (  8  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 14 22 23 15   30 34 35 31 )  sclera  (  8  8  1 )  simpleGrading ( 1 1 1 )
+
+    // ── Zona globo (z=30.5–31.0mm) ───────────────────────────────────────
+    hex ( 24 25 26 27   36 37 38 39 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 27 31 28 24   39 43 40 36 )  globo  (  6  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 24 28 29 25   36 40 41 37 )  globo  (  6  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 25 29 30 26   37 41 42 38 )  globo  (  6  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 26 30 31 27   38 42 43 39 )  globo  (  6  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 31 35 32 28   43 47 44 40 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 28 32 33 29   40 44 45 41 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 29 33 34 30   41 45 46 42 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )
+    hex ( 30 34 35 31   42 46 47 43 )  globo  (  8  8  1 )  simpleGrading ( 1 1 1 )
+);
+
+edges
+(
+    arc  4  7  (  1.5    0      0  )
+    arc  4  5  (  0      1.5    0  )
+    arc  5  6  ( -1.5    0      0  )
+    arc  6  7  (  0     -1.5    0  )
+
+    arc 12 15  (  1.5    0      30 )
+    arc 12 13  (  0      1.5    30 )
+    arc 13 14  ( -1.5    0      30 )
+    arc 14 15  (  0     -1.5    30 )
+
+    arc 16 19  (  2.5    0      0  )
+    arc 16 17  (  0      2.5    0  )
+    arc 17 18  ( -2.5    0      0  )
+    arc 18 19  (  0     -2.5    0  )
+
+    arc 20 23  (  2.5    0      30 )
+    arc 20 21  (  0      2.5    30 )
+    arc 21 22  ( -2.5    0      30 )
+    arc 22 23  (  0     -2.5    30 )
+
+    arc 28 31  (  1.5    0      30.5 )
+    arc 28 29  (  0      1.5    30.5 )
+    arc 29 30  ( -1.5    0      30.5 )
+    arc 30 31  (  0     -1.5    30.5 )
+
+    arc 32 35  (  2.5    0      30.5 )
+    arc 32 33  (  0      2.5    30.5 )
+    arc 33 34  ( -2.5    0      30.5 )
+    arc 34 35  (  0     -2.5    30.5 )
+
+    arc 40 43  (  1.5    0      31.0 )
+    arc 40 41  (  0      1.5    31.0 )
+    arc 41 42  ( -1.5    0      31.0 )
+    arc 42 43  (  0     -1.5    31.0 )
+
+    arc 44 47  (  2.5    0      31.0 )
+    arc 44 45  (  0      2.5    31.0 )
+    arc 45 46  ( -2.5    0      31.0 )
+    arc 46 47  (  0     -2.5    31.0 )
+);
+
+boundary
+(
+    posterior_on
+    {
+        type wall;
+        faces
+        (
+            (  0  1  2  3 )
+            (  3  7  4  0 )
+            (  0  4  5  1 )
+            (  1  5  6  2 )
+            (  2  6  7  3 )
+        );
+    }
+
+    posterior_ons
+    {
+        type wall;
+        faces
+        (
+            (  7 19 16  4 )
+            (  4 16 17  5 )
+            (  5 17 18  6 )
+            (  6 18 19  7 )
+        );
+    }
+
+    // Setor i_max ONS unificado: todo perimetro (E, N, W, S) eh candidato
+    // a contato com a arteria. solver solidContact identifica dinamicamente
+    // as faces ativas; faces remanescentes recebem Winkler (gordura orbital)
+    // pelo composite BC.
+    ons_outer
+    {
+        type wall;
+        faces
+        (
+            ( 19 16 20 23 )   // ONS_E i_max (+X)  ← antes era contact_artoph
+            ( 16 17 21 20 )   // ONS_N i_max (+Y)
+            ( 17 18 22 21 )   // ONS_W i_max (-X)
+            ( 18 19 23 22 )   // ONS_S i_max (-Y)
+        );
+    }
+
+    sclera_outer
+    {
+        type wall;
+        faces
+        (
+            ( 23 20 32 35 )
+            ( 20 21 33 32 )
+            ( 21 22 34 33 )
+            ( 22 23 35 34 )
+        );
+    }
+
+    globo_outer
+    {
+        type wall;
+        faces
+        (
+            ( 35 32 44 47 )
+            ( 32 33 45 44 )
+            ( 33 34 46 45 )
+            ( 34 35 47 46 )
+        );
+    }
+
+    anterior_globo
+    {
+        type wall;
+        faces
+        (
+            ( 36 37 38 39 )
+            ( 39 43 40 36 )
+            ( 36 40 41 37 )
+            ( 37 41 42 38 )
+            ( 38 42 43 39 )
+            ( 43 47 44 40 )
+            ( 40 44 45 41 )
+            ( 41 45 46 42 )
+            ( 42 46 47 43 )
+        );
+    }
+);

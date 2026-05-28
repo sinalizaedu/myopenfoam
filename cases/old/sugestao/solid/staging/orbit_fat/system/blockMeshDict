@@ -1,0 +1,89 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// sugestao/solid/staging/orbit_fat — paralelepipedo de gordura orbital 3D que
+// envolve a arteria + nervo + ONS + LC + sclera + globo.
+//
+// bbox: x:[-16, +6]mm  y:[-8, +6]mm  z:[-7, +36]mm  (volume bruto 22x14x43mm)
+// resolucao 22x14x43 cells (~1mm cell size). cellZone: orbital_fat.
+//
+// Apos blockMesh, este mesh tem cells que se sobrepoem com:
+//   - arteria (mesh extrudado curvilinear, copiado do ao-mestrado)
+//   - nervo + ONS + LC (cilindro R=2.5mm em (0,0), z=[0, 30.5])
+//   - sclera + globo (cilindro R=2.5mm em (0,0), z=[30, 31])
+// Essas cells sobrepostas sao removidas por topoSet+subsetMesh em
+// solid/Allmesh, criando os patches:
+//   - fat_inner_arteria (interface gordura<->arteria_externa)
+//   - fat_inner_nerve   (interface gordura<->ons_outer + sclera_outer + globo_outer)
+//
+// Patches externos do paralelepipedo (paredes da orbita ossea, fixedDisplacement):
+//   fat_x_min, fat_x_max, fat_y_min, fat_y_max, fat_z_min, fat_z_max
+
+scale   0.001;
+
+vertices
+(
+    // Z = -7 (face posterior do paralelepipedo)
+    ( -16  -8  -7 )  // 0
+    (   6  -8  -7 )  // 1
+    (   6   6  -7 )  // 2
+    ( -16   6  -7 )  // 3
+
+    // Z = +36 (face anterior do paralelepipedo)
+    ( -16  -8  36 )  // 4
+    (   6  -8  36 )  // 5
+    (   6   6  36 )  // 6
+    ( -16   6  36 )  // 7
+);
+
+blocks
+(
+    // Bloco unico: paralelepipedo de gordura orbital.
+    // Resolucao ~0.66mm cell size:  33x21x64 = 44352 cells brutas.
+    // Refinamento vs versao anterior (22x14x43 = 13244): 3.3x cells, slivers
+    // menores na fronteira artery.stl (subsetMesh).
+    hex (0 1 2 3 4 5 6 7) orbital_fat (33 21 64) simpleGrading (1 1 1)
+);
+
+edges ();
+
+boundary
+(
+    fat_x_min
+    {
+        type wall;
+        faces ( ( 0 4 7 3 ) );
+    }
+    fat_x_max
+    {
+        type wall;
+        faces ( ( 1 2 6 5 ) );
+    }
+    fat_y_min
+    {
+        type wall;
+        faces ( ( 0 1 5 4 ) );
+    }
+    fat_y_max
+    {
+        type wall;
+        faces ( ( 2 3 7 6 ) );
+    }
+    fat_z_min
+    {
+        type wall;
+        faces ( ( 0 3 2 1 ) );
+    }
+    fat_z_max
+    {
+        type wall;
+        faces ( ( 4 5 6 7 ) );
+    }
+);
+
+mergePatchPairs ();

@@ -1,0 +1,62 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// on-flam-sfsi-2 - 4 zonas (on/pia/sas/dura) com propriedades materiais
+// IDENTICAS as do on-mestrado-2 ANATOMICO:
+//   on   : nervo neural,    r=0    -1.50,  E=30  kPa, nu=0.45, rho=1000
+//   pia  : pia mater,       r=1.50 -1.55,  E=3   MPa, nu=0.45, rho=1100
+//   sas  : SAS (CSF solid), r=1.55 -2.35,  E=100 kPa, nu=0.30, rho=1000
+//   dura : dura mater,      r=2.35 -2.50,  E=3   MPa, nu=0.45, rho=1100
+//
+// LEI CONSTITUTIVA: neoHookeanElastic (em vez do linearElastic do on-mestrado-2).
+// Justificativa: o solver NL geometry (necessario para capturar bifurcacao de
+// flambagem) requer lei nao-linear. neoHookean reduz ao Hooke linear em
+// pequenas deformacoes e e mais robusto que StVenantKirchhoffElastic sob
+// compressao axial finita (StVK perde monotonicidade em compressao com nu
+// proximo de 0.5 -> NaN).
+//
+// nu_sas=0.30 preservado do on-mestrado-2 (SAS modelado como solido soft
+// quase-incompressivel "fluid-like", K=83 kPa, G=38 kPa). Nu mais alto
+// disparava locking volumetrico em FVM segregado.
+
+planeStress     no;
+
+mechanical
+(
+    on
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 30e3;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+
+    pia
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+
+    sas
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 100e3;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+
+    dura
+    {
+        type    neoHookeanElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+);

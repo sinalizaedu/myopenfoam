@@ -1,0 +1,63 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      binary;
+    arch        "LSB;label=32;scalar=64";
+    class       surfaceTensorField;
+    location    "14";
+    object      Ff_;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 0 0 0 0];
+
+internalField   uniform (1 0 0 0 1 0 0 0 1);
+
+boundaryField
+{
+    fixed
+    {
+        type            calculated;
+        value           uniform (1 0 0 0 1 0 0 0 1);
+    }
+    top
+    {
+        type            calculated;
+        value           uniform (1 0 0 0 1 0 0 0 1);
+    }
+    xMinus
+    {
+        type            calculated;
+        value           uniform (1 0 0 0 1 0 0 0 1);
+    }
+    xPlus
+    {
+        type            calculated;
+        value           uniform (1 0 0 0 1 0 0 0 1);
+    }
+    yMinus
+    {
+        type            calculated;
+        value           uniform (1 0 0 0 1 0 0 0 1);
+    }
+    yPlus
+    {
+        type            calculated;
+        value           uniform (1 0 0 0 1 0 0 0 1);
+    }
+    imperfection
+    {
+        type            calculated;
+        value           uniform (1 0 0 0 1 0 0 0 1);
+    }
+}
+
+
+// ************************************************************************* //

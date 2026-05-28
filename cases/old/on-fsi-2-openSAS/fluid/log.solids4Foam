@@ -1,0 +1,571 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : May 26 2026
+Time   : 01:20:17
+Host   : 11e9c566ab2e
+PID    : 1754
+I/O    : uncollated
+Case   : /simulation/on-fsi-2-openSAS/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel fluidModel
+
+Selecting fluidModel pimpleFluid
+Selecting dynamicFvMesh dynamicMotionSolverFvMesh
+Selecting motion solver: displacementLaplacian
+Applying motion to entire mesh
+Selecting motion diffusion: quadratic
+Selecting motion diffusion: inverseDistance
+Selecting patchDistMethod meshWave
+Reading g from constant directory
+No finite volume options present
+
+Selecting incompressible transport model Newtonian
+Selecting turbulence model type laminar
+Selecting laminar stress model Stokes
+
+PIMPLE: Operating solver in PISO mode
+
+Constructing face velocity Uf
+
+Courant Number mean: 0 max: 0
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[precice] [0m This is preCICE version 3.3.1
+---[precice] [0m Revision info: v3.3.1
+---[precice] [0m Build type: Release (without debug log)
+---[precice] [0m Working directory "/simulation/on-fsi-2-openSAS/fluid"
+---[precice] [0m Configuring preCICE with configuration "../precice-config.xml"
+---[precice] [0m I am participant "Fluid"
+---[precice] [0m Setting up primary communication to coupling partner/s
+---[precice] [0m Primary ranks are connected
+---[precice] [0m Setting up preliminary secondary communication to coupling partner/s
+---[precice] [0m Prepare partition for mesh Fluid-Mesh
+---[precice] [0m Receive global mesh Solid-Mesh
+---[precice] [0m Setting up secondary communication to coupling partner/s
+---[precice] [0m Secondary ranks are connected
+---[precice] [0m Automatic RBF mapping alias from mesh "Fluid-Mesh" to mesh "Solid-Mesh" in "write" direction resolves to "partition-of-unity RBF" .
+---[precice] [0m Computing "partition-of-unity RBF" mapping from mesh "Fluid-Mesh" to mesh "Solid-Mesh" in "write" direction.
+---[precice] [0m Mapping "Force" for t=0 from "Fluid-Mesh" to "Solid-Mesh" (skipped zero sample)
+---[precice] [0m Automatic RBF mapping alias from mesh "Solid-Mesh" to mesh "Fluid-Mesh" in "read" direction resolves to "partition-of-unity RBF" .
+---[precice] [0m Computing "partition-of-unity RBF" mapping from mesh "Solid-Mesh" to mesh "Fluid-Mesh" in "read" direction.
+---[precice] [0m Mapping "Displacement" for t=0 from "Solid-Mesh" to "Fluid-Mesh" (skipped zero sample)
+---[precice] [0m it 1 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 9.4955905e-05, Final residual = 3.9723002e-09, No Iterations 5
+DILUPBiCG:  Solving for Uy, Initial residual = 9.4969781e-05, Final residual = 3.9823314e-09, No Iterations 5
+DILUPBiCG:  Solving for Uz, Initial residual = 0.0012685926, Final residual = 8.2762626e-09, No Iterations 6
+GAMG:  Solving for p, Initial residual = 0.26481451, Final residual = 0.2625375, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 0.33234191, Final residual = 0.3418738, No Iterations 1000
+time step continuity errors : sum local = 1.0376268e-10, global = 7.1032322e-12, cumulative = 7.1032322e-12
+GAMG:  Solving for p, Initial residual = 0.39416586, Final residual = 0.35923588, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 0.24976299, Final residual = 0.24871977, No Iterations 1000
+time step continuity errors : sum local = 1.0275465e-10, global = 5.8460863e-12, cumulative = 1.2949319e-11
+GAMG:  Solving for p, Initial residual = 0.25880651, Final residual = 0.24559269, No Iterations 1000
+GAMG:  Solving for p, Initial residual = 0.24814053, Final residual = 0.2459886, No Iterations 1000
+time step continuity errors : sum local = 1.0293565e-10, global = 5.7539042e-12, cumulative = 1.8703223e-11
+ExecutionTime = 4.27 s  ClockTime = 5 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 2 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.6480079e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.0783998e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.3792621e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 6.7736635e-09, No Iterations 9
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.1964996e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 5.1439866e-09, No Iterations 9
+GAMG:  Solving for p, Initial residual = 0.99999995, Final residual = 6.8804609e-07, No Iterations 48
+GAMG:  Solving for p, Initial residual = 0.012605874, Final residual = 7.8324185e-07, No Iterations 20
+time step continuity errors : sum local = 6.2063661e-09, global = 1.5793488e-09, cumulative = 1.5980521e-09
+GAMG:  Solving for p, Initial residual = 0.44540243, Final residual = 8.8316728e-07, No Iterations 44
+GAMG:  Solving for p, Initial residual = 0.02994256, Final residual = 8.8486541e-07, No Iterations 24
+time step continuity errors : sum local = 2.3554029e-09, global = -6.3576619e-10, cumulative = 9.6228588e-10
+GAMG:  Solving for p, Initial residual = 0.093887882, Final residual = 7.5979067e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.0019653424, Final residual = 8.2752718e-07, No Iterations 10
+time step continuity errors : sum local = 1.8715298e-09, global = -5.1648898e-10, cumulative = 4.457969e-10
+ExecutionTime = 4.57 s  ClockTime = 18 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 3 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.1703293e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.0859091e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.3290528e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7160737e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6366544e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0605536e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 6.1500179e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.063954929, Final residual = 6.0167012e-07, No Iterations 26
+time step continuity errors : sum local = 1.0228294e-07, global = -9.4363249e-09, cumulative = -8.990528e-09
+GAMG:  Solving for p, Initial residual = 0.17330196, Final residual = 6.0420739e-07, No Iterations 30
+GAMG:  Solving for p, Initial residual = 0.16912703, Final residual = 7.5478906e-07, No Iterations 28
+time step continuity errors : sum local = 3.8277046e-08, global = 3.512859e-09, cumulative = -5.477669e-09
+GAMG:  Solving for p, Initial residual = 0.073984087, Final residual = 6.9518952e-07, No Iterations 24
+GAMG:  Solving for p, Initial residual = 0.016189267, Final residual = 7.911446e-07, No Iterations 20
+time step continuity errors : sum local = 2.9087967e-08, global = 5.1221303e-09, cumulative = -3.5553869e-10
+ExecutionTime = 4.83 s  ClockTime = 35 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 4 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.2275665e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.0546609e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.435831e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.708525e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6537173e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0525413e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.810603e-07, No Iterations 50
+GAMG:  Solving for p, Initial residual = 0.061656239, Final residual = 6.7411586e-07, No Iterations 22
+time step continuity errors : sum local = 1.1473579e-07, global = 2.0378552e-08, cumulative = 2.0023013e-08
+GAMG:  Solving for p, Initial residual = 0.17129165, Final residual = 7.6799115e-07, No Iterations 44
+GAMG:  Solving for p, Initial residual = 0.16416495, Final residual = 7.2120103e-07, No Iterations 26
+time step continuity errors : sum local = 3.6381732e-08, global = -6.6517787e-09, cumulative = 1.3371235e-08
+GAMG:  Solving for p, Initial residual = 0.073309245, Final residual = 8.5218604e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.015526064, Final residual = 7.9307179e-07, No Iterations 16
+time step continuity errors : sum local = 2.9166268e-08, global = -5.059975e-09, cumulative = 8.3112596e-09
+ExecutionTime = 5.11 s  ClockTime = 52 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 5 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.037856e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.339969e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.5653269e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7079245e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6632826e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0521464e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.1113454e-07, No Iterations 40
+GAMG:  Solving for p, Initial residual = 0.061699519, Final residual = 6.0170731e-07, No Iterations 26
+time step continuity errors : sum local = 1.0227659e-07, global = -1.3176206e-08, cumulative = -4.8649468e-09
+GAMG:  Solving for p, Initial residual = 0.17147946, Final residual = 7.0882537e-07, No Iterations 34
+GAMG:  Solving for p, Initial residual = 0.16421999, Final residual = 8.4541004e-07, No Iterations 28
+time step continuity errors : sum local = 4.2605677e-08, global = 5.3498563e-09, cumulative = 4.8490948e-10
+GAMG:  Solving for p, Initial residual = 0.073337301, Final residual = 5.7900256e-07, No Iterations 28
+GAMG:  Solving for p, Initial residual = 0.015531154, Final residual = 6.9832266e-07, No Iterations 20
+time step continuity errors : sum local = 2.5654104e-08, global = 5.6447494e-09, cumulative = 6.1296589e-09
+ExecutionTime = 5.41 s  ClockTime = 69 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 6 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.4216467e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.4200209e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.5188383e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7083849e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6619909e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0521922e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.7944553e-07, No Iterations 50
+GAMG:  Solving for p, Initial residual = 0.061822313, Final residual = 6.7689507e-07, No Iterations 22
+time step continuity errors : sum local = 1.1508546e-07, global = 2.0458313e-08, cumulative = 2.6587971e-08
+GAMG:  Solving for p, Initial residual = 0.17151305, Final residual = 7.6779929e-07, No Iterations 44
+GAMG:  Solving for p, Initial residual = 0.1645166, Final residual = 7.2379111e-07, No Iterations 26
+time step continuity errors : sum local = 3.6493906e-08, global = -6.6799978e-09, cumulative = 1.9907974e-08
+GAMG:  Solving for p, Initial residual = 0.073358924, Final residual = 8.5187971e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.015569022, Final residual = 7.924318e-07, No Iterations 16
+time step continuity errors : sum local = 2.9114687e-08, global = -5.0272966e-09, cumulative = 1.4880677e-08
+ExecutionTime = 5.7 s  ClockTime = 86 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 7 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 9.468433e-18, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.0393795e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.4681849e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7085507e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6549884e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0518382e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.1146144e-07, No Iterations 40
+GAMG:  Solving for p, Initial residual = 0.061807307, Final residual = 6.0205051e-07, No Iterations 26
+time step continuity errors : sum local = 1.0234383e-07, global = -1.3183827e-08, cumulative = 1.6968504e-09
+GAMG:  Solving for p, Initial residual = 0.1714909, Final residual = 7.0902007e-07, No Iterations 34
+GAMG:  Solving for p, Initial residual = 0.16449509, Final residual = 8.4552908e-07, No Iterations 28
+time step continuity errors : sum local = 4.2616123e-08, global = 5.3510819e-09, cumulative = 7.0479323e-09
+GAMG:  Solving for p, Initial residual = 0.07335146, Final residual = 5.7980527e-07, No Iterations 28
+GAMG:  Solving for p, Initial residual = 0.015564211, Final residual = 7.0043823e-07, No Iterations 20
+time step continuity errors : sum local = 2.5729296e-08, global = 5.6576353e-09, cumulative = 1.2705568e-08
+ExecutionTime = 5.97 s  ClockTime = 103 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 8 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.146159e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.4903655e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.5527693e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7087371e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6524744e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0519641e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.7928287e-07, No Iterations 50
+GAMG:  Solving for p, Initial residual = 0.061853846, Final residual = 6.7652188e-07, No Iterations 22
+time step continuity errors : sum local = 1.1501543e-07, global = 2.0447283e-08, cumulative = 3.3152851e-08
+GAMG:  Solving for p, Initial residual = 0.17150916, Final residual = 7.6778034e-07, No Iterations 44
+GAMG:  Solving for p, Initial residual = 0.16460228, Final residual = 7.2340548e-07, No Iterations 26
+time step continuity errors : sum local = 3.6469186e-08, global = -6.6747108e-09, cumulative = 2.647814e-08
+GAMG:  Solving for p, Initial residual = 0.073359379, Final residual = 8.5191769e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.015578314, Final residual = 7.9314404e-07, No Iterations 16
+time step continuity errors : sum local = 2.9137548e-08, global = -5.0396376e-09, cumulative = 2.1438503e-08
+ExecutionTime = 6.28 s  ClockTime = 120 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 9 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.1223247e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.5646134e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.4480376e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7088678e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6535641e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0522049e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.1106739e-07, No Iterations 40
+GAMG:  Solving for p, Initial residual = 0.061902116, Final residual = 6.0268477e-07, No Iterations 26
+time step continuity errors : sum local = 1.0248267e-07, global = -1.320022e-08, cumulative = 8.2382831e-09
+GAMG:  Solving for p, Initial residual = 0.17153548, Final residual = 7.0898485e-07, No Iterations 34
+GAMG:  Solving for p, Initial residual = 0.16471227, Final residual = 8.4616423e-07, No Iterations 28
+time step continuity errors : sum local = 4.2670141e-08, global = 5.3574187e-09, cumulative = 1.3595702e-08
+GAMG:  Solving for p, Initial residual = 0.073372534, Final residual = 5.803677e-07, No Iterations 28
+GAMG:  Solving for p, Initial residual = 0.015591957, Final residual = 7.0126636e-07, No Iterations 20
+time step continuity errors : sum local = 2.5765106e-08, global = 5.6668145e-09, cumulative = 1.9262516e-08
+ExecutionTime = 6.71 s  ClockTime = 137 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 10 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.0071338e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 8.7005475e-18, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.6426107e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7089481e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6553489e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0524091e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.7871536e-07, No Iterations 50
+GAMG:  Solving for p, Initial residual = 0.061941287, Final residual = 6.7689393e-07, No Iterations 22
+time step continuity errors : sum local = 1.1511542e-07, global = 2.0465636e-08, cumulative = 3.9728152e-08
+GAMG:  Solving for p, Initial residual = 0.17156264, Final residual = 7.6757965e-07, No Iterations 44
+GAMG:  Solving for p, Initial residual = 0.1647944, Final residual = 7.234576e-07, No Iterations 26
+time step continuity errors : sum local = 3.6495484e-08, global = -6.6779841e-09, cumulative = 3.3050168e-08
+GAMG:  Solving for p, Initial residual = 0.073382544, Final residual = 8.5172496e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.015603742, Final residual = 7.9260429e-07, No Iterations 16
+time step continuity errors : sum local = 2.9126128e-08, global = -5.0296286e-09, cumulative = 2.8020539e-08
+ExecutionTime = 7 s  ClockTime = 155 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 11 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.0960093e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.2997162e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.3145058e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7089531e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6552484e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.052477e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.108525e-07, No Iterations 40
+GAMG:  Solving for p, Initial residual = 0.061941869, Final residual = 6.0298967e-07, No Iterations 26
+time step continuity errors : sum local = 1.025479e-07, global = -1.3205879e-08, cumulative = 1.481466e-08
+GAMG:  Solving for p, Initial residual = 0.17156404, Final residual = 7.0895905e-07, No Iterations 34
+GAMG:  Solving for p, Initial residual = 0.16479669, Final residual = 8.465303e-07, No Iterations 28
+time step continuity errors : sum local = 4.2702954e-08, global = 5.363103e-09, cumulative = 2.0177763e-08
+GAMG:  Solving for p, Initial residual = 0.073384234, Final residual = 5.8056573e-07, No Iterations 28
+GAMG:  Solving for p, Initial residual = 0.015603395, Final residual = 7.0141262e-07, No Iterations 20
+time step continuity errors : sum local = 2.5779039e-08, global = 5.6720344e-09, cumulative = 2.5849798e-08
+ExecutionTime = 7.29 s  ClockTime = 172 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 12 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.3527809e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.5192192e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.3891117e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7089436e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6552803e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0524846e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.7855079e-07, No Iterations 50
+GAMG:  Solving for p, Initial residual = 0.061942554, Final residual = 6.7686482e-07, No Iterations 22
+time step continuity errors : sum local = 1.1511576e-07, global = 2.0463662e-08, cumulative = 4.631346e-08
+GAMG:  Solving for p, Initial residual = 0.17156497, Final residual = 7.67555e-07, No Iterations 44
+GAMG:  Solving for p, Initial residual = 0.16479608, Final residual = 7.2359275e-07, No Iterations 26
+time step continuity errors : sum local = 3.6498205e-08, global = -6.681347e-09, cumulative = 3.9632113e-08
+GAMG:  Solving for p, Initial residual = 0.073383101, Final residual = 8.5175313e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.015603968, Final residual = 7.9258521e-07, No Iterations 16
+time step continuity errors : sum local = 2.9126068e-08, global = -5.0286461e-09, cumulative = 3.4603467e-08
+ExecutionTime = 7.6 s  ClockTime = 188 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 13 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.0068354e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.4724635e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.4895274e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7089448e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6552583e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0524932e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.1076785e-07, No Iterations 40
+GAMG:  Solving for p, Initial residual = 0.061943024, Final residual = 6.0298611e-07, No Iterations 26
+time step continuity errors : sum local = 1.0254641e-07, global = -1.3205794e-08, cumulative = 2.1397673e-08
+GAMG:  Solving for p, Initial residual = 0.17156438, Final residual = 7.0893069e-07, No Iterations 34
+GAMG:  Solving for p, Initial residual = 0.16479947, Final residual = 8.4639545e-07, No Iterations 28
+time step continuity errors : sum local = 4.2698934e-08, global = 5.3615848e-09, cumulative = 2.6759258e-08
+GAMG:  Solving for p, Initial residual = 0.073384293, Final residual = 5.8048312e-07, No Iterations 28
+GAMG:  Solving for p, Initial residual = 0.015603666, Final residual = 7.0141805e-07, No Iterations 20
+time step continuity errors : sum local = 2.5780923e-08, global = 5.6715429e-09, cumulative = 3.24308e-08
+ExecutionTime = 7.88 s  ClockTime = 205 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 14 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.1417919e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.3945607e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.3594638e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7089937e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6552124e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0526272e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.7859984e-07, No Iterations 50
+GAMG:  Solving for p, Initial residual = 0.061952775, Final residual = 6.7687322e-07, No Iterations 22
+time step continuity errors : sum local = 1.1512259e-07, global = 2.0462456e-08, cumulative = 5.2893256e-08
+GAMG:  Solving for p, Initial residual = 0.17157411, Final residual = 7.6751204e-07, No Iterations 44
+GAMG:  Solving for p, Initial residual = 0.16481647, Final residual = 7.234447e-07, No Iterations 26
+time step continuity errors : sum local = 3.6498576e-08, global = -6.6816527e-09, cumulative = 4.6211604e-08
+GAMG:  Solving for p, Initial residual = 0.073386614, Final residual = 8.5164832e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.015606881, Final residual = 7.9256446e-07, No Iterations 16
+time step continuity errors : sum local = 2.9129694e-08, global = -5.0299658e-09, cumulative = 4.1181638e-08
+ExecutionTime = 8.18 s  ClockTime = 222 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 15 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.025936e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.0487522e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.3899488e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7090078e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6551515e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0526431e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.1071392e-07, No Iterations 40
+GAMG:  Solving for p, Initial residual = 0.061952912, Final residual = 6.031863e-07, No Iterations 26
+time step continuity errors : sum local = 1.0258937e-07, global = -1.3212286e-08, cumulative = 2.7969352e-08
+GAMG:  Solving for p, Initial residual = 0.17157411, Final residual = 7.0889362e-07, No Iterations 34
+GAMG:  Solving for p, Initial residual = 0.16481861, Final residual = 8.4671707e-07, No Iterations 28
+time step continuity errors : sum local = 4.2718843e-08, global = 5.3617965e-09, cumulative = 3.3331148e-08
+GAMG:  Solving for p, Initial residual = 0.073388075, Final residual = 5.8042479e-07, No Iterations 28
+GAMG:  Solving for p, Initial residual = 0.015606536, Final residual = 7.0144345e-07, No Iterations 20
+time step continuity errors : sum local = 2.5782478e-08, global = 5.6689677e-09, cumulative = 3.9000116e-08
+ExecutionTime = 8.48 s  ClockTime = 239 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 16 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.2488517e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.4504082e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.3120331e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7090183e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6551356e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0526571e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.7853026e-07, No Iterations 50
+GAMG:  Solving for p, Initial residual = 0.061953656, Final residual = 6.768999e-07, No Iterations 22
+time step continuity errors : sum local = 1.1512681e-07, global = 2.0463881e-08, cumulative = 5.9463997e-08
+GAMG:  Solving for p, Initial residual = 0.17157621, Final residual = 7.6752229e-07, No Iterations 44
+GAMG:  Solving for p, Initial residual = 0.16481734, Final residual = 7.2349131e-07, No Iterations 26
+time step continuity errors : sum local = 3.6502893e-08, global = -6.680789e-09, cumulative = 5.2783208e-08
+GAMG:  Solving for p, Initial residual = 0.073387458, Final residual = 8.5159647e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.015607195, Final residual = 7.9250596e-07, No Iterations 16
+time step continuity errors : sum local = 2.912788e-08, global = -5.0286877e-09, cumulative = 4.775452e-08
+ExecutionTime = 8.76 s  ClockTime = 255 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 17 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.1069953e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.4012561e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.3646164e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7090302e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.655111e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0526668e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.1071833e-07, No Iterations 40
+GAMG:  Solving for p, Initial residual = 0.061954606, Final residual = 6.0322875e-07, No Iterations 26
+time step continuity errors : sum local = 1.0259681e-07, global = -1.3214946e-08, cumulative = 3.4539574e-08
+GAMG:  Solving for p, Initial residual = 0.17157634, Final residual = 7.0891241e-07, No Iterations 34
+GAMG:  Solving for p, Initial residual = 0.16482148, Final residual = 8.4678855e-07, No Iterations 28
+time step continuity errors : sum local = 4.2722425e-08, global = 5.3621739e-09, cumulative = 3.9901748e-08
+GAMG:  Solving for p, Initial residual = 0.07338899, Final residual = 5.8052457e-07, No Iterations 28
+GAMG:  Solving for p, Initial residual = 0.01560707, Final residual = 7.0144302e-07, No Iterations 20
+time step continuity errors : sum local = 2.5781672e-08, global = 5.6690898e-09, cumulative = 4.5570838e-08
+ExecutionTime = 9.05 s  ClockTime = 272 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 18 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.4505588e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.5511682e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.5125418e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7090389e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6551048e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0526741e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.7835238e-07, No Iterations 50
+GAMG:  Solving for p, Initial residual = 0.061955212, Final residual = 6.7688454e-07, No Iterations 22
+time step continuity errors : sum local = 1.1512733e-07, global = 2.0463671e-08, cumulative = 6.6034509e-08
+GAMG:  Solving for p, Initial residual = 0.17157811, Final residual = 7.6751262e-07, No Iterations 44
+GAMG:  Solving for p, Initial residual = 0.16482008, Final residual = 7.2349198e-07, No Iterations 26
+time step continuity errors : sum local = 3.6502035e-08, global = -6.6812507e-09, cumulative = 5.9353258e-08
+GAMG:  Solving for p, Initial residual = 0.073388267, Final residual = 8.5150688e-07, No Iterations 36
+GAMG:  Solving for p, Initial residual = 0.015607694, Final residual = 7.9253701e-07, No Iterations 16
+time step continuity errors : sum local = 2.9130294e-08, global = -5.0311104e-09, cumulative = 5.4322148e-08
+ExecutionTime = 9.35 s  ClockTime = 289 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m it 19 (min: 1, max: 100), time-window 1, t 0 (max: 1), Dt 1, max-dt 1
+Time = 1
+
+Evolving fluid model: pimpleFluid
+Courant Number mean: 0 max: 0
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 1.3222537e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 1.1081397e-17, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.5743723e-17, No Iterations 1
+DILUPBiCG:  Solving for Ux, Initial residual = 1, Final residual = 1.7090528e-09, No Iterations 10
+DILUPBiCG:  Solving for Uy, Initial residual = 1, Final residual = 8.6550828e-09, No Iterations 9
+DILUPBiCG:  Solving for Uz, Initial residual = 1, Final residual = 2.0526823e-09, No Iterations 10
+GAMG:  Solving for p, Initial residual = 1, Final residual = 9.1074192e-07, No Iterations 40
+GAMG:  Solving for p, Initial residual = 0.061956306, Final residual = 6.0323343e-07, No Iterations 26
+time step continuity errors : sum local = 1.0260062e-07, global = -1.3214809e-08, cumulative = 4.1107339e-08
+GAMG:  Solving for p, Initial residual = 0.1715783, Final residual = 7.0891364e-07, No Iterations 34
+GAMG:  Solving for p, Initial residual = 0.16482457, Final residual = 8.4675265e-07, No Iterations 28
+time step continuity errors : sum local = 4.2721665e-08, global = 5.3625177e-09, cumulative = 4.6469857e-08
+GAMG:  Solving for p, Initial residual = 0.073389851, Final residual = 5.8064296e-07, No Iterations 28
+GAMG:  Solving for p, Initial residual = 0.015607625, Final residual = 7.0149278e-07, No Iterations 20
+time step continuity errors : sum local = 2.5782309e-08, global = 5.6689969e-09, cumulative = 5.2138854e-08
+ExecutionTime = 9.63 s  ClockTime = 305 s
+
+---[precice] [0m Mapping "Force" for t=1 from "Fluid-Mesh" to "Solid-Mesh"
+---[precice] [0m Time window completed
+---[precice] [0m Mapping "Displacement" for t=1 from "Solid-Mesh" to "Fluid-Mesh"
+---[precice] [0m Reached end at: final time-window: 1, final time: 1
+---[preciceAdapter] The coupling timestep completed. Writing the updated results.
+---[preciceAdapter] The coupling completed.
+---[precice] [0m Close communication channels
+---[preciceAdapter] The simulation was ended by preCICE. Calling the end() methods of any functionObject explicitly.
+---[preciceAdapter] Great that you are using the OpenFOAM-preCICE adapter! Next to the preCICE library and any other components, please also cite this adapter. Find how on https://precice.org/adapter-openfoam-overview.html.
+
+End
+
+I/O    : uncollated

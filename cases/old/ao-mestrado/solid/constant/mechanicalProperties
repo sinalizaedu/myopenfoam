@@ -1,0 +1,33 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// Parede da arteria oftalmica:
+//   modelo constitutivo : linear-elastico, isotropico, homogeneo
+//   E  (Modulo de Young)        = 0.3 MPa = 3e5 Pa  (rigidez baseline)
+//   nu (coeficiente de Poisson) = 0.49 (quase-incompressivel; tecido mole)
+//   rho                         = 1050 kg/m^3 (parede arterial)
+//
+// Justificativa: tecidos moles ricos em agua tem nu proximo de 0.5 (limite
+// incompressivel). nu=0.49 e o valor padrao para parede arterial em
+// estudos OMVS / FSI ocular.
+
+planeStress     no;
+
+mechanical
+(
+    arteria
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1050;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e5;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+);
+
+// ************************************************************************* //

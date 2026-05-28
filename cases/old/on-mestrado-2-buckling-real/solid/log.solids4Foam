@@ -1,0 +1,345 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : May 26 2026
+Time   : 17:27:59
+Host   : a73e14524ed2
+PID    : 80330
+I/O    : uncollated
+Case   : /simulation/on-mestrado-2-buckling-real/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel linearGeometryTotalDisplacement
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+    Winkler stiffness k = 200000 Pa/m
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+    pressure is time-varying
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Number of cells in new mesh : 7680
+Number of faces in new mesh : 23776
+Number of points in new mesh: 8463
+    oldInternalFaces : 1216
+Number of cells in new mesh : 960
+Number of faces in new mesh : 3872
+Number of points in new mesh: 1984
+    oldInternalFaces : 1952
+Number of cells in new mesh : 5760
+Number of faces in new mesh : 18432
+Number of points in new mesh: 6944
+    oldInternalFaces : 2112
+Number of cells in new mesh : 1920
+Number of faces in new mesh : 6784
+Number of points in new mesh: 2976
+    oldInternalFaces : 1024
+Number of cells in new mesh : 256
+Number of faces in new mesh : 1040
+Number of points in new mesh: 546
+    oldInternalFaces : 544
+Number of cells in new mesh : 128
+Number of faces in new mesh : 544
+Number of points in new mesh: 320
+    oldInternalFaces : 320
+Number of cells in new mesh : 160
+Number of faces in new mesh : 672
+Number of points in new mesh: 384
+    oldInternalFaces : 352
+Number of cells in new mesh : 544
+Number of faces in new mesh : 2192
+Number of points in new mesh: 1122
+    oldInternalFaces : 544
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+solvePressure = false
+    Setting `extrapolateValue` to `true` on the posterior_sas patch of the D field
+    Setting `extrapolateValue` to `true` on the dura_outer patch of the D field
+    Setting `extrapolateValue` to `true` on the sclera_ring_outer patch of the D field
+    Setting `extrapolateValue` to `true` on the globo_outer patch of the D field
+    Setting `extrapolateValue` to `true` on the anterior_globo patch of the D field
+    Setting `extrapolateValue` to `true` on the contact_local patch of the D field
+Creating forces_globo function object.
+Creating forces_apex_dura function object.
+Creating forces_apex_on function object.
+Creating forces_apex_pia function object.
+Time = 1
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+setCellDisplacements: reading cellDisplacements
+Initial Residual Norm = 1.7320508
+Initial Solution Norm = 0.0041893046
+ Iteration       Residual Norm           Step Norm
+       100        0.0025133983       3.5557884e-06
+       200        0.0010665598       1.0882297e-06
+       300        0.0012875185       1.4258624e-06
+       400       0.00041820968       4.4684316e-07
+       500       0.00025770854       2.6828427e-07
+       596: Converged - Relative residual tolerance met.
+Max epsilonEq = 0.020097638
+Max sigmaEq (von Mises stress) = 27210.791
+ExecutionTime = 14.66 s  ClockTime = 14 s
+
+Time = 2
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 0.00032050962
+Initial Solution Norm = 0.015386988
+ Iteration       Residual Norm           Step Norm
+       100       0.00026433129       5.2543563e-07
+       200       0.00015257918       3.4513238e-07
+       300       0.00014019089       1.8274727e-07
+       400       0.00014072373       1.4383789e-07
+       500       8.4344843e-05       1.8056202e-06
+       600       0.00014398062        1.934303e-07
+       700       5.1480582e-05         4.41221e-08
+       800       3.7207036e-05       4.4152848e-07
+       900       2.7158433e-05       8.3297372e-08
+      1000       2.0483109e-05       3.1050061e-07
+      1100       1.8806745e-05       7.4133586e-08
+      1200       1.3633653e-05       2.0532468e-07
+      1300       1.2153314e-05       4.4478413e-08
+      1400       9.7155016e-06       1.7111107e-07
+      1500       8.5488448e-06       1.5682838e-07
+      1600       7.6577783e-06       1.4971954e-07
+      1700       7.0044868e-06       1.2686224e-07
+      1800       6.2100027e-06       2.3173559e-08
+      1900       5.2924027e-06        1.034962e-07
+      2000       4.7656813e-06       8.8336382e-08
+      2100       4.1833701e-06        1.669518e-08
+      2200       3.6719854e-06       6.9821569e-08
+      2300       3.4696978e-06       1.2338356e-08
+      2400       2.9428309e-06       1.1464607e-08
+      2500       2.6889494e-06        4.227653e-08
+      2600       2.1611011e-06       3.7771667e-08
+      2700       1.8650567e-06       9.0302468e-09
+      2800       1.6754079e-06       2.9641791e-08
+      2847: Converged - Step norm relative tolerance met.
+Max epsilonEq = 0.023066902
+Max sigmaEq (von Mises stress) = 31144.419
+ExecutionTime = 126.9 s  ClockTime = 127 s
+
+Time = 3
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 0.00017465265
+Initial Solution Norm = 0.016932027
+ Iteration       Residual Norm           Step Norm
+       100         0.000147475       4.7397526e-07
+       200       7.5884725e-05       1.8927633e-06
+       300       4.9088087e-05       1.2287765e-06
+       400       3.6023738e-05       6.3500012e-08
+       500       2.6950123e-05       4.4560262e-08
+       600       1.3499275e-05       3.6426665e-07
+       700       8.8956054e-06       2.3506062e-07
+       800        5.559909e-06       1.3600074e-08
+       900       3.8157247e-06        6.637681e-09
+      1000       2.7990767e-06       4.4648815e-09
+      1100        2.240427e-06       3.4182552e-09
+      1187: Converged - Step norm relative tolerance met.
+Max epsilonEq = 0.025173806
+Max sigmaEq (von Mises stress) = 33995.481
+ExecutionTime = 153.94 s  ClockTime = 154 s
+
+Time = 4
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 0.00016056717
+Initial Solution Norm = 0.018451
+ Iteration       Residual Norm           Step Norm
+       100       0.00015768183        2.756142e-07
+       200       7.1175013e-05       1.8639974e-06
+       300       4.5521533e-05       1.2539962e-06
+       400       3.0404141e-05       7.8064976e-08
+       500       2.2342582e-05       3.9930349e-08
+       600       1.4736951e-05        2.638717e-08
+       700       9.5497367e-06       1.6657984e-08
+       800       7.0235681e-06        1.226337e-08
+       900       4.0393237e-06        7.344381e-09
+      1000       2.4648688e-06       1.1194228e-08
+      1100       1.7988987e-06       2.9389529e-09
+      1157: Converged - Step norm relative tolerance met.
+Max epsilonEq = 0.027284897
+Max sigmaEq (von Mises stress) = 36853.223
+ExecutionTime = 180.43 s  ClockTime = 180 s
+
+Time = 5
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 0.00014834291
+Initial Solution Norm = 0.01997005
+ Iteration       Residual Norm           Step Norm
+       100       0.00014634667       2.7586739e-07
+       200       6.6174146e-05       2.3553408e-07
+       300       4.5503024e-05        9.746502e-08
+       400       3.6301718e-05       8.7985167e-08
+       500       1.9261059e-05       4.0948216e-08
+       600       1.1846091e-05       3.3524416e-08
+       700       8.2689069e-06       2.2164263e-08
+       800       4.9306767e-06       3.0564065e-08
+       900       3.1935313e-06       9.0243836e-09
+      1000       2.2381904e-06       1.7298848e-08
+      1100       1.7255289e-06        3.281898e-09
+      1119: Converged - Step norm relative tolerance met.
+Max epsilonEq = 0.029395493
+Max sigmaEq (von Mises stress) = 39710.399
+ExecutionTime = 206.13 s  ClockTime = 206 s
+
+Time = 6
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 0.00013812733
+Initial Solution Norm = 0.021489107
+ Iteration       Residual Norm           Step Norm
+       100       0.00011533752       4.8374733e-07
+       200       6.3412843e-05       4.6299744e-07
+       300       4.0056536e-05       2.2436775e-07
+       400       3.0203175e-05       6.1906686e-08
+       500       1.6536053e-05       5.0640274e-08
+       600       1.0973958e-05       3.2744995e-08
+       700       7.0696254e-06       4.9219294e-08
+       800       4.5527571e-06       1.3725218e-08
+       900       3.2892731e-06       7.1463799e-09
+      1000       2.1570486e-06       6.2068501e-09
+      1100       1.5884354e-06       3.1405097e-09
+      1129: Converged - Step norm relative tolerance met.
+Max epsilonEq = 0.031507611
+Max sigmaEq (von Mises stress) = 42569.864
+ExecutionTime = 231.75 s  ClockTime = 232 s
+
+Time = 7
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 0.00012902872
+Initial Solution Norm = 0.023008243
+ Iteration       Residual Norm           Step Norm
+       100       0.00010829924       4.8238166e-07
+       200        5.979828e-05       3.2839155e-07
+       300       3.6926209e-05       1.2482782e-07
+       400       2.5774478e-05       6.2967674e-08
+       500       1.8198751e-05       4.0156303e-08
+       600       1.1949122e-05       2.5892816e-08
+       700       8.7852986e-06        1.883037e-08
+       800       4.2949748e-06       1.5889353e-07
+       900       2.9280288e-06       6.4310234e-09
+      1000       1.9967327e-06       6.4237624e-09
+      1079: Converged - Step norm relative tolerance met.
+Max epsilonEq = 0.033617455
+Max sigmaEq (von Mises stress) = 45426.137
+ExecutionTime = 256.19 s  ClockTime = 256 s
+
+Time = 8
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 0.00012118997
+Initial Solution Norm = 0.024527338
+ Iteration       Residual Norm           Step Norm
+       100       0.00010408933       2.1493381e-07
+       200       7.3419351e-05       1.4900523e-07
+       300       7.4770871e-05       1.4576637e-07
+       400       2.7846351e-05       7.8995536e-08
+       500       1.5142146e-05       2.9518885e-08
+       600       9.8900536e-06       1.9146686e-08
+       700       8.0810591e-06       1.5366651e-08
+       800         4.20156e-06       8.6904769e-09
+       900       2.7218818e-06       4.9075508e-09
+      1000       1.9615283e-06        3.950284e-09
+      1086: Converged - Step norm relative tolerance met.
+Max epsilonEq = 0.035729535
+Max sigmaEq (von Mises stress) = 48285.49
+ExecutionTime = 280.86 s  ClockTime = 281 s
+
+Time = 9
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 0.00011419315
+Initial Solution Norm = 0.02604648
+ Iteration       Residual Norm           Step Norm
+       100       0.00011380014       2.7629254e-07
+       200       5.4131534e-05       2.3695858e-07
+       300        3.575973e-05       9.9115536e-08
+       400       2.1615799e-05       1.4414911e-07
+       500        1.439207e-05       3.8371927e-08
+       600       9.2386287e-06       3.2825873e-08
+       700       6.0010084e-06       2.2622641e-07
+       800       4.2383948e-06       1.0956408e-08
+       900       2.5331555e-06       2.0307496e-08
+      1000       1.9211382e-06       4.5021947e-09
+      1073: Converged - Step norm relative tolerance met.
+Max epsilonEq = 0.037840656
+Max sigmaEq (von Mises stress) = 51143.616
+ExecutionTime = 305.61 s  ClockTime = 306 s
+
+Time = 10
+
+Evolving solid solver using an implicit segregated approach
+Solving the momentum equation for D
+Initial Residual Norm = 0.00010802763
+Initial Solution Norm = 0.027565636
+ Iteration       Residual Norm           Step Norm
+       100       9.1087521e-05       4.8464837e-07
+       200       4.8719523e-05       2.3668815e-07
+       300       3.4251381e-05       1.0192652e-07
+       400       2.0566681e-05       1.4975968e-07
+       500        1.440023e-05       4.0445855e-08
+       600       9.4470471e-06       2.6015342e-08
+       700       6.1545832e-06       1.7072036e-08
+       800       3.7134582e-06       1.3767823e-08
+       900       2.4825039e-06       2.0821826e-08
+      1000       1.7632093e-06       7.2692376e-08
+      1045: Converged - Step norm relative tolerance met.
+Max epsilonEq = 0.039951194
+Max sigmaEq (von Mises stress) = 54000.797
+ExecutionTime = 330.52 s  ClockTime = 331 s
+
+The momentum equation converged in all time-steps
+
+
+End
+

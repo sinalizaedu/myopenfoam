@@ -1,0 +1,80 @@
+#!/bin/bash
+# ao-mestrado — geometria + malhas + FSI two-way (preCICE).
+# Pipeline: extrai centerline da artery.stl via voxel skeletonization
+# (build_teste_geom.py, estrategia voxel_skeleton), gera polyMesh estruturada
+# extrudada em O-grid no lumen e anel poligonal na parede, e roda pimpleFoam
+# (fluido) + solids4Foam (solido) acoplados via preCICE.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+cd "$ROOT"
+
+# Scripts: prefere ${ROOT}/scripts (sincronizada no container), depois brunaStuff do repo
+if [[ -f "${ROOT}/scripts/build_teste_geom.py" ]]; then
+  BRUNA="${ROOT}/scripts"
+elif [[ -f "${ROOT}/../../brunaStuff/build_teste_geom.py" ]]; then
+  BRUNA="$(cd "${ROOT}/../../brunaStuff" && pwd)"
+else
+  echo "ERROR: cannot find build_teste_geom.py" >&2
+  exit 1
+fi
+
+# Compilar BC customizada solidTractionElasticFoundation (mola de Winkler
+# para gordura orbital na superficie externa da arteria) se ainda nao
+# existir. Requer headers do solids4Foam (so funciona dentro do container).
+SPRING_LIB="${ROOT}/src/elasticFoundation/libsolidTractionElasticFoundation.so"
+if [[ -n "${WM_PROJECT_DIR:-}" && ! -f "$SPRING_LIB" ]]; then
+  echo "=== 0) Compilando BC custom (mola de Winkler) ==="
+  ( cd "${ROOT}/src/elasticFoundation" && ./Allwmake )
+fi
+
+echo "=== 1) Gerar polyMesh tubular extrudada (lumen + annulus) ==="
+# Centerline via voxel skeletonization 3D (skimage), com extensao dos tips
+# ate as tampas reais do STL. Garante uma malha estruturada estavel mesmo
+# para curvaturas fortes da arteria curva.
+python3 "${BRUNA}/build_teste_geom.py" \
+  --strategy voxel_skeleton \
+  --out "${ROOT}" \
+  --src-stl "${ROOT}/constant/triSurface/artery.stl" \
+  --mesh-only
+
+echo "=== 2) Watchpoint preCICE (closest point to optic nerve) ==="
+# Mantem o sync do watchpoint para post-processamento (sem efeito no solver).
+python3 "${BRUNA}/artoph_closest_point_to_nerve.py" 2>/dev/null || true
+python3 "${BRUNA}/sync_artoph_fsi_precice_watchpoint.py" 2>/dev/null || true
+
+chmod +x fluid/Allmesh solid/Allmesh 2>/dev/null || true
+
+echo "=== 3) Mesh (requires OpenFOAM) ==="
+if [[ -z "${WM_PROJECT_DIR:-}" ]]; then
+  echo "SKIP mesh/solve: WM_PROJECT_DIR not set. Inside Docker run:"
+  echo "  cd /simulation/artoph-fsi-curva-mestrado && ./Allrun"
+  exit 0
+fi
+
+(cd fluid && bash ./Allmesh) || { echo "ERROR: fluid Allmesh failed"; exit 1; }
+(cd solid && bash ./Allmesh) || { echo "ERROR: solid Allmesh failed"; exit 1; }
+
+for d in fluid/constant/polyMesh/points solid/constant/polyMesh/points; do
+  [[ -f "$d" ]] || { echo "ERROR: meshing did not produce $d"; exit 1; }
+done
+
+echo "=== 4) Coupled solvers (preCICE) ==="
+(cd fluid && pimpleFoam > log.pimpleFoam 2>&1) &
+PF=$!
+(cd solid && solids4Foam > log.solids4Foam 2>&1) &
+PS=$!
+RC_F=0; RC_S=0
+wait $PF || RC_F=$?
+wait $PS || RC_S=$?
+if (( RC_F != 0 )); then
+  echo "ERROR: pimpleFoam failed (rc=$RC_F)"; tail -40 fluid/log.pimpleFoam; exit 1
+fi
+if (( RC_S != 0 )); then
+  echo "ERROR: solids4Foam failed (rc=$RC_S)"; tail -40 solid/log.solids4Foam; exit 1
+fi
+if grep -q "FOAM FATAL\|FOAM aborting" fluid/log.pimpleFoam solid/log.solids4Foam 2>/dev/null; then
+  echo "ERROR: FATAL in solver log"
+  grep -nE "FOAM FATAL|FOAM aborting" fluid/log.pimpleFoam solid/log.solids4Foam | head
+  exit 1
+fi
+echo "=== Allrun finished ==="

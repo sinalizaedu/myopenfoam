@@ -1,0 +1,105 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+
+// One-way FSI: 3 ciclos cardiacos (T = 60/HR = 60/69 = 0.870 s, OMVS waveform).
+// 1o ciclo = transiente de estabilizacao (rampa Hann 100ms). 2o e 3o ciclos
+// = regime quase-periodico, dos quais extraimos as metricas fisiologicas.
+// Outlet defasado em 5ms vs inlet -> gradiente pulsatil real (~20-30 Pa pico).
+// adjustTimeStep desligado pelo acoplamento preCICE de janela fixa.
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         2.609;       // 3*T_cycle = 3*0.8696 = 2.6087 s; 0.3ms de folga
+deltaT          1e-3;
+writeControl    timeStep;
+writeInterval   20;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  6;
+writeCompression off;
+runTimeModifiable yes;
+adjustTimeStep  no;
+
+functions
+{
+    // Probes desativadas: os pontos da centerline antiga estao fora do novo
+    // polyMesh tubular extrudado. Para reativar, gere pontos via
+    // brunaStuff/build_artoph_tubular_meshes.py e valide com raycasting.
+    preCICE_Adapter
+    {
+        type            preciceAdapterFunctionObject;
+        libs            ("libpreciceAdapterFunctionObject.so");
+    }
+
+    // Vazao Q = integral_S U.n dA no patch inlet (sangue entrando, m^3/s).
+    // Esperado fisiologicamente: pico sistolico ~ 10-20 cm/s na arteria
+    // oftalmica/CRA -> Q_pico ~ U*A ~ 0.15 m/s * pi*(0.55e-3)^2 ~ 1.4e-7 m^3/s.
+    // Loga em postProcessing/inletQ/<time>/surfaceFieldValue.dat
+    inletQ
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        log             false;
+        writeFields     false;
+        regionType      patch;
+        name            inlet;
+        operation       sum;
+        surfaceFormat   none;
+        fields          ( phi );        // phi = U.Sf  -> sum(phi) = Q [m^3/s]
+    }
+
+    outletQ
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        log             false;
+        writeFields     false;
+        regionType      patch;
+        name            outlet;
+        operation       sum;
+        surfaceFormat   none;
+        fields          ( phi );
+    }
+
+    // |U|_max(t): velocidade maxima escalar no dominio, util para checar se
+    // o pico sistolico cai na faixa fisiologica (10-20 cm/s na oftalmica).
+    // Etapa 1: cria campo derivado magU = mag(U).
+    magU
+    {
+        type            mag;
+        libs            ("libfieldFunctionObjects.so");
+        field           U;
+        result          magU;
+        writeControl    timeStep;
+        writeInterval   1;
+        log             false;
+    }
+    // Etapa 2: opera max(magU) e loga em postProcessing/UmaxDomain/.
+    UmaxDomain
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        log             false;
+        writeFields     false;
+        regionType      all;
+        operation       max;
+        fields          ( magU );
+    }
+}
+
+// ************************************************************************* //

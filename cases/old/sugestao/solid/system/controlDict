@@ -1,0 +1,69 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     solids4Foam;
+
+// Carrega BC custom solidTractionElasticFoundation (mola de Winkler para
+// gordura orbital nos patches NAO ativos do solidContact).
+libs ("$FOAM_CASE/../src/elasticFoundation/libsolidTractionElasticFoundation.so");
+
+// Match preCICE / fluido — 1 ciclo cardiaco completo + transiente curto.
+// HR=69 bpm -> T=0.8696s. Para o smoke test rodamos 1 ciclo (endTime=0.870s).
+// Para producao com transiente: trocar para 2.609 (3 ciclos) sem refazer mesh.
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime    0.2500;
+deltaT          1e-3;
+
+writeControl    timeStep;
+writeInterval   10;       // Cada 10 ms (25 escritas em 250ms) -- evita OOM no Docker
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  6;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable yes;
+adjustTimeStep  no;
+
+functions
+{
+    // Watchpoint na meso-parede da arteria, proximo do P_contact (+X-Y, z~25mm)
+    dispNearContact
+    {
+        type            solidPointDisplacement;
+        point           (0.002220591 -0.001218236 0.02476221);
+    }
+    // Forcas resultantes na interface FSI
+    solidForcesInner
+    {
+        type            solidForces;
+        historyPatch    arteria_lumen;
+    }
+    // Forcas resultantes no patch externo da arteria (Winkler + contato)
+    solidForcesOuter
+    {
+        type            solidForces;
+        historyPatch    arteria_externa;
+    }
+    // Forcas resultantes no patch de contato do ONS (slave do contato)
+    solidForcesONS
+    {
+        type            solidForces;
+        historyPatch    ons_outer;
+    }
+    preCICE_Adapter
+    {
+        type            preciceAdapterFunctionObject;
+        libs            ("libpreciceAdapterFunctionObject.so");
+    }
+}

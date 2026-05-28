@@ -1,0 +1,22 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      solidProperties;
+}
+
+// on-mestrado-1 SEM SAS - quasi-estatico, 1 unico timestep.
+// Mesma config do on-mestrado-2.
+
+solidModel      linearGeometryTotalDisplacement;
+
+linearGeometryTotalDisplacementCoeffs
+{
+    nCorrectors             10000;
+    rTol                    1e-4;
+    aTol                    1e-6;
+    sTol                    1e-7;
+    materialTolerance       1e-4;
+    infoFrequency           200;
+}

@@ -1,0 +1,49 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    "p|pFinal|pcorr|pcorrFinal"
+    {
+        solver          GAMG;
+        tolerance       1e-06;
+        relTol          0;
+        minIter         1;
+        maxIter         1000;
+        smoother        GaussSeidel;
+        nPreSweeps      0;
+        nPostSweeps     2;
+        nFinestSweeps   2;
+        scaleCorrection true;
+        directSolveCoarsest false;
+        cacheAgglomeration true;
+        nCellsInCoarsestLevel 20;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+    }
+
+    "U|UFinal"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-08;
+        relTol          0;
+        minIter         1;
+    }
+}
+
+PIMPLE
+{
+    // PERF v2 (2026-05-24): Δp ~ 10 Pa + lumen 1.1 mm + dt=2 ms => Co << 1.
+    // Mesh BLOCKMESH cartesiana => ortogonalidade perfeita (nNonOrtho = 0).
+    // Em FSI one-way (mesh fluida estatica), 1 outer corrector basta.
+    nOuterCorrectors            1;
+    nCorrectors                 2;
+    nNonOrthogonalCorrectors    0;
+}

@@ -1,0 +1,36 @@
+#!/bin/bash
+# Remove resultados e arquivos auto-gerados (preserva sistema/0 base, scripts/).
+set -e
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+cd "$ROOT"
+
+echo "=== Limpando teste-2d-fsi-oa-on ==="
+
+# Timesteps + processadores
+for d in solid fluid; do
+  find "${ROOT}/${d}" -maxdepth 1 -type d -regex ".*/[0-9]+\.?[0-9]*" \
+    ! -name "0" -exec rm -rf {} +
+  rm -rf "${ROOT}/${d}/processor"* 2>/dev/null || true
+  rm -rf "${ROOT}/${d}/postProcessing" 2>/dev/null || true
+  rm -f "${ROOT}/${d}/log."* 2>/dev/null || true
+  rm -rf "${ROOT}/${d}/constant/polyMesh" 2>/dev/null || true
+  # Auto-gerados pelo blockMesh/topoSet
+  rm -f "${ROOT}/${d}/system/blockMeshDict" 2>/dev/null || true
+done
+
+# Subsets auto-gerados pelo solids4foam (um por cellZone)
+rm -rf "${ROOT}/solid/system/"*Subset 2>/dev/null || true
+rm -f "${ROOT}/solid/system/"*Subset.dict 2>/dev/null || true
+
+# preCICE outputs (na raiz do caso)
+rm -f "${ROOT}/precice-Fluid-events.json" "${ROOT}/precice-Solid-events.json" 2>/dev/null || true
+rm -f "${ROOT}/precice-Fluid-iterations.log" "${ROOT}/precice-Solid-iterations.log" 2>/dev/null || true
+rm -f "${ROOT}/precice-Fluid-watch"*.log "${ROOT}/precice-Solid-watch"*.log 2>/dev/null || true
+rm -rf "${ROOT}/precice-run" 2>/dev/null || true
+rm -f "${ROOT}/.precice"* 2>/dev/null || true
+
+# Ondas OMVS auto-geradas
+rm -f "${ROOT}/fluid/constant/inlet_pressure.dat" 2>/dev/null || true
+rm -f "${ROOT}/fluid/constant/outlet_pressure.dat" 2>/dev/null || true
+
+echo "Limpeza concluida."

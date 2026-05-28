@@ -1,0 +1,87 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Gerado por brunaStuff/gen_teste_2d_fsi_blockmesh.py                          |
+| Caso: teste-2d-fsi-oa-on (FSI + contato OA x ONS, lado FLUIDO -- lumen)      |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+scale   0.001;   // vertices em mm
+
+vertices
+(
+    (   0.000    10.200   0.000)   // 0
+    (  20.000    10.200   0.000)   // 1
+    (  20.000    11.300   0.000)   // 2
+    (   0.000    11.300   0.000)   // 3
+    (   0.000    10.200   1.000)   // 4
+    (  20.000    10.200   1.000)   // 5
+    (  20.000    11.300   1.000)   // 6
+    (   0.000    11.300   1.000)   // 7
+);
+
+blocks
+(
+    hex ( 0 1 2 3   4 5 6 7 )  lumen  ( 40 6 1 )  simpleGrading ( 1 1 1 )
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            ( 0 4 7 3 )       // x = 0
+        );
+    }
+
+    outlet
+    {
+        type patch;
+        faces
+        (
+            ( 1 2 6 5 )       // x = LX
+        );
+    }
+
+    wall_bot
+    {
+        type wall;
+        faces
+        (
+            ( 0 1 5 4 )       // y = Y_WALL_BOT  (FSI inferior)
+        );
+    }
+
+    wall_top
+    {
+        type wall;
+        faces
+        (
+            ( 3 7 6 2 )       // y = Y_WALL_TOP  (FSI superior)
+        );
+    }
+
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            ( 0 3 2 1 )       // z = 0
+            ( 4 5 6 7 )       // z = LZ
+        );
+    }
+);
+
+mergePatchPairs
+(
+);

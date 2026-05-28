@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      solidForce;
+}
+// Campo de forca escrito pelo preCICE OpenFOAM adapter na patch 'lumen'
+// (interface FSI). Fora dela = zero.
+
+dimensions      [ 1 1 -2 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 );
+
+boundaryField
+{
+    lumen
+    {
+        type            calculated;
+        value           uniform ( 0 0 0 );
+    }
+    inner_cap_back
+    {
+        type            zeroGradient;
+    }
+    inner_cap_front
+    {
+        type            zeroGradient;
+    }
+    arteria_externa
+    {
+        type            zeroGradient;
+    }
+    ".*"
+    {
+        type            zeroGradient;
+    }
+}

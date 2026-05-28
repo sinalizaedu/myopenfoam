@@ -1,0 +1,43 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      solidForce;
+}
+
+// on-caso-1 - Campo de forca FSI preenchido pelo preCICE OpenFOAM adapter.
+// Apenas 2 patches FSI ativas: fsi_pia e fsi_dura. As patches fsi_sclera_peri
+// e fsi_sclera_ring tem BC zeroGradient aqui (perderam o papel FSI: o lid
+// poroso do fluido absorve a carga distal no on-caso-1).
+
+dimensions      [ 1 1 -2 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 );
+
+boundaryField
+{
+    fsi_pia
+    {
+        type            calculated;
+        value           uniform ( 0 0 0 );
+    }
+    fsi_dura
+    {
+        type            calculated;
+        value           uniform ( 0 0 0 );
+    }
+
+    // Demais patches: zeroGradient (nao recebem Force do FSI)
+    fsi_sclera_peri     { type zeroGradient; }
+    fsi_sclera_ring     { type zeroGradient; }
+    posterior_on        { type zeroGradient; }
+    posterior_pia       { type zeroGradient; }
+    posterior_dura      { type zeroGradient; }
+    contact_local       { type zeroGradient; }
+    dura_outer          { type zeroGradient; }
+    sclera_ring_outer   { type zeroGradient; }
+    globo_outer         { type zeroGradient; }
+    anterior_globo      { type zeroGradient; }
+}

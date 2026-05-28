@@ -1,0 +1,135 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// on-fsi-2 - SOLIDO de 7 zonas com FSI two-way (preCICE).
+//
+// BCs:
+//   z=0 (canal optico):
+//     posterior_{on,pia,dura} = fixedDisplacement (0 0 0)
+//     posterior_sas REMOVIDO   (a face z=0 r=1.55-2.35 agora e' o inlet do
+//                               fluido em fluid/0/p; nao existe mais como
+//                               patch do solido).
+//
+//   z=30 (junction nervo<->LC/sclera): SEM BC explicita - continuidade
+//     nodal entre nervo (pia/dura) e sclera (peri/ring). Ja' modelado por
+//     vertices compartilhados no blockMeshDict.
+//
+//   FSI patches (preCICE escreve campo solidForce nestes patches; a BC
+//   solidForce converte para traction equivalente):
+//     fsi_pia          - parede da pia r=1.55, recebe pressao radial p/ -r
+//     fsi_dura         - parede da dura r=2.35, recebe pressao radial p/ +r
+//     fsi_sclera_peri  - tampa peripapilar inner z=30 r=1.55-2.0, push axial +z
+//     fsi_sclera_ring  - tampa peripapilar outer z=30 r=2.0-2.35, push axial +z
+//
+//   Demais BCs (mesmas do on-mestrado-2):
+//     dura_outer       - solidTractionElasticFoundation k=200 kPa/m (Winkler)
+//     contact_local    - solidTraction P=9034 Pa (arteria oftalmica)
+//     sclera_ring_outer- solidTraction P=0 (livre)
+//     globo_outer      - fixedDisplacement (EQUADOR, musculos extraoculares)
+//     anterior_globo   - solidTraction P=0 (livre, lado vitreo)
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ---- z=0 mm: canal optico - ENGASTE TOTAL ---------------------------
+    posterior_on
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_pia
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    posterior_dura
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- FSI interfaces (preCICE le Force do fluido) -------------------
+    fsi_pia
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform ( 0 0 0 );
+    }
+
+    fsi_dura
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform ( 0 0 0 );
+    }
+
+    fsi_sclera_peri
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform ( 0 0 0 );
+    }
+
+    fsi_sclera_ring
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- contato local arteria oftalmica (carved-out de dura_outer) ----
+    //   Patch criado por topoSet+createPatch em z=22.5mm, eixo +X.
+    //   P_contact = 9034 Pa (sys/dia mean, ALPHA=0.6767).
+    contact_local
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 9034;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- dura_outer (resto da lateral z=0-30): Winkler 200 kPa/m -------
+    dura_outer
+    {
+        type        solidTractionElasticFoundation;
+        k           200000;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- sclera_ring_outer (lateral z=30-30.30): livre ------------------
+    sclera_ring_outer
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- globo_outer (lateral z=30.30-30.80): EQUADOR engastado --------
+    globo_outer
+    {
+        type        fixedDisplacement;
+        value       uniform ( 0 0 0 );
+    }
+
+    // ---- anterior_globo (z=30.80, lado vitreo): livre, sem IOP ---------
+    anterior_globo
+    {
+        type        solidTraction;
+        traction    uniform ( 0 0 0 );
+        pressure    uniform 0;
+        value       uniform ( 0 0 0 );
+    }
+}

@@ -1,0 +1,37 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+
+// Velocidade do LCR. Cul-de-sac com inlet de pressao -> U inicia em 0,
+// pequenas correntes parasita pelo gradiente de pressao se houver
+// nao-uniformidade. Em estado estacionario perfeito, U deve ser ~0.
+
+dimensions      [ 0 1 -1 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 );
+
+boundaryField
+{
+    inlet
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform ( 0 0 0 );
+    }
+
+    fsi_pia          { type movingWallVelocity; value uniform ( 0 0 0 ); }
+    fsi_dura         { type movingWallVelocity; value uniform ( 0 0 0 ); }
+
+    // OPEN-SAS TEST: era movingWallVelocity, agora outlet
+    fsi_sclera_peri
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform ( 0 0 0 );
+    }
+
+    fsi_sclera_ring  { type movingWallVelocity; value uniform ( 0 0 0 ); }
+}

@@ -1,0 +1,31 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    "D|DD"
+    {
+        solver          PCG;
+        preconditioner  FDIC;
+        // Contato + multi-zona com razao de rigidez E_ons/E_on=100x exige
+        // solver mais robusto. Tolerancias um pouco mais apertadas que
+        // ao-mestrado isolado, mas relaxadas que on-mestrado quasi-static.
+        tolerance       1e-09;
+        relTol          0.05;
+    }
+}
+
+relaxationFactors
+{
+    fields
+    {
+        // Contato com penalty introduz forte nao-linearidade local.
+        // Relaxamento mais conservador que ao-mestrado isolado (0.7 -> 0.5).
+        D       0.5;
+    }
+}

@@ -1,0 +1,38 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// on-flambagem-2 - rampa de deslocamento imposto na tampa anterior.
+// 20 timesteps de 1 s cada (interpretado como pseudo-tempo: cada step a
+// configuracao quasi-estatica). A tabela constant/timeVsDisp interpola
+// linearmente entre os 21 pares.
+
+application     solids4Foam;
+
+startFrom       latestTime;
+startTime       0;
+stopAt          endTime;
+endTime         20.0;
+
+deltaT          1.0;
+
+writeControl    timeStep;
+writeInterval   1;
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
+
+// Carrega a BC customizada solidTractionElasticFoundation (mola de Winkler).
+// Compilada em cases/on-mestrado/src/elasticFoundation/Allwmake.
+libs ("$FOAM_CASE/../src/elasticFoundation/libsolidTractionElasticFoundation.so");

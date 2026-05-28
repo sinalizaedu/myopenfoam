@@ -1,0 +1,17 @@
+// Rampa axial fina: 40 passos lineares ate -4 mm (dz=-0.1 mm por passo,
+// strain=-0.33% por passo). Esquema canonico de cylinderCrush tutorial:
+// passos pequenos + sub-relaxacao do campo + NL Updated Lagrangian.
+//
+// Pcr Euler para fixed-fixed (K=0.5): 6.85 N -> dz_cr ~ 2.74 mm (t ~ 27)
+// Pcr Euler para fixed-fixed AISC (K=0.65): 4.05 N -> dz_cr ~ 1.62 mm (t ~ 16)
+//
+// interpolationTable nao requer todos os pontos; usa interpolacao linear.
+// Coloco so 5 pontos: clamp deixa o resto interpolado linearmente.
+
+(
+    ( 0      ( 0  0   0       ) )
+    ( 10     ( 0  0  -1.0e-3  ) )
+    ( 20     ( 0  0  -2.0e-3  ) )
+    ( 30     ( 0  0  -3.0e-3  ) )
+    ( 40     ( 0  0  -4.0e-3  ) )
+)

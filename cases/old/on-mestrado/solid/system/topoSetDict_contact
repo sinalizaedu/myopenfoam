@@ -1,0 +1,53 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// on-mestrado — localizacao do contato da arteria oftalmica.
+//
+// Geometria real (caso ao-mestrado apos translate_artery_to_p_contact com
+// alvo theta=-30 deg, z=25 mm — quadrante +X-Y, anatomicamente coerente
+// com artery_unscaled.stl que tem contato natural em theta~-20 deg, z~22.8mm):
+//
+//   ponto teorico de contato arteria-ONS (parede externa do ONS, r=2.5mm):
+//     P_contact = (+2.165, -1.250, +25.00) mm
+//                = (R_ONS*cos(-30 deg), R_ONS*sin(-30 deg), 25 mm)
+//     setor angular = -30 deg (quadrante +X-Y)
+//   centerline da arteria FSI passa por:
+//     P_cl = (+2.815, -1.625, +25.00) mm   (r_xy = R_ONS + R_outer_tube = 3.25 mm)
+//
+// Selecionamos uma regiao pequena (~1 mm x ~1 mm) da superficie externa do ONS
+// (patch ons_outer) na vizinhanca desse ponto.  Essa regiao recebera a pressao
+// pulsatil da arteria.  O resto do ons_outer mantem a mola de Winkler.
+//
+// Box selecionado (em metros):
+//   x : [+1.65e-3, +2.65e-3] (≈ 1 mm em x, centrado em +2.165 mm)
+//   y : [-1.75e-3, -0.75e-3] (≈ 1 mm em y, centrado em -1.250 mm; quadrante +X-Y)
+//   z : [+24.5e-3, +25.5e-3] (1 mm em z, centroide em z=+25.0 mm)
+//
+// Resultado esperado: ~2 faces selecionadas, area total ~1 mm^2.
+
+actions
+(
+    // Faces do ons_outer dentro do box → vao virar `contact_local`
+    {
+        name    contact_local;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name ons_outer; }
+    }
+    {
+        name    contact_local;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo
+        {
+            box (1.65e-3  -1.75e-3  24.5e-3) (2.65e-3  -0.75e-3  25.5e-3);
+        }
+    }
+);

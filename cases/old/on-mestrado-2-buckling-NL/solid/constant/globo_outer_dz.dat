@@ -1,0 +1,19 @@
+// Tabela de deslocamento imposto em globo_outer (-z = shift cefalico).
+// Formato interpolationTable<vector>: ( (t (Dx Dy Dz)) ... )
+//
+// SUGESTAO (1): incrementos PEQUENOS para Newton-Raphson convergir.
+// 10 passos lineares de -0.4 mm cada, ate -4 mm = 13.3% strain.
+// Cada passo NL converge a partir da solucao do passo anterior.
+(
+    (0.0   (0  0  0       ))
+    (1.0   (0  0  -4.0e-4 ))
+    (2.0   (0  0  -8.0e-4 ))
+    (3.0   (0  0  -1.2e-3 ))
+    (4.0   (0  0  -1.6e-3 ))
+    (5.0   (0  0  -2.0e-3 ))
+    (6.0   (0  0  -2.4e-3 ))
+    (7.0   (0  0  -2.8e-3 ))   // cruza P_cr K=0.65 em ~ -2.77 mm
+    (8.0   (0  0  -3.2e-3 ))
+    (9.0   (0  0  -3.6e-3 ))
+    (10.0  (0  0  -4.0e-3 ))
+)

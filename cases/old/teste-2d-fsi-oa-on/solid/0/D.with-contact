@@ -1,0 +1,104 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| teste-2d-fsi-oa-on -- displacement BCs                                       |
+|                                                                              |
+| BCs por patch:                                                               |
+|   outer_top    : fixedDisplacement (0 0 0)  -- orbital roof rigid            |
+|   outer_bottom : fixedDisplacement (0 0 0)  -- orbital floor rigid           |
+|   outer_left_* : solidSymmetry              -- slice infinita lateral        |
+|   outer_right_*: solidSymmetry              -- slice infinita lateral        |
+|   on_mestrado  : solidContact (MASTER)      -- contato OA/ONS (no Block A)   |
+|   oa_mestrado  : solidContact (SHADOW)      -- contato OA/ONS (no Block B)   |
+|   lumen_bot    : solidForce  (preCICE)      -- FSI interface inferior        |
+|   lumen_top    : solidForce  (preCICE)      -- FSI interface superior        |
+|   frontAndBack : empty                                                       |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+dimensions      [ 0 1 0 0 0 0 0 ];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    // ---- Rigid orbital roof / floor ---------------------------------------
+    outer_top
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+    outer_bottom
+    {
+        type            fixedDisplacement;
+        value           uniform ( 0 0 0 );
+    }
+
+    // ---- Symmetry nas laterais (slice infinita em x) ----------------------
+    outer_left_lower     { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_left_wall_inf  { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_left_wall_sup  { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_left_fat_above { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_right_lower    { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_right_wall_inf { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_right_wall_sup { type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+    outer_right_fat_above{ type solidSymmetry; patchType symmetry; value uniform ( 0 0 0 ); }
+
+    // ---- Contato deslizante sem atrito OA <-> ONS -------------------------
+    // Convencao master/shadow alinhada ao contactPatchTest:
+    //   on_mestrado (lower top, y=10) = MASTER
+    //   oa_mestrado (upper bottom)    = SHADOW
+    on_mestrado
+    {
+        type                  solidContact;
+        master                yes;
+        rigidMaster           no;
+        shadowPatch           oa_mestrado;
+        useNewPointDistanceMethod        no;
+        usePrevCandidateMasterNeighbors  no;
+        writePointDistanceFields         false;
+        normalContactModel    standardPenalty;
+        standardPenaltyNormalModelDict
+        {
+            penaltyScale      1;
+            relaxationFactor  0.05;
+        }
+        frictionContactModel  frictionless;
+        value                 uniform ( 0 0 0 );
+    }
+
+    oa_mestrado
+    {
+        type          solidContact;
+        master        no;
+        shadowPatch   on_mestrado;
+        value         uniform ( 0 0 0 );
+    }
+
+    // ---- FSI interfaces -- forca pulsatil do sangue ------------------------
+    // preCICE adapter escreve o campo 'solidForce' (N/m^3) nestes patches.
+    // BC solidForce converte para traction equivalente no equilibrio.
+    lumen_bot
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform ( 0 0 0 );
+    }
+    lumen_top
+    {
+        type            solidForce;
+        forceField      solidForce;
+        value           uniform ( 0 0 0 );
+    }
+
+    frontAndBack
+    {
+        type        empty;
+    }
+}
+
+// ************************************************************************* //

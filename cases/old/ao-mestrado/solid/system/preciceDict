@@ -1,0 +1,38 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+preciceConfig "../precice-config.xml";
+
+participant Solid;
+
+modules (FSI);
+
+interfaces
+{
+  Interface1
+  {
+    mesh              Solid-Mesh;
+    patches           (lumen);
+    locations         faceCenters;
+
+    readData
+    (
+      Force
+    );
+
+    writeData         ();
+  };
+};
+
+FSI
+{
+  solverType              solid;
+  namePointDisplacement   pointD;
+  nameCellDisplacement    D;
+  nameForce               solidForce;
+}
