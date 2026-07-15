@@ -26,7 +26,7 @@ from check_velocity import parse_vector_field
 
 case = Path("cases/on-caso-1.2-fluidonly")
 if not case.exists():
-    case = Path("cases/old/on-caso-1.2-fluidonly")
+    case = Path("cases/artigo_mestrado/on-caso-1.2-fluidonly")
 zones = parse_cellzones(case / "constant/polyMesh/cellZones")
 
 R_PIA_OUT = 1.55e-3
