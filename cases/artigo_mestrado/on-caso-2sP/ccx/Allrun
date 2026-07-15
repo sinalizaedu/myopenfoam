@@ -1,0 +1,63 @@
+#!/bin/bash
+# on-caso-2sP (CCX) - VARIANTE SEM PERTURBACAO LATERAL.
+# Identico ao on-caso-2, porem o on-caso-2sP.inp NAO aplica a perturbacao
+# antissimetrica A/B na pia; mantem apenas o driving do globo (Dz + EOM).
+#
+# Pipeline:
+#   1) Garante que existe a malha solids4Foam em ../solid (gera com blockMesh
+#      se polyMesh nao existir);
+#   2) Converte polyMesh -> CalculiX .inp (mesh + Winkler springs);
+#   3) Roda ccx_preCICE em modo standalone (sem precice-config.xml).
+#
+# Inputs:
+#   on-caso-2sP.inp              (hand-written, *INCLUDE para os 2 abaixo)
+#   on-caso-2sP_mesh.inp         (gerado pelo conversor)
+#   on-caso-2sP_winkler.inp      (gerado pelo conversor)
+
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+
+POLYMESH=../solid/constant/polyMesh
+
+# ---------- 1) garante que polyMesh existe ----------
+if [ ! -f "${POLYMESH}/points" ]; then
+    echo "=== Gerando polyMesh em ../solid (blockMesh+topoSet+createPatch) ==="
+    pushd ../solid >/dev/null
+    blockMesh | tee log.blockMesh
+    topoSet -dict system/topoSetDict_perturbation | tee log.topoSet
+    createPatch -overwrite -dict system/createPatchDict_perturbation | tee log.createPatch
+    popd >/dev/null
+fi
+
+# ---------- 2) converte polyMesh -> CCX .inp ----------
+echo "=== on-caso-2sP (CCX): polyMesh -> CalculiX .inp ==="
+python3 foam_polymesh_to_ccx_inp.py \
+    --polymesh "${POLYMESH}" \
+    --out-mesh on-caso-2sP_mesh.inp \
+    --out-winkler on-caso-2sP_winkler.inp \
+    --winkler-k 200000
+# (a PIC e' aplicada via *DSLOAD em DURA_INNER_SURF, superficie interna
+#  gerada pelo proprio conversor -- nao precisa de gerador adicional.)
+
+# ---------- 3) roda CalculiX ----------
+echo "=== on-caso-2sP (CCX): solver ccx_preCICE -i on-caso-2sP ==="
+ccx_preCICE -i on-caso-2sP 2>&1 | tee log.ccx
+
+# ---------- 4) converte .frd -> .vtu (opcional, no host) ----------
+if command -v ccx2paraview >/dev/null 2>&1; then
+    echo "=== on-caso-2sP (CCX): convertendo .frd -> .vtu (ParaView) ==="
+    ccx2paraview on-caso-2sP.frd vtu 2>&1 | tail -5 || true
+elif [ -x /tmp/ccx2pv/bin/ccx2paraview ]; then
+    /tmp/ccx2pv/bin/ccx2paraview on-caso-2sP.frd vtu 2>&1 | tail -5 || true
+else
+    echo "=== on-caso-2sP (CCX): ccx2paraview nao encontrado dentro do container ==="
+    echo "    (rode no HOST: cd cases/on-caso-2sP/ccx && /tmp/ccx2pv/bin/ccx2paraview on-caso-2sP.frd vtu)"
+fi
+
+echo ""
+echo "=== Concluido. Arquivos de saida: ==="
+echo "  on-caso-2sP.frd  - campos CalculiX"
+echo "  on-caso-2sP.pvd  - ParaView Data"
+echo "  on-caso-2sP.dat  - totais RF no engaste posterior (curva F_z(Dz))"
+echo "  on-caso-2sP.sta  - status de convergencia por incremento Riks"

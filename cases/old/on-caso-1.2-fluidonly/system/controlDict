@@ -1,0 +1,30 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// on-fsi-2 - controlDict do FLUIDO (LCR estatico).
+// Acoplado ao solido via preCICE: 1 time-window de 1.0s, IQN-ILS itera
+// dentro da window ate convergencia.
+
+application     pimpleFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         1.0;
+deltaT          1.0;          // = janela de acoplamento preCICE
+
+writeControl    timeStep;
+writeInterval   1;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+runTimeModifiable yes;
+adjustTimeStep  no;            // preCICE exige janela fixa
+
+

@@ -1,0 +1,20 @@
+#!/bin/bash
+# on-caso-3-sf - "on-caso-3 Sem Forca (frontal)".
+#
+# Este caso usa o pipeline CalculiX (Riks NLGEOM), igual ao on-caso-3, mas SEM
+# nenhuma compressao/forca axial vinda da frente. So carga LATERAL: P_contact
+# da arteria oftalmica (DSLOAD), varrida 0..18068 Pa, para testar se a
+# flambagem do nervo acontece apenas com a indentacao lateral.
+# Winkler = 200 kPa/m (baseline, conforme tab:casos-setup do artigo_final).
+#
+# Rodada unica (P_contact default = 9034 Pa):
+#   cd ccx && ./Allrun
+#
+# Sweep completo (0 -> 18068 Pa):
+#   bash brunaStuff/sweep_on-caso-3-sf_pcontact.sh
+#
+# Este wrapper apenas delega para o ccx/Allrun (rodada unica).
+
+set -e
+cd "$(dirname "$0")/ccx"
+exec ./Allrun

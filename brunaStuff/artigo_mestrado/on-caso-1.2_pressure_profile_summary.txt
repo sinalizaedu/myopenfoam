@@ -1,0 +1,26 @@
+==============================================================================
+Passo 2 - Perfil p(z) e erro do inlet de PRESSAO vs VAZAO (desacoplado)
+==============================================================================
+
+Carga na bainha = pressao media no bulk do SAS.
+Erro = (inlet Q - inlet P)/inlet P, na carga transmitida ao solido.
+
+   PIC       d  maxDeltaP(z)  load_P(Pa)  load_Q(Pa)    erro%
+----------------------------------------------------------------
+  1333   1e+15         0.003     1333.00     1333.00  -0.000%
+  1333   1e+17         0.075     1333.00     1333.07  +0.006%
+  1333   1e+19         3.799     1333.00     1336.80  +0.285%
+  2000   1e+15         0.004     2000.00     1999.99  -0.000%
+  2000   1e+17         0.395     2000.00     2000.39  +0.020%
+  2000   1e+19         5.225     2000.00     2005.22  +0.261%
+  3000   1e+15         0.006     3000.00     2999.99  -0.000%
+  3000   1e+17         0.614     3000.00     3000.61  +0.020%
+  3000   1e+19         7.798     3000.00     3007.80  +0.260%
+
+=> erro maximo na carga da bainha: 0.285%
+=> maxima diferenca de perfil |p_P(z)-p_Q(z)|: 7.80 Pa
+
+Conclusao: no SAS a pressao e' ~uniforme (= PIC) e a queda toda
+ocorre atraves do lid Darcy; logo um inlet de PRESSAO (=PIC) impoe
+praticamente a mesma carga na bainha que o inlet de VAZAO calibrado.
+O FSI pode usar inlet de pressao (mais estavel) sem perda de fidelidade.

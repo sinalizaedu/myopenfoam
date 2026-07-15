@@ -1,0 +1,184 @@
+*HEADING
+on-caso-2sP (CCX 2.20) - SEM PERTURBACAO LATERAL + PIC via DSLOAD na parede da dura
+**
+** ============================================================================
+** IDENTICO ao on-caso-2 (V14b SANS validado), EXCETO:
+**   - REMOVIDA a perturbacao antissimetrica lateral na pia outer
+**     (PERT_NODES_A em +X e PERT_NODES_B em -X). Nao ha mais gatilho
+**     artificial de bifurcacao para o modo S.
+**   - MANTIDO o driving do GLOBO: Dz prescrito (-1.5 mm em rampa) +
+**     CLOAD residual dos musculos extraoculares (EOM) na ANTERIOR_GLOBO.
+**   - ADICIONADA a PIC (pressao intracraniana) como *DSLOAD de 1333 Pa
+**     aplicado DIRETAMENTE na PAREDE INTERNA da dura (interface dura<->sas).
+**
+** Rota (iii): manter o SAS mole (nu=0.05) para o nervo continuar sendo
+** esmagado axialmente, MAS pressurizar a dura direto na parede. O conversor
+** (foam_polymesh_to_ccx_inp.py) expoe a interface interna dura<->sas como
+** *SURFACE DURA_INNER_SURF apontando para os elementos da DURA -> pressao
+** positiva empurra a dura radialmente para FORA -> tracao circunferencial
+** -> mantem o tubo dural reto e tenso (mata a "sanfona"/bellows).
+**
+** Por que isto funciona onde o prestress/inchaco no SAS falhou: um *DSLOAD
+** impoe pressao UNIFORME na parede, independente da forma deformada da dura
+** (achata as dobras). Ja um SAS mole inchando se acomoda a forma da parede
+** (a pressao "segue" as dobras em vez de acha-las). Como o SAS atras e' mole,
+** ele quase nao reage a pressao aplicada na dura -> a carga age efetivamente
+** na parede dural. (Experimentos: initial-stress e swelling no SAS NAO
+** curaram a sanfona; ver brunaStuff/on-caso-2sP_*_vs_sanfona.png.)
+**
+** Geometria, materiais, Winkler, engastes e solver = on-caso-2 (ver dossie
+** brunaStuff/dossie_on-caso-2_v14b.md). 8 zonas, C3D8I, Riks arc-length.
+** ============================================================================
+*INCLUDE, INPUT=on-caso-2sP_mesh.inp
+*INCLUDE, INPUT=on-caso-2sP_winkler.inp
+**
+** ============================================================================
+** MATERIAIS (NEO HOOKE compressivel, nu=0.49 quase-incompressivel)
+** Unidades SI: Pa (=N/m^2). Multiplicar por 1e-6 p/ ler em MPa.
+** ============================================================================
+*MATERIAL, NAME=ON_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=30 kPa, MAT_NERVO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+03, 4.0000e-06
+*DENSITY
+1000
+**
+** SAS solido "fluido-like": macio + ALTAMENTE compressivel (nu=0.05).
+**   E  = 3 kPa ; nu = 0.05 ; C10 = 714.3 Pa ; D1 = 1.8e-3 1/Pa ; K = 1.11 kPa
+*MATERIAL, NAME=SAS_MAT
+*HYPERELASTIC, NEO HOOKE
+7.1430e+02, 1.8000e-03
+*DENSITY
+1000
+**
+*MATERIAL, NAME=PIA_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1100
+**
+*MATERIAL, NAME=DURA_MAT
+** Ortotropico cilindrico (1=radial, 2=circ, 3=axial). E_circ = 3x E_rad/axial.
+*ELASTIC, TYPE=ENGINEERING CONSTANTS
+** E_r,    E_theta, E_z,     nu_rt, nu_rz, nu_tz, G_rt,    G_rz
+3.000e+6, 9.000e+6, 3.000e+6, 0.30,  0.30,  0.30,  1.150e+6, 1.150e+6
+** G_tz, T
+1.150e+6, 0.0
+*DENSITY
+1100
+**
+*MATERIAL, NAME=LC_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=300 kPa, MAT_LC]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+04, 4.0000e-07
+*DENSITY
+1100
+**
+*MATERIAL, NAME=SCLERA_PERI_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=SCLERA_RING_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=GLOBO_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*SOLID SECTION, ELSET=ON,          MATERIAL=ON_MAT
+*SOLID SECTION, ELSET=PIA,         MATERIAL=PIA_MAT
+*SOLID SECTION, ELSET=SAS,         MATERIAL=SAS_MAT
+*ORIENTATION, NAME=ORI_CYL, SYSTEM=CYLINDRICAL
+0.0, 0.0, 0.0, 0.0, 0.0, 1.0
+*SOLID SECTION, ELSET=DURA,        MATERIAL=DURA_MAT, ORIENTATION=ORI_CYL
+*SOLID SECTION, ELSET=LC,          MATERIAL=LC_MAT
+*SOLID SECTION, ELSET=SCLERA_PERI, MATERIAL=SCLERA_PERI_MAT
+*SOLID SECTION, ELSET=SCLERA_RING, MATERIAL=SCLERA_RING_MAT
+*SOLID SECTION, ELSET=GLOBO,       MATERIAL=GLOBO_MAT
+**
+** ============================================================================
+** AMPLITUDE -- rampa linear (Dz + PIC crescem juntos no pseudo-tempo)
+** ============================================================================
+*AMPLITUDE, NAME=DZRAMP
+0.0, 0.0, 1.0, 1.0
+**
+** ============================================================================
+** STEP UNICO -- Riks arc-length escala o driving do globo (Dz + EOM)
+** ============================================================================
+*STEP, NLGEOM=YES, INC=500
+*STATIC, RIKS
+0.025, 1.0, 1e-5, 0.05, 1.0
+**
+** ====================================================================
+** Engastes
+** ====================================================================
+** Engaste posterior (canal optico, z=0): rigido total nos 4 patches.
+*BOUNDARY
+POSTERIOR_ON,   1, 3, 0.0
+POSTERIOR_PIA,  1, 3, 0.0
+POSTERIOR_SAS,  1, 3, 0.0
+POSTERIOR_DURA, 1, 3, 0.0
+**
+** Globo: face anterior LATERAL fixa (orbita confina XY) + Dz prescrito.
+*BOUNDARY
+ANTERIOR_GLOBO, 1, 2, 0.0
+**
+*BOUNDARY, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 3, 3, -1.50e-3
+**
+** ====================================================================
+** Item 1 - FORCA RESIDUAL DOS MUSCULOS EXTRAOCULARES (EOM) -- "a do globo"
+** ====================================================================
+** Tracao residual dos 4 retos puxando o globo em -Z (~16 mN baseline),
+** distribuida na face anterior do globo. Soma-se ao Dz prescrito.
+*CLOAD, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 3, -1.0e-4
+**
+** ====================================================================
+** PIC (pressao intracraniana ~10 mmHg) na PAREDE INTERNA da dura
+** ====================================================================
+** P=1333 Pa positiva em DURA_INNER_SURF (interface dura<->sas, gerada pelo
+** conversor). A normal externa do elemento DURA naquela face aponta p/ o
+** eixo (para dentro); pressao positiva age no sentido OPOSTO -> empurra a
+** dura radialmente p/ FORA -> tracao circunferencial -> mata a sanfona.
+** Rampada com DZRAMP (cresce junto com a compressao axial).
+*DSLOAD, AMPLITUDE=DZRAMP
+DURA_INNER_SURF, P, 1333.0
+**
+** ====================================================================
+** PERTURBACAO LATERAL: REMOVIDA NESTA VARIANTE (on-caso-2sP)
+** ====================================================================
+** No on-caso-2 havia *NSET PERT_NODES_A/B + *CLOAD +/-3 mN em X (gatilho
+** antissimetrico de modo S). Aqui NAO ha nenhuma carga lateral: somente
+** o driving axial do globo (Dz + EOM). Qualquer flambagem que surja sera
+** espontanea (imperfeicao numerica), nao induzida por perturbacao imposta.
+** ====================================================================
+**
+** Outputs por incremento (.dat)
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_DURA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_PIA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_ON, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=ANTERIOR_GLOBO, TOTALS=ONLY
+RF, U
+**
+** Outputs de campo no .frd (ParaView via ccx2paraview)
+*NODE FILE, FREQUENCY=5
+U, RF
+*EL FILE, FREQUENCY=5
+S, E
+**
+*END STEP

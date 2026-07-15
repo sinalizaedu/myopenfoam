@@ -1,0 +1,29 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+// on-caso-3F2 - cria patch local 'contact_local2' a partir do faceSet definido
+// em topoSetDict_contact2 (lado -X, z=7.5 mm). As faces saem do dura_outer
+// (Winkler desativado nelas pelo conversor) e passam ao novo patch que recebera
+// *DSLOAD pressao P_contact em on-caso-3F2.inp (CONTACT_LOCAL2_SURF). Forma o
+// segundo membro do par antissimetrico de contato arterial (modo S).
+//
+// IMPORTANTE: rodar este createPatch DEPOIS do createPatchDict_contact, pois
+// ambos extraem faces de dura_outer; encadear os dois mantem cada conjunto
+// isolado no seu proprio patch.
+
+pointSync   false;
+
+patches
+(
+    {
+        name            contact_local2;
+        patchInfo       { type wall; }
+        constructFrom   set;
+        set             contact_local2;
+    }
+);

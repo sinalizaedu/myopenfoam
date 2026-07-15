@@ -1,0 +1,39 @@
+Blocos RF totals encontrados: {'POSTERIOR_DURA': 7, 'POSTERIOR_PIA': 7, 'POSTERIOR_ON': 7, 'ANTERIOR_GLOBO': 7}
+Blocos U medio ANTERIOR_GLOBO: 7
+========================================================================
+on-caso-2 v2 (CCX 2.20 NLGEOM + Riks) - flambagem axial anatomica
+Geometria: 7 zonas (on, pia, dura, lc, sclera_peri, sclera_ring, globo)
+Material : NEO HOOKE compressivel, nu=0.495 (quase-incompressivel)
+========================================================================
+
+Timestamps lidos do Riks: 7
+Range Dz no globo: -1.000 a -0.187 mm
+Lambda (load factor) range: 0.188 a 1.000
+
+--- Reacao no engaste posterior (z=0, canal optico) ---
+  F_eng_max  =   519.15 mN @ Dz_globo = -1.000 mm
+  Decomposicao no pico (% de F_eng):
+     dura :  +68.192 mN  (  13.1%)
+     pia  :  +37.801 mN  (   7.3%)
+     on   : +413.154 mN  (  79.6%)
+
+--- Equilibrio axial (sanity check) ---
+  F_anterior_globo = -132.004 mN
+  F_eng_posterior  = +519.148 mN
+  |imbalance| max  = 387.144 mN  (springs Winkler + perturbacao)
+
+--- Rigidez axial pre-flambagem (regime |Dz| <= 0.2 mm) ---
+  k_axial = 757.81 N/m
+
+--- Sem evento de flambagem na faixa simulada ---
+  max |F_eng| = 519.15 mN @ Dz_globo = -1.000 mm
+  Curva F_eng(Dz) e' monotonica - estrutura permanece sub-critica.
+  K_ef estimado = 0.653 (back-out de Euler dura sozinha)
+
+--- Comparacao com Euler analitico (so dura_outer, EI=2.018e-05 Nm^2) ---
+  K=0.5: P_cr_Euler =  885.18 mN   (CCX/Euler = 0.59)
+  K=0.7: P_cr_Euler =  451.62 mN   (CCX/Euler = 1.15)
+  K=1.0: P_cr_Euler =  221.29 mN   (CCX/Euler = 2.35)
+
+Sumario salvo em /Users/brunaenne/Documents/repos/myopenfoam/brunaStuff/on-caso-2_ccx_summary.txt
+Plot salvo em /Users/brunaenne/Documents/repos/myopenfoam/brunaStuff/on-caso-2_ccx_F_vs_dz.png

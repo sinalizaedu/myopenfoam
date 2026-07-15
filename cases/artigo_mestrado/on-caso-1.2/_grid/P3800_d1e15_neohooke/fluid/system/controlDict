@@ -1,0 +1,37 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// on-caso-1.2 - controlDict do FLUIDO (LCR, modo ICP-driven com rampa).
+// Acoplado ao solido via preCICE: 6 time-windows de 1.0s (rampa de PIC
+// 1333->3800 Pa), IQN-ILS itera dentro de cada window ate convergencia.
+
+application     solids4Foam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         10.0;
+deltaT          1.0;          // = janela de acoplamento preCICE
+
+writeControl    timeStep;
+writeInterval   1;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+runTimeModifiable yes;
+adjustTimeStep  no;            // preCICE exige janela fixa
+
+functions
+{
+    preCICE_Adapter
+    {
+        type            preciceAdapterFunctionObject;
+        libs            ("libpreciceAdapterFunctionObject.so");
+    }
+}

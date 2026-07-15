@@ -1,0 +1,24 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+// on-caso-3 - cria patch local 'perturbation_strip' extraindo as faces
+// do dura_outer indicadas pelo topoSetDict_perturbation. As faces movidas
+// saem do dura_outer (fica menor, mantem Winkler 200 kPa/m no resto) e
+// passam ao novo patch que recebe solidTraction de 10 Pa (BC em 0/D).
+
+pointSync   false;
+
+patches
+(
+    {
+        name            perturbation_strip;
+        patchInfo       { type wall; }
+        constructFrom   set;
+        set             perturbation_strip;
+    }
+);

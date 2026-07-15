@@ -1,0 +1,39 @@
+==============================================================================
+on-caso-2F  vs  on-caso-2 (V14b) - efeito da magnitude do achatamento
+Pergunta: o complexo nervo+pia flamba (modo S) a Dz clinicamente realista?
+==============================================================================
+
+### Caso 2 / V14b (Dz=-1.5 mm, extremo)
+  Dz prescrito (BC)     : -1.50 mm
+  Dz real atingido      : -1.522 mm  (|U_z| max)
+  F_eng max (engaste)   :   537.5 mN
+  Kink lateral por camada (|U_lat| max, mm) [z do pico]:
+     nervo (r=0.5)   :  0.203 mm  @ z= 21.0 mm
+     pia (r=1.55)    :  0.275 mm  @ z= 21.0 mm
+     SAS (r=2.0)     :  0.161 mm  @ z= 21.0 mm
+     dura (r=2.5)    :  0.079 mm  @ z= 21.0 mm
+  Razao kink_pia/kink_dura =  3.48  (>1 => pia kinka mais que dura = modo S confinado)
+
+### Caso 2F (Dz=-0.6 mm, clinico real)
+  Dz prescrito (BC)     : -0.60 mm
+  Dz real atingido      : -0.608 mm  (|U_z| max)
+  F_eng max (engaste)   :   158.4 mN
+  Kink lateral por camada (|U_lat| max, mm) [z do pico]:
+     nervo (r=0.5)   :  0.187 mm  @ z= 21.0 mm
+     pia (r=1.55)    :  0.240 mm  @ z= 21.0 mm
+     SAS (r=2.0)     :  0.155 mm  @ z= 21.0 mm
+     dura (r=2.5)    :  0.100 mm  @ z= 21.0 mm
+  Razao kink_pia/kink_dura =  2.40  (>1 => pia kinka mais que dura = modo S confinado)
+
+------------------------------------------------------------------------------
+COMPARACAO DIRETA (realista 2F / extremo V14b):
+  nervo (r=0.5)   : 2F= 0.187 mm  vs  V14b= 0.203 mm  ->  92.1% do kink extremo
+  pia (r=1.55)    : 2F= 0.240 mm  vs  V14b= 0.275 mm  ->  87.3% do kink extremo
+  SAS (r=2.0)     : 2F= 0.155 mm  vs  V14b= 0.161 mm  ->  96.3% do kink extremo
+  dura (r=2.5)    : 2F= 0.100 mm  vs  V14b= 0.079 mm  -> 126.7% do kink extremo
+
+VEREDITO:
+  >>> SIM: a 2F (Dz=-0.6 mm) o nervo+pia AINDA flamba em modo S
+      (kink_pia=0.240 mm, razao pia/dura=2.40>1).
+      O mecanismo SANS persiste em deslocamento fisiologico, so
+      que com amplitude proporcionalmente menor.

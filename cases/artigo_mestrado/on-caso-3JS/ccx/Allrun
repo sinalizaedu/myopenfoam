@@ -1,0 +1,99 @@
+#!/bin/bash
+# on-caso-3JS (CCX) - GEOMETRIA em "S" (dupla meia-onda) + CARGAS do Caso 3F.
+#
+# Demonstra a narrativa (B): o "S" da SANS e' uma FORMA GEOMETRICA IMPOSTA pela
+# folga sinuosa + ancoragem dupla + contatos, nao flambagem espontanea. A malha
+# reta e' varrida ao longo de uma linha de centro em "S" (warp_centerline_S.py)
+# e submetida ao mesmo carregamento do Caso 3J (compressao axial Dy=-1.0 mm +
+# arteria oftalmica + PIC).
+#
+# Pipeline (igual ao 3J, trocando o warp em J pelo warp em S):
+#   1) polyMesh em ../solid (blockMesh + perturbacao + CONTATO) se nao existir;
+#   2) converte polyMesh -> .inp (mesh + Winkler UNIFORME); contact_local vira
+#      CONTACT_LOCAL_SURF;
+#   3) dura ortotropica por anel para a curva em S (gen_dura_ortho_orient_S.py);
+#   4) varre mesh E winkler na linha de centro em S (warp_centerline_S.py);
+#   5) injeta P_CONTACT na clausula *DSLOAD; roda ccx; renomeia com _$OUT_TAG.
+#
+# Parametros (env vars):
+#   P_CONTACT  [Pa]   default 9034
+#   OUT_TAG           default ""
+#   WINKLER_K  [Pa/m] default 200000
+#   SWING_DEG  [deg]  default 25  (amplitude do S; maior = S mais pronunciado)
+
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+
+P_CONTACT=${P_CONTACT:-9034}
+OUT_TAG=${OUT_TAG:-}
+WINKLER_K=${WINKLER_K:-200000}
+SWING_DEG=${SWING_DEG:-25}
+
+POLYMESH=../solid/constant/polyMesh
+THETA0=-90
+
+# ---------- 1) polyMesh (com patch de CONTATO) ----------
+if [ ! -f "${POLYMESH}/points" ]; then
+    echo "=== Gerando polyMesh em ../solid (blockMesh + perturbacao + contato) ==="
+    pushd ../solid >/dev/null
+    blockMesh | tee log.blockMesh
+    topoSet -dict system/topoSetDict_perturbation | tee log.topoSet.perturbation
+    createPatch -overwrite -dict system/createPatchDict_perturbation | tee log.createPatch.perturbation
+    topoSet -dict system/topoSetDict_contact | tee log.topoSet.contact
+    createPatch -overwrite -dict system/createPatchDict_contact | tee log.createPatch.contact
+    popd >/dev/null
+fi
+
+# ---------- 2) converte polyMesh -> CCX .inp (Winkler UNIFORME) ----------
+echo "=== on-caso-3JS (CCX): polyMesh -> CalculiX .inp  [k_winkler=${WINKLER_K} Pa/m] ==="
+python3 foam_polymesh_to_ccx_inp.py \
+    --polymesh "${POLYMESH}" \
+    --out-mesh on-caso-3JS_mesh.inp \
+    --out-winkler on-caso-3JS_winkler.inp \
+    --winkler-k "${WINKLER_K}"
+
+# ---------- 3) referencia de arco ----------
+ZMAX=$(python3 -c "from warp_centerline_S import max_z; from pathlib import Path; print(max_z(Path('on-caso-3JS_mesh.inp').read_text().splitlines()))")
+echo "=== on-caso-3JS (CCX): warp em S (theta0=${THETA0} swing=+/-${SWING_DEG} deg, zmax=${ZMAX}) ==="
+
+# ---------- 3b) dura ortotropica por anel (curva em S) ----------
+echo "=== on-caso-3JS (CCX): orientacoes ortotropicas da dura (curva em S) ==="
+python3 gen_dura_ortho_orient_S.py \
+    --mesh on-caso-3JS_mesh.inp \
+    --out on-caso-3JS_dura_orient.inp \
+    --theta0-deg "${THETA0}" --swing-deg "${SWING_DEG}" --zmax "${ZMAX}"
+
+# ---------- 3c) warp em S (mesh + winkler com o MESMO zmax) ----------
+python3 warp_centerline_S.py \
+    --mesh on-caso-3JS_mesh.inp \
+    --theta0-deg "${THETA0}" --swing-deg "${SWING_DEG}" --zmax "${ZMAX}"
+python3 warp_centerline_S.py \
+    --mesh on-caso-3JS_winkler.inp \
+    --theta0-deg "${THETA0}" --swing-deg "${SWING_DEG}" --zmax "${ZMAX}"
+
+# ---------- 4) injeta P_CONTACT ----------
+echo "=== on-caso-3JS (CCX): P_CONTACT = ${P_CONTACT} Pa (arteria oftalmica) ==="
+sed -i -E "s|^CONTACT_LOCAL_SURF, P, .*\$|CONTACT_LOCAL_SURF, P, ${P_CONTACT}|" on-caso-3JS.inp
+grep -n "^CONTACT_LOCAL_SURF, P," on-caso-3JS.inp || true
+
+# ---------- 5) roda CalculiX ----------
+echo "=== on-caso-3JS (CCX): solver ccx_preCICE -i on-caso-3JS  [tag=${OUT_TAG:-<none>}] ==="
+rm -f on-caso-3JS.frd on-caso-3JS.dat on-caso-3JS.cvg on-caso-3JS.sta \
+      on-caso-3JS.12d on-caso-3JS.pvd on-caso-3JS.*.vtu log.ccx
+ccx_preCICE -i on-caso-3JS 2>&1 | tee log.ccx
+
+# ---------- 5b) renomeia outputs com tag ----------
+if [ -n "${OUT_TAG}" ]; then
+    echo "=== on-caso-3JS (CCX): renomeando outputs _${OUT_TAG} ==="
+    for ext in frd dat cvg sta; do
+        if [ -f "on-caso-3JS.${ext}" ]; then
+            cp "on-caso-3JS.${ext}" "on-caso-3JS_${OUT_TAG}.${ext}"
+        fi
+    done
+    cp log.ccx "log.ccx_${OUT_TAG}"
+fi
+
+echo ""
+echo "=== Concluido. Saidas: on-caso-3JS.{frd,dat,sta} + log.ccx ==="
+echo "Analise do modo: python3 ../../../brunaStuff/analyze_on-caso-3J_Smode.py (ajuste o CASE)"

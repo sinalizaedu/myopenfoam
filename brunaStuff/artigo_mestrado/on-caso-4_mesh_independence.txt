@@ -1,0 +1,17 @@
+on-caso-4 - independencia de malha (estagio S0_baseline; cargas fisicas fixas)
+========================================================================================
+Malhas: base (1x) -> intermediaria (theta,z 2x; radial 1x) -> fina (2x uniforme).
+Patch de contato (box em metros) e pressoes (Pa) IDENTICOS -> so a discretizacao muda.
+
+metrica                       1x base   theta,z 2x  2x uniforme var.%(int->fim)
+n_nos                            5581        30430        41230                
+----------------------------------------------------------------------------------------
+kink nervo (r=0.5) [mm]        0.0928       0.1219       0.1248           2.32%
+kink dura (r=2.5) [mm]         0.2854       0.5296       0.5310           0.25%
+offset centroide [mm]          0.0844       0.1066       0.1083           1.59%
+|U_lat| max global [mm]        0.2854       0.5320       0.5316           0.07%
+sigma_vM contato [kPa]       109.9873     396.7954     392.7833           1.02%
+----------------------------------------------------------------------------------------
+Criterio: metrica considerada independente da malha quando var.% (malha
+intermediaria -> mais fina) < ~2-3%. Variacoes maiores indicam que vale
+refinar mais ou que a metrica e' local (pico pontual sensivel ao no).

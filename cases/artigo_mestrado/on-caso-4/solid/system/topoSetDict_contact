@@ -1,0 +1,53 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// on-caso-3 - cria faceSet 'contact_local' em dura_outer para servir de
+// patch de carga focal da arteria oftalmica (P_contact).
+//
+// Geometria (replicada de cases/on-caso-1/system/topoSetDict_contact):
+//   centro = (R_dura=2.5 mm, 0, z=22.5 mm), theta=0 deg (+X)
+//   distancia ao globo (z=30) ~ 7.5 mm -- proximo da entrada anatomica
+//                                          da arteria oftalmica na bainha
+//   distancia ao engaste (z=0) ~ 22.5 mm
+//
+// Grid:
+//   - dura_outer tem 6 cels tangenciais por quadrante -> dtheta=15 deg
+//     Cels centradas em theta = +/-7.5, +/-22.5, +/-37.5, ...
+//     Pegando theta = +/-7.5 deg (cels mais proximas de +X):
+//       x_face = 2.5 * cos(7.5) = 2.479 mm
+//       y_face = 2.5 * sin(7.5) = +/-0.326 mm
+//   - 10 cels axiais sobre z=0-30 mm -> dz=3 mm
+//     Cels centradas em z = 1.5, 4.5, ..., 22.5, 25.5, 28.5 mm
+//     Pegando cel n=7 com centro EXATO em z=22.5 mm.
+//
+// Box selecionado (metros): captura 2 faces (1 axial x 2 tang).
+//   x : [+2.40e-3, +2.60e-3]   (filtra theta = +/-7.5 deg em r=2.5 mm)
+//   y : [-0.50e-3, +0.50e-3]   (ambos os lados de y=0)
+//   z : [+21.0e-3, +24.0e-3]   (3 mm em z, centrado em z=22.5 mm)
+// Resultado esperado: 2 faces, ~1.2 mm^2 de superficie de contato.
+
+actions
+(
+    {
+        name    contact_local;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name dura_outer; }
+    }
+    {
+        name    contact_local;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo
+        {
+            box (2.3941e-03 -5.3702e-04 1.7840e-02) (2.6000e-03 5.3702e-04 2.7160e-02);
+        }
+    }
+);

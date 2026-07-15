@@ -1,0 +1,36 @@
+ Container myopenfoam-fsi-run-953088be8f01 Creating 
+ Container myopenfoam-fsi-run-953088be8f01 Created 
+OK_MESH
+ Container myopenfoam-fsi-run-8dbbb4ee8977 Creating 
+ Container myopenfoam-fsi-run-8dbbb4ee8977 Created 
+
+Total CalculiX Time: 106.415243
+________________________________________
+
+===== NIVEL r1  resolucoes={'N_TANG': 8, 'N_RAD_ON': 6, 'N_RAD_CTR': 8, 'N_RAD_PIA': 1, 'N_RAD_SAS_IN': 3, 'N_RAD_SAS_OUT': 3, 'N_RAD_DURA': 2, 'N_AXIAL_SOLID': (30, 1, 1)} =====
+  $ docker compose run --rm fsi bash -lc "cd on-caso-1.2/_mesh_indep/_scratch_solid && rm -rf constant/polyMesh 0 log.* && blockMesh > log.blockMesh 2>&1 && topoSet -dict system/topoSetDict_contact > log.topoSet 2>&1 && createPatch -overwrite -dict system/createPatchDict_contact > log.createPatch 2>&1 && echo OK_MESH"
+[1/4] Lendo polyMesh redondo do on-caso-1: /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep/_scratch_solid/constant/polyMesh
+      nodes=13713, cells=11648, patches=12, zones=['on', 'pia', 'dura', 'lc', 'sclera_peri', 'sclera_ring', 'globo']
+[2/4] Reconstruindo conectividade C3D8 (11648 celulas)
+[3/4] Escrevendo all.msh / all.nam / winkler.inp em /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep/r1
+[4/4] Concluido.
+      13713 nodes, 11648 hex C3D8
+        EALL_ON          :  7680 elementos
+        EALL_PIA         :   960 elementos
+        EALL_DURA        :  1920 elementos
+        EALL_LC          :   256 elementos
+        EALL_SCLERA_PERI :   128 elementos
+        EALL_SCLERA_RING :   160 elementos
+        EALL_GLOBO       :   544 elementos
+      Nfsi_all: 1984 nodes
+      Winkler : 992 SPRINGA em dura_outer (k=2.0e+05 Pa/m)
+      SURFACEs: Scontact_local, Sfsi_sclera_peri, Sfsi_sclera_ring, Sfsi_pia, Sfsi_dura
+  nodes=13713  anel pia=32  anel dura=32
+  $ docker compose run --rm fsi bash -lc "cd on-caso-1.2/_mesh_indep/r1 && rm -f main.frd main.dat main.sta main.cvg && export OMP_NUM_THREADS=8 && ccx_preCICE -i main > log.ccx 2>&1 ; tail -3 log.ccx"
+  n_eq=39744  dura_mean=+0.5267 um  pia_mean=-0.9222 um
+
+===== RESUMO =====
+ nivel     n_eq  dura_mean(um)  pia_mean(um)
+    r1    39744         0.5267       -0.9222
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep/results.json

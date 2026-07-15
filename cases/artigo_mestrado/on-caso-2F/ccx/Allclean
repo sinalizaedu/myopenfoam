@@ -1,0 +1,15 @@
+#!/bin/bash
+# on-caso-2F (CCX) - limpa artefatos do solver CalculiX.
+# Mantem on-caso-2F.inp e os .inp de malha (mesh/winkler), que sao copiados
+# do on-caso-2 e nao dependem do Dz.
+
+cd "$(dirname "$0")"
+
+echo "Limpando on-caso-2F (CCX)..."
+rm -f \
+    on-caso-2F.frd on-caso-2F.dat on-caso-2F.cvg on-caso-2F.sta \
+    on-caso-2F.12d on-caso-2F.eig on-caso-2F.txt on-caso-2F.rfn.frd \
+    on-caso-2F.equ on-caso-2F.fbd \
+    on-caso-2F.pvd on-caso-2F.*.vtu on-caso-2F.*.vtk \
+    log.ccx spooles.out
+echo "Feito."

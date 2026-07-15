@@ -1,0 +1,16 @@
+#!/bin/bash
+# on-caso-3J (CCX) - limpa artefatos do solver CalculiX.
+# Mantem on-caso-3J.inp (hand-written); regenera mesh/winkler/dura_orient no Allrun.
+
+cd "$(dirname "$0")"
+
+echo "Limpando on-caso-3J (CCX)..."
+rm -f \
+    on-caso-3J.frd on-caso-3J.dat on-caso-3J.cvg on-caso-3J.sta \
+    on-caso-3J.12d on-caso-3J.eig on-caso-3J.txt on-caso-3J.rfn.frd \
+    on-caso-3J.equ on-caso-3J.fbd \
+    on-caso-3J_mesh.inp on-caso-3J_winkler.inp on-caso-3J_dura_orient.inp \
+    on-caso-3J.pvd on-caso-3J.*.vtu on-caso-3J.*.vtk \
+    on-caso-3J_*.frd on-caso-3J_*.dat on-caso-3J_*.cvg on-caso-3J_*.sta \
+    log.ccx log.ccx_* spooles.out
+echo "Feito."

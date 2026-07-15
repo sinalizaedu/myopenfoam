@@ -1,0 +1,82 @@
+ Container myopenfoam-fsi-run-7fbfa5694f75 Creating 
+ Container myopenfoam-fsi-run-7fbfa5694f75 Created 
+OK_MESH
+ Container myopenfoam-fsi-run-dfda6becfb38 Creating 
+ Container myopenfoam-fsi-run-dfda6becfb38 Created 
+
+Total CalculiX Time: 41.493666
+________________________________________
+ Container myopenfoam-fsi-run-b567a43baed5 Creating 
+ Container myopenfoam-fsi-run-b567a43baed5 Created 
+OK_MESH
+ Container myopenfoam-fsi-run-043af2d362fe Creating 
+ Container myopenfoam-fsi-run-043af2d362fe Created 
+bash: line 1:   221 Killed                  ccx_preCICE -i main > log.ccx 2>&1
+************************************************************
+
+You are using an executable made on Sun Jul 31 18:08:37 CEST 2022
+/opt/homebrew/lib/python3.14/site-packages/numpy/_core/fromnumeric.py:3860: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/opt/homebrew/lib/python3.14/site-packages/numpy/_core/_methods.py:144: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+
+===== NIVEL r1  resolucoes={'N_TANG': 8, 'N_RAD_ON': 6, 'N_RAD_CTR': 8, 'N_RAD_PIA': 1, 'N_RAD_SAS_IN': 3, 'N_RAD_SAS_OUT': 3, 'N_RAD_DURA': 2, 'N_AXIAL_SOLID': (30, 1, 1)} =====
+  $ docker compose run --rm fsi bash -lc "cd on-caso-1.2/_mesh_indep/_scratch_solid && rm -rf constant/polyMesh 0 log.* && blockMesh > log.blockMesh 2>&1 && topoSet -dict system/topoSetDict_contact > log.topoSet 2>&1 && createPatch -overwrite -dict system/createPatchDict_contact > log.createPatch 2>&1 && echo OK_MESH"
+[1/4] Lendo polyMesh redondo do on-caso-1: /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep/_scratch_solid/constant/polyMesh
+      nodes=13713, cells=11648, patches=12, zones=['on', 'pia', 'dura', 'lc', 'sclera_peri', 'sclera_ring', 'globo']
+[2/4] Reconstruindo conectividade C3D8 (11648 celulas)
+[3/4] Escrevendo all.msh / all.nam / winkler.inp em /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep/r1
+[4/4] Concluido.
+      13713 nodes, 11648 hex C3D8
+        EALL_ON          :  7680 elementos
+        EALL_PIA         :   960 elementos
+        EALL_DURA        :  1920 elementos
+        EALL_LC          :   256 elementos
+        EALL_SCLERA_PERI :   128 elementos
+        EALL_SCLERA_RING :   160 elementos
+        EALL_GLOBO       :   544 elementos
+      Nfsi_all: 1984 nodes
+      Winkler : 992 SPRINGA em dura_outer (k=2.0e+05 Pa/m)
+      SURFACEs: Scontact_local, Sfsi_sclera_peri, Sfsi_sclera_ring, Sfsi_pia, Sfsi_dura
+  nodes=13713  anel pia=32  anel dura=32
+  $ docker compose run --rm fsi bash -lc "cd on-caso-1.2/_mesh_indep/r1 && rm -f main.frd main.dat main.sta main.cvg && export OMP_NUM_THREADS=8 && ccx_preCICE -i main > log.ccx 2>&1 ; tail -3 log.ccx"
+  n_eq=39744  dura_mean=+0.5267 um  pia_mean=-0.9222 um
+
+===== NIVEL r2  resolucoes={'N_TANG': 16, 'N_RAD_ON': 12, 'N_RAD_CTR': 16, 'N_RAD_PIA': 2, 'N_RAD_SAS_IN': 6, 'N_RAD_SAS_OUT': 6, 'N_RAD_DURA': 4, 'N_AXIAL_SOLID': (60, 2, 2)} =====
+  $ docker compose run --rm fsi bash -lc "cd on-caso-1.2/_mesh_indep/_scratch_solid && rm -rf constant/polyMesh 0 log.* && blockMesh > log.blockMesh 2>&1 && topoSet -dict system/topoSetDict_contact > log.topoSet 2>&1 && createPatch -overwrite -dict system/createPatchDict_contact > log.createPatch 2>&1 && echo OK_MESH"
+[1/4] Lendo polyMesh redondo do on-caso-1: /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep/_scratch_solid/constant/polyMesh
+      nodes=101345, cells=93184, patches=12, zones=['on', 'pia', 'dura', 'lc', 'sclera_peri', 'sclera_ring', 'globo']
+[2/4] Reconstruindo conectividade C3D8 (93184 celulas)
+[3/4] Escrevendo all.msh / all.nam / winkler.inp em /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep/r2
+[4/4] Concluido.
+      101345 nodes, 93184 hex C3D8
+        EALL_ON          : 61440 elementos
+        EALL_PIA         :  7680 elementos
+        EALL_DURA        : 15360 elementos
+        EALL_LC          :  2048 elementos
+        EALL_SCLERA_PERI :  1024 elementos
+        EALL_SCLERA_RING :  1280 elementos
+        EALL_GLOBO       :  4352 elementos
+      Nfsi_all: 7808 nodes
+      Winkler : 3901 SPRINGA em dura_outer (k=2.0e+05 Pa/m)
+      SURFACEs: Scontact_local, Sfsi_sclera_peri, Sfsi_sclera_ring, Sfsi_pia, Sfsi_dura
+  nodes=101345  anel pia=64  anel dura=64
+  $ docker compose run --rm fsi bash -lc "cd on-caso-1.2/_mesh_indep/r2 && rm -f main.frd main.dat main.sta main.cvg && export OMP_NUM_THREADS=8 && ccx_preCICE -i main > log.ccx 2>&1 ; tail -3 log.ccx"
+Traceback (most recent call last):
+  File "/Users/brunaenne/Documents/repos/myopenfoam/brunaStuff/mesh_independence_caso_1_2.py", line 348, in <module>
+    main()
+    ~~~~^^
+  File "/Users/brunaenne/Documents/repos/myopenfoam/brunaStuff/mesh_independence_caso_1_2.py", line 335, in main
+    r = run_level(f)
+  File "/Users/brunaenne/Documents/repos/myopenfoam/brunaStuff/mesh_independence_caso_1_2.py", line 313, in run_level
+    pia = mean_radial(nodes, disp_pia, pia_ids)
+  File "/Users/brunaenne/Documents/repos/myopenfoam/brunaStuff/mesh_independence_caso_1_2.py", line 256, in mean_radial
+    return (float(np.mean(vals)), float(np.min(vals)), float(np.max(vals)),
+                                        ~~~~~~^^^^^^
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/_core/fromnumeric.py", line 3302, in min
+    return _wrapreduction(a, np.minimum, 'min', axis, None, out,
+                          keepdims=keepdims, initial=initial, where=where)
+  File "/opt/homebrew/lib/python3.14/site-packages/numpy/_core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: zero-size array to reduction operation minimum which has no identity

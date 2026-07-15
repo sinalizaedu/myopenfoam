@@ -66,6 +66,146 @@ myopenfoam/
     └── FSI-GUIDE.md
 ```
 
+## Master's thesis cases (`cases/artigo_mestrado/on-*`)
+
+Beyond the generic `validation/` case, this repository hosts the simulation
+campaign for Bruna's master's thesis on **CFD/FEA modelling of the optic nerve
+under CSF pressure** in normal and SANS (Spaceflight-Associated Neuro-ocular
+Syndrome) conditions. Full technical details are in
+[`brunaStuff/artigo_mestrado/relatorio_sans.tex`](brunaStuff/artigo_mestrado/relatorio_sans.tex).
+
+| Case | Solver(s) | SAS model | Drainage | Scenario | Notes |
+| --- | --- | --- | --- | --- | --- |
+| `on-mestrado-1` | solids4foam | solid (lumped) | none | 1g | 5 zones, FEA baseline |
+| `on-mestrado-2` | solids4foam | solid (anatomical) | none | 1g | 8 zones, FEA |
+| `on-mestrado-3` | solids4foam | solid (anatomical) | none | SANS upper | 8 zones, FEA, P_CSF=3800 Pa |
+| `on-fsi-2` | solids4foam + pimpleFluid | fluid (FSI cul-de-sac) | none | 1g | 7 zones, two-way FSI via preCICE |
+| `on-fsi-3` | solids4foam + pimpleFluid | fluid (FSI cul-de-sac) | none | SANS upper | as fsi-2, P_CSF=3800 Pa |
+| `on-caso-1` | solids4foam + pimpleFluid | fluid (FSI) | porous lid (Darcy) | 1g | 7 zones + outlet, **selective decoupling** |
+| `on-caso-1.2` | **CalculiX** + pimpleFluid | fluid (FSI) | porous lid (Darcy) | 1g | as caso-1 but ccx_preCICE on the solid side |
+
+### Architecture of `on-caso-1` and `on-caso-1.2`
+
+These two cases share the same fluid topology (SAS regular + porous lid drain
+modelled as Darcy-Forchheimer in `peri_porous`) and the same solid topology
+(7 anatomical zones), differing only in the solid solver. They implement the
+**Selective Decoupling Trick** to avoid added-mass instability at the
+CSF-sclera interface:
+
+- **FSI active** on `fsi_pia` and `fsi_dura` only (radial sheath patches in
+  z=[0, 30] mm). The fluid sends Forces, the solid sends Displacements.
+- **Static equivalent load** on the inner sclera faces (`fsi_sclera_peri` and
+  `fsi_sclera_ring`): a constant pressure of 1333 Pa (= P_CSF baseline) is
+  applied via `solidTraction` (solids4foam) or `*DLOAD` (CalculiX) instead
+  of dynamic FSI coupling. Geometric continuity of the FEM mesh propagates
+  the load coherently to `lc`, `globo`, `dura_outer` (Winkler 200 kPa/m,
+  orbital fat), `contact_local` (9034 Pa, ophthalmic artery), etc.
+- **Free outlet** at `outlet_peri` (z=30.5 mm, p=0): CSF leaves the domain
+  through the porous lid without imposing tear-like stresses on the
+  peripapillary sclera.
+
+The CalculiX deck for `on-caso-1.2` is generated automatically by
+`brunaStuff/gen_on_caso_1_2_ccx_inp.py` (mesh + NSETs in `all.msh` and
+`all.nam`, included by `solid/main.inp`). The native `.frd` output is
+converted to ParaView format (`.pvd` + `.vtu`) automatically by `Allrun`
+via `ccx2paraview`.
+
+#### `solids4foam` `pimpleFluid` + `fvOptions` patch (Darcy fix)
+
+Upstream `solids4foam` v2512/ESI ships with `pimpleFluid.esi.C` lines that
+explicitly disable `fvOptions` integration (commented as
+`// fvOptions not implemented yet`). This means **any
+`explicitPorositySource` in `system/fvOptions` is silently ignored** -
+flow ignores the Darcy coefficient `d` regardless of value.
+
+The Dockerfile applies an in-tree patch to `pimpleFluid.esi.C` before
+`Allwmake`: it `#include`s `fvOptions.H`, instantiates
+`fv::options& fvOptions = fv::options::New(mesh)` inside `evolve()`, adds
+`== fvOptions(U)` to the `tUEqn` momentum source (matching canonical
+`pimpleFoam/UEqn.H`), and uncomments `fvOptions.constrain(UEqn)` plus
+`fvOptions.correct(U)`. The patched `libsolids4FoamModels.so` is then
+bind-mounted into running containers via `docker-compose.yaml` (mount
+target `/opt/of-user/lib/libsolids4FoamModels.so`, source
+`./cases/_lib/libsolids4FoamModels.so`).
+
+Validation - sweep on `on-caso-1.2` (saved in
+`cases/on-caso-1.2/_sweep/d{1e13,1e15,1e17}/`):
+
+| `d` (m^-2) | `\|U\|`_pp_max | Q_drainage (m³/s) | Regime |
+| --- | --- | --- | --- |
+| 1e13 | 1.19e-4 m/s | 9.96e-10 | open microdrainage |
+| 1e15 | 1.19e-6 m/s | 9.96e-12 | healthy (~physiologic) |
+| 1e17 | 1.19e-8 m/s | 9.96e-14 | **IIH/SANS-like (compartmentalized)** |
+
+Pure Darcy scaling (100x change in `d` -> 100x change in flow). This sweep
+used the **earlier Δp-anchored configuration** (both `inlet` p=1333 Pa and
+`outlet_peri` p=0 `fixedValue`), where the total `dp` stays anchored, so
+compartmentalization manifested as **reduced drainage flow** (Q -> 0 as
+d -> infinity) rather than as elevated ICP. The live case has since moved to
+the ICP-driven ramp described below (dura expansion); the `_sweep/` results
+remain as the flow-compartmentalization reference.
+
+#### ICP-driven **full 2-way FSI** with dura expansion (default `on-caso-1.2`)
+
+The live `on-caso-1.2` now runs the **complete two-way FSI in ICP-driven mode**:
+the inlet pressure (chiasmatic cistern) is **ramped from 1333 Pa (healthy) to
+3800 Pa (SANS) over 6 coupling windows** (`fluid/0/p` `uniformFixedValue table`),
+while the distal lid Darcy coefficient is set to the **compartmentalized
+regime `d = 1e16`** so almost nothing drains. CSF therefore accumulates in the
+perineural SAS, **distending the dura outward and compressing the optic nerve
+(pia) inward** - the hallmark optic nerve sheath distension of SANS/IIH on MRI.
+
+The ramp (small load increments per window) is what makes the Neo-Hookean
+CalculiX Newton-Raphson converge: all 6 windows converge in 5-13 IQN-ILS
+iterations (`time-windows-reused = 3` accelerates windows 2-6). This resolves
+the divergence previously seen when the full SANS load was applied in a single
+window. Radial displacement at z=30 mm, θ=0 (watchpoints `duraPeripapilar`
+r=2.35 and `tampaPeripapilar` r=1.55):
+
+| PIC (Pa) | dura `U_r` (µm) | pia `U_r` (µm) |
+| --- | --- | --- |
+| 1333 (healthy) | −0.281 (inward) | −0.604 |
+| 3800 (SANS) | **+0.242 (outward)** | −0.933 |
+
+Net over the ramp: dura **+0.52 µm outward** (sheath distension), pia
+**−0.33 µm inward** (nerve compression). Even θ=0 sits directly under the
+ophthalmic-artery sector (9034 Pa inward static load), so the off-artery
+expansion is larger. Figure: `brunaStuff/figs/on-caso-1.2-dura-expansion.png`
+(`python3 brunaStuff/plot_caso_1_2_dura_expansion.py`).
+
+#### Auxiliary fluid-only ICP map (`on-caso-1.2-fluidonly`)
+
+To map compartmentalization as elevated ICP purely on the fluid side, the
+auxiliary case `cases/on-caso-1.2-fluidonly/` runs the same fluid mesh under
+`flowRateInletVelocity` BC at the inlet (Q = 3e-11 m³/s prescribed) and
+`zeroGradient` p, with `outlet_peri` p=0 as venous reference, using standalone
+`pimpleFoam` (no preCICE/CalculiX).
+
+| `d` (m^-2) | ICP_bulk (Pa) | Δp_lid (Pa) | Regime |
+| --- | --- | --- | --- |
+| 1e12 | -330 | -85 | lid wide open (Bernoulli transient) |
+| 1e13 | -317 | -81 | lid wide open |
+| 1e14 | -188 | -36 | barely permeable (no compartmentalization) |
+| 1e15 | **1106** | 410 | **healthy (~P_CSF baseline 1333 Pa)** |
+| 1e16 | **14039** | 4871 | **IIH/SANS severe (~105 mmHg)** |
+
+A single decade of `d` (1e15 -> 1e16) drives ICP from physiologic to severe
+intracranial hypertension - matching the clinical SANS hypothesis that
+small changes in arachnoid villi permeability cause large ICP elevations.
+
+To validate compartmentalization on a fresh checkout:
+
+```bash
+# Q-driven (FSI on-caso-1.2): show flow scales 100x with d
+python3 brunaStuff/check_compartmentalization.py cases/on-caso-1.2
+python3 brunaStuff/check_velocity.py cases/on-caso-1.2
+python3 brunaStuff/sweep_d_table.py     # requires _sweep/ to exist
+
+# ICP-driven (fluid-only on-caso-1.2-fluidonly): show ICP rises with d
+python3 brunaStuff/sweep_icp_driven.py
+# Figure: brunaStuff/figs/on-caso-1.2-icp-driven.png
+```
+
 ## Quick Start
 
 ### 1. Build the image

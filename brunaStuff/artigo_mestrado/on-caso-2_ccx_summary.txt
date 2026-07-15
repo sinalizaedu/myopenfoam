@@ -1,0 +1,38 @@
+========================================================================
+on-caso-2 v2 (CCX 2.20 NLGEOM + Riks) - flambagem axial anatomica
+Geometria: 7 zonas (on, pia, dura, lc, sclera_peri, sclera_ring, globo)
+Material : NEO HOOKE compressivel, nu=0.49 (E_rigido=3MPa, E_LC=300kPa, E_nervo=30kPa)
+========================================================================
+
+Timestamps lidos do Riks: 5
+Range Dz no globo: -1.500 a -0.281 mm
+Lambda (load factor) range: 0.188 a 1.000
+
+--- Reacao no engaste posterior (z=0, canal optico) ---
+  F_eng_max  =   681.32 mN @ Dz_globo = -1.500 mm
+  Decomposicao no pico (% de F_eng):
+     dura :  +88.400 mN  (  13.0%)
+     pia  :  +48.962 mN  (   7.2%)
+     on   : +543.955 mN  (  79.8%)
+
+--- Equilibrio axial (sanity check) ---
+  F_anterior_globo = -180.839 mN
+  F_eng_posterior  = +681.317 mN
+  |imbalance| max  = 500.479 mN  (springs Winkler + perturbacao)
+
+--- Rigidez axial pre-flambagem (regime |Dz| <= 0.2 mm) ---
+  k_axial = 149.81 N/m
+
+--- F_eng_total monotonico (pico = ultimo ponto) ---
+  max |F_eng| = 681.32 mN @ Dz_globo = -1.500 mm
+  K_ef estimado = 0.570 (back-out de Euler dura sozinha)
+
+--- Pico de cada camada (P_cr_local) ---
+  dura : F_max =   88.40 mN @ Dz =  -1.50 mm  
+  pia  : F_max =   48.96 mN @ Dz =  -1.50 mm  
+  on   : F_max =  543.95 mN @ Dz =  -1.50 mm  
+
+--- Comparacao com Euler analitico (so dura_outer, EI=2.018e-05 Nm^2) ---
+  K=0.5: P_cr_Euler =  885.18 mN   (CCX/Euler = 0.77)
+  K=0.7: P_cr_Euler =  451.62 mN   (CCX/Euler = 1.51)
+  K=1.0: P_cr_Euler =  221.29 mN   (CCX/Euler = 3.08)

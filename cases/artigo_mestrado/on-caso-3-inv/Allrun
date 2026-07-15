@@ -1,0 +1,48 @@
+#!/bin/bash
+# on-caso-3-inv - FLAMBAGEM por deslocamento axial imposto na tampa anterior.
+# SEM FSI (solido puro). Geometria identica ao on-flambagem-2 (tubo 4 zonas
+# concentricas, z=0-30 mm), mas com PROPRIEDADES MATERIAIS DO on-mestrado-2:
+#
+#   on   : nervo neural,    r=0    -1.50,  E=30  kPa, nu=0.45
+#   pia  : pia mater,       r=1.50 -1.55,  E=3   MPa, nu=0.45
+#   sas  : SAS (CSF solid), r=1.55 -2.35,  E=100 kPa, nu=0.30   (anatomico)
+#   dura : dura mater,      r=2.35 -2.50,  E=3   MPa, nu=0.45
+#
+# Sem esclera, sem LC, sem globo, sem contact_local.
+#
+# Carregamento:
+#   posterior_sas             : P_CSF = 1333 Pa (~10 mmHg) - PIC normal.
+#   anterior_{on,pia,sas,dura}: rampa de Dz=0 -> -1 mm em 40 passos
+#                               (constant/timeVsDisp, deltaT=1).
+#   dura_outer                : Winkler 200 kPa/m (gordura orbital realista).
+#   perturbation_strip        : 10 Pa lateral em +X, z=[12;18] mm
+#                               (carved-out de dura_outer, quebra de simetria
+#                               para selecionar modo de flambagem).
+#
+# Solver NL geometry (nonLinearGeometryTotalLagrangianTotalDisplacement) com
+# neoHookeanElastic. Sub-relaxacao agressiva alpha_D=0.3.
+
+set -e
+set -o pipefail
+cd "$(dirname "$0")/solid"
+
+echo "=== on-caso-3-inv: blockMesh (4 zonas, ~16320 cells) ==="
+blockMesh | tee log.blockMesh
+
+echo "=== on-caso-3-inv: topoSet (extrai perturbation_strip do dura_outer) ==="
+topoSet -dict system/topoSetDict_perturbation | tee log.topoSet
+
+echo "=== on-caso-3-inv: createPatch (cria perturbation_strip) ==="
+createPatch -overwrite -dict system/createPatchDict_perturbation | tee log.createPatch
+
+echo "=== on-caso-3-inv: checkMesh ==="
+checkMesh | tee log.checkMesh
+
+echo "=== on-caso-3-inv: solids4Foam (40 passos com Dz ramped) ==="
+solids4Foam | tee log.solids4Foam
+
+echo ""
+echo "=== Concluido. Resultados em solid/{1,2,...,40}/ ==="
+echo ""
+echo "Curva F_z(Dz) em postProcessing/forces_anterior_dura/0/forces_*.dat"
+echo "Visualizar deformacao em ParaView: solid/on-caso-3-inv.foam"

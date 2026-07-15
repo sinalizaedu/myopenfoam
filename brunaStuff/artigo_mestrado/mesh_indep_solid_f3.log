@@ -1,0 +1,27 @@
+ Container myopenfoam-fsi-run-c5fc5117c057 Creating 
+ Container myopenfoam-fsi-run-c5fc5117c057 Created 
+[1/5] Lendo polyMesh em of/constant/polyMesh
+      nodes=332785, faces=961632, cells=314496, patches=12, zones=['on', 'pia', 'dura', 'lc', 'sclera_peri', 'sclera_ring', 'globo']
+[2/5] Reconstruindo conectividade C3D8 (314496 celulas)
+      OK
+[3/5] Escrevendo malha em ccx/all_mesh.inp
+[4/5] Escrevendo Winkler em ccx/winkler.inp (8622 faces de dura_outer)
+[5/5] Concluido. Total: 332785 nodes, 314496 hex C3D8.
+bash: line 1:   225 Killed                  ccx_preCICE -i main > log.ccx 2>&1
+************************************************************
+
+You are using an executable made on Sun Jul 31 18:08:37 CEST 2022
+
+===== NIVEL SOLIDO f3 =====
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep_solid/f3
+refine_blockmesh: 55 blocos escalados (fr=3, ft=3, fz=3) -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep_solid/f3/of/system/blockMeshDict
+  $ docker compose run --rm fsi bash -lc "cd on-caso-1.2/_mesh_indep_solid/f3/of && blockMesh > log.blockMesh 2>&1 && topoSet -dict system/topoSetDict_contact > log.topoSet 2>&1 && createPatch -overwrite -dict system/createPatchDict_contact > log.createPatch 2>&1 && cd .. && python3 foam_polymesh_to_ccx_inp.py --polymesh of/constant/polyMesh --out-mesh ccx/all_mesh.inp --out-winkler ccx/winkler.inp --winkler-k 200000 --element-type C3D8 && cd ccx && rm -f main.frd main.dat main.sta main.cvg && ccx_preCICE -i main > log.ccx 2>&1 ; tail -n 3 log.ccx"
+Traceback (most recent call last):
+  File "/Users/brunaenne/Documents/repos/myopenfoam/brunaStuff/mesh_independence_solid_caso_1_2.py", line 371, in <module>
+    main()
+    ~~~~^^
+  File "/Users/brunaenne/Documents/repos/myopenfoam/brunaStuff/mesh_independence_solid_caso_1_2.py", line 360, in main
+    r = run_level(f)
+  File "/Users/brunaenne/Documents/repos/myopenfoam/brunaStuff/mesh_independence_solid_caso_1_2.py", line 242, in run_level
+    raise RuntimeError(f"frd sem passos: {frd}")
+RuntimeError: frd sem passos: /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_mesh_indep_solid/f3/ccx/main.frd

@@ -1,0 +1,31 @@
+% =============================================================================
+%  Conclusões -- Mestrado Bruna
+%  Estudo CFD/FEA do nervo óptico (NO) sob pressão do LCR / SANS.
+%  Síntese (máx. 3 parágrafos); o detalhamento quantitativo está em Resultados.
+% -----------------------------------------------------------------------------
+%  Como usar:
+%    \input{conclusoes_sans.tex}  no seu main.tex
+%      -> sugerido logo APÓS \input{relatorio_sans.tex}, fechando o documento
+%         antes das referências bibliográficas.
+%
+%  Pacotes mínimos esperados no preâmbulo do main.tex (os mesmos da metodologia
+%  e do relatório):
+%    \usepackage[utf8]{inputenc}
+%    \usepackage[T1]{fontenc}
+%    \usepackage[brazil]{babel}
+%    \usepackage{amsmath, amssymb}
+%    \usepackage{siunitx}
+%    \usepackage[round]{natbib}
+%
+%  Citações esperadas no .bib (todas já presentes nos demais arquivos):
+%    Lee2020NPJ, Mader2011, Chourdakis2022, Bungartz2016, Holzapfel2000.
+% =============================================================================
+
+\section{Conclusões}
+\label{sec:conclusoes}
+
+Este trabalho estabeleceu uma plataforma numérica reprodutível, em interação fluido-estrutura (FSI) acoplada via \textsc{preCICE} \citep{Chourdakis2022, Bungartz2016}, para o estudo biomecânico do nervo óptico sob pressão do líquido cefalorraquidiano (LCR), motivada pela Síndrome Neuro-ocular Associada ao Voo Espacial (SANS) \citep{Lee2020NPJ, Mader2011}. O achado central é que a representação do LCR como fluido é \emph{necessária}: o modelo FSI reproduz o princípio de Pascal num \emph{cul-de-sac} fechado (residual $< 0.5\%$), enquanto o modelo puramente estrutural é qualitativamente insensível à pressão intracraniana, modo de falha não corrigível por refinamento de malha. Consistentemente, o LCR atua como amortecedor isotrópico da carga arterial, reduzindo a deflexão lateral do nervo em mais de uma ordem de magnitude, o que indica que a tortuosidade observada \emph{in vivo} é um efeito transiente da pulsação arterial, e não do carregamento médio estático.
+
+Dois resultados complementares delimitam o quadro mecânico da SANS. Primeiro, a flambagem axial clássica de Euler \emph{não} constitui modo de falha relevante na faixa clínica do \emph{shift} cefálico, com margem de segurança mínima de $\sim 2.4\times$ confirmada por validação cruzada numérica da bifurcação em geometria prismática equivalente. Segundo, a drenagem perineural modelada por um \emph{lid} poroso de Darcy mostra que a compartimentalização do espaço subaracnoide do nervo óptico, do regime saudável ao regime IIH/SANS severo, ocorre num único \emph{decade} do coeficiente de obstrução -- não-linearidade coerente com o gatilho clínico abrupto da hipertensão perineural. O detalhamento quantitativo desses achados, das tabelas de indicadores e dos testes de verificação e validação encontra-se na Seção~\ref{sec:resultados-sans}.
+
+As conclusões devem ser lidas à luz das hipóteses adotadas: regime estático, artéria oftálmica como pressão prescrita (sem acoplamento de três vias), leis constitutivas lineares próximas do limite de validade ($\varepsilon_{\mathrm{eq}}^{\max} \approx 0.017$) e ausência da pressão intraocular. A continuidade natural do trabalho passa, portanto, pelo FSI transiente ao longo do ciclo cardíaco, por formulação hiperelástica anisotrópica \citep{Holzapfel2000} e pela inclusão do gradiente de pressão translaminar -- extensões que a plataforma aqui validada já suporta e que constituem a fronteira de pesquisa da fisiopatologia da SANS.

@@ -1,0 +1,63 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// on-caso-3 - 4 zonas (on/pia/sas/dura) com propriedades materiais
+// IDENTICAS as do on-mestrado-2 ANATOMICO:
+//   on   : nervo neural,    r=0    -1.50,  E=30  kPa, nu=0.45, rho=1000
+//   pia  : pia mater,       r=1.50 -1.55,  E=3   MPa, nu=0.45, rho=1100
+//   sas  : SAS (CSF solid), r=1.55 -2.35,  E=100 kPa, nu=0.30, rho=1000
+//   dura : dura mater,      r=2.35 -2.50,  E=3   MPa, nu=0.45, rho=1100
+//
+// LEI CONSTITUTIVA: linearElastic (Hooke linear pequenas deformacoes).
+// Justificativa: o solver NL geometry com neoHookean falhou no Time=1
+// (Jacobiano negativo / checkerboarding segregado em multi-zona, ver
+// solidProperties). Fallback adotado: linearGeometryTotalDisplacement, que
+// requer lei small-strain. Para 1 mm em 30 mm de tubo (~3.3% strain), Hooke
+// linear ainda esta dentro do regime valido (erro de geometria nao-linear
+// O(strain^2) = O(0.001), abaixo do erro de discretizacao radial).
+//
+// nu_sas=0.30 preservado (vs 0.499 do on-mestrado-2): SAS modelado como
+// solido soft com compressibilidade fisicamente moderada para evitar
+// volumetric locking no FVM segregado.
+
+planeStress     no;
+
+mechanical
+(
+    on
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 30e3;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+
+    pia
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+
+    sas
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 100e3;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
+    }
+
+    dura
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 3e6;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
+    }
+);

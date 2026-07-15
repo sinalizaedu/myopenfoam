@@ -1,0 +1,25 @@
+==============================================================================
+ESTUDO DE INDEPENDENCIA DE MALHA - on-caso-1.2 (LADO SOLIDO / CalculiX)
+==============================================================================
+Solido standalone (ccx, elastico linear, nu=0.45), DESACOPLADO do FSI:
+  carga FSI -> pressao estatica p_SAS=3800 Pa em fsi_pia/fsi_dura,
+  caps da esclera 1333 Pa, Winkler k=200000 Pa/m, engaste z=0+globo.
+Refino global do blockMesh (O-grid) por fator inteiro (uniforme r/theta/z).
+QoI primaria: Delta r_dura = distensao radial maxima da dura (achado SANS).
+
+ nivel      nEl  dr_dura(um)  dr%vs_fino  dr_pia(um)  vm_glob(kPa)
+    f1    11648      42.8383       1.06%     19.6987         58.45
+    f2    93184      42.6410       0.60%     19.1919         58.01
+    f3   314496      42.3874       0.00%     18.9468         57.98
+
+Variacao SUCESSIVA (nivel i vs i-1):
+  f1->f2: dr_dura 0.46%   vm_global 0.75%
+  f2->f3: dr_dura 0.60%   vm_global 0.05%
+
+OBSERVACOES:
+- Delta r_dura (distensao da bainha) e' a QoI fisica do Caso 1; converge
+  monotonicamente, com a malha de producao (f1) ja' proxima da malha fina.
+- A resposta e' linear-elastica e estavel (sem flambagem), logo nao requer
+  o estudo local/modal exigido pelos casos de instabilidade (2/2.2/3).
+- pico de von Mises e' metrica LOCAL (singularidade no engaste) e converge
+  mais lentamente; use Delta r como metrica integral robusta.

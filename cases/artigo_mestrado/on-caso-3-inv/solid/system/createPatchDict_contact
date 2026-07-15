@@ -1,0 +1,25 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+// on-caso-3-inv - cria patch local 'contact_local' a partir do faceSet definido
+// em topoSetDict_contact (lado -X, espelhado em relacao ao on-caso-3 que esta
+// no lado +X). As faces movidas saem do dura_outer (Winkler nelas fica
+// desativado automaticamente pelo conversor) e passam ao novo patch que recebera
+// *DSLOAD pressao P_contact = 9034 Pa em on-caso-3-inv.inp.
+
+pointSync   false;
+
+patches
+(
+    {
+        name            contact_local;
+        patchInfo       { type wall; }
+        constructFrom   set;
+        set             contact_local;
+    }
+);

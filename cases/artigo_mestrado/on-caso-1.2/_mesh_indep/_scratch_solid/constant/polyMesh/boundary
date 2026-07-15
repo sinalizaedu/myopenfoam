@@ -1,0 +1,107 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+12
+(
+    posterior_on
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          420;
+        startFace       63540;
+    }
+    posterior_pia
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       63960;
+    }
+    posterior_dura
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          80;
+        startFace       64000;
+    }
+    dura_outer
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          1518;
+        startFace       64080;
+    }
+    sclera_ring_outer
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       65598;
+    }
+    globo_outer
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          40;
+        startFace       65638;
+    }
+    anterior_globo
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          860;
+        startFace       65678;
+    }
+    fsi_pia
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          1520;
+        startFace       66538;
+    }
+    fsi_dura
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          1520;
+        startFace       68058;
+    }
+    fsi_sclera_peri
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          160;
+        startFace       69578;
+    }
+    fsi_sclera_ring
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          160;
+        startFace       69738;
+    }
+    contact_local
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          2;
+        startFace       69898;
+    }
+)
+
+// ************************************************************************* //

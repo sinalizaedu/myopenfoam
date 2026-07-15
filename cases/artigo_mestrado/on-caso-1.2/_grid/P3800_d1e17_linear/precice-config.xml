@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  on-caso-1.2 : preCICE config (FSI two-way - estatico, com lid poroso distal)
+                Variante de on-caso-1 que usa CalculiX no lugar de solids4Foam.
+
+  Acoplamento:
+    Fluid (OpenFOAM pimpleFluid, SAS LCR + lid poroso Darcy)
+      <==> Solid (CalculiX 2.20 com adapter v2.20.1, MVP de 2 cilindros)
+    Forces         Fluid -> Solid  (pressao do LCR nas paredes laterais)
+    Displacements  Solid -> Fluid  (mesh motion do fluido segue solido)
+
+  IMPORTANTE - data names:
+    CalculiX adapter usa "Forces" e "Displacements" (PLURAL).
+    OpenFOAM adapter por padrao usa "Force"/"Displacement" (SINGULAR), mas
+    pode ser configurado para casar com qualquer nome. Aqui adotamos os
+    nomes plural do CalculiX como canonical.
+
+  Patches FSI (2, mapeadas via RBF thin-plate-splines):
+    fsi_pia          - r=1.55 mm, z=0-30   (anel da pia)
+    fsi_dura         - r=2.35 mm, z=0-30   (anel da dura)
+
+  Mapping: RBF thin-plate-splines (mesh CalculiX nao precisa ser conformal
+  com OpenFOAM; esta variante usa anel completo de 32 cells em theta vs.
+  4 quadrantes de 8 cells em theta na malha OpenFOAM = mesma resolucao em
+  numero de cells, mas conectividade diferente -> RBF cuida).
+
+  Tempo:
+    Carga estatica, 1 time-window de 1.0s, IQN-ILS max 100 iter.
+-->
+<precice-configuration>
+  <log>
+    <sink
+      filter="%Severity% > debug and %Rank% = 0"
+      format="---[precice] %ColorizedSeverity% %Message%"
+      enabled="true" />
+  </log>
+
+  <data:vector name="Forces" />
+  <data:vector name="Displacements" />
+
+  <mesh name="Fluid-Mesh" dimensions="3">
+    <use-data name="Forces" />
+    <use-data name="Displacements" />
+  </mesh>
+
+  <mesh name="Solid-Mesh" dimensions="3">
+    <use-data name="Displacements" />
+    <use-data name="Forces" />
+  </mesh>
+
+  <participant name="Fluid">
+    <provide-mesh name="Fluid-Mesh" />
+    <receive-mesh name="Solid-Mesh" from="Solid" />
+    <write-data name="Forces" mesh="Fluid-Mesh" />
+    <read-data name="Displacements" mesh="Fluid-Mesh" />
+    <mapping:rbf direction="write" from="Fluid-Mesh" to="Solid-Mesh" constraint="conservative">
+      <basis-function:thin-plate-splines />
+    </mapping:rbf>
+    <mapping:rbf direction="read" from="Solid-Mesh" to="Fluid-Mesh" constraint="consistent">
+      <basis-function:thin-plate-splines />
+    </mapping:rbf>
+  </participant>
+
+  <participant name="Solid">
+    <provide-mesh name="Solid-Mesh" />
+    <write-data name="Displacements" mesh="Solid-Mesh" />
+    <read-data name="Forces" mesh="Solid-Mesh" />
+    <!-- pia (r=1.55): compressao do nervo. dura (r=2.35): expansao da bainha. -->
+    <watch-point mesh="Solid-Mesh" name="tampaPeripapilar" coordinate="0.00155;0.0;0.030" />
+    <watch-point mesh="Solid-Mesh" name="duraPeripapilar" coordinate="0.00235;0.0;0.030" />
+  </participant>
+
+  <m2n:sockets acceptor="Fluid" connector="Solid" exchange-directory=".." />
+
+  <coupling-scheme:parallel-implicit>
+    <time-window-size value="1.0" />
+    <max-time value="5.0" />
+    <participants first="Fluid" second="Solid" />
+    <exchange data="Forces" mesh="Solid-Mesh" from="Fluid" to="Solid" />
+    <exchange data="Displacements" mesh="Solid-Mesh" from="Solid" to="Fluid" />
+    <max-iterations value="100" />
+    <relative-convergence-measure limit="1e-4" data="Displacements" mesh="Solid-Mesh" />
+    <relative-convergence-measure limit="1e-3" data="Forces" mesh="Solid-Mesh" />
+    <acceleration:IQN-ILS>
+      <data name="Displacements" mesh="Solid-Mesh" />
+      <data name="Forces" mesh="Solid-Mesh" />
+      <preconditioner type="residual-sum" />
+      <filter type="QR2" limit="1e-2" />
+      <initial-relaxation value="0.01" />
+      <max-used-iterations value="50" />
+      <!-- reaproveita info das janelas anteriores: a rampa muda a carga pouco
+           a pouco, entao o subespaco de quasi-Newton acelera as janelas 2..6 -->
+      <time-windows-reused value="3" />
+    </acceleration:IQN-ILS>
+  </coupling-scheme:parallel-implicit>
+</precice-configuration>

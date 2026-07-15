@@ -1,0 +1,255 @@
+*HEADING
+on-caso-4 (CCX 2.20) - INCHACO SANS dirige AREA e FORCA de contato, Riks
+**
+** ============================================================================
+** on-caso-4 = "on-caso-3-sf + inchaco SANS acoplado ao contato arterial"
+**
+** HERDADO do on-caso-3-sf (mesma malha 7 zonas, mesmos materiais NeoHooke/orto,
+** mesmo SAS solido, mesmo Winkler 2 MPa/m SANS, SEM forca frontal -- sem Dz
+** prescrito, sem CLOAD EOM no globo). A diferenca fisica central:
+**
+**   >>> A P_contact da arteria NAO E MAIS UMA CARGA FIXA NUM PATCH FIXO. <<<
+**   >>> AGORA O INCHACO DA BAINHA (dirigido por P_CSF) DEFINE, EM CADA     <<<
+**   >>> ESTAGIO DE SANS, TANTO A AREA DO PATCH QUANTO A FORCA DE CONTATO.  <<<
+**
+** Cadeia fisica modelada (SANS):
+**   ICP elevada -> LCR acumula no SAS (compartimentado perto do globo) ->
+**   a bainha (dura) DISTENDE radialmente (ONSD aumenta = "nervo incha") ->
+**   a arteria oftalmica, que cruza/encosta na bainha em +X, z~22.5 mm,
+**   passa a ter MAIOR interferencia geometrica com a bainha inchada ->
+**   AREA de contato cresce E FORCA de contato cresce.
+**
+** Como isso vira numeros (contato "encenado em uma passada", prescrito mas
+** ANCORADO numa medida do proprio inchaco -- ver brunaStuff/measure_on-caso-4_*):
+**   1) o inchaco e' dirigido pela P_CSF (DSLOAD na parede interna da dura,
+**      DURA_INNER_SURF) -- injetada por env var P_CSF no Allrun;
+**   2) por estagio, mede-se Dr_dura(z,theta) no setor +X (run inchaco-only) e
+**      define-se a "pegada" onde Dr_dura excede a folga arteria-bainha (gap);
+**   3) o box do contact_local (topoSetDict_contact) e' ampliado p/ cobrir essa
+**      pegada -> AREA(estagio) cresce com o inchaco;
+**   4) P_contact(estagio) = k_art * delta, delta = max(0, Dr_dura - gap),
+**      k_art = rigidez efetiva de indentacao da arteria -> FORCA(estagio) cresce.
+**
+** Mantidos (todos LATERAIS):
+**   - P_contact: arteria oftalmica empurrando a dura focalmente em +X,
+**     z~22.5 mm (DSLOAD CONTACT_LOCAL_SURF), area+valor por estagio;
+**   - P_CSF: pressao do LCR na parede interna da dura (DSLOAD DURA_INNER_SURF)
+**     -- MOTOR do inchaco. Baseline 1g = 1333 Pa; SANS upper ~3800 Pa; severo
+**     compartimentado ~5500 Pa. Injetada por env var P_CSF;
+**   - Winkler 2 MPa/m em dura_outer (fundacao da gordura orbital SANS);
+**   - engaste posterior total (canal optico) e confinamento lateral XY do
+**     globo pela orbita (ANTERIOR_GLOBO 1,2=0; z LIVRE -- sem forca frontal).
+**
+** PERGUNTA CIENTIFICA: conforme o inchaco SANS progride (P_CSF crescente), o
+** aumento ACOPLADO de area + forca de contato da arteria oftalmica intensifica
+** o insulto ao nervo (kink lateral, sigma_vM no contato, offset do centroide)?
+** Sweep pelo ESTAGIO DE SANS (inchaco), nao mais por P_contact isolado.
+**
+** ============================================================================
+** Geometria (do blockMeshDict de on-caso-1, malha reduzida): 11648 -> 2736
+** hex C3D8I. 7 zonas concentricas:
+**   on / pia / sas / dura / lc / sclera_peri / sclera_ring / globo
+**   (valores Bruna 2026-05-28: casco E=3 MPa, LC=300 kPa, nervo=30 kPa, nu=0.49)
+**
+** Lei constitutiva: NEO HOOKE compressivel (CCX *HYPERELASTIC, NEO HOOKE):
+**   C10 = E / [4(1+nu)]   ;   D1 = 6(1-2*nu) / E
+** Elemento C3D8I (modos incompativeis) mitiga locking volumetrico em nu=0.49.
+**
+** ============================================================================
+** Solver: *STATIC, RIKS (arc-length). Sem o Dz prescrito, o vetor de carga de
+** referencia que o Riks escala (lambda) e' composto SO pelas cargas laterais:
+**   P_contact (DSLOAD) + perturbacao (CLOAD) + reacao do Winkler.
+** ARCMAX=1.0 -> o fator maximo e' 1.0, logo P_contact_max aplicado = exatamente
+** o valor injetado no sweep (nao ha overshoot). lam_final<1 no .sta sinaliza
+** que a estrutura NAO suportou a carga lateral total (colapso/snap = flambagem).
+**
+** ============================================================================
+*INCLUDE, INPUT=on-caso-4_mesh.inp
+*INCLUDE, INPUT=on-caso-4_winkler.inp
+**
+** ============================================================================
+** MATERIAIS (NEO HOOKE compressivel, nu=0.49 quase-incompressivel)
+** Unidades SI: Pa (=N/m^2). Multiplicar por 1e-6 p/ ler em MPa.
+** ============================================================================
+*MATERIAL, NAME=ON_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=30 kPa, MAT_NERVO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+03, 4.0000e-06
+*DENSITY
+1000
+**
+*MATERIAL, NAME=SAS_MAT
+** SAS solido "fluido-like": macio + ALTAMENTE compressivel (nu=0.05).
+**   E  = 3 kPa, nu = 0.05 -> C10 = 714.3 Pa, D1 = 1.8e-3 1/Pa
+*HYPERELASTIC, NEO HOOKE
+7.1430e+02, 1.8000e-03
+*DENSITY
+1000
+**
+*MATERIAL, NAME=PIA_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1100
+**
+*MATERIAL, NAME=DURA_MAT
+** Anisotropia transversa (Holzapfel-like simplificado): E_circ = 3x E_rad/axial.
+** Linear elastic ortotropico em sistema cilindrico (1=radial, 2=circ, 3=axial).
+*ELASTIC, TYPE=ENGINEERING CONSTANTS
+** E_r,    E_theta, E_z,     nu_rt, nu_rz, nu_tz, G_rt,    G_rz
+3.000e+6, 9.000e+6, 3.000e+6, 0.30,  0.30,  0.30,  1.150e+6, 1.150e+6
+** G_tz, T
+1.150e+6, 0.0
+*DENSITY
+1100
+**
+*MATERIAL, NAME=LC_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=300 kPa, MAT_LC]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+04, 4.0000e-07
+*DENSITY
+1100
+**
+*MATERIAL, NAME=SCLERA_PERI_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=SCLERA_RING_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=GLOBO_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*SOLID SECTION, ELSET=ON,          MATERIAL=ON_MAT
+*SOLID SECTION, ELSET=PIA,         MATERIAL=PIA_MAT
+*SOLID SECTION, ELSET=SAS,         MATERIAL=SAS_MAT
+** Dura: precisa de ORIENTATION cilindrica para o ortotropico funcionar.
+*ORIENTATION, NAME=ORI_CYL, SYSTEM=CYLINDRICAL
+0.0, 0.0, 0.0, 0.0, 0.0, 1.0
+*SOLID SECTION, ELSET=DURA,        MATERIAL=DURA_MAT, ORIENTATION=ORI_CYL
+*SOLID SECTION, ELSET=LC,          MATERIAL=LC_MAT
+*SOLID SECTION, ELSET=SCLERA_PERI, MATERIAL=SCLERA_PERI_MAT
+*SOLID SECTION, ELSET=SCLERA_RING, MATERIAL=SCLERA_RING_MAT
+*SOLID SECTION, ELSET=GLOBO,       MATERIAL=GLOBO_MAT
+**
+** ============================================================================
+** STEP UNICO -- Riks arc-length escala as cargas LATERAIS (P_contact + P_CSF).
+** ============================================================================
+** Sem Dz prescrito: o carregamento e' lateral (P_contact) + interno (P_CSF, o
+** inchaco). O Riks rampa ambos juntos via lambda (0 -> valores do estagio,
+** ARCMAX=1.0). Por estagio de SANS, P_CSF, a area do contact_local e P_contact
+** ja vem fixados (injetados no Allrun); aqui o Riks so resolve o equilibrio.
+**
+** Riks (arc-length) com incremento inicial/maximo pequenos e minimo bem fino
+** (1e-9): a carga focal (P_contact saturada no sistolico ~18 kPa) sobre o SAS
+** mole exige passos finos. O Riks degrada com cortes graduais; passos pequenos
+** evitam a inversao de elementos no SAS mole que estourava o *STATIC puro.
+*STEP, NLGEOM=YES, INC=8000
+*STATIC, RIKS
+0.005, 1.0, 1e-9, 0.02, 1.0
+** Controles tolerantes (so a 1a linha; reais usam default). Campos:
+** I0, I_R(max iter eq.), I_P, I_C, I_L, I_G, I_S, I_A(max cortes), I_J, I_T.
+*CONTROLS, PARAMETERS=TIME INCREMENTATION
+8, 30, 9, 40, 10, 4, , 30, ,
+** Criterio de convergencia do campo. Campos: R_n(razao residuo/forca media),
+** C_n(razao correcao/incremento), q_0(forca media inicial), q_u(FORCA MEDIA
+** FIXA imposta pelo usuario), ...  A carga focal de contato e quase
+** auto-equilibrada -> a "forca media" calculada fica ~5 uN no 1o incremento e o
+** criterio RELATIVO (residuo/forca_media) nunca fecha (falso "divergence").
+** Fixamos q_u=0.1 N (escala da forca de contato): o criterio vira ABSOLUTO
+** (residuo <= R_n*q_u = 5e-4 N), que e' apertado e estavel em todos os estagios.
+*CONTROLS, PARAMETERS=FIELD
+0.005, 0.02, , 0.1,
+**
+** ====================================================================
+** Engastes
+** ====================================================================
+** Engaste posterior (canal optico, z=0): 1,2,3=0 em todas as posteriores.
+*BOUNDARY
+POSTERIOR_ON,   1, 3, 0.0
+POSTERIOR_PIA,  1, 3, 0.0
+POSTERIOR_SAS,  1, 3, 0.0
+POSTERIOR_DURA, 1, 3, 0.0
+**
+** Globo: confinamento LATERAL XY pela orbita (1,2=0). Eixo Z LIVRE -- NAO
+** ha deslocamento prescrito nem forca axial vinda da frente (esta e' a
+** diferenca central em relacao ao on-caso-3).
+*BOUNDARY
+ANTERIOR_GLOBO, 1, 2, 0.0
+**
+** ====================================================================
+** [REMOVIDO] Forca frontal do on-caso-3:
+**   *BOUNDARY, AMPLITUDE=DZRAMP : ANTERIOR_GLOBO 3,3,-1.5e-3  (Dz prescrito)
+**   *CLOAD,    AMPLITUDE=DZRAMP : ANTERIOR_GLOBO 3, -1.0e-4   (EOM residual)
+** Ambos eliminados -> nenhuma compressao/forca axial vinda do globo.
+** ====================================================================
+**
+** ====================================================================
+** [REMOVIDO] Perturbacao antissimetrica artificial (PERT_A/B, +/-15 mN)
+** ====================================================================
+** Objetivo do caso 'sf': testar APENAS o efeito do P_contact, sem nenhuma
+** forca adicional. A perturbacao artificial foi herdada do on-caso-2/on-caso-3
+** mas nao tem lugar aqui -- o proprio P_contact (~11 mN focal) ja' e' a carga
+** lateral assimetrica que quebra a simetria. Removida para o caso ficar limpo.
+**
+** ====================================================================
+** P_contact -- ARTERIA OFTALMICA pressionando a dura mater externamente
+** ====================================================================
+** Pressao focal lateral em +X, z~22.5 mm, na face externa da dura (patch
+** CONTACT_LOCAL_SURF, carved-out de dura_outer, sem Winkler). P>0 empurra a
+** dura radialmente para o centro do nervo (arteria oftalmica comprimindo).
+**
+** NO CASO 4 este valor NAO e' varrido isoladamente: por estagio de SANS, o
+** Allrun injeta P_contact(estagio) = k_art*delta (delta = interferencia da
+** bainha inchada com a arteria, medida no run inchaco-only) E o box do
+** contact_local e' ampliado para a area do estagio. Assim area+forca crescem
+** ACOPLADAS ao inchaco. O default abaixo (9034 Pa) e' o estagio baseline 1g;
+** o Allrun sobrescreve via env var P_CONTACT.
+*DSLOAD
+CONTACT_LOCAL_SURF, P, 18068.0
+**
+** ====================================================================
+** P_CSF -- LCR pressurizando a PAREDE INTERNA da dura (MOTOR DO INCHACO)
+** ====================================================================
+** P=P_CSF positiva em DURA_INNER_SURF (interface dura<->sas, gerada pelo
+** conversor, apontando para os elementos da DURA -> empurra a dura
+** radialmente p/ FORA -> a bainha DISTENDE = "o nervo incha"). Esta e' a
+** variavel-motor do caso 4: quanto maior P_CSF, maior Dr_dura, maior a
+** interferencia com a arteria -> maior area + forca de contato.
+**   baseline 1g       : 1333 Pa (~10 mmHg)
+**   SANS upper        : 3800 Pa (~28 mmHg, cf. on-mestrado-3)
+**   severo/compartim. : ~5500 Pa
+** Injetado por env var P_CSF no Allrun. SEM AMPLITUDE: o Riks rampa a P_CSF
+** junto com o P_contact via lambda (sem DZRAMP -- este caso nao tem Dz).
+*DSLOAD
+DURA_INNER_SURF, P, 3800
+**
+** Outputs por incremento (.dat)
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_DURA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_PIA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_ON, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=ANTERIOR_GLOBO, TOTALS=ONLY
+RF, U
+**
+** Outputs de campo no .frd (ParaView via ccx2paraview)
+*NODE FILE, FREQUENCY=5
+U, RF
+*EL FILE, FREQUENCY=5
+S, E
+**
+*END STEP

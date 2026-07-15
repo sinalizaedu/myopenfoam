@@ -1,0 +1,54 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// on-caso-3-inv - cria faceSet 'contact_local' em dura_outer para servir de
+// patch de carga focal da arteria oftalmica (P_contact), mas no LADO -X
+// (espelhado em relacao ao on-caso-3, que estava em +X).
+//
+// Motivacao: testar se a posicao angular do contato relativa a perturbacao
+// muda o modo de flambagem. A perturbacao_strip esta em +X (z=15 mm).
+//   on-caso-3      : P_contact em +X (z=22.5)  -> mesma metade do tubo
+//                    que a perturbacao -> reforca um lobulo so
+//   on-caso-3-inv  : P_contact em -X (z=22.5)  -> metade oposta a perturbacao
+//                    -> deve favorecer modo 2 (S) com lobulos antagonicos
+//
+// Geometria (espelhada de cases/on-caso-3/solid/system/topoSetDict_contact):
+//   centro = (R_dura=-2.5 mm, 0, z=22.5 mm), theta=180 deg (-X)
+//   mesma distancia ao globo e ao engaste, so muda o angulo.
+//
+// Grid: dura_outer tem 6 cels tangenciais por quadrante -> dtheta=15 deg.
+// Cels em -X centradas em theta = 180 +/- 7.5 deg:
+//   x_face = 2.5 * cos(180 +/- 7.5) = -2.479 mm  (negativo)
+//   y_face = 2.5 * sin(180 +/- 7.5) = -/+0.326 mm
+//
+// Box selecionado (metros): captura 2 faces (1 axial x 2 tang) em -X.
+//   x : [-2.60e-3, -2.40e-3]   (filtra theta = 180 +/- 7.5 deg em r=2.5 mm)
+//   y : [-0.50e-3, +0.50e-3]   (ambos os lados de y=0)
+//   z : [+21.0e-3, +24.0e-3]   (3 mm em z, centrado em z=22.5 mm)
+// Resultado esperado: 2 faces, ~1.2 mm^2 de superficie de contato (igual on-caso-3).
+
+actions
+(
+    {
+        name    contact_local;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { name dura_outer; }
+    }
+    {
+        name    contact_local;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo
+        {
+            box (-2.60e-3  -0.50e-3  21.0e-3) (-2.40e-3  +0.50e-3  24.0e-3);
+        }
+    }
+);

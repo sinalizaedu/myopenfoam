@@ -1,0 +1,46 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system/sasSubset";
+    object      fvSchemes;
+}
+
+// Gauss linear corrected: anti-checkerboarding em zonas com nu->0.5 ou
+// contraste de modulo elevado. Identico a on-mestrado-2/sasSubset.
+
+d2dt2Schemes
+{
+    default         steadyState;
+}
+
+ddtSchemes
+{
+    default         steadyState;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+}
+
+divSchemes
+{
+    default         Gauss linear;
+}
+
+laplacianSchemes
+{
+    default         Gauss linear corrected;
+}
+
+snGradSchemes
+{
+    default         corrected;
+}
+
+interpolationSchemes
+{
+    default         linear;
+}

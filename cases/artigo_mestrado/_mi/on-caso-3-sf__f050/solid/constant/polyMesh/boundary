@@ -1,0 +1,93 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+10
+(
+    posterior_on
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          45;
+        startFace       2298;
+    }
+    posterior_pia
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          12;
+        startFace       2343;
+    }
+    posterior_sas
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          48;
+        startFace       2355;
+    }
+    posterior_dura
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          12;
+        startFace       2403;
+    }
+    dura_outer
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          59;
+        startFace       2415;
+    }
+    sclera_ring_outer
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          12;
+        startFace       2474;
+    }
+    globo_outer
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          12;
+        startFace       2486;
+    }
+    anterior_globo
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          117;
+        startFace       2498;
+    }
+    perturbation_strip
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          1;
+        startFace       2615;
+    }
+    contact_local
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          0;
+        startFace       2616;
+    }
+)
+
+// ************************************************************************* //

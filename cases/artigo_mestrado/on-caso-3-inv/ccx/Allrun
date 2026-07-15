@@ -1,0 +1,126 @@
+#!/bin/bash
+# on-caso-3-inv (CCX) - copia exata do on-caso-3, mas P_contact em -X (espelhado).
+#
+# Diferenca em relacao ao on-caso-3:
+#   - O patch contact_local fica em -X (oposto a perturbacao_strip, que esta em +X),
+#     em vez de +X como no on-caso-3.
+#
+# Diferenca em relacao ao on-caso-2:
+#   - Adiciona patch 'contact_local' (carved de dura_outer em z=22.5 mm, -X)
+#     via topoSetDict_contact + createPatchDict_contact;
+#   - Aplica *DSLOAD CONTACT_LOCAL_SURF, P, P_CONTACT no STEP.
+#
+# Todos os demais ingredientes (materiais, Winkler 200 kPa/m baseline,
+# perturbacao, BCs, Riks settings) sao IDENTICOS ao on-caso-2.
+#
+# Pipeline:
+#   1) Garante que existe a malha solids4Foam em ../solid (gera com blockMesh
+#      se polyMesh nao existir);
+#   2) Converte polyMesh -> CalculiX .inp (mesh + Winkler springs);
+#   3) Sed-injeta P_CONTACT na clausula *DSLOAD CONTACT_LOCAL_SURF antes de rodar;
+#   4) Roda ccx_preCICE em modo standalone (sem precice-config.xml);
+#   5) Renomeia outputs com sufixo _$OUT_TAG (.dat/.frd/.sta/.cvg/log).
+#
+# Parametros (env vars, opcionais):
+#   P_CONTACT  : pressao focal da arteria oftalmica [Pa]. Default = 9034 (~67 mmHg).
+#   OUT_TAG    : sufixo dos arquivos de saida.        Default = "" (sem sufixo).
+#   WINKLER_K  : rigidez do Winkler [Pa/m].           Default = 200000 (baseline
+#                                                     fisiologica, igual ao caso 2).
+#
+# Uso (sweep externo):
+#   P_CONTACT=0     OUT_TAG=Pc0     ./Allrun
+#   P_CONTACT=18068 OUT_TAG=Pc18068 ./Allrun
+#
+# Inputs:
+#   on-caso-3-inv.inp                (hand-written, contem *INCLUDE para os 2 abaixo)
+#   on-caso-3-inv_mesh.inp           (gerado pelo conversor)
+#   on-caso-3-inv_winkler.inp        (gerado pelo conversor)
+#
+# Outputs:
+#   on-caso-3-inv${OUT_TAG:+_$OUT_TAG}.frd  (campos U, RF, S, E para ParaView/cgx)
+#   on-caso-3-inv${OUT_TAG:+_$OUT_TAG}.dat  (totais de RF nos NSETs ANTERIOR_*)
+#   on-caso-3-inv${OUT_TAG:+_$OUT_TAG}.cvg  (residuos por iteracao)
+#   on-caso-3-inv${OUT_TAG:+_$OUT_TAG}.sta  (status de convergencia por incremento)
+#   log.ccx${OUT_TAG:+_$OUT_TAG}        (stdout completo)
+
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+
+P_CONTACT=${P_CONTACT:-9034}
+OUT_TAG=${OUT_TAG:-}
+WINKLER_K=${WINKLER_K:-200000}
+
+POLYMESH=../solid/constant/polyMesh
+
+# ---------- 1) garante que polyMesh existe ----------
+if [ ! -f "${POLYMESH}/points" ]; then
+    echo "=== Gerando polyMesh em ../solid (blockMesh+topoSet+createPatch) ==="
+    pushd ../solid >/dev/null
+    blockMesh | tee log.blockMesh
+    topoSet -dict system/topoSetDict_perturbation | tee log.topoSet.perturbation
+    createPatch -overwrite -dict system/createPatchDict_perturbation | tee log.createPatch.perturbation
+    # contact_local: patch focal para P_contact (arteria oftalmica, ~9 kPa)
+    topoSet -dict system/topoSetDict_contact | tee log.topoSet.contact
+    createPatch -overwrite -dict system/createPatchDict_contact | tee log.createPatch.contact
+    popd >/dev/null
+fi
+
+# ---------- 2) converte polyMesh -> CCX .inp ----------
+echo "=== on-caso-3-inv (CCX): polyMesh -> CalculiX .inp  [k_winkler=${WINKLER_K} Pa/m] ==="
+# Conversor copiado para dentro do caso (cases/ e o unico volume do container).
+# Master fica em brunaStuff/foam_polymesh_to_ccx_inp.py.
+python3 foam_polymesh_to_ccx_inp.py \
+    --polymesh "${POLYMESH}" \
+    --out-mesh on-caso-3-inv_mesh.inp \
+    --out-winkler on-caso-3-inv_winkler.inp \
+    --winkler-k "${WINKLER_K}"
+
+# ---------- 3a) injeta P_CONTACT na clausula *DSLOAD ----------
+echo "=== on-caso-3-inv (CCX): P_CONTACT = ${P_CONTACT} Pa (arteria oftalmica) ==="
+# Substitui a linha "CONTACT_LOCAL_SURF, P, <valor>" preservando o resto do .inp.
+# Usa # como delim p/ evitar conflito com '/'; -i'' para BSD/macOS compat (no
+# container Linux funciona tambem). Mantemos o arquivo on-caso-3-inv.inp modificado
+# no fim (proxima rodada com mesmo P_CONTACT regrava com o mesmo valor).
+sed -i -E "s|^CONTACT_LOCAL_SURF, P, .*\$|CONTACT_LOCAL_SURF, P, ${P_CONTACT}|" on-caso-3-inv.inp
+grep -n "^CONTACT_LOCAL_SURF, P," on-caso-3-inv.inp || true
+
+# ---------- 3b) roda CalculiX ----------
+echo "=== on-caso-3-inv (CCX): solver ccx_preCICE -i on-caso-3-inv  [tag=${OUT_TAG:-<none>}] ==="
+rm -f on-caso-3-inv.frd on-caso-3-inv.dat on-caso-3-inv.cvg on-caso-3-inv.sta on-caso-3-inv.12d \
+      on-caso-3-inv.pvd on-caso-3-inv.*.vtu log.ccx
+ccx_preCICE -i on-caso-3-inv 2>&1 | tee log.ccx
+
+# ---------- 3c) renomeia outputs com tag (se OUT_TAG nao vazio) ----------
+if [ -n "${OUT_TAG}" ]; then
+    echo "=== on-caso-3-inv (CCX): renomeando outputs _${OUT_TAG} ==="
+    for ext in frd dat cvg sta; do
+        if [ -f "on-caso-3-inv.${ext}" ]; then
+            cp "on-caso-3-inv.${ext}" "on-caso-3-inv_${OUT_TAG}.${ext}"
+        fi
+    done
+    cp log.ccx "log.ccx_${OUT_TAG}"
+fi
+
+# ---------- 4) converte .frd -> .vtu (opcional, no host) ----------
+# .frd e formato CalculiX nativo. ParaView nao le diretamente; convertemos
+# para .vtu com ccx2paraview se disponivel (no host, nao no container).
+FRD_TARGET="on-caso-3-inv${OUT_TAG:+_$OUT_TAG}.frd"
+if command -v ccx2paraview >/dev/null 2>&1; then
+    echo "=== on-caso-3-inv (CCX): convertendo ${FRD_TARGET} -> .vtu (ParaView) ==="
+    ccx2paraview "${FRD_TARGET}" vtu 2>&1 | tail -5 || true
+elif [ -x /tmp/ccx2pv/bin/ccx2paraview ]; then
+    /tmp/ccx2pv/bin/ccx2paraview "${FRD_TARGET}" vtu 2>&1 | tail -5 || true
+else
+    echo "=== on-caso-3-inv (CCX): ccx2paraview nao encontrado dentro do container ==="
+    echo "    (esperado - rode 'cd cases/on-caso-3-inv/ccx && /tmp/ccx2pv/bin/ccx2paraview ${FRD_TARGET} vtu' no HOST)"
+fi
+
+echo ""
+echo "=== Concluido. Arquivos de saida: ==="
+echo "  on-caso-3-inv.frd  - campos CalculiX (cgx -c se disponivel)"
+echo "  on-caso-3-inv.pvd  - ParaView Data (abre direto no ParaView)"
+echo "  on-caso-3-inv.dat  - totais RF no engaste posterior (curva F_z(Dz))"
+echo "  on-caso-3-inv.sta  - status de convergencia por incremento Riks"
+echo ""
+echo "Analise: python3 ../../../brunaStuff/analyze_on-caso-3-inv_ccx.py"

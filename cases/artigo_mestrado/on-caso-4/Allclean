@@ -1,0 +1,13 @@
+#!/bin/bash
+# on-caso-4 - limpa artefatos (CCX + malha solid regeneravel).
+
+cd "$(dirname "$0")"
+
+echo "Limpando on-caso-4..."
+# artefatos do CalculiX
+(cd ccx && ./Allclean) || true
+# malha/logs do OpenFOAM no solid (polyMesh e regeneravel pelo blockMesh)
+rm -rf \
+    solid/log.* \
+    solid/postProcessing
+echo "Feito."

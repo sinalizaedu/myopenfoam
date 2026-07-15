@@ -1,0 +1,342 @@
+*HEADING
+on-caso-3 Sdip - VARIANTE "dipolo lateral": dois empurroes OPOSTOS na dura
+** (PERTURBATION_STRIP +X em z~15 / arteria -X em z~22.5) forcam o modo S.
+** Dz=-1.0 mm, PIC e Winkler INTACTOS.
+**
+** ============================================================================
+** Geometria (do blockMeshDict de on-caso-1, malha reduzida para caber em
+** memoria: 6 tang/quadrante x 10 axiais no nervo): 11648 -> 2736 hex C3D8I.
+**
+**   on            : nervo neural (E=30   kPa, nu=0.49)  - miolo macio
+**   pia           : pia mater    (E=3    MPa, nu=0.49)  - casco rigido
+**   dura          : dura mater   (E=3    MPa, nu=0.49)  - casco rigido
+**   lc            : lamina cribrosa (E=0.3 MPa, nu=0.49) - rigidez intermed.
+**   sclera_peri   : esclera peripapilar (E=3 MPa, nu=0.49) - casco rigido
+**   sclera_ring   : esclera anel (E=3 MPa, nu=0.49) - casco rigido
+**   globo         : casca do globo (E=3 MPa, nu=0.49) - casco rigido
+**
+** Valores conforme Bruna (2026-05-28): pia/dura/sclera/globo agrupados em
+** E=3 MPa "casco"; LC=300 kPa (intermediaria); nervo=30 kPa "miolo"; e
+** nu=0.49 (em vez de 0.495) p/ aliviar o bulk modulus (K=50G ao inves de
+** K=100G) -> menos locking volumetrico e melhor equilibrio numerico.
+**
+** Discretizacao espacial (z em mm):
+**   nervo + meninges        : z = [ 0.00, 30.00 ]
+**   LC + esclera (peri+ring): z = [30.00, 30.30 ]
+**   globo                   : z = [30.30, 30.80 ]
+**
+** Lei constitutiva: NEO HOOKE compressivel (CCX *HYPERELASTIC, NEO HOOKE):
+**   W = C10 (I1_bar - 3) + (1/D1) (J - 1)^2
+**   C10 = G/2 = E / [4(1+nu)]   ;   D1 = 2/K = 6(1-2*nu) / E
+**
+** Para nu=0.49 (quase-incompressivel, vias fisiologicas):
+**   coef = 4(1+nu) = 5.96  -> C10 = E / 5.96
+**   D1   = 6 * 0.02 / E = 0.12 / E
+**
+** Elemento C3D8I (8-node hex com modos incompativeis): mitiga o volumetric
+** locking que C3D8 sofre em nu>=0.49 sem precisar montar C3D20R quadratico.
+**
+** ============================================================================
+** BCs (anatomicas, conforme guidance da Bruna):
+**   posterior_{on,pia,dura} (z=0, apice orbital, canal optico):
+**     engaste TOTAL (DOF 1,2,3 = 0). Ancoragem rigida ao osso.
+**
+**   anterior_globo (z=30.80, vitreo): rampa de deslocamento prescrito Dz
+**     de 0 -> -1 mm via *AMPLITUDE + Riks (o load factor do Riks pode ir
+**     ate ARCMAX, escalando a rampa para passar do P_cr).
+**
+**   dura_outer (lateral z=0-30, r=2.5 mm): Winkler 200 kPa/m (gordura
+**     orbital realista) via SPRINGA -- inclui-se via on-caso-3_winkler.inp.
+**
+**   perturbation_strip (carved-out de dura_outer, z=10-20 mm, +X):
+**     pressure 10 Pa lateral. Quebra de simetria para selecionar o modo
+**     de flambagem sem alterar P_cr quantitativo (~10^-5 da carga axial
+**     de pico). Nao recebe Winkler nas faces (excluido no conversor).
+**
+**   contact_local (carved-out de dura_outer, z~22.5 mm, +X): pressao
+**     focal P_contact = 9034 Pa (~67 mmHg) representando a arteria
+**     oftalmica pressionando a dura externamente. Re-introduzido do
+**     on-caso-1/solid/0/D. Tambem fica fora do Winkler.
+**
+**   sclera_ring_outer, globo_outer, fsi_*: free traction (sem coupling FSI
+**     porque este e' caso sFSI puro, dominio so' solido).
+**
+** Sem PIC nesta versao: o caso 7-zonas nao tem cellZone 'sas', logo nao ha
+** patch para impor pressao do CSF. Para incluir PIC seria necessario voltar
+** ao layout 8-zonas do old/on-mestrado-2/.
+**
+** ============================================================================
+** Solver: *STATIC, RIKS (arc-length method, Riks-Wempner-Crisfield)
+**   Riks ajusta dinamicamente o tamanho do incremento via parametro lambda
+**   (load proportionality factor). Permite passar do ponto critico P_cr
+**   sem divergencia (snap-through, bifurcacao Euler) onde Newton-Raphson
+**   puro diverge.
+**
+**   Sintaxe CCX: *STATIC, RIKS
+**     dl_init, l_total, dl_min, dl_max, lambda_max
+**   onde l_total = pseudo-tempo total e lambda_max e' o fator maximo
+**   (ARCMAX) que escala o BC. ARCMAX=1.5 = pode atingir 1.5x o Dz prescrito.
+**
+*INCLUDE, INPUT=on-caso-3_mesh.inp
+*INCLUDE, INPUT=on-caso-3_winkler.inp
+**
+** ============================================================================
+** MATERIAIS (NEO HOOKE compressivel, nu=0.49 quase-incompressivel)
+** Unidades SI: Pa (=N/m^2). Multiplicar por 1e-6 p/ ler em MPa.
+** ============================================================================
+*MATERIAL, NAME=ON_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=30 kPa, MAT_NERVO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+03, 4.0000e-06
+*DENSITY
+1000
+**
+** ============================================================================
+** Item 3 (revisitado): SAS solido em vez de molas SPRINGA
+** ============================================================================
+** Material extremamente macio + altamente compressivel (nu=0.30 baixo)
+** preenchendo o gap r=1.55-2.35 mm. Atua como "fluido solidificado":
+**   - Impede fisicamente que pia atravesse a parede da dura no buckling
+**   - Sob compressao axial, desenvolve tensao hidrostatica natural ~ PIC
+**     (substitui o DSLOAD FSI_*_SURF -- nao precisa mais)
+**   - nu=0.30 (em vez de 0.49) permite o fluido/tecido se mover lateral-
+**     mente, evitando volumetric locking severo nos elementos macios
+*MATERIAL, NAME=SAS_MAT
+** SAS solido "fluido-like": macio + ALTAMENTE compressivel (nu=0.05).
+**   E  = 3 kPa  (10x mais macio que o nervo, ainda longe do colapso numerico)
+**   nu = 0.05   (quase nulo -- impede contrapressao lateral irrealista)
+**   C10 = E / [4(1+nu)]    = 3000 / 4.2   = 714.3 Pa
+**   D1  = 6(1-2nu) / E     = 6*0.90/3000  = 1.8e-3 1/Pa
+**   K   = E / [3(1-2nu)]   = 1.11 kPa     (45x menos rigido que com nu=0.30)
+** Permite que o SAS se "esmague" sob compressao axial e flua para os lados
+** durante o kinking, sem gerar tensao hidrostatica artificial alta. Ainda
+** assim impede pia de atravessar dura por continuidade do mesh.
+*HYPERELASTIC, NEO HOOKE
+7.1430e+02, 1.8000e-03
+*DENSITY
+1000
+**
+*MATERIAL, NAME=PIA_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1100
+**
+*MATERIAL, NAME=DURA_MAT
+** Anisotropia transversa (Holzapfel-like simplificado, item 4):
+** dura mater apresenta fibras de colageno alinhadas circunferencialmente
+** -> E_circ ~10x maior que E_axial e E_radial. Isso bloqueia a dilatacao
+** sob PIC interna, mantendo o tubo "tenso e reto" em vez de balao isotropico.
+** Linear elastic ortotropico em sistema cilindrico (1=radial, 2=circ, 3=axial).
+*ELASTIC, TYPE=ENGINEERING CONSTANTS
+** Anisotropia moderada: E_circ = 3x E_rad/axial (literatura Holzapfel
+** -> 10x e severo demais p/ convergir junto com pertubacao + Dz; 3x
+** mantem o efeito qualitativo de bloquear dilatacao radial sem
+** instabilizar o solver).
+** E_r,    E_theta, E_z,     nu_rt, nu_rz, nu_tz, G_rt,    G_rz
+3.000e+6, 9.000e+6, 3.000e+6, 0.30,  0.30,  0.30,  1.150e+6, 1.150e+6
+** G_tz, T
+1.150e+6, 0.0
+*DENSITY
+1100
+**
+*MATERIAL, NAME=LC_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=300 kPa, MAT_LC]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+04, 4.0000e-07
+*DENSITY
+1100
+**
+*MATERIAL, NAME=SCLERA_PERI_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=SCLERA_RING_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=GLOBO_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*SOLID SECTION, ELSET=ON,          MATERIAL=ON_MAT
+*SOLID SECTION, ELSET=PIA,         MATERIAL=PIA_MAT
+*SOLID SECTION, ELSET=SAS,         MATERIAL=SAS_MAT
+** Dura: precisa de ORIENTATION cilindrica para o ortotropico funcionar.
+*ORIENTATION, NAME=ORI_CYL, SYSTEM=CYLINDRICAL
+0.0, 0.0, 0.0, 0.0, 0.0, 1.0
+*SOLID SECTION, ELSET=DURA,        MATERIAL=DURA_MAT, ORIENTATION=ORI_CYL
+*SOLID SECTION, ELSET=LC,          MATERIAL=LC_MAT
+*SOLID SECTION, ELSET=SCLERA_PERI, MATERIAL=SCLERA_PERI_MAT
+*SOLID SECTION, ELSET=SCLERA_RING, MATERIAL=SCLERA_RING_MAT
+*SOLID SECTION, ELSET=GLOBO,       MATERIAL=GLOBO_MAT
+**
+** ====================================================================
+** Trabeculas SPRINGA REMOVIDAS: o SAS solido substitui as molas
+** radiais. O contato continuum impede pia atravessar dura.
+** ====================================================================
+**
+** ============================================================================
+** AMPLITUDE -- rampa linear do Dz axial
+** ============================================================================
+*AMPLITUDE, NAME=DZRAMP
+0.0, 0.0, 1.0, 1.0
+**
+** ============================================================================
+** STEP UNICO -- Riks arc-length escala TODAS cargas (PIC + Dz + pert)
+** ============================================================================
+** Por simplicidade numerica, juntamos PIC + compressao + perturbacao em um
+** unico STEP onde lambda escala todas as cargas linearmente. Nao e perfeito
+** fisiologicamente (PIC deveria ser constante pre-existente), mas captura
+** o caminho de equilibrio com PIC ativo. No final (lambda=1):
+**   PIC = 1500 Pa (em fsi_pia + fsi_dura)
+**   Dz_globo = -1 mm
+**   Pert = 500 Pa em +X (perturbation_strip)
+**
+** Tentativa de 2 STEPs separados (PIC preload depois Dz) divergiu na
+** transicao por causa de cargas residuais mal condicionadas no .sta.
+** Single-step Riks e numericamente mais robusto.
+**
+*STEP, NLGEOM=YES, INC=500
+*STATIC, RIKS
+0.025, 1.0, 1e-5, 0.05, 1.0
+**
+** ====================================================================
+** Engastes
+** ====================================================================
+** Engaste posterior (canal optico, z=0): canal e osseo, aperta o nervo
+** todo radialmente E impede deslizamento axial -> 1,2,3=0 em todas as
+** posteriores (on, pia, sas, dura).
+*BOUNDARY
+POSTERIOR_ON,   1, 3, 0.0
+POSTERIOR_PIA,  1, 3, 0.0
+POSTERIOR_SAS,  1, 3, 0.0
+POSTERIOR_DURA, 1, 3, 0.0
+**
+** Globo: face anterior LATERAL fixa (a orbita confina XY) com Dz
+** prescrito. Estrategia: Dz=-1.5mm controla o encurtamento axial
+** (do globe flattening + gordura empurrando) -- equivalente cinematico
+** ao desbalanco gordura-EOM. Riks escala via lambda.
+*BOUNDARY
+ANTERIOR_GLOBO, 1, 2, 0.0
+**
+*BOUNDARY, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 3, 3, -1.00e-3
+**
+** ====================================================================
+** Item 1 - FORCA RESIDUAL DOS MUSCULOS EXTRAOCULARES (EOM)
+** ====================================================================
+** Tracao residual de ancoragem dos 4 retos extraoculares puxando o
+** globo posteriormente (em -Z): F_EOM ~ 16 mN baseline (4 mN x 4 EOMs)
+** distribuido nos nos da face anterior do globo. Pequena CONTRIBUICAO
+** que se soma ao Dz prescrito (nao e o motor da compressao, mas
+** representa a fisiologia do balanco gordura-EOMs em SANS).
+**
+** OBS: nesta versao a compressao eh primariamente conduzida pelo Dz
+** prescrito (mais estavel numericamente). EOM puro (force-driven sem
+** Dz) sera testado em on-caso-3.2 conforme plano da usuaria.
+**
+** EOM = 16 mN total (nominal, conforme tab:casos-setup do artigo). ANTERIOR_GLOBO
+** tem 409 nos -> CLOAD por no = -16e-3 / 409 = -3.912e-5 N (sentido -Z).
+** RESSALVA: como ANTERIOR_GLOBO tem Dz PRESCRITO (=-1.5 mm) no DOF 3, este CLOAD
+** no mesmo DOF e' SOBREPOSTO pela condicao de contorno cinematica -> nao altera
+** o resultado (a resposta e' governada pelo Dz). Mantido apenas para coerencia
+** documental com a legenda da tabela do artigo (BC comum EOM ~16 mN).
+*CLOAD, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 3, -3.912e-5
+**
+** ====================================================================
+** PERTURBACAO LATERAL: REMOVIDA NESTA VARIANTE (decisao Bruna 2026-05-31)
+** ====================================================================
+** Antes havia *NSET PERT_NODES_A/B + *CLOAD +/-3 mN em X (gatilho
+** antissimetrico de modo S). Removida: nenhum caso usa mais perturbacao
+** lateral artificial. As cargas laterais aqui sao a PIC interna na dura e
+** o P_contact da arteria oftalmica; a flambagem, se houver, e conduzida
+** pelo driving axial (Dz + EOM) + essas cargas fisicas, nao por um gatilho
+** numerico imposto.
+** ====================================================================
+**
+** ====================================================================
+** P_contact -- ARTERIA OFTALMICA pressionando a dura mater externamente
+** ====================================================================
+** Re-introducao do "P_contact antigo" (cases/on-caso-1/solid/0/D):
+** carga focal de pressao na face externa da dura, lado +X, z~22.5 mm,
+** representando o segmento intra-orbital da arteria oftalmica que cruza
+** o nervo otico e o comprime focalmente. Magnitude = 9034 Pa ~ 67 mmHg
+** (pressao arterial media na art. oftalmica, valor herdado de
+** on-fsi-2-Pc9034 e on-caso-1).
+**
+** Geometria: patch CONTACT_LOCAL (carved-out de dura_outer via
+** topoSetDict_contact + createPatchDict_contact em ../solid/system/):
+**   - centro: (R_dura=2.5 mm, 0, z=22.5 mm), theta=0 deg (+X)
+**   - 2 faces, ~1.2 mm^2 de superficie de contato
+**   - sem Winkler (conversor exclui automaticamente as faces fora de
+**     dura_outer pos-createPatch)
+**
+** Convencao CCX *DSLOAD ... P: pressao positiva = compressao no sentido
+** -normal_outward (ou seja, empurra a superficie para DENTRO do solido).
+** Em dura_outer a normal aponta para +r (radial externa), portanto
+** P>0 empurra a dura radialmente para o centro do nervo -- exatamente o
+** efeito anatomico da arteria oftalmica comprimindo o nervo.
+**
+** Riks escala P_contact junto com Dz e perturbacao (lambda comum). No
+** lambda=1: P_contact=9034 Pa simultaneo com Dz_globo=-1.5 mm. Para
+** parametrizar (analogo on-fsi-2-Pc0/9034/18068), basta editar o valor
+** abaixo (0 = sem artéria; 18068 = pressao sistolica).
+*DSLOAD
+CONTACT_LOCAL_SURF, P, 18068
+**
+** ====================================================================
+** [VARIANTE Sdip] SEGUNDO EMPURRAO, DE SENTIDO OPOSTO -> forca o modo "S"
+** ====================================================================
+** A face PERTURBATION_STRIP_SURF tambem e' carved-out de dura_outer, logo
+** sua normal aponta para +r (=+X em theta=0). Pressao NEGATIVA inverte o
+** sentido: P<0 PUXA a dura para FORA (+X) em z~15 mm, enquanto a arteria
+** (CONTACT_LOCAL_SURF, P>0) EMPURRA para DENTRO (-X) em z~22.5 mm. Os dois
+** carregamentos de sentido oposto em z diferentes formam um binario que
+** desenha duas curvas opostas = padrao antissimetrico "S".
+** Magnitude tunavel: a faixa e' longa (z=10-20), entao mesmo pressao
+** moderada gera forca lateral comparavel a' da arteria focal. Comecar
+** modesto (-2000 Pa) e subir se o "S" nao aparecer / enquanto convergir.
+*DSLOAD
+PERTURBATION_STRIP_SURF, P, -2000.0
+**
+** ====================================================================
+** PIC (pressao intracraniana ~10 mmHg) na PAREDE INTERNA da dura
+** ====================================================================
+** P=1333 Pa positiva em DURA_INNER_SURF (interface dura<->sas, gerada pelo
+** conversor, apontando para os elementos da DURA). A normal externa do
+** elemento DURA naquela face aponta p/ o eixo; pressao positiva age no
+** sentido OPOSTO -> empurra a dura radialmente p/ FORA -> tracao
+** circunferencial -> mantem o tubo dural reto e tenso (mata a "sanfona").
+** Rota A validada no on-caso-2sP. Rampada com DZRAMP (cresce com a compressao).
+*DSLOAD, AMPLITUDE=DZRAMP
+DURA_INNER_SURF, P, 1333.0
+**
+** Outputs por incremento (.dat)
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_DURA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_PIA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_ON, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=ANTERIOR_GLOBO, TOTALS=ONLY
+RF, U
+**
+** Outputs de campo no .frd (ParaView via ccx2paraview)
+*NODE FILE, FREQUENCY=5
+U, RF
+*EL FILE, FREQUENCY=5
+S, E
+**
+*END STEP

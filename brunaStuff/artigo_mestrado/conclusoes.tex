@@ -1,0 +1,32 @@
+
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+
+\graphicspath{{figs/}}
+
+\begin{document}
+
+\section*{Conclusões}
+\label{sec:conclusoes}
+
+As simulações sustentam a tortuosidade do nervo óptico na SANS como uma falha estrutural de flambagem governada por dois carregamentos simultâneos: o axial, transmitido pelo recuo cefálico do globo, e o transversal, imposto pela artéria oftálmica, que juntos esgotam a folga natural do nervo dentro de uma bainha de baixa complacência. A progressão dos cinco casos, partindo do tubo reto idealizado (Caso 2G), passando pela tortuosidade anatômica (Caso 2J) e pelo contato arterial (Casos 3F e 3S) até a interação fluido-estrutura com drenagem porosa (Caso 1), compõe uma hierarquia de condições necessárias e suficientes para o mecanismo, isolando de forma controlada o papel de cada fator fisiopatológico.
+
+A configuração de tubo reto e axissimétrico (Caso 2G) constitui a referência negativa do estudo: sob compressão axial pura no limite clínico do recuo cefálico, a coluna permanece estável, com a reação de engaste de $F_z \approx \SI{317}{\milli\newton}$ representando apenas $\SI{60,5}{\%}$ da carga crítica de Euler ($P_{\mathrm{cr}} = \SI{523,8}{\milli\newton}$ para $K = 0{,}65$) e uma margem de segurança de $1{,}65\times$. A teoria de Hetényi para viga sobre fundação elástica confirma que o modo natural da órbita saudável é um arco único e difuso ($n = 1$, $\lambda = \SI{30}{\milli\meter}$), e a análise não linear de Riks satura monotonicamente em $\lambda = 1{,}0$ sem ponto-limite. Conclui-se que nem a compressão axial do globo nem o confinamento da gordura orbital geram, isoladamente, o padrão antissimétrico em ``S'' observado clinicamente, demonstrando que a tortuosidade exige obrigatoriamente uma quebra de simetria física.
+
+A tortuosidade anatômica em ``J'' (Caso 2J) fornece a primeira quebra de simetria, reduzindo a rigidez axial secante em cerca de $33\%$ (de $\SI{266}{}$ para $\SI{178}{\newton\per\meter}$) e atuando como gatilho natural da instabilidade, em substituição à perturbação numérica. Contudo, pia e dura fletem solidariamente em um único arco global (razão de dobramento $\approx 1{,}0$), e a varredura da gordura orbital por um fator de $250\times$ ($k_w$ de $\SI{20}{\kilo\pascal\per\meter}$ a $\SI{5}{\mega\pascal\per\meter}$) apenas \emph{confina} a excursão lateral da pia, de $\SI{0,65}{}$ para $\SI{0,065}{\milli\meter}$, sem jamais convertê-la na ondulação focal antissimétrica. A folga anatômica, portanto, predispõe ao dobramento, mas não basta para reproduzir o padrão clínico da SANS.
+
+O contato focal da artéria oftálmica (Casos 3F e 3S) é o gatilho direcional decisivo da tortuosidade. A varredura da pressão de contato força a dura a dobrar de forma estritamente monotônica e fecha o espaço subaracnóideo em até $\SI{99,3}{\%}$ sob carga arterial sistólica, reproduzindo o estrangulamento focal observado em ressonância; o ponto-limite aparente identificado na malha de produção revelou-se artefato da sub-resolução da lâmina fina da pia, eliminado pelo refino radial, de modo que não há instabilidade física genuína na faixa. Quando isolado da compressão axial (Caso 3S), o contato produz uma indentação lateral localizada e de sentido único ($\approx \SI{606}{\micro\meter}$ na face externa da dura), confirmando seu papel de imperfeição direcional, e não de arco global de flambagem. Coerentemente, o enrijecimento da gordura orbital desloca o modo crítico de Hetényi de $n = 1$ para $n = 2$ (de uma para duas meias-ondas, $\lambda = \SI{15}{\milli\meter}$), explicando a transição de uma curvatura difusa para pontos focais de estrangulamento.
+
+O modelo de interação fluido-estrutura (Caso 1) demonstra que a representação explícita do LCR como fluido é indispensável: ao recuperar o princípio de Pascal no compartimento fechado de baixa complacência, o LCR pressurizado distende a bainha para fora ($+\SI{0,439}{\micro\meter}$ no \emph{watchpoint} peripapilar) ao mesmo tempo que comprime o nervo para dentro ($-\SI{0,370}{\micro\meter}$), resposta de sinal oposto que o espaço subaracnóideo modelado como sólido hidrostático nos casos estruturais não captura. Além disso, o modelo fornece o elo causal a montante de toda a cascata: a obstrução das vias de drenagem perineural eleva a pressão intracraniana no \emph{bulk} de forma abrupta dentro de uma única década do coeficiente de Darcy $d$ (transição do regime saudável, $\sim\SI{1333}{\pascal}$, ao severo, $\sim\SI{14}{\kilo\pascal}$), reproduzindo a observação clínica de que pequenas variações na permeabilidade da drenagem disparam a compartimentalização do ONSAS.
+
+As conclusões valem sob regime quase estático, com a artéria oftálmica representada como carga de contato prescrita e não como o contato pulsátil que de fato ocorre \emph{in vivo}, e com leis constitutivas Neo-Hookeanas isotrópicas que não incorporam a anisotropia das fibras de colágeno da pia e da dura. Os modelos, portanto, não capturam a pulsação arterial transiente sobre uma bainha pré-tensionada, hipótese central para a tortuosidade dinâmica, e o acoplamento FSI completo permanece restrito ao regime de PIC moderada por limitações de convergência no regime hiperelástico. A continuidade natural do estudo passa por incorporar essa pulsação por meio de FSI transiente ao longo do ciclo cardíaco, pela formulação hiperelástica anisotrópica e pela inclusão do gradiente de pressão translaminar e da pressão intraocular, extensões que a plataforma numérica aqui validada já está preparada para suportar e que constituem a fronteira de pesquisa da fisiopatologia da SANS.
+
+\end{document}

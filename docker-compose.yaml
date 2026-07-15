@@ -17,6 +17,9 @@ services:
     volumes:
       # Mount your local simulation case(s) into the container
       - ./cases:/simulation
+      # Bind-mount the patched solids4foam library (fvOptions/Darcy fix in pimpleFluid).
+      # See README "solids4foam pimpleFluid + fvOptions patch" for context.
+      - ./cases/_lib/libsolids4FoamModels.so:/opt/of-user/lib/libsolids4FoamModels.so:ro
     working_dir: /simulation
     # Override to run a specific case directly:
     # command: bash -lc "cd myCase && ./Allrun"

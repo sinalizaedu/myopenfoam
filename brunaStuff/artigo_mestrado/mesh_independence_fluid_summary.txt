@@ -1,0 +1,26 @@
+==============================================================================
+ESTUDO DE INDEPENDENCIA DE MALHA - on-caso-1.2 (LADO FLUIDO / OpenFOAM)
+==============================================================================
+Fluido LCR standalone (simpleFoam, laminar, Re<<1), DESACOPLADO do FSI:
+  inlet p_kin=1.333 (=1333 Pa), outlet_peri p=0, paredes noSlip estaticas,
+  lid peri_porous Darcy d=1e16 m^-2 (regime SANS compartimentalizado).
+Refino global do blockMesh por fator inteiro (uniforme r/theta/z).
+
+ nivel   nCells  iters   Q_dren(m3/s)  Q%vs_fino  dp_lid(Pa)   p_SAS(Pa)  |U|mean(m/s)  |U|max(m/s)
+    x1     6144    121     2.9412e-12       8.1%       522.9   1332.9999     3.999e-07    5.455e-06
+    x2    49152    697     2.7765e-12       2.0%       607.2   1332.9999     4.556e-07    6.426e-06
+    x3   165888    458     2.7208e-12       0.0%       631.2   1332.9999     4.742e-07    5.513e-06
+
+Variacao SUCESSIVA (nivel i vs i-1):
+  Q drenagem : x1->x2 5.9%   x2->x3 2.0%
+  dp_lid     : x1->x2 13.9%   x2->x3 3.8%
+
+OBSERVACOES:
+- p_SAS (pressao media na SAS = CARGA transmitida a bainha no FSI) e' identica
+  ate' 4 casas decimais em todas as malhas (~1333.00 Pa): a carga
+  estrutural relevante e' independente de malha (<0.001%).
+- Q de drenagem (indicador secundario) converge monotonicamente: malha de
+  producao (x1, 6144 cels) a +8.1% da fina; variacao
+  sucessiva cai para 2.0% no ultimo refino (< criterio 5%).
+- |U|_max e' um pico LOCAL (extremo de malha) e nao converge monotonicamente;
+  use |U|_mean ou Q como metricas integrais robustas.

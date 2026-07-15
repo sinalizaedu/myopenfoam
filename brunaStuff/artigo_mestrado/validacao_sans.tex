@@ -1,0 +1,49 @@
+% =============================================================================
+%  Validação numérica externa do FSI de LCR (Caso~3)
+%  Fragmento para \input na Metodologia / Resultados.
+% =============================================================================
+
+\subsubsection*{Velocidades do LCR em planos críticos}
+
+No modelo de referência, Namaghi \textit{et al.} definem seis planos normais ao eixo do nervo; os planos~3 (bulbar) e~6 (distal, junto à drenagem trabecular) concentram a validação. Para o indivíduo saudável ($d = \SI{1e15}{\per\meter\squared}$), reportam $|\bar{\mathbf{U}}| = \SI{1.002e-5}{\meter\per\second}$ (bulbar) e $\SI{1.040e-6}{\meter\per\second}$ (distal) no instante de PIC máxima do ciclo cardíaco~\cite{namaghi2026}. No domínio axisimétrico presente ($z = 0$ no canal óptico, $z = \SI{30}{\milli\meter}$ na LC), o plano~3 mapeia-se ao terço peripapilar ($z \in [\SI{24}{},\SI{29}{})\,\si{\milli\meter}$) e o plano~6 à tampa porosa de drenagem ($z \in [\SI{30}{},\SI{30.5}{})\,\si{\milli\meter}$, \texttt{peri\_porous}); o mapeamento por fração $k/6$ do comprimento fluido ($L = \SI{30.5}{\milli\meter}$) reproduz o plano~6 em $z = \SI{30.5}{\milli\meter}$, mas coloca o plano~3 nominal em $z \approx \SI{15}{\milli\meter}$ (meio do nervo), longe da região bulbar. Com PIC $= \SI{1333}{\pascal}$ e $d = \SI{1e15}{\per\meter\squared}$, o FSI produz $|\bar{\mathbf{U}}| = \SI{1.31e-5}{\meter\per\second}$ no plano bulbar e $\SI{1.92e-6}{\meter\per\second}$ no distal (Tabela~\ref{tab:met-val-vel}), discrepância moderada ($\sim 1{,}3\times$ e $\sim 1{,}8\times$). A média no \emph{bulk} do SAS ($\sim \SI{5.4e-5}{\meter\per\second}$) não equivale ao plano~3, pois o perfil axial decresce da entrada ($z = 0$) para a LC. A hierarquia bulbar $\gg$ distal é preservada; diferenças residuais são esperadas pela geometria axisimétrica \textit{versus} anatomia descentrada, regime quase-estacionário \textit{versus} pulsação de PIC e malha de \num{6144} células \textit{versus} $\num{1.1e6}$ elementos no estudo de referência.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Velocidades médias do LCR em planos axiais (\texttt{on-caso-1.2}, \texttt{P1333\_d1e15\_neohooke}): Namaghi \textit{et al.}~\cite{namaghi2026} (Namaghi Caso~1 (saudável), $d = \SI{1e15}{\per\meter\squared}$) \textit{versus} FSI presente (PIC $= \SI{1333}{\pascal}$). Média de $|\mathbf{U}|$ nas células com $z \in [24, 29)$ mm (bulbar) e $z \in [30, 30.5)$ mm (distal).}
+\label{tab:met-val-vel}
+\begin{tabular}{l r r r}
+\toprule
+\textbf{Região (plano)} & Namaghi & Presente & Razão \\
+ & \multicolumn{1}{c}{$|\bar{\mathbf{U}}|$ (m/s)} & \multicolumn{1}{c}{$|\bar{\mathbf{U}}|$ (m/s)} & presente/Namaghi \\
+\midrule
+Bulbar (plano~3) & $1{,}002 \times 10^{-5}$ & $1{,}31 \times 10^{-5}$ & $1{,}3$ \\
+Distal (plano~6) & $1{,}040 \times 10^{-6}$ & $1{,}92 \times 10^{-6}$ & $1{,}8$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Resposta estrutural acoplada e contraste com o modelo sólido}
+
+Na mesma malha (\texttt{on-caso-1.2}), material linear ($\nu = 0{,}45$) e Winkler ($k_w = \SI{2e5}{\pascal\per\meter}$), contrastou-se FSI acoplado \textit{versus} PIC prescrita na dura sem domínio fluido (Casos~1/2)~\cite{furlani}. A dura expande praticamente igual ($\Delta r_{\mathrm{dura}}$, erro relativo $\lesssim \SI{2.2}{\percent}$); na pia, os sinais invertem-se --- $\Delta r_{\mathrm{pia}} > 0$ no sólido (arrasto com a dura) e $< 0$ no FSI (compressão isotrópica do LCR)~\cite{lee2020, furlani}. A Tabela~\ref{tab:met-val-estrutural} inclui ainda o FSI Neo-Hookeano (Caso~3 de produção): distensão da bainha equivalente, compressão pial menor por quase-incompressibilidade.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Deslocamento radial máximo no corpo do nervo ($z < \SI{29.5}{\milli\meter}$), $d = \SI{1e15}{\per\meter\squared}$. Sólido: PIC na dura (Casos~1/2); FSI linear e Neo-Hookeano (Caso~3).}
+\label{tab:met-val-estrutural}
+\begin{tabular}{r r r r r r r}
+\toprule
+ &
+\multicolumn{3}{c}{$\Delta r_{\mathrm{dura}}$ (\si{\micro\meter})} &
+\multicolumn{3}{c}{$\Delta r_{\mathrm{pia}}$ (\si{\micro\meter})} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+PIC (\si{\pascal}) & Sólido & FSI linear & FSI Neo-Hooke & Sólido & FSI linear & FSI Neo-Hooke \\
+\midrule
+1333 & $+15{,}03$ & $+14{,}89$ & $+14{,}41$ & $+0{,}25$ & $-7{,}17$ & $-2{,}36$ \\
+2000 & $+22{,}55$ & $+22{,}26$ & $+21{,}72$ & $+0{,}53$ & $-10{,}81$ & $-3{,}54$ \\
+3000 & $+33{,}82$ & $+33{,}22$ & $+32{,}82$ & $+0{,}96$ & $-16{,}34$ & $-5{,}32$ \\
+3800 & $+42{,}84$ & $+41{,}91$ & $+41{,}82$ & $+1{,}30$ & $-20{,}85$ & $-6{,}74$ \\
+\bottomrule
+\end{tabular}
+\end{table}

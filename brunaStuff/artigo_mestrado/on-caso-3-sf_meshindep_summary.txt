@@ -1,0 +1,33 @@
+======================================================================================
+INDEPENDENCIA DE MALHA - caso 3F (on-caso-3-sf): SO arteria, p_c=9034 Pa, +X
+======================================================================================
+Metrica de convergencia = deflexao lateral (NAO ha carga axial -> k_axial nao se aplica).
+Todos os niveis atingem lambda=1.0 (indentacao estavel, sem snap).
+
+nivel             fam  nCells pia/dura faces Flat[mN]  |Ux|axis[um] kink_dura Ur_cont[um]
+-----------------------------------------------------------------------------------------
+f050           global     819      1/1     0      0.2           0.0       7.4        0.00
+f100*          global    4752      1/2     2     71.7         332.6     606.2     -606.20
+f150           global   16587      2/3     5     32.8         385.4     931.9     -930.72
+radpia2dura3   radial    5328      2/3     2     60.7         333.0     608.1     -608.11
+radpia3dura4   radial    5904      3/4     2     57.8         333.0     608.3     -608.32
+  (* = malha de producao f100; faces = nº de faces da dura no patch arterial)
+
+ACHADO CHAVE: o patch de contato (CONTACT_LOCAL_SURF) e' uma caixa topoSet
+GEOMETRICA fixa; o nº de faces da dura externa que caem nela depende da malha
+circunferencial/axial (0 -> 2 -> 5). Como a carga e' P=9034 Pa x area, a FORCA
+lateral efetiva NAO e' invariante no refino GLOBAL (Flat: 72 -> 33 mN). O refino
+RADIAL nao toca o ladrilhamento da face externa (2 faces em todos), por isso a
+deflexao do eixo converge. Para convergencia GLOBAL limpa e' preciso fixar a
+AREA carregada (escalar P p/ P*A=const, ou usar contato mecanico real).
+
+CONVERGENCIA GLOBAL (ref = f150, 16587 cells):
+   f050              819 cells: |Ux|axis desvio -100.00%  |  kink_dura desvio -99.20%
+   f100             4752 cells: |Ux|axis desvio -13.71%  |  kink_dura desvio -34.95%
+   f150            16587 cells: |Ux|axis desvio  +0.00%  |  kink_dura desvio  +0.00%
+
+CONVERGENCIA RADIAL (laminas pia/dura; inclui producao f100 p/ referencia) (ref = radpia3dura4, 5904 cells):
+   radpia2dura3     5328 cells: |Ux|axis desvio  -0.00%  |  kink_dura desvio  -0.03%
+   radpia3dura4     5904 cells: |Ux|axis desvio  +0.00%  |  kink_dura desvio  +0.00%
+   f100             4752 cells: |Ux|axis desvio  -0.12%  |  kink_dura desvio  -0.35%
+

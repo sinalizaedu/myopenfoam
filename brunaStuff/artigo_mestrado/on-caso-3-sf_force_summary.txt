@@ -1,0 +1,18 @@
+====================================================================================
+3F: PRESSAO FIXA (p_c=9034) vs FORCA FIXA (~71.7 mN) no refino RADIAL
+====================================================================================
+nivel                pia/dura  |Ux| (P fixa)  P_forca[Pa]  |Ux| (F fixa)
+------------------------------------------------------------------------
+f100 (pia1/dura2)         1/2        332.6um         9034        332.6um
+radpia2dura3              2/3        333.0um        10671        404.1um
+radpia3dura4              3/4        333.0um        11200        426.4um
+
+Espalhamento radial sob PRESSAO fixa: 332.6..333.0 um (+0.1% do f100) -> CONVERGE
+Espalhamento radial sob FORCA   fixa: 332.6..426.4 um (+28.2% do f100) -> NAO converge
+
+GLOBAL fino f150 sob FORCA fixa: p_c=19744 Pa (> snap ~13.5 kPa) -> Riks DIVERGE
+(blow-up ~lambda=0.29; deslocamento nodal -> metros). Sob PRESSAO fixa, f150
+converge mas com footprint diferente (5 faces vs 2), ver on-caso-3-sf_meshindep.
+
+CONCLUSAO: a variavel de controle convergente deste contato prescrito e' a
+PRESSAO p_c, nao a resultante. Fixar a forca PIORA a convergencia.

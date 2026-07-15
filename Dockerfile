@@ -61,6 +61,29 @@ RUN source /usr/lib/openfoam/openfoam2512/etc/bashrc && \
 # ---------- solids4foam ----------
 WORKDIR /build/s4f
 RUN git clone --depth 1 https://github.com/solids4foam/solids4foam.git .
+
+# [PATCH] Enable fvOptions in pimpleFluid.esi.C so DarcyForchheimer porosity
+# (fvOptions/explicitPorositySource) is actually applied to the momentum
+# equation. Upstream solids4foam v2512/ESI variant ships with these calls
+# commented out as "// fvOptions not implemented yet" - that means the Darcy
+# coefficient `d` has zero effect on flow regardless of value. The patch:
+#   1) #include "fvOptions.H"
+#   2) Create fv::options& fvOptions = fv::options::New(mesh) inside evolve()
+#   3) Add `== fvOptions(U)` source term to the tUEqn momentum construction
+#      (this is the line copied from canonical pimpleFoam UEqn.H)
+#   4) Uncomment fvOptions.constrain(UEqn) and fvOptions.correct(U)
+# Validated empirically: U_max in peri_porous scales 100x with d (1e15->1e17),
+# matching analytic Darcy. Without this patch the solver gives U_max~20 m/s
+# (Re~40000, Bernoulli-dominated) regardless of d.
+RUN F=/build/s4f/src/solids4FoamModels/fluidModels/pimpleFluid/pimpleFluid.esi.C && \
+    sed -i "/#include \"thermalRobinFvPatchScalarField.H\"/a #include \"fvOptions.H\"" "$F" && \
+    sed -i "s|const bool moveMeshOuterCorrectors = moveMeshOuterCorrectors_;|&\n\n    // [s4f patch] enable fvOptions for porosity\n    fv::options\& fvOptions = fv::options::New(mesh);|" "$F" && \
+    python3 -c 'import sys;fp=sys.argv[1];t=open(fp).read();old="          - boussinesqMomentumSource()\n        );";new="          - boussinesqMomentumSource()\n         ==\n            fvOptions(U)\n        );";assert old in t,"anchor missing";open(fp,"w").write(t.replace(old,new))' "$F" && \
+    sed -i "s|// fvOptions not implemented yet$||g" "$F" && \
+    sed -i "s|// fvOptions.constrain(UEqn);|fvOptions.constrain(UEqn);|g" "$F" && \
+    sed -i "s|// fvOptions.correct(U);|fvOptions.correct(U);|g" "$F" && \
+    echo "Patch markers:" && grep -nE "fvOptions" "$F" | head -10
+
 RUN source /usr/lib/openfoam/openfoam2512/etc/bashrc && \
     export S4F_NO_FILE_FIXES=1 && \
     ./Allwmake -j"$(nproc)" 2>&1 | tee /tmp/log.s4f
@@ -124,6 +147,14 @@ RUN apt-get update && \
       libarpack2-dev libspooles-dev libyaml-cpp-dev \
       libgfortran5 libblas3 liblapack3 && \
     rm -rf /var/lib/apt/lists/*
+
+# ccx2paraview: converte .frd (CalculiX) -> .vtu / .pvd (ParaView)
+# vtk: dependency runtime do ccx2paraview (manipula UnstructuredGrid binarios)
+# Instalado system-wide para que ccx2paraview esteja no PATH para qualquer
+# usuario do container (sem precisar de --user reinstall a cada `docker run`).
+RUN pip3 install --break-system-packages --no-cache-dir \
+      ccx2paraview==3.2.0 \
+      vtk==9.6.2
 
 # preCICE libraries + headers + binaries
 COPY --from=builder /opt/precice /opt/precice

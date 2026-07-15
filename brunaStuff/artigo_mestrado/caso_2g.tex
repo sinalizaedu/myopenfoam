@@ -1,0 +1,29 @@
+
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+
+\graphicspath{{figs/}}
+
+\begin{document}
+
+\subsection*{Caso 2G}
+\label{sec:res-caso2}
+
+O cenário \texttt{Caso 2G} foi desenvolvido para caracterizar a resposta mecânica de um modelo simplificado do NO representado por um tubo retilíneo e perfeitamente axissimétrico. O complexo dural e neural é submetido a uma carga de compressão axial decorrente do recuo posterior do polo ocular ($\Delta z$) e confinado lateralmente pela reação radial da gordura orbital, modelada como uma fundação elástica de Winkler, sem a imposição de imperfeições geométricas prévias ou excentricidades.
+
+Os resultados das simulações numéricas demonstraram a completa ausência de instabilidade por flambagem de Euler ao longo de todo o envelope de deslocamento clínico relevante ($\Delta z \in [\SI{0.5}{};\,\SI{1.0}]\,\si{\milli\meter}$). Sob a rampa quasi-estática de compressão até o limite clínico de $\Delta z = -\SI{1.0}{\milli\meter}$, com a pressão intracraniana fisiológica plenamente aplicada, a força de reação de engaste axial total atingiu $F_z \approx \SI{317}{\milli\newton}$, correspondente a uma rigidez axial secante de $\approx \SI{317}{\newton\per\meter}$ do complexo dural-neural. Adotando o fator de comprimento efetivo recomendado na literatura biomecânica de $K = 0.65$, o qual representa adequadamente a restrição rotacional parcial nas extremidades do canal óptico e na inserção escleral posterior \cite{wang2016}, a carga crítica de Euler teórica para o sistema é de $P_{\mathrm{cr}} = \SI{523.8}{\milli\newton}$. A força imposta representa \SI{60.5}{\%} desse limite crítico de instabilidade ($F_z/P_{\mathrm{cr}} = 0.605$), estabelecendo uma margem de segurança estável de $1.65\times$ que se mantém para todo o regime de extremidades rotacionalmente restringidas ($K \le 0.65$) representativo da ancoragem óssea no canal óptico e da inserção escleral posterior [3, 4].
+
+Esta estabilidade elástica intrínseca sob compressão pura é corroborada analiticamente pela teoria de Hetényi para vigas sobre fundação elástica contínua \cite{reilly2023} [5]. Sob parâmetros de uma órbita saudável com rigidez de Winkler de $k_w = \SI{200}{\kilo\pascal\per\meter}$ [1, 6], a formulação analítica prevê que o modo crítico fundamental de falha corresponde ao modo $n = 1$, caracterizado por uma única meia-onda simétrica e difusa com comprimento de onda crítico de $\lambda = \SI{30}{\milli\meter}$ sob uma carga limite de $P_{\mathrm{cr}} = \SI{507.8}{\milli\newton}$ [5]. Esse perfil em arco suave e unidirecional diverge completamente das duas meias-ondas alternadas que definem a configuração antissimétrica em formato de ``S'' observada clinicamente na SANS \cite{lee2020} [2].
+
+Em total acordo com as predições teóricas, a rampa quasi-estática de deslocamento prescrito produziu uma curva força--deslocamento estritamente monotônica, sem pontos-limite ou comportamento de \emph{snap-through}, resultando puramente em um encurtamento elástico uniforme. A excursão lateral residual do tubo manteve-se em $\approx \SI{0.05}{\milli\meter}$ (da ordem do ruído de discretização da malha), permanecendo a coluna essencialmente reta ao longo de todo o carregamento (Figura~\ref{fig:res-caso2-reto}). Comprova-se, portanto, que a idealização de uma geometria perfeitamente reta e simétrica para o NO sob compressão axial pura não é capaz de selecionar espontaneamente o modo antissimétrico de flexão, demonstrando que a transição para o padrão sinuoso e o dobramento (\emph{kinking}) observados na SANS exige obrigatoriamente a introdução de uma quebra de simetria [2, 7].
+
+
+\end{document}

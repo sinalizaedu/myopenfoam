@@ -1,0 +1,33 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      p;
+}
+dimensions      [ 0 2 -2 0 0 0 0 ];
+internalField   uniform 0.0;
+boundaryField
+{
+    inlet
+    {
+        type            uniformFixedValue;
+        uniformValue    table
+        (
+            (0   0)
+            (1   0.285714)
+            (2   0.571429)
+            (3   0.857143)
+            (4   1.14286)
+            (5   1.42857)
+            (6   1.71429)
+            (7   2)
+        );
+    }
+    outlet_peri      { type fixedValue; value uniform 0.0; }
+    fsi_pia          { type zeroGradient; }
+    fsi_dura         { type zeroGradient; }
+    lid_wall_inner   { type zeroGradient; }
+    lid_wall_outer   { type zeroGradient; }
+}

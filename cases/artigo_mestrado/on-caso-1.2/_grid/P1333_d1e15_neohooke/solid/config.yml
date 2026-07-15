@@ -1,0 +1,26 @@
+# CalculiX-preCICE adapter v2.20.1 config para on-caso-1.2
+#
+# Define o participante "Solid" com DUAS interfaces FSI separadas (FSI_PIA e
+# FSI_DURA), ambas mapeadas para o mesmo Solid-Mesh. Isso evita o problema do
+# adapter nao resolver nested NSETs (FSI_ALL = FSI_PIA + FSI_DURA falhava
+# com "Set NFSI_ALLN does not exist").
+#
+# precice-config-file: caminho para o XML do preCICE (TOP-LEVEL OBRIGATORIO).
+# nodes-mesh: nome do mesh preCICE (deve casar com precice-config.xml).
+# patch: NSET (no all.inp/main.inp) cujos nodes estarao no acoplamento.
+# read-data: campos lidos do fluido (Forces).
+# write-data: campos escritos para o fluido (Displacements).
+
+precice-config-file: ../precice-config.xml
+
+participants:
+  Solid:
+    interfaces:
+      - nodes-mesh: Solid-Mesh
+        patch: fsi_pia
+        read-data: Forces
+        write-data: Displacements
+      - nodes-mesh: Solid-Mesh
+        patch: fsi_dura
+        read-data: Forces
+        write-data: Displacements

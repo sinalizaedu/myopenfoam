@@ -1,0 +1,178 @@
+** ===========================================================================
+** on-caso-1.2 -- CalculiX FSI ONSAS com lid poroso + 7 zonas anatomicas
+**
+** Solver: CalculiX 2.20 com adapter preCICE v2.20.1 (ccx_preCICE).
+** Acoplamento: Forces (le do Fluido) <-> Displacements (escreve para Fluido).
+**
+** Versao 7-zonas (MALHA CIRCULAR, convertida do blockMesh do on-caso-1):
+**   on, pia, dura, lc, sclera_peri, sclera_ring, globo
+**   - Malha IDENTICA a do on-caso-1 (mesmo polyMesh do solido): secao circular
+**     O-grid com NUCLEO NEURAL SOLIDO (sem furo central), 11648 hex C3D8.
+**     Convertida por brunaStuff/gen_on_caso_1_2_from_blockmesh.py.
+**   - Materiais elasticos lineares (Tabela tab:mat-linear, Caso 1, nu=0.45)
+**   - Engaste z=0 estendido (3 NSETs separados: posterior_on/pia/dura)
+**   - FSI dinamico via preCICE em fsi_pia + fsi_dura (z=[0,30] mm)
+**   - Pressao estatica 1333 Pa nas caps da esclera (Sfsi_sclera_peri/ring),
+**     iguais aos patches fsi_sclera_* do on-caso-1 [Desacoplamento Seletivo]
+**   - SEM carga arterial focal (a artéria oftálmica e' o Caso 3, nao o Caso 1)
+**   - Winkler (gordura orbital) k=2e5 Pa/m via SPRINGA radiais p/ ghost fixo
+**     (winkler.inp) em dura_outer, igual ao on-caso-1
+**   - Engaste do globo (globo_outer = face externa r=R_DURA, z>=30.3)
+** ===========================================================================
+
+*HEADING
+on-caso-1.2 -- FSI ONSAS com lid poroso + 7 zonas anatomicas (CalculiX)
+
+** ---- Mesh + NSETs (gerado por brunaStuff/gen_on_caso_1_2_from_blockmesh.py) ----
+**   all.msh: *NODE + *ELEMENT por zona (ELSET=EALL_<ZONA>)
+**   all.nam: *NSET (N<patch>: Nposterior_*, Nfsi_*, Ndura_outer, Ncontact_local,
+**            Nglobo_outer, Nfsi_all) + *SURFACE (Scontact_local, Sfsi_sclera_*)
+*INCLUDE, INPUT=all.msh
+*INCLUDE, INPUT=all.nam
+
+** ===========================================================================
+** Materiais elasticos lineares -- modelo de base do Caso 1 (FSI), conforme a
+** Tabela~ref{tab:mat-linear} do artigo_final.tex. E/nu/rho por zona; nu=0.45
+** (limite inferior da faixa 0.45-0.49 do artigo) p/ mitigar travamento
+** volumetrico nos elementos C3D8. O SAS, modelado como fluido (LCR) no Caso 1,
+** nao aparece aqui.
+** ===========================================================================
+
+** on (tecido neural, muito macio): E=30 kPa, nu=0.45, rho=1000 kg/m^3
+*MATERIAL, NAME=ON_MAT
+** E=30000 Pa, nu=0.45
+*ELASTIC
+30000, 0.45
+*DENSITY
+1000.0
+
+*MATERIAL, NAME=PIA_MAT
+** E=3e+06 Pa, nu=0.45
+*ELASTIC
+3e+06, 0.45
+*DENSITY
+1100.0
+
+*MATERIAL, NAME=DURA_MAT
+** E=3e+06 Pa, nu=0.45
+*ELASTIC
+3e+06, 0.45
+*DENSITY
+1100.0
+
+*MATERIAL, NAME=LC_MAT
+** E=400000 Pa, nu=0.45
+*ELASTIC
+400000, 0.45
+*DENSITY
+1100.0
+
+*MATERIAL, NAME=SCLERA_PERI_MAT
+** E=5e+06 Pa, nu=0.45
+*ELASTIC
+5e+06, 0.45
+*DENSITY
+1400.0
+
+*MATERIAL, NAME=SCLERA_RING_MAT
+** E=5e+06 Pa, nu=0.45
+*ELASTIC
+5e+06, 0.45
+*DENSITY
+1400.0
+
+*MATERIAL, NAME=GLOBO_MAT
+** E=5e+06 Pa, nu=0.45
+*ELASTIC
+5e+06, 0.45
+*DENSITY
+1400.0
+
+*SOLID SECTION, ELSET=EALL_ON,          MATERIAL=ON_MAT
+
+*SOLID SECTION, ELSET=EALL_PIA,         MATERIAL=PIA_MAT
+*SOLID SECTION, ELSET=EALL_DURA,        MATERIAL=DURA_MAT
+*SOLID SECTION, ELSET=EALL_LC,          MATERIAL=LC_MAT
+*SOLID SECTION, ELSET=EALL_SCLERA_PERI, MATERIAL=SCLERA_PERI_MAT
+*SOLID SECTION, ELSET=EALL_SCLERA_RING, MATERIAL=SCLERA_RING_MAT
+*SOLID SECTION, ELSET=EALL_GLOBO,       MATERIAL=GLOBO_MAT
+
+** ===========================================================================
+** Boundary conditions (engastes via *BOUNDARY)
+** ===========================================================================
+
+** Engaste em z=0 (canal optico) -- 3 NSETs separados conforme on-caso-1
+**   posterior_on  (anel R_INNER-R_ON, layer 0-1 em z=0)
+**   posterior_pia (layer R_PIA em z=0)
+**   posterior_dura (layers R_SAS, R_DURA_MID, R_DURA em z=0)
+*BOUNDARY
+Nposterior_on,   1, 3, 0.0
+Nposterior_pia,  1, 3, 0.0
+Nposterior_dura, 1, 3, 0.0
+
+** Engaste do globo (face externa r=R_DURA, z=[30.3, 30.8]):
+** representa ancoragem aos musculos extraoculares e a` orbita.
+*BOUNDARY
+Nglobo_outer, 1, 3, 0.0
+
+** ===========================================================================
+** Fundacao elastica de Winkler em dura_outer (gordura orbital, k=2e5 Pa/m)
+** ===========================================================================
+** Espelha o on-caso-1 (solidTractionElasticFoundation k=200000). Implementado
+** como SPRINGA radiais ligando cada no' de dura_outer a um ghost node fixo
+** (mesma abordagem do on-caso-2). Gerado em winkler.inp por
+** gen_on_caso_1_2_from_blockmesh.py. O proprio winkler.inp ja' inclui o
+** *BOUNDARY que engasta os ghost nodes (NSET GHOST_WINKLER); a rigidez de
+** cada mola e' k * area_nodal (somada das faces de dura_outer).
+*INCLUDE, INPUT=winkler.inp
+
+** ===========================================================================
+** Step: estatico nao-linear (NLGEOM exigido pelo adapter preCICE)
+** ===========================================================================
+**
+** *STEP, NLGEOM e' OBRIGATORIO para o adapter preCICE (issue #63).
+** *STATIC com (inc_inicial, tempo_total) = (1.0, 6.0): 6 janelas de
+** acoplamento de 1.0 s cada (rampa de PIC 1333->3800 Pa no fluido). O
+** adapter preCICE fixa dtheta=1.0/janela; o tempo total da STEP precisa
+** cobrir as 6 janelas (= max-time do precice-config.xml).
+** INC=1000000 permite ao IQN-ILS implicit iterar repetidas vezes cada
+** janela durante o acoplamento.
+*STEP, NLGEOM, INC=1000000
+*STATIC
+1.0, 4.0
+** ---- Cargas estaticas (aplicadas antes da carga FSI dinamica do preCICE) ----
+
+** Pressao estatica 1333 Pa nas caps da esclera (fsi_sclera_peri/ring), que
+** no on-caso-1 deixam de ser FSI e recebem solidTraction pressure 1333
+** (Truque de Desacoplamento Seletivo - cf. relatorio_sans.tex sec.4.7).
+** Convencao CCX: P positiva = empurra a face para DENTRO do elemento.
+*DLOAD
+Sfsi_sclera_peri, P, 1333.0
+Sfsi_sclera_ring,  P, 1333.0
+
+** [REMOVIDO] Carga arterial (9034 Pa em contact_local): pertence ao Caso 3
+** (artéria oftálmica), nao ao Caso 1. O Caso 1 e' puramente a compartimentalizacao
+** do LCR via FSI + drenagem porosa, sem carga arterial focal.
+
+** Placeholders para os Forces lidos pelo preCICE em fsi_pia e fsi_dura:
+** o adapter preenche estes slots a cada iteracao implicita. Sem placeholders,
+** sim->nforc=0 e o adapter falha ao indexar as cargas. Os valores abaixo sao
+** IGNORADOS (sao reescritos pelo preCICE), so' precisam existir.
+*CLOAD
+Nfsi_all, 1, 0.0
+Nfsi_all, 2, 0.0
+Nfsi_all, 3, 0.0
+
+** ---- Output do CalculiX ----
+**   .frd: campos U (deslocamento) e S (tensao) em cada incremento
+**   .dat: deslocamentos nodais nos NSETs declarados
+*NODE FILE
+U
+*EL FILE
+S, E
+*NODE PRINT, NSET=Nfsi_pia
+U
+*NODE PRINT, NSET=Nfsi_dura
+U
+**
+*END STEP

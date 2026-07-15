@@ -1,0 +1,117 @@
+Como considerar a gordura?
+- Fundação elástica (molas, fundação elástica de Winkler)
+
+Como considerar a órbita?
+- Sclera em disco e lamina cibrosa em disco
+
+
+
+
+
+
+
+4 simulações com e sem aumento da pressão intracraniana
+Opção 1) Arteria oftalmica
+Opcao 2) Flambagem mecanica
+
+
+
+2a fase do mestrado
+2. Espaço subaracnoide como zona de fluido — ausente
+
+Atualmente o CSF é representado como pressão na face posterior_ons. O espaço subaracnoide real (entre ON e ONS, ao longo dos 30 mm) contém fluido que:
+
+Transmite pressão uniformemente para toda a superfície do ON
+Age como amortecedor hidrodinâmico para forças laterais
+No modelo atual, o ON e a ONS estão bonded (colados), o que elimina esse espaço. O efeito prático: a rigidez do sistema é ligeiramente subestimada na direção radial.
+
+
+Além da análise estática não-linear (para ver o deslocamento causado pela artéria), recomendo rodar uma análise de flambagem linear (Eigenvalue buckling) seguida de uma análise pós-flambagem (usando métodos como Riks ou arc-length). Isso vai mostrar exatamente o momento em que o nervo perde a estabilidade e adquire aquele formato em "S" (tortuosidade).
+
+
+
+
+
+
+
+
+Doutorado 
+
+COmplacencia lumped ou malha do fluido que deforma ALE
+
+
+===== Patch solids4foam pimpleFluid + fvOptions (28-mai-2026) =====
+
+Bug encontrado: o pimpleFluid.esi.C do solids4foam v2512 desativa fvOptions
+explicitamente (// fvOptions not implemented yet) - a Darcy do peri_porous
+era ignorada, U ~ 20 m/s (Re ~ 40000) independente de d.
+
+Patch aplicado no Dockerfile (sed em pimpleFluid.esi.C antes do Allwmake):
+  1) #include "fvOptions.H"
+  2) fv::options& fvOptions = fv::options::New(mesh) em evolve()
+  3) == fvOptions(U) no tUEqn momentum source (linha critica, copiada do
+     pimpleFoam canonico - foi o que faltava no meu primeiro patch)
+  4) descomentar fvOptions.constrain(UEqn) e fvOptions.correct(U)
+
+A libsolids4FoamModels.so recompilada esta em cases/_lib/ e e' bind-
+mountada em /opt/of-user/lib via docker-compose.yaml. Para futuros rebuilds
+da imagem, o Dockerfile ja aplica o patch.
+
+Validacao (sweep d=1e13/1e15/1e17 no on-caso-1.2):
+  d=1e13: U_pp_max=1.19e-4 m/s, Q=9.96e-10 m^3/s  (microdrenagem aberta)
+  d=1e15: U_pp_max=1.19e-6 m/s, Q=9.96e-12 m^3/s  (saudavel ~ fisiologico)
+  d=1e17: U_pp_max=1.19e-8 m/s, Q=9.96e-14 m^3/s  (IIH/SANS compartimentado)
+Escalamento exato 100x:100x = Darcy puro. Resultados em
+cases/on-caso-1.2/_sweep/.
+
+Observacao: como inlet/outlet sao fixedValue p, a compartimentalizacao
+aparece no FLUXO Q (nao na pressao). Para ICP variar com d, mudar inlet
+para flowRateInletVelocity. A interpretacao fisica e' coerente: SANS
+modela obstrucao linfatica que reduz Q_drenage, com ICP elevada sendo
+consequencia (circuito acoplado a complacencia cerebral via R*Q).
+
+Helpers em brunaStuff/:
+  check_compartmentalization.py  - estatistica de p por cellZone
+  check_velocity.py              - estatistica de U por cellZone
+  compare_d_sweep.py             - compara d1e15 vs d1e17
+  sweep_d_table.py               - tabela 3 valores de d (sweep)
+  plot_compartmentalization.py   - figura log-log Q(d) e perfil U_z(z)
+  sweep_icp_driven.py            - sweep ICP-driven, gera figura ICP(d)
+
+
+===== Sweep ICP-driven com flowRateInletVelocity (fluid-only) =====
+
+Caso auxiliar criado: cases/on-caso-1.2-fluidonly/
+  - cp -r de on-caso-1.2/fluid (mesma malha + fvOptions)
+  - inlet trocado para flowRateInletVelocity Q=3e-11 m^3/s
+  - p_inlet zeroGradient (a pressao se ajusta)
+  - outlet_peri zeroGradient para U, fixedValue p=0
+  - pimpleFoam standalone (sem preCICE/CalculiX) porque o FSI completo
+    diverge no Neo-Hookean para ICP > ~1500 Pa (forces FSI excedem
+    capacidade portante da pia/dura no regime hiperelastico)
+
+Sweep d=1e12, 1e13, 1e14, 1e15, 1e16:
+
+  d (m^-2)   |  ICP_bulk (Pa)  |  dp_lid (Pa) |  Regime
+  ---------  |  ------------- | ------------ | -----------------------
+  1e12       |     -330        |     -85      |  lid aberto (transiente Bernoulli)
+  1e13       |     -317        |     -81      |  lid aberto
+  1e14       |     -188        |     -36      |  quase aberto, sem compart.
+  1e15       |     1106        |     410      |  SAUDAVEL (~ P_CSF 1333 Pa)
+  1e16       |    14039        |    4871      |  IIH/SANS SEVERO (~105 mmHg)
+
+Transicao saudavel -> SANS-severo em UMA UNICA decada de d (1e15 -> 1e16,
+fator 12.7x em ICP). Matcha a observacao clinica de que pequenas variacoes
+na permeabilidade das vilositosidades aracnoideas perineurais (inflamacao,
+depositos de proteina, alteracoes na PIC) podem desencadear compartimen-
+talizacao do ONSAS com elevacao marcada da pressao - mecanismo central em
+IIH e em SANS.
+
+Figura: brunaStuff/figs/on-caso-1.2-icp-driven.png
+
+Limitacao do FSI completo: em modo ICP-driven, ICP_bulk > 1500 Pa gera
+forces FSI demasiadas para o Neo-Hookean Newton-Raphson convergir no
+CalculiX (corrupted double-linked list / divergencia). Mitigacoes futuras:
+(a) carga em multi-step com ramping, (b) contato unilateral globo-dura,
+(c) regularizacao por damping Rayleigh.
+

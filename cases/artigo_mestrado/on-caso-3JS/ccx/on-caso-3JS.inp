@@ -1,0 +1,230 @@
+*HEADING
+on-caso-3JS (CCX 2.20) - GEOMETRIA em "S" (dupla meia-onda) + CARGAS do Caso 3F, Riks.
+**
+** ============================================================================
+** on-caso-3JS = "Caso 3JS": demonstracao da TORTUOSIDADE EM "S" (modo n=2,
+** antissimetrico) como FORMA GEOMETRICA IMPOSTA -- nao como flambagem de Euler
+** espontanea. Cabe na narrativa (B) da dissertacao:
+**
+**   "O 'S' da SANS NAO e' uma bifurcacao espontanea (os casos 2G/2J/3F/3J mostram
+**    que o modo NATURAL do complexo, no regime fisiologico e sub-critico, e' o
+**    arco unico n=1). O 'S' clinico e' uma forma IMPOSTA pela combinacao de:
+**    (i) FOLGA redundante do nervo (~8 mm) arranjada de modo SINUOSO;
+**    (ii) ANCORAGEM nas duas pontas (globo + canal optico);
+**    (iii) CONTATOS multiplos (arteria oftalmica, paredes orbitais)."
+**
+**   Aqui a folga sinuosa e' representada IMPONDO uma linha de centro em "S"
+**   (curvatura troca de sinal no meio, duas meias-ondas) -- o analogo
+**   antissimetrico do arco unico em "J" do Caso 2J. A compressao axial clinica
+**   + a arteria entao AMPLIFICAM esse "S", fechando o SAS.
+**
+**   GEOMETRIA (S imposta):
+**     - malha reta (eixo Z) VARRIDA ao longo de uma linha de centro em "S" no
+**       plano XY (warp_centerline_S.py): th(s)=th0 + A*cos(2*pi*s/L), com
+**       A=swing (~25 deg) -> offset lateral X(s)~sin(2*pi*s/L), POSITIVO na 1a
+**       metade e NEGATIVO na 2a (cruza zero em s=L/2) = "S" verdadeiro;
+**     - globo na ORIGEM (0,0); tangente no globo levemente inclinada (A) -- a
+**       folga sinuosa imposta; comprimento de arco e raio PRESERVADOS (nao estica);
+**     - apos o sweep a malha esta no plano XY com a espessura da secao em Z;
+**     - dura ORTOTROPICA via orientacoes cilindricas POR ANEL cujo eixo segue a
+**       tangente local da curva em S (gen_dura_ortho_orient_S.py); include
+**       on-caso-3JS_dura_orient.inp;
+**     - Winkler 200 kPa/m UNIFORME na parede da dura, varrido com a MESMA curva.
+**
+**   CARGAS (= Caso 3F / on-caso-3, identicas ao Caso 3J):
+**     - COMPRESSAO AXIAL clinica: Dy = 0 -> -1.0 mm prescrito na face do globo
+**       (apos o warp o eixo do nervo no globo aponta -Y -> DOF 2);
+**     - PRESSAO FOCAL DA ARTERIA OFTALMICA: P_contact na dura (CONTACT_LOCAL_SURF,
+**       face +Y do tubo reto -> no plano do S apos o warp). VARRIDA 0->18068 Pa;
+**     - PIC (liquor) 1333 Pa na parede interna da dura (DURA_INNER_SURF);
+**     - tracao residual dos musculos extraoculares (EOM) na face do globo.
+**
+**   RESULTADO ESPERADO: ao contrario de 2J/3J (arco unico, n=1), o complexo
+**   ASSUME e AMPLIFICA o "S" (deflexao lateral troca de sinal ao longo do eixo),
+**   confirmando que o padrao em "S" e' selecionado pela GEOMETRIA imposta (B),
+**   nao por instabilidade espontanea.
+**
+** ============================================================================
+** Geometria de base (do blockMeshDict de on-caso-1): 8 zonas concentricas
+**   on / pia / sas / dura / lc / sclera_peri / sclera_ring / globo
+**   (valores Bruna 2026-05-28: casco E=3 MPa, LC=300 kPa, nervo=30 kPa, nu=0.49)
+**
+** Discretizacao espacial (z em mm, ANTES do sweep; vira o comprimento de arco
+** s = zmax - z medido a partir do globo):
+**   nervo + meninges        : z = [ 0.00, 30.00 ]
+**   LC + esclera (peri+ring): z = [30.00, 30.30 ]
+**   globo                   : z = [30.30, 30.80 ]   (globo na origem, s=0)
+**
+** Lei constitutiva: NEO HOOKE compressivel (CCX *HYPERELASTIC, NEO HOOKE):
+**   W = C10 (I1_bar - 3) + (1/D1) (J - 1)^2
+**   C10 = G/2 = E / [4(1+nu)]   ;   D1 = 2/K = 6(1-2*nu) / E
+** Elemento C3D8I (modos incompativeis): mitiga locking volumetrico em nu=0.49.
+**
+** ============================================================================
+** Solver: *STATIC, RIKS (arc-length, Riks-Wempner-Crisfield). lambda escala o
+** vetor de carga de referencia (Dy + EOM + PIC + P_contact). ARCMAX=1.0 ->
+** fator maximo 1.0 (sem overshoot). lam_final<1 no .sta sinaliza colapso.
+**
+*INCLUDE, INPUT=on-caso-3JS_mesh.inp
+*INCLUDE, INPUT=on-caso-3JS_winkler.inp
+**
+** ============================================================================
+** MATERIAIS (NEO HOOKE compressivel, nu=0.49 quase-incompressivel)
+** Unidades SI: Pa (=N/m^2). Multiplicar por 1e-6 p/ ler em MPa.
+** ============================================================================
+*MATERIAL, NAME=ON_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=30 kPa, MAT_NERVO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+03, 4.0000e-06
+*DENSITY
+1000
+**
+*MATERIAL, NAME=SAS_MAT
+** SAS solido "fluido-like": macio + ALTAMENTE compressivel (nu=0.05).
+**   E  = 3 kPa, nu = 0.05 -> C10 = 714.3 Pa, D1 = 1.8e-3 1/Pa
+*HYPERELASTIC, NEO HOOKE
+7.1430e+02, 1.8000e-03
+*DENSITY
+1000
+**
+*MATERIAL, NAME=PIA_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1100
+**
+*MATERIAL, NAME=DURA_MAT
+** Dura ortotropica (Holzapfel-like simplificado): E_circ = 3x E_rad/axial.
+** A orientacao cilindrica POR ANEL (eixo = tangente local da curva em "J")
+** vem de on-caso-3JS_dura_orient.inp (gen_dura_ortho_orient.py). Linear elastic
+** ortotropico em sistema cilindrico (1=radial, 2=circ, 3=axial).
+*ELASTIC, TYPE=ENGINEERING CONSTANTS
+** E_r,    E_theta, E_z,     nu_rt, nu_rz, nu_tz, G_rt,    G_rz
+3.000e+6, 9.000e+6, 3.000e+6, 0.30,  0.30,  0.30,  1.150e+6, 1.150e+6
+** G_tz, T
+1.150e+6, 0.0
+*DENSITY
+1100
+**
+*MATERIAL, NAME=LC_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=300 kPa, MAT_LC]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+04, 4.0000e-07
+*DENSITY
+1100
+**
+*MATERIAL, NAME=SCLERA_PERI_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=SCLERA_RING_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=GLOBO_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*SOLID SECTION, ELSET=ON,          MATERIAL=ON_MAT
+*SOLID SECTION, ELSET=PIA,         MATERIAL=PIA_MAT
+*SOLID SECTION, ELSET=SAS,         MATERIAL=SAS_MAT
+** Dura ortotropica em "J": secoes solidas por anel + orientacoes cilindricas
+** cuja axial segue a tangente local da curva (gen_dura_ortho_orient.py).
+*INCLUDE, INPUT=on-caso-3JS_dura_orient.inp
+*SOLID SECTION, ELSET=LC,          MATERIAL=LC_MAT
+*SOLID SECTION, ELSET=SCLERA_PERI, MATERIAL=SCLERA_PERI_MAT
+*SOLID SECTION, ELSET=SCLERA_RING, MATERIAL=SCLERA_RING_MAT
+*SOLID SECTION, ELSET=GLOBO,       MATERIAL=GLOBO_MAT
+**
+** ============================================================================
+** AMPLITUDE -- rampa linear da compressao axial (Dy) + EOM + PIC
+** ============================================================================
+*AMPLITUDE, NAME=DZRAMP
+0.0, 0.0, 1.0, 1.0
+**
+** ============================================================================
+** STEP UNICO -- Riks arc-length escala todas as cargas (Dy + EOM + PIC + P_contact)
+** ============================================================================
+*STEP, NLGEOM=YES, INC=500
+*STATIC, RIKS
+0.025, 1.0, 1e-5, 0.05, 1.0
+**
+** ====================================================================
+** Engastes
+** ====================================================================
+** Engaste posterior (canal optico, z=0): 1,2,3=0 em todas as posteriores.
+*BOUNDARY
+POSTERIOR_ON,   1, 3, 0.0
+POSTERIOR_PIA,  1, 3, 0.0
+POSTERIOR_SAS,  1, 3, 0.0
+POSTERIOR_DURA, 1, 3, 0.0
+**
+** Globo na origem: apos o sweep o eixo do nervo no globo aponta -Y. A orbita
+** confina as direcoes PERPENDICULARES ao eixo -> fixa X (DOF 1) e Z (DOF 3,
+** espessura). A compressao axial e prescrita em -Y (DOF 2): Dy = 0 -> -1.0 mm
+** (limite clinico do Caso 3F). Riks escala via lambda.
+*BOUNDARY
+ANTERIOR_GLOBO, 1, 1, 0.0
+ANTERIOR_GLOBO, 3, 3, 0.0
+**
+*BOUNDARY, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 2, 2, -1.00e-3
+**
+** ====================================================================
+** Tracao residual dos musculos extraoculares (EOM) na face do globo
+** ====================================================================
+** Pequena contribuicao em -Y (tangente do nervo no globo apos o sweep). Como
+** ANTERIOR_GLOBO tem Dy PRESCRITO no DOF 2, este CLOAD no mesmo DOF e' sobreposto
+** pela BC cinematica (mantido por coerencia documental com o Caso 2J/3F).
+*CLOAD, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 2, -1.0e-4
+**
+** ====================================================================
+** P_contact -- ARTERIA OFTALMICA pressionando a dura mater externamente
+** ====================================================================
+** Carga focal de pressao na face externa da dura (patch CONTACT_LOCAL_SURF,
+** carved-out de dura_outer em z~22.5 mm). Posicionada NO PLANO do "J", no lado
+** CONVEXO/externo do arco (face +Y no referencial reto -> +X no plano do J apos
+** o warp), empurrando para DENTRO contra a curvatura (oposta ao "C" axial).
+** P>0 aplica pressao normal a face deformada, comprimindo o arco do nervo.
+** Riks escala P_contact via lambda (0 -> valor injetado, ARCMAX=1.0). O sweep
+** externo (Allrun) injeta: 0, 4517, 9034, 13551, 18068 Pa.
+*DSLOAD
+CONTACT_LOCAL_SURF, P, 9034
+**
+** ====================================================================
+** PIC (pressao intracraniana ~10 mmHg) na PAREDE INTERNA da dura
+** ====================================================================
+** P=1333 Pa em DURA_INNER_SURF (interface dura<->sas): empurra a dura
+** radialmente p/ FORA -> tracao circunferencial -> mantem a bainha tensa
+** (mata a "sanfona") mesmo na geometria curva. Rampada com DZRAMP.
+*DSLOAD, AMPLITUDE=DZRAMP
+DURA_INNER_SURF, P, 1333.0
+**
+** Outputs por incremento (.dat)
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_DURA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_PIA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_ON, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=ANTERIOR_GLOBO, TOTALS=ONLY
+RF, U
+**
+** Outputs de campo no .frd (ParaView via ccx2paraview)
+*NODE FILE, FREQUENCY=5
+U, RF
+*EL FILE, FREQUENCY=5
+S, E
+**
+*END STEP

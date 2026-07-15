@@ -1,0 +1,458 @@
+\documentclass[article, hidelinks,oneside,12pt]{abntex2}
+
+\usepackage{float} %fixar imagem
+\usepackage[utf8]{inputenc} %língua
+\usepackage{amsmath} %matemática
+\usepackage{graphicx} %imagens
+\usepackage{amssymb} %para adicionar laplace
+\usepackage{indentfirst} %indentar primeiro parágrafo da seção
+\graphicspath{ {./Figuras/} }
+\usepackage[num,bibjustif]{abntex2cite} % Citações padrão ABNT
+\usepackage{pdfpages} %Adicionar PDF
+%\usepackage[alf]{abntex2cite} % Citações padrão ABNT
+%\usepackage[num]{abntex2cite}  %bibliografia
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{pgf-pie}
+\usepackage{caption}
+\usepackage{longtable}
+\usepackage[output-decimal-marker={,}]{siunitx}
+\usepackage{booktabs}
+
+\definecolor{lightgray}{gray}{0.95}
+
+\begin{document}
+
+\begin{center}
+\textbf{Flambagem do nervo óptico na SANS: interação fluido-estrutura entre a pressão do líquido cefalorraquidiano e a expansão da artéria oftálmica}
+\\
+Autor(a): Bruna Wendhausem Enne, Universidade de São Paulo
+\\
+\end{center}
+
+\section*{Resumo}
+
+A Síndrome Neuro-Ocular Associada a Voos Espaciais altera a parte posterior do olho de astronautas, provocando edema e tortuosidade no nervo óptico sob condições de microgravidade. Este estudo tem como objetivo investigar os mecanismos biomecânicos desse processo utilizando modelos computacionais que avaliam como a compressão axial e o carregamento transversal atuam na indução da flambagem estrutural do nervo óptico. A metodologia adota um modelo tridimensional baseado em geometria de revolução do complexo ocular, realizando simulações estruturais não lineares no programa CalculiX, além de análises de interação fluido-estrutura com o uso combinado do OpenFOAM e preCICE. Os resultados demonstram que a compressão axial pura gerada pelo recuo do globo ocular é insuficiente para produzir a sinuosidade clínica observada na SANS, mantendo a coluna retilínea. Embora a presença de uma curvatura inicial reduza a rigidez mecânica em 42\%, o formato característico em S é observado apenas quando se introduz a suposição de um contato transversal duplo da artéria oftálmica, que atua como gatilho geométrico, direcionando a deformação e causando um fechamento de 99,3\% do espaço subaracnóideo. Adicionalmente, o modelo com interação fluido-estrutura evidencia a transmissão isotrópica da pressão hidrostática do líquido cefalorraquidiano, com resposta caracterizada pela expansão da bainha dural para fora e compressão simultânea da pia-máter para dentro, comportamento que os modelos puramente sólidos não capturam. Conclui-se que a tortuosidade envolve um mecanismo acoplado. O carregamento longitudinal consome a folga mecânica do sistema e a carga transversal focal da artéria define o modo de falha estrutural sob o efeito da retenção do líquido cefalorraquidiano.
+
+Palavras-chave: Microgravidade, Biomecânica ocular, Flambagem estrutural, Interação fluido-estrutura (FSI), Líquido cefalorraquidiano (LCR)
+
+\newpage
+
+\begin{siglas}
+  \item[AO] Artéria Oftálmica (\textit{Ophthalmic Artery})
+  \item[BNO] Bainha do Nervo Óptico (\textit{Optic Nerve Sheath})
+  \item[CFD] Fluidodinâmica Computacional (\textit{Computational Fluid Dynamics})
+  \item[EDO] Equação Diferencial Ordinária (\textit{Ordinary Differential Equation})
+  \item[EOM] Músculo Extraocular (\textit{Extraocular Muscle})
+  \item[FEM] Método dos Elementos Finitos (\textit{Finite Element Method})
+  \item[FSI] Interação Fluido-Estrutura (\textit{Fluid-Structure Interaction})
+  \item[HII] Hipertensão Intracraniana Idiopática (\textit{Idiopathic Intracranial Hypertension})
+  \item[LC] Lâmina Cribrosa (\textit{Lamina Cribrosa})
+  \item[LCR] Líquido Cefalorraquidiano (\textit{Cerebrospinal Fluid})
+  \item[NO] Nervo Óptico (\textit{Optic Nerve})
+  \item[ONH] Cabeça do Nervo Óptico (\textit{Optic Nerve Head})
+  \item[ONSAS] Espaço Subaracnóideo do Nervo Óptico (\textit{Optic Nerve Subarachnoid Space})
+  \item[PIC] Pressão Intracraniana (\textit{Intracranial Pressure})
+  \item[PIO] Pressão Intraocular (\textit{Intraocular Pressure})
+  \item[SANS] Síndrome Neuro-Ocular Associada a Voos Espaciais (\textit{Spaceflight-Associated Neuro-Ocular Syndrome})
+  \item[SAS] Espaço Subaracnóideo (\textit{Subarachnoid Space})
+  \item[TLPG] Gradiente de Pressão Translaminar (\textit{Translaminar Pressure Gradient})
+\end{siglas}
+
+
+
+\section*{Introdução}
+
+Com o planejamento de missões tripuladas a Marte, a exposição prolongada à microgravidade impõe desafios de saúde críticos aos astronautas \cite{nasa}. Entre esses desafios destaca-se a Síndrome Neuro-Ocular Associada a Voos Espaciais (SANS), uma condição que afeta cerca de 75\% dos tripulantes em missões de longa duração \cite{lee2018}, alterando a função e a anatomia do segmento posterior do olho, com efeitos que podem persistir por anos após o retorno à Terra \cite{nasa}. Clinicamente, a SANS manifesta-se sobretudo por hipermetropia, dobras de coroide, edema do disco óptico, achatamento posterior do globo ocular, distensão da bainha do nervo óptico (BNO) e tortuosidade do nervo óptico (NO) \cite{mader2011, zhang2018, lee2020}. 
+
+A causa da tortuosidade do NO (Figura~\ref{fig:ontort}), caracterizada pelo desvio de seu eixo central e encurvamento de seu trajeto, permanece sob investigação \cite{yang2022, sibony2023}. Sugere-se que a patogênese é multifatorial, envolvendo uma complexa interação entre a redistribuição de fluidos, a alteração da pressão intracraniana (PIC) e a resposta biomecânica dos sistemas ocular e nervoso central \cite{mader2011, mahak2025, nigro2026}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.35]{Figuras/ONTort.png}
+\caption{Ressonâncias magnéticas do NO após permanência moderada no espaço. \\À esquerda, NO tortuoso. À direita, NO de referência para comparação.}
+\fonte{\citeonline[p. 94]{scott}.}
+\label{fig:ontort}
+\end{figure}
+
+O principal fator desencadeante da SANS é a remoção do vetor de gravidade terrestre, que normalmente mantém um gradiente de pressão hidrostática vertical no corpo humano \cite{huang2019}. Ao entrar em microgravidade, cerca de dois litros de fluido migram das extremidades inferiores para a cabeça, o pescoço e o tronco \cite{moore1987, scott2019, huang2019}, com alterações hemodinâmicas como o aumento do volume da veia jugular interna já nas primeiras semanas em órbita \cite{mader2011, arbeille, petersen}. 
+
+A principal linha teórica para explicar esses efeitos baseia-se na compartimentalização das pressões craniana e ocular, destacando o Gradiente de Pressão Translaminar (TLPG), isto é, a diferença entre a pressão intraocular (PIO) e a pressão do líquido cefalorraquidiano (LCR). No espaço, o acúmulo de fluidos mantém a PIC elevada enquanto a PIO permanece estável, de modo que o TLPG diminui ou se inverte \cite{berdahl2012, greenwald2021, zarrinbakhsh2025}. Modelos de parâmetros concentrados (\textit{lumped parameter frameworks}), regidos por equações diferenciais ordinárias (EDOs), reproduzem esse quadro ao mostrar que a microgravidade eleva a pressão venosa central e a congestão venosa cerebral \cite{salerni2019, nigro2026, ong2023}, dificultando a drenagem do LCR e elevando de forma persistente a PIC. Essa pressão é transmitida pelo espaço subaracnóideo do nervo óptico (ONSAS) até a região posterior do globo, afetando o NO, que, mergulhado no LCR dentro da BNO, é extremamente sensível a variações de pressão no crânio \cite{berdahl2012}. A própria BNO, contínua com o ONSAS, distende-se sob essa PIC elevada \cite{lioi2025}, enquanto a cabeça do nervo óptico (ONH) e a lâmina cribrosa (LC) concentram a tensão imposta pelo TLPG \cite{newson2006, shin2017, liu2023}.
+
+Embora a hipótese do TLPG seja a mais proeminente, ela não justifica todas as observações clínicas \cite{yang2022}. \citeonline{sibony2023} comparam a SANS à hipertensão intracraniana idiopática (HII) terrestre, mas os astronautas com SANS geralmente não relatam as fortes dores de cabeça e os obscurecimentos visuais típicos da HII \cite{zhang2025}, indício de que a simples elevação global da PIC não justifica o quadro e de que fatores locais são decisivos. Nessa linha, uma teoria propõe que a gordura orbital retém mais água e se expande no espaço, deformando o globo mais intensamente do que a própria PIC e explicando o achatamento ocular e as dobras de retina \cite{reilly2023}. Outra atribui o achatamento ao deslocamento do cérebro, cuja tração sobre a BNO repuxa a parte posterior do globo \cite{carter2023}. Todas as teorias concordam que a SANS reflete um desequilíbrio estrutural e fluididnâmico mais amplo entre o crânio e a órbita, não sendo apenas uma questão de pressão.
+
+A SANS é, portanto, um fenômeno de natureza multifatorial. A elevação da PIO e a expansão da gordura orbital empurram o globo e a LC posteriormente, configurando um carregamento axial que comprime o NO contra o seu engaste ósseo no canal óptico e o leva a buscar alívio dobrando-se \cite{reilly2023, sigal2004, newson2006, islam2024}. Esse mecanismo, contudo, é insuficiente por si só. A flambagem necessita também de um carregamento transversal que, ao romper a simetria geométrica e de forças, introduz um momento fletor responsável por desencadear a instabilidade \cite{jafari2025, lim2024, chiang2025, wang2016}.
+
+A compressão do NO por lesões vasculares já é documentada na literatura terrestre, como nos aneurismas do segmento oftálmico \cite{fujita, beatty, date}, e, em microgravidade, a AO e seus ramos sofrem adaptações hemodinâmicas análogas que contribuem para o carregamento mecânico do NO \cite{salerni2019, nigro2026}. Análises de imagem mostram remodelação vascular ocular, com redução de pequenos vasos em favor de vasos mais calibrosos \cite{vyas}. Simulações de fluidodinâmica computacional (CFD) confirmam aumentos de fluxo e de tensão de cisalhamento na rede arterial ocular durante a microgravidade simulada \cite{caddy2024}, dilatação compensatória que mantém a autorregulação do fluxo \cite{salerni2019, nigro2026}. Devido à baixa complacência do ONSAS, essa expansão da AO desloca o LCR e exerce pressão radial contra as fibras nervosas e a bainha dural \cite{nigro2026}, efeito agravado pelas veias dilatadas que estagnam o LCR ao redor do NO \cite{yang2022}. A validação \textit{in vivo} dessas hipóteses, contudo, é dificultada pela escassez de equipamentos nas estações espaciais, restringindo as análises ao período pós-voo, quando os fluidos já se redistribuíram sob gravidade terrestre \cite{lee2018, mader2013, wahlin2021, rohr}.
+
+Diante das limitações inerentes aos modelos analógicos físicos, abordagens computacionais têm sido amplamente empregadas para investigar a biomecânica do segmento posterior do olho e de estruturas associadas à SANS. A maior parte dos estudos recorre ao método dos elementos finitos (FEM), aplicado a geometrias como a ONH \cite{sigal2004, wang2016}, a LC associada ao globo ou ao NO \cite{newson2006, feola2016, sala2023}, a BNO e suas combinações com a ONH \cite{lee2020, islam2024, jafari2025} e, ainda, a esclera posterior, a coroide e a gordura orbital \cite{feola2018, lim2024, reilly2023}. Modelos de interação fluido-estrutura (FSI) concentram-se majoritariamente no globo ocular \cite{furlani, karampelas, maklad} e na vasculatura retiniana \cite{rebhan2019}, enquanto abordagens de CFD tratam do escoamento em ventrículos \cite{holmlund2019}, na vasculatura retiniana \cite{caddy2024} e no ONSAS \cite{namaghi2026}. Apesar dessa diversidade, poucos trabalhos incorporam explicitamente as condições de microgravidade \cite{feola2016, feola2018, lee2020, reilly2023, caddy2024}, e nenhum acopla a dinâmica da AO à mecânica do NO.
+
+O objetivo principal deste estudo é investigar, por meio de simulações numéricas, os mecanismos biomecânicos subjacentes à SANS, avaliando quantitativamente como os diferentes carregamentos atuantes sobre o NO contribuem para induzir a tortuosidade e o fenômeno de flambagem. Especificamente, busca-se: (i) verificar se a compressão axial, decorrente da elevação da PIC e do deslocamento posterior do globo, é capaz, por si só, de induzir a tortuosidade observada na SANS, examinando a influência da geometria do nervo; (ii) avaliar o impacto do carregamento transversal introduzido pelo contato da AO; e (iii) investigar o papel da compartimentalização do LCR, comparando simulações exclusivamente estruturais com modelos de interação FSI. Para tanto, adota-se uma abordagem unificada baseada em uma geometria de revolução do complexo nervo-bainha-globo ocular, sobre a qual são empregadas formulações não lineares de grandes deformações no software CalculiX, para as análises estruturais puras, e acoplamentos numéricos via OpenFOAM e preCICE, para a FSI.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section*{Metodologia}
+
+\subsection*{Visão geral}
+
+O fluxo de trabalho reúne códigos abertos num contêiner \textsc{Docker} (\textsc{Ubuntu} 20.04). As análises estruturais (grandes deformações, NLGEOM) rodam no CalculiX v2.20 com o método de comprimento de arco de Riks \cite{riks1979}, robusto na presença de instabilidades estruturais. A FSI acopla o fluido (OpenFOAM v2512, pimpleFluid, algoritmo PIMPLE, solids4Foam) ao sólido (CalculiX v2.20) pela biblioteca preCICE v3.3.1. Foram desenvolvidos três casos distintos para avaliar diferentes fundamentações teóricas da SANS:
+
+\textbf{Caso 1: Compressão axial pelo deslocamento do globo}
+
+Referência estrutural da instabilidade elástica do NO, com o LCR tratado como sólido hidrostático equivalente. O carregamento consiste num deslocamento axial no polo posterior do globo, em direção ao canal óptico, que comprime o complexo dural-neural contra seu engaste ósseo e força a flexão lateral do nervo-pia sobre a reação da gordura orbital, representada por uma fundação de Winkler. O caso desdobra-se em duas configurações que variam unicamente a geometria do eixo do ON, isolando seu papel na simulação.
+
+No Caso 1A o NO é um tubo perfeitamente reto e axissimétrico, sem imperfeições. Esta geometria ideal elimina qualquer mecanismo intrínseco de quebra de simetria, permitindo verificar se a compressão axial pura é suficiente para induzir a tortuosidade. O Caso 1B substitui o eixo reto por uma curvatura anatômica na forma de um arco em J hipotético, mantendo inalterados malha, materiais e condições de contorno. 
+
+\textbf{Caso 2: Compressão transversal pela artéria oftálmica}
+
+Complementa o Caso 1 introduzindo o carregamento transversal da artéria oftálmica (AO), modelado como pressão de contato focal ($p_c$) sobre a face externa da dura-máter, em conjunto com a rampa axial. O objetivo é avaliar a sensibilidade de deflexão lateral da bainha, do fechamento local do SAS e do modo de deformação à pressão arterial ($p_c = 0 \to \SI{18068}{\pascal}$), incluindo a configuração com dois contatos antissimétricos, representando os possíveis pontos de toque da AO.
+
+\textbf{Caso 3: Compartimentalização do LCR}
+
+Modelo de FSI bidirecional que captura a distensão radial da bainha, achado clínico da SANS. O LCR é modelado como fluido Newtoniano incompressível, que escoa pelo canal óptico até a órbita. Na saída, um meio poroso de Darcy com coeficiente $d$ representa a restrição das granulações aracnóideas. Aumentar $d$ aumenta a obstrução da drenagem do LCR. O lado sólido usa a mesma lei Neo-Hookeana dos Casos 1 e 2, com \texttt{NLGEOM} e acoplamento \texttt{*STATIC} via preCICE. A vazão $Q$, medida no fluido do FSI, quantifica a compartimentalização.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{Formulação matemática e métodos numéricos}
+\label{sec:teoria}
+
+\subsubsection*{Mecânica do sólido (CalculiX)}
+\label{sec:teoria-solido}
+
+Em regime quase-estático, o domínio sólido $\Omega_s$ satisfaz o balanço de momento linear (descrição Lagrangiana total), sem termo inercial:
+\begin{equation}
+  \nabla_{\!X}\!\cdot\,\mathbf{P} + \rho_s\,\mathbf{b} = \mathbf{0}
+  \quad\text{em } \Omega_s,
+  \label{eq:equilibrio-solido}
+\end{equation}
+com $\mathbf{P} = \mathbf{F}\,\mathbf{S}$ o primeiro tensor de Piola--Kirchhoff e $\mathbf{F} = \mathbf{I} + \nabla_{\!X}\boldsymbol{\delta}$ o gradiente de deformação. A formulação de grandes deformações (\texttt{NLGEOM}) considera os termos geométricos não lineares, essenciais à flambagem do complexo nervo--pia \cite{bonet2008, belytschko2014}. Os casos adotam material Neo-Hookeano compressível \cite{bonet2008}. A dura-máter, entretanto, obedece a um modelo de elasticidade linear ortotrópica em coordenadas cilíndricas \cite{holzapfel2000}.
+
+A flambagem gera pontos em que o Newton--Raphson com controle de carga diverge. Por isso, usa-se o método de comprimento de arco de Riks \cite{crisfield1991}, que resolve em conjunto o deslocamento $\boldsymbol{\delta}$ e o fator de carga $\lambda$:
+\begin{equation}
+  \mathbf{r}(\boldsymbol{\delta},\lambda)
+  = \mathbf{f}_{\mathrm{int}}(\boldsymbol{\delta}) - \lambda\,\mathbf{f}_{\mathrm{ref}}
+  = \mathbf{0},
+  \qquad
+  \lVert \Delta\boldsymbol{\delta}\rVert^2 + \psi^2\,\Delta\lambda^2 = \Delta\ell^2,
+  \label{eq:riks}
+\end{equation}
+com $\mathbf{f}_{\mathrm{int}}$ sendo as forças internas, $\mathbf{f}_{\mathrm{ref}}$ a carga de referência e $\Delta\ell$ o comprimento de arco.
+
+Para interpretação dos resultados, a resposta à compressão axial é comparada com dois modelos clássicos de flexão e flambagem de colunas. O primeiro é a flambagem de Euler de uma coluna comprimida, cuja carga crítica
+\begin{equation}
+  P_{\mathrm{cr}} = \frac{\pi^2 E I}{(K L)^2}
+  \label{eq:euler}
+\end{equation}
+depende da rigidez flexional $EI$ do nervo-bainha, do comprimento livre $L$ e do fator de comprimento efetivo $K$, que traduz a restrição rotacional das extremidades, adotado como $K = 0{,}65$ \cite{wang2016}. A razão $F_z/P_{\mathrm{cr}}$ entre a força de reação axial e essa carga crítica fornece a margem de segurança à instabilidade. 
+
+O segundo modelo adiciona o suporte lateral da gordura retrobulbar pela teoria de Hetényi para vigas sobre fundação elástica de Winkler \cite{hetenyi1946}, em que a carga crítica
+\begin{equation}
+  P_{\mathrm{cr}}(n) = E I \left(\frac{n\pi}{L}\right)^{\!2} + k_w \left(\frac{L}{n\pi}\right)^{\!2}
+  \label{eq:hetenyi}
+\end{equation}
+depende do número $n$ de meias-ondas e da rigidez de fundação $k_w$. O menor $P_{\mathrm{cr}}(n)$ indica o modo preferido e seu comprimento de onda $\lambda = L/n$, mostrando se o sistema tende ao modo simétrico ($n = 1$) ou ao padrão em S ($n = 2$) observado clinicamente.
+
+\subsubsection*{Dinâmica do fluido (OpenFOAM)}
+\label{sec:teoria-fluido}
+
+Especificamente no Caso 3, o LCR é modelado como um fluido Newtoniano incompressível, com conservação de massa e quantidade de movimento em $\Omega_f$ \cite{ferziger, versteeg}:
+\begin{align}
+  \nabla\!\cdot\mathbf{U} &= 0,
+  \label{eq:continuidade}\\[2pt]
+  \frac{\partial \mathbf{U}}{\partial t}
+  + \nabla\!\cdot(\mathbf{U}\,\mathbf{U})
+  &= -\nabla p
+  + \nabla\!\cdot\!\big(\nu\,\nabla\mathbf{U}\big)
+  + \mathbf{S}_M,
+  \label{eq:momento}
+\end{align}
+com $\mathbf{U}$ a velocidade, $p = P/\rho$ a pressão cinemática, $\nu = \mu/\rho$ a viscosidade cinemática e $\mathbf{S}_M$ o termo-fonte. Como $\mathrm{Re} = U L/\nu \ll 1$ no SAS, o regime é laminar. O termo-fonte $\mathbf{S}_M$ representa a resistência hidráulica da tampa porosa, que modela a drenagem do LCR. Com coeficiente inercial nulo ($f = 0$), a tampa obedece à lei de Darcy \cite{nield2006, namaghi2026},
+
+\begin{equation}
+  \mathbf{S}_M = -\nu\,d\,\mathbf{U},
+  \label{eq:darcy}
+\end{equation}
+
+em que o coeficiente de Darcy $d$ serve como indicador da resistência hidráulica da drenagem. A Eq.~\eqref{eq:momento} é resolvida pelo algoritmo PIMPLE \cite{versteeg, ferziger}, com tempo Euler implícito, convecção \textit{Gauss linear Upwind} limitada e laplacianos \textit{Gauss linear corrected}. O passo de tempo é fixo, igual à janela de acoplamento ($\Delta t = \SI{1.0}{\second}$). A deformação da interface é propagada ao interior por formulação ALE (\textit{arbitrary Lagrangian--Eulerian}) \cite{donea2003}.
+
+
+\subsubsection*{Acoplamento fluido-estrutura (preCICE)}
+\label{sec:teoria-fsi}
+
+A FSI é particionada e implícita (Dirichlet--Neumann) via \textsc{preCICE}. Na interface da pia com a dura impõem-se compatibilidade cinemática e equilíbrio dinâmico \cite{bazilevs2013},
+\begin{equation}
+  \mathbf{U}_f = \dot{\boldsymbol{\delta}}_s
+  \quad\text{e}\quad
+  \boldsymbol{\sigma}_f\!\cdot\!\mathbf{n} = \boldsymbol{\sigma}_s\!\cdot\!\mathbf{n}
+  \quad\text{em } \Gamma_{\mathrm{FSI}},
+  \label{eq:fsi-interface}
+\end{equation}
+trocando forças (fluido $\rightarrow$ sólido) e deslocamentos (sólido $\rightarrow$ fluido) a cada iteração.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{Geometria e domínio computacional}
+
+O domínio reproduz o segmento intraorbitário do NO, a LC com a esclera e uma calota anterior do globo, com a função de transmitir a carga axial ao polo posterior do NO. A seção transversal tem oito zonas concêntricas geradas via \texttt{blockMesh}. Os raios e extensões axiais estão detalhados na Tabela~\ref{tab:zonas} e ilustrados na Figura~\ref{fig:geometria}.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Zonas anatômicas concêntricas do modelo (raios internos, externos e extensão axial). As três camadas pia, SAS e dura envolvem o NO ao longo dos \SI{30}{\milli\meter}. A LC e a calota do globo fecham uma das extremidades do domínio.}
+\label{tab:zonas}
+\begin{tabular}{llll}
+\toprule
+\textbf{Zona} & $r_{\mathrm{int}}$ (\si{\milli\meter}) & $r_{\mathrm{ext}}$ (\si{\milli\meter}) & $z$ (\si{\milli\meter}) \\
+\midrule
+\texttt{on} ~\cite{sigal2004, wang2016}       & 0.00 & 1.50 & $0$--$30$ \\
+\texttt{pia}~\cite{sigal2004, wang2016, feola2016}              & 1.50 & 1.55 & $0$--$30$ \\
+\texttt{sas}~\cite{wang2016, feola2016, lim2024}              & 1.55 & 2.35 & $0$--$30$ \\
+\texttt{dura}~\cite{wang2016, feola2016}             & 2.35 & 2.50 & $0$--$30$ \\
+\texttt{lc} ~\cite{sigal2004, feola2016, islam2024} & 0.00 & 1.50 & $30.00$--$30.30$ \\
+\texttt{sclera\_peri}~\cite{feola2016}     & 1.50 & 2.00 & $30.00$--$30.30$ \\
+\texttt{sclera\_ring}~\cite{feola2016}     & 2.00 & 2.50 & $30.00$--$30.30$ \\
+\texttt{globo}~\cite{reilly2023}            & 0.00 & 2.50 & $30.30$--$30.80$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[height=0.20\textheight]{Figuras/Mestrado/Geometry_final.png}%
+\hfill
+\includegraphics[height=0.20\textheight]{Figuras/Mestrado/Geometry_final_2.png}
+\caption{Geometrias de revolução do complexo NO-bainha-globo com as oito zonas anatômicas concêntricas. A região destacada em verde representa o espaço subaracnóideo. No Caso 3, esta zona é modelada como o domínio fluido para a simulação de FSI. Nos Casos 1 e 2, ela é discretizada como um domínio sólido com comportamento hidrostático equivalente.}
+
+\label{fig:geometria}
+\end{figure}
+
+A convergência da malha sólida hexaédrica estruturada é independente do refinamento (erro $< \pm 1\%$), adotando-se \num{4752} hexaedros com boa qualidade (não-ortogonalidade $\approx 0$, \emph{skewness} $< \num{1e-3}$, refino global e radial). A malha fluida foi verificada de forma desacoplada do FSI, convergindo com 6144 elementos hexaédricos (variação $< 0{,}001\%$, não-ortogonalidade $\approx 0$, \emph{skewness} $< \num{0,26}$).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{Propriedades de materiais e fluido}
+\label{sec:met-materiais}
+
+A Tabela~\ref{tab:mat} apresenta os parâmetros para cada região. O modelo adota a lei Neo-Hookeana compressível \cite{holzapfel2000, calculix}, conforme a Eq.~\ref{eq:neohooke-W}, proveniente dos parâmetros elásticos obtidos na literatura.
+
+\begin{equation}
+  W = C_{10}(\bar I_1 - 3) + \frac{1}{D_1}(J-1)^2,
+  \label{eq:neohooke-W}
+\end{equation}
+com $C_{10}$ e $D_1$ mapeados do módulo de Young ($E$) e do coeficiente de Poisson ($\nu$) de cada tecido de acordo com a Eq.~(\ref{eq:neohooke}).
+
+\begin{equation}
+  C_{10} = \frac{E}{4\,(1+\nu)}, \qquad
+  D_1 = \frac{6\,(1-2\nu)}{E}.
+  \label{eq:neohooke}
+\end{equation}
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Propriedades dos materiais sólidos. Os módulos $E$, $\nu$ e $\rho$ são extraídos das referências e adotados pelo modelo elástico linear. É adotada a lei Neo-Hookeana, da qual $C_{10}$ e $D_1$ derivam-se dos parâmetros lineares, conforme a Eq.~(\ref{eq:neohooke}).}
+
+\label{tab:mat}
+\begin{tabular}{l r c r r r}
+\toprule
+\textbf{Zona (Ref.)} & $E$ & $\nu$ & $\rho$ (\si{\kilogram\per\meter\cubed}) & $C_{10}$ (\si{\pascal}) & $D_1$ (\si{\per\pascal}) \\
+\midrule
+\texttt{on} \cite{sigal2004}            & \SI{30}{\kilo\pascal} & 0.49 & 1000 & $5.034\times10^{3}$ & $4.0\times10^{-6}$ \\
+\texttt{pia} \cite{sigal2004}           & \SI{3}{\mega\pascal}  & 0.49 & 1100 & $5.034\times10^{5}$ & $4.0\times10^{-8}$ \\
+\texttt{sas}\textsuperscript{$\dagger$} & \SI{3}{\kilo\pascal}  & 0.05 & 1000 & $7.143\times10^{2}$ & $1.8\times10^{-3}$ \\
+\texttt{lc} \cite{sigal2004}            & \SI{300}{\kilo\pascal}& 0.49 & 1100 & $5.034\times10^{4}$ & $4.0\times10^{-7}$ \\
+\texttt{sclera\_peri/ring} \cite{sigal2004} & \SI{3}{\mega\pascal} & 0.49 & 1400 & $5.034\times10^{5}$ & $4.0\times10^{-8}$ \\
+\texttt{globo} \cite{sigal2004}         & \SI{3}{\mega\pascal}  & 0.49 & 1400 & $5.034\times10^{5}$ & $4.0\times10^{-8}$ \\
+\midrule
+\multicolumn{6}{l}{\texttt{dura} \cite{feola2016, wang2016, jafari2025}, $\rho = 1100$:} \\
+\multicolumn{6}{l}{\quad $E_r = E_z = \SI{3}{\mega\pascal}$,\; $E_\theta = \SI{9}{\mega\pascal}$,\; $\nu_{rt} = \nu_{rz} = \nu_{tz} = 0.30$,\; $G = \SI{1.15}{\mega\pascal}$}
+\\
+\bottomrule
+\end{tabular}
+\vspace{0.35em}
+\begin{minipage}{\linewidth}
+\footnotesize\raggedright
+$^\dagger$~O SAS sólido é um substituto numérico do fluido (calibração numérica, sem referência direta).
+\end{minipage}
+\end{table}
+
+A dura-máter é modelada como ortotrópica, com rigidez circunferencial igual ao triplo da axial/radial ($E_\theta/E_z = 3$) em razão da anisotropia das fibras de colágeno \cite{holzapfel2000}.
+
+Apenas no Caso 3, o LCR é fluido Newtoniano incompressível ($\rho = \SI{1000}{\kilogram\per\meter\cubed}$, $\mu = \SI{1.0e-3}{\pascal\second}$, modelo \texttt{pimpleFluid}) \cite{gholampour2018, namaghi2026}. A drenagem na extremidade distal do tubo é uma tampa porosa de \SI{0.5}{\milli\meter}, com lei de Darcy-Forchheimer, cujo coeficiente $d$ varia de $\SI{1e15}{\per\meter\squared}$ (saudável) a $\SI{1e19}{\per\meter\squared}$ (obstrução severa da drenagem) \cite{namaghi2026}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{Condições de Contorno e Carregamentos}
+\label{sec:met-contorno}
+
+As simulações compartilham engaste total nas faces proximais ($z = 0$, fixação das meninges ao canal óptico) \cite{wang2016}, confinamento lateral do polo anterior do globo ($X$ e $Y$ impedidos) e PIC na face interna da dura-máter a \SI{1333}{\pascal} \cite{feola2016, wang2016, namaghi2026}. 
+
+A gordura retrobulbar sobre a face externa da dura-máter é representada por uma fundação elástica de Winkler, ou seja, molas radiais que ligam cada nó a um ponto fixo com rigidez $k_w = E_{\mathrm{fat}}/t_{\mathrm{fat}} \approx \SI{500}{\pascal}/\SI{2.5}{\milli\meter} = \SI{2e5}{\pascal\per\meter}$ \cite{schoemaker2006, yoo2011}. 
+
+Nos Casos 1 e 2, o SAS é discretizado como sólido hidrostático equivalente, de modo que a PIC se transmite diretamente à bainha sem resolver o escoamento do LCR. O carregamento principal é a compressão axial do globo, determinada como deslocamento posterior $\Delta z$ no polo ocular, com valor fixo de $-\SI{1.0}{\milli\meter}$ \cite{reilly2023} e aplicada quase-estaticamente via método de Riks, com uma força residual dos músculos extraoculares de $\approx \SI{16}{\milli\newton}$ no polo anterior \cite{reilly2023}.
+
+O Caso 2 acrescenta a pressão de contato focal da AO ($p_c$), imposta sobre a face externa da dura-máter ($+x$, $z \approx \SI{22.5}{\milli\meter}$), variando de \SI{9034}{\pascal} (média sístole/diástole) a \SI{18068}{\pascal} (pressão equivalente ao pico sistólico, em carregamento quase-estático) \cite{feola2016}. Uma variante com dois contatos antissimétricos ($+x$ e $-x$) reproduz o cruzamento anatômico da artéria sobre o nervo.
+
+No Caso 3, o domínio fluido se acopla ao sólido via \textsc{preCICE}, com a mesma fundação de Winkler e sem carga focal da artéria. A parte sólida utiliza lei Neo-Hookeana compressível (Eqs.~\ref{eq:neohooke-W}--\ref{eq:neohooke}), com parâmetros da Tabela~\ref{tab:mat}, \texttt{NLGEOM} e passo \texttt{*STATIC}. Não se usa o método de Riks, pois a resposta é estável e sem flambagem.
+
+O SAS é resolvido como fluido Newtoniano incompressível (\texttt{pimpleFluid}, OpenFOAM; $\rho = \SI{1000}{\kilogram\per\meter\cubed}$, $\mu = \SI{1.0e-3}{\pascal\second}$) \cite{gholampour2018, namaghi2026}. No \textit{inlet}, adotou-se uma pressão PIC, fixa em \SI{1333}{\pascal} (basal) ou em rampa até \SI{3800}{\pascal} (SANS) \cite{feola2016, wang2016, namaghi2026}. No \textit{outlet}, fixou-se a referência venosa episcleral ($p=0$). 
+
+Nas interfaces FSI, a pressão é acoplada e a velocidade segue a cinemática estrutural (\textit{movingWallVelocity}). A drenagem distal é modelada por uma tampa porosa de \SI{0.5}{\milli\meter} com resistência Darcy-Forchheimer, cujo coeficiente $d$ varia de $\SI{1e15}{\per\meter\squared}$ (saudável) a $\SI{1e19}{\per\meter\squared}$ (obstrução severa da drenagem) \cite{namaghi2026}. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Resultados e discussão}
+\label{sec:resultados}
+
+\subsection*{Caso 1A}
+\label{sec:res-caso1A}
+
+Ao comprimir o nervo de forma lenta e gradual até o limite clínico, a estrutura continuou totalmente estável e não sofreu a flambagem de Euler ($\Delta z \in [0{,}5;\ 1{,}0]\,\si{\milli\meter}$). A força de reação axial atingiu $F_z \approx \SI{317}{\milli\newton}$ (rigidez secante $\approx \SI{317}{\newton\per\meter}$), correspondendo a apenas \SI{60.5}{\%} da carga crítica teórica ($P_{\mathrm{cr}} = \SI{523.8}{\milli\newton}$, com $K = 0.65$).
+
+Conforme esperado, essa força na SANS supera o estiramento de 90 a 150 mN que o NO sofre em movimentos oculares normais, conforme apontado por \citeonline{wang2017}. O valor de 317 mN também está abaixo da capacidade máxima de contração dos músculos extraoculares (580 a 730 mN) \cite{wang2017}, e o movimento ocular continua ocorrendo normalmente, embora passe a funcionar sob um esforço constante.
+
+Ao comprimir o NO de forma gradual, o desvio lateral foi de apenas $\approx \SI{0.05}{\milli\meter}$, ou seja, a coluna permaneceu aproximadamente reta durante todo o carregamento, o que concorda com o observado em \citeonline{reilly2023}. Conclui-se que a idealização de um NO perfeitamente reto e simétrico sob compressão axial pura não induz espontaneamente o modo antissimétrico de flexão, de modo que para se obter o padrão tortuoso da SANS mostrou-se obrigatória uma quebra de simetria.
+
+\subsection*{Caso 1B}
+\label{sec:res-caso1B}
+
+Antes da flambagem (recuo de $\approx \SI{0.10}{\milli\meter}$), a rigidez axial, isso é, a força de reação necessária para comprimir o nervo, cai de $k_{\mathrm{axial}} \approx \SI{306}{\newton\per\meter}$ no tubo reto para $\approx \SI{178}{\newton\per\meter}$ na curvatura em J, ou seja, cerca de \SI{42}{\%} mais mole, valor coerente com os obtidos por \citeonline{wang2017}. O deslocamento lateral do nervo chega a $\approx \SI{0.5}{\milli\meter}$ para um recuo axial de \SI{1.0}{\milli\meter}.
+
+Com Winkler de órbita saudável ($k_w = \SI{200}{\kilo\pascal\per\meter}$) e utilizando a teoria de Hetényi, o modo crítico é o $n = 1$, uma única meia-onda suave ($\lambda = \SI{30}{\milli\meter}$, $P_{\mathrm{cr}} = \SI{507.8}{\milli\newton}$), o que diverge do padrão antissimétrico em S observado na SANS.
+
+
+\subsection*{Caso 2}
+\label{sec:res-caso2}
+
+Adicionando a pressão focal da AO ao tubo reto ($+x$, $z \approx \SI{22.5}{\milli\meter}$) e varrendo-a de $p_c = 0 \to \SI{18068}{\pascal}$, constatou-se que toda a faixa de $p_c$ converge à carga plena ($\lambda = 1{,}0$) (Figura~\ref{fig:res-3F2-Smode}). A deflexão lateral da dura cresce de \SI{0.019}{\milli\meter} a \SI{0.981}{\milli\meter} com a carga arterial.
+
+A reação axial ($F_{\max} \approx \SI{760}{\milli\newton}$) é dada quase só pela compressão de $\Delta z$ e pouco sensível à pressão arterial, situando-se na mesma ordem de grandeza das trações na junção ONS–esclera previstas por \citeonline{jafari2025} ($\SI{770}{\milli\newton}$). Sob pressão equivalente ao pico sistólico ($p_c = \SI{18068}{\pascal}$), o espaço subaracnóideo (SAS) chega a fechar \SI{99.3}{\%}, reproduzindo o estrangulamento focal observado na SANS.
+
+Apesar disso, esse contato arterial único empurra a dura e o nervo sempre para o mesmo lado, formando apenas uma meia-onda (modo $n = 1$), ou seja, um só ponto de contato não basta para gerar o padrão em S visto clinicamente. 
+
+Anatomicamente, a AO cruza o nervo óptico ao longo de seu trajeto intraorbitário, passando por dois pontos diametralmente opostos e axialmente deslocados. Para capturar esse efeito, acrescentou-se um segundo contato oposto ($-x$, $z \approx \SI{7.5}{\milli\meter}$), ambos com $p_c = \SI{9034}{\pascal}$, sob a mesma rampa. O eixo do nervo passa a ter dois focos de sinais contrários com uma troca de sinal de $\delta_x(z)$ que caracteriza as duas meias-ondas antissimétricas (modo $n = 2$). A reação axial ($F_z \approx \SI{762}{\milli\newton}$) e a deflexão lateral máxima da dura ($\mathrm{kink}_{\mathrm{dura}} \approx \SI{410}{\micro\meter}$) mantêm a mesma ordem de grandeza do contato único, mas agora distribuídas em dois contatos focais alternados, exatamente o padrão de estrangulamento da tortuosidade observada na SANS (Figura~\ref{fig:res-3F2-Smode}).
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{Figuras/Mestrado/on-caso-3F2_Smode.png}
+\caption{Perfil de deflexão lateral $\delta_x(z)$ do eixo do nervo para o contato único (azul, lobo único, $n = 1$) e para os dois contatos antissimétricos (vermelho, contatos opostos, $n = 2$).}
+\label{fig:res-3F2-Smode}
+\end{figure}
+
+\subsection*{Caso 3}
+\label{sec:res-fsi}
+
+A vazão de drenagem, medida no outlet, reproduz o escalamento de Darcy. A cada incremento de $100\times$ no coeficiente $d$, a vazão cai exatamente $100\times$ (Tabela~\ref{tab:res-caso1-grid}). A simulação varia entre fluxo normal de LCR ($Q \sim 10^{-11}\,\si{\meter\cubed\per\second}$ em $d = 10^{15}\,\si{\per\meter\squared}$) e drenagem quase nula ($Q \sim 10^{-15}\,\si{\meter\cubed\per\second}$ em $d = 10^{19}\,\si{\per\meter\squared}$). Esta última, condição de compartimentalização observada em casos de SANS/HII. Com $d$ fixo, a vazão cresce linearmente com a PIC. 
+
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Compartimentalização do LCR medida no lado fluido do FSI acoplado. Vazão de drenagem $Q$ a cada PIC e coeficiente de Darcy $d$.}
+\label{tab:res-caso1-grid}
+\begin{tabular}{r r r r}
+\toprule
+& \multicolumn{3}{c}{Vazão de drenagem $Q$ (\si{\meter\cubed\per\second})} \\
+\cmidrule(lr){2-4}
+PIC (\si{\pascal}) & $d = 10^{15}$ & $d = 10^{17}$ & $d = 10^{19}$ \\
+\midrule
+1333 & $2{,}07\times10^{-11}$ & $2{,}07\times10^{-13}$ & $2{,}07\times10^{-15}$ \\
+2000 & $3{,}24\times10^{-11}$ & $3{,}24\times10^{-13}$ & $3{,}24\times10^{-15}$ \\
+3000 & $5{,}04\times10^{-11}$ & $5{,}04\times10^{-13}$ & $5{,}04\times10^{-15}$ \\
+3800 & $6{,}73\times10^{-11}$ & $6{,}73\times10^{-13}$ & $6{,}73\times10^{-15}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No acoplamento FSI bidirecional com lei Neo-Hookeana no sólido, o LCR deforma a dura e a pia ao mesmo tempo. A dura expande-se radialmente para fora e a pia comprime-se para dentro, estreitando o SAS (Tabela~\ref{tab:met-val-estrutural}). A distensão da bainha vai de $+\SI{14.4}{\micro\meter}$ (PIC basal, \SI{1333}{\pascal}) a $+\SI{41.8}{\micro\meter}$ (PIC SANS, \SI{3800}{\pascal}). A pia comprime de $-\SI{2.4}{\micro\meter}$ a $-\SI{6.7}{\micro\meter}$. A resposta depende da PIC e quase não varia com $d$. O fluido transmite a pressão isotrópica que o SAS sólido dos Casos 1 e 2 não reproduz \cite{lee2020, furlani}.
+
+Na mesma malha, foram comparadas três configurações (Tabela~\ref{tab:met-val-estrutural}): SAS sólido hidrostático (Casos 1 e 2), FSI com material linear ($\nu = 0{,}45$, varredura de sensibilidade) e FSI Neo-Hookeano (Caso 3). A dura expande de forma equivalente nos três ($\Delta r_{\mathrm{dura}}$, diferença $\lesssim \SI{2.2}{\percent}$). Na pia, o sólido dá $\Delta r_{\mathrm{pia}} > 0$ (arrasto com a dura) e o FSI dá $\Delta r_{\mathrm{pia}} < 0$ (compressão do LCR).
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Deslocamento radial máximo no corpo do nervo, $d = \SI{1e15}{\per\meter\squared}$. Sólido (Caso~1), FSI linear ($\nu = 0{,}45$) e FSI Neo-Hookeano (Caso 3, NH).}
+
+\label{tab:met-val-estrutural}
+\begin{tabular}{r r r r r r r}
+\toprule
+ &
+\multicolumn{3}{c}{$\Delta r_{\mathrm{dura}}$ (\si{\micro\meter})} &
+\multicolumn{3}{c}{$\Delta r_{\mathrm{pia}}$ (\si{\micro\meter})} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+PIC (\si{\pascal}) & Sólido & FSI linear & FSI NH & Sólido & FSI linear & FSI NH \\
+\midrule
+1333 & $+15{,}03$ & $+14{,}89$ & $+14{,}41$ & $+0{,}25$ & $-7{,}17$ & $-2{,}36$ \\
+2000 & $+22{,}55$ & $+22{,}26$ & $+21{,}72$ & $+0{,}53$ & $-10{,}81$ & $-3{,}54$ \\
+3000 & $+33{,}82$ & $+33{,}22$ & $+32{,}82$ & $+0{,}96$ & $-16{,}34$ & $-5{,}32$ \\
+3800 & $+42{,}84$ & $+41{,}91$ & $+41{,}82$ & $+1{,}30$ & $-20{,}85$ & $-6{,}74$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O modelo de referência em \citeonline{namaghi2026} define dois planos normais ao eixo do nervo, chamados bulbar e distal, modelados com base em resultados de uma ressonância magnética. Para um indivíduo saudável, reportam $|\bar{\mathbf{U}}| = \SI{1.002e-5}{\meter\per\second}$ (bulbar) e $\SI{1.040e-6}{\meter\per\second}$ (distal) no instante de PIC máxima do ciclo cardíaco \cite{namaghi2026}. No presente domínio axisimétrico, o FSI produz $|\bar{\mathbf{U}}| = \SI{1.31e-5}{\meter\per\second}$ no plano bulbar e $\SI{1.92e-6}{\meter\per\second}$ no distal (Tabela~\ref{tab:met-val-vel}), com discrepância moderada ($\sim 1{,}3\times$ e $\sim 1{,}8\times$). Diferenças residuais são esperadas pela geometria axisimétrica frente à anatomia modelada, pelo regime quase-estacionário em contraste com a pulsação de PIC e pelas malhas divergentes do estudo de referência.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Velocidades médias do LCR em planos axiais: \citeonline{namaghi2026} Caso~1 (saudável), com $d = \SI{1e15}{\per\meter\squared}$, e FSI, com PIC $= \SI{1333}{\pascal}$.}
+\label{tab:met-val-vel}
+\begin{tabular}{l r r r}
+\toprule
+Região (plano) & Namaghi & Presente & Razão \\
+ & \multicolumn{1}{c}{$|\bar{\mathbf{U}}|$ (m/s)} & \multicolumn{1}{c}{$|\bar{\mathbf{U}}|$ (m/s)} & \\
+\midrule
+Bulbar & $1{,}002 \times 10^{-5}$ & $1{,}31 \times 10^{-5}$ & $1{,}3$ \\
+Distal & $1{,}040 \times 10^{-6}$ & $1{,}92 \times 10^{-6}$ & $1{,}8$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{Limitações}
+\label{sec:res-limitacoes}
+
+Algumas simplificações foram adotadas no presente estudo, o que pode gerar limitações.
+
+No plano físico, a abordagem quase-estática impede a captura da pulsação arterial e do ciclo cardíaco. No Caso 2, $p_c$ assume valores equivalentes ao pico sistólico de forma prescrita e instantânea, e não como carga pulsátil no tempo. Da mesma forma, o uso de leis materiais isotrópicas Neo-Hookeanas desconsidera o alinhamento das fibras de colágeno da pia e da dura, fator é relevante sob grandes deformações. Além disso, a AO foi simplificada como uma carga de contato mecânica fixa, em vez de um canal de fluxo ativo.
+
+No aspecto geométrico e numérico, o complexo óptico foi idealizado por uma geometria de revolução axissimétrica e a tortuosidade anatômica representada por uma curva simplificada em J, e não a geometria real do nervo. Por fim, o comportamento da gordura orbital, que deveria ser simulada como um meio contínuo, foi substituído por uma fundação elástica de molas lineares de Winkler.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section*{Conclusões}
+\label{sec:conclusoes}
+
+Os resultados indicam que a tortuosidade do NO na SANS se caracteriza como uma falha por flambagem estrutural dada por dois carregamentos simultâneos. O empurrão axial vindo do recuo do globo ocular consome a folga mecânica do sistema, enquanto a força transversal causada pelo contato da AO funciona como o gatilho para direcionar e estabilizar o formato final do nervo.
+
+O modelo com o tubo reto funcionou como uma referência estável e operou bem abaixo da carga crítica de Euler, atingindo apenas $60{,}5\%$ do limite teórico com força de $F_z \approx \SI{317}{\milli\newton}$, o que exclui a compressão axial pura como causadora da tortuosidade. Com a inserção de uma curvatura anatômica em J, há uma quebra de simetria, o que deixa a rigidez axial $\SI{42}{\percent}$ mais mole, gerando uma tendência ao dobramento em uma única onda suave.
+
+Supõe-se que é o toque localizado da AO, inchada em microgravidade, que define a geometria tortuosa do NO vista nos astronautas. A configuração com dois apoios alternados, simulando o trajeto real da AO cruzando o nervo, força a estrutura a assumir o modo crítico com duas meias ondas. Esse arranjo em formato de S concentra picos severos de tensão e provoca o estrangulamento de até \SI{99.3}{\percent} do SAS sob pressão equivalente ao pico sistólico, em carregamento quase-estático.
+
+A modelagem da interação entre fluido e estrutura foi fundamental para capturar o efeito correto da pressão, algo que as simulações feitas apenas com sólidos não conseguem registrar. Com a drenagem bloqueada, o LCR fica compartimentalizado e sua pressão aumenta rapidamente. Esse comportamento faz com que a bainha dural se expanda para fora em $+\SI{41.82}{\micro\meter}$ ao mesmo tempo em que aperta a pia máter para dentro em $-\SI{6.74}{\micro\meter}$.
+
+Este trabalho procura entender os efeitos da SANS, por meio de simulações numéricas. Mesmo com as limitações de uma simulação estática, os resultados indicam o risco de lesão crônica e abrem caminho para futuras análises, fundamentais para proteger a visão dos tripulantes em missões espaciais de longa duração.
+
+\newpage
+
+\bibliography{ref.bib}
+
+\end{document}
+
+
+

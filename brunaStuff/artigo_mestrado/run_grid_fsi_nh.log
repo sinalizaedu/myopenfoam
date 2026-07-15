@@ -1,0 +1,519 @@
+############ P1333_d1e15 neohooke ############
+
+=== PREPARE P1333_d1e15_neohooke: P=1333 Pa, d=1e+15, mat=neohooke, nwin=6 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P1333_d1e15_neohooke
+
+=== RUN P1333_d1e15_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P1333_d1e15_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-338a39e776ac Creating 
+ Container myopenfoam-fsi-run-338a39e776ac Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 221.517771
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P1333_d1e15_neohooke', 'p_target_pa': 1333.0, 'd': 1000000000000000.0, 'mat': 'neohooke', 'dura_ur_max_um': 14.405260000000002, 'pia_ur_max_um': -2.3634690000000003, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P1333_d1e17 neohooke ############
+
+=== PREPARE P1333_d1e17_neohooke: P=1333 Pa, d=1e+17, mat=neohooke, nwin=6 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P1333_d1e17_neohooke
+
+=== RUN P1333_d1e17_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P1333_d1e17_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-e4a49532ec98 Creating 
+ Container myopenfoam-fsi-run-e4a49532ec98 Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 235.405874
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P1333_d1e17_neohooke', 'p_target_pa': 1333.0, 'd': 1e+17, 'mat': 'neohooke', 'dura_ur_max_um': 14.40738, 'pia_ur_max_um': -2.363331, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P1333_d1e19 neohooke ############
+
+=== PREPARE P1333_d1e19_neohooke: P=1333 Pa, d=1e+19, mat=neohooke, nwin=6 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P1333_d1e19_neohooke
+
+=== RUN P1333_d1e19_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P1333_d1e19_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-31b93a99f5bc Creating 
+ Container myopenfoam-fsi-run-31b93a99f5bc Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 290.978634
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P1333_d1e19_neohooke', 'p_target_pa': 1333.0, 'd': 1e+19, 'mat': 'neohooke', 'dura_ur_max_um': 14.40738, 'pia_ur_max_um': -2.3633319999999998, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P2000_d1e15 neohooke ############
+
+=== PREPARE P2000_d1e15_neohooke: P=2000 Pa, d=1e+15, mat=neohooke, nwin=7 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P2000_d1e15_neohooke
+
+=== RUN P2000_d1e15_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P2000_d1e15_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-a29d25f3ac37 Creating 
+ Container myopenfoam-fsi-run-a29d25f3ac37 Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 233.949212
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P2000_d1e15_neohooke', 'p_target_pa': 2000.0, 'd': 1000000000000000.0, 'mat': 'neohooke', 'dura_ur_max_um': 21.717, 'pia_ur_max_um': -3.5445390000000003, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P2000_d1e17 neohooke ############
+
+=== PREPARE P2000_d1e17_neohooke: P=2000 Pa, d=1e+17, mat=neohooke, nwin=7 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P2000_d1e17_neohooke
+
+=== RUN P2000_d1e17_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P2000_d1e17_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-41f43c438d17 Creating 
+ Container myopenfoam-fsi-run-41f43c438d17 Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 388.706199
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P2000_d1e17_neohooke', 'p_target_pa': 2000.0, 'd': 1e+17, 'mat': 'neohooke', 'dura_ur_max_um': 21.71701, 'pia_ur_max_um': -3.544546, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e17_neohooke    2000  neohooke       21.717       -3.545         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P2000_d1e19 neohooke ############
+
+=== PREPARE P2000_d1e19_neohooke: P=2000 Pa, d=1e+19, mat=neohooke, nwin=7 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P2000_d1e19_neohooke
+
+=== RUN P2000_d1e19_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P2000_d1e19_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-3240783ddc40 Creating 
+ Container myopenfoam-fsi-run-3240783ddc40 Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 323.966869
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P2000_d1e19_neohooke', 'p_target_pa': 2000.0, 'd': 1e+19, 'mat': 'neohooke', 'dura_ur_max_um': 21.72062, 'pia_ur_max_um': -3.5443129999999994, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e17_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e19_neohooke    2000  neohooke       21.721       -3.544         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P3000_d1e15 neohooke ############
+
+=== PREPARE P3000_d1e15_neohooke: P=3000 Pa, d=1e+15, mat=neohooke, nwin=8 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P3000_d1e15_neohooke
+
+=== RUN P3000_d1e15_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P3000_d1e15_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-35156e7c97b9 Creating 
+ Container myopenfoam-fsi-run-35156e7c97b9 Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 267.133565
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P3000_d1e15_neohooke', 'p_target_pa': 3000.0, 'd': 1000000000000000.0, 'mat': 'neohooke', 'dura_ur_max_um': 32.816340000000004, 'pia_ur_max_um': -5.316986, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e17_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e19_neohooke    2000  neohooke       21.721       -3.544         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P3000_d1e17 neohooke ############
+
+=== PREPARE P3000_d1e17_neohooke: P=3000 Pa, d=1e+17, mat=neohooke, nwin=8 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P3000_d1e17_neohooke
+
+=== RUN P3000_d1e17_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P3000_d1e17_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-f14026b3f11d Creating 
+ Container myopenfoam-fsi-run-f14026b3f11d Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 297.354398
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P3000_d1e17_neohooke', 'p_target_pa': 3000.0, 'd': 1e+17, 'mat': 'neohooke', 'dura_ur_max_um': 32.816340000000004, 'pia_ur_max_um': -5.316997, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e17_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e19_neohooke    2000  neohooke       21.721       -3.544         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+  P3000_d1e17_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P3000_d1e19 neohooke ############
+
+=== PREPARE P3000_d1e19_neohooke: P=3000 Pa, d=1e+19, mat=neohooke, nwin=8 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P3000_d1e19_neohooke
+
+=== RUN P3000_d1e19_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P3000_d1e19_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-045fa3dce969 Creating 
+ Container myopenfoam-fsi-run-045fa3dce969 Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 431.299787
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P3000_d1e19_neohooke', 'p_target_pa': 3000.0, 'd': 1e+19, 'mat': 'neohooke', 'dura_ur_max_um': 32.81635, 'pia_ur_max_um': -5.31701, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e17_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e19_neohooke    2000  neohooke       21.721       -3.544         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+  P3000_d1e17_neohooke    3000  neohooke       32.816       -5.317         OK
+  P3000_d1e19_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P3800_d1e15 neohooke ############
+
+=== PREPARE P3800_d1e15_neohooke: P=3800 Pa, d=1e+15, mat=neohooke, nwin=10 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P3800_d1e15_neohooke
+
+=== RUN P3800_d1e15_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P3800_d1e15_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-5b07eb6e5de7 Creating 
+ Container myopenfoam-fsi-run-5b07eb6e5de7 Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 355.261892
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P3800_d1e15_neohooke', 'p_target_pa': 3800.0, 'd': 1000000000000000.0, 'mat': 'neohooke', 'dura_ur_max_um': 41.82151, 'pia_ur_max_um': -6.736414000000001, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e17_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e19_neohooke    2000  neohooke       21.721       -3.544         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+  P3000_d1e17_neohooke    3000  neohooke       32.816       -5.317         OK
+  P3000_d1e19_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+  P3800_d1e15_neohooke    3800  neohooke       41.822       -6.736         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P3800_d1e17 neohooke ############
+
+=== PREPARE P3800_d1e17_neohooke: P=3800 Pa, d=1e+17, mat=neohooke, nwin=10 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P3800_d1e17_neohooke
+
+=== RUN P3800_d1e17_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P3800_d1e17_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-2ed70c4dfc50 Creating 
+ Container myopenfoam-fsi-run-2ed70c4dfc50 Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 342.326358
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P3800_d1e17_neohooke', 'p_target_pa': 3800.0, 'd': 1e+17, 'mat': 'neohooke', 'dura_ur_max_um': 41.82152, 'pia_ur_max_um': -6.736427999999999, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e17_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e19_neohooke    2000  neohooke       21.721       -3.544         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+  P3000_d1e17_neohooke    3000  neohooke       32.816       -5.317         OK
+  P3000_d1e19_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+  P3800_d1e15_neohooke    3800  neohooke       41.822       -6.736         OK
+  P3800_d1e17_neohooke    3800  neohooke       41.822       -6.736         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json
+############ P3800_d1e19 neohooke ############
+
+=== PREPARE P3800_d1e19_neohooke: P=3800 Pa, d=1e+19, mat=neohooke, nwin=10 ===
+  $ rm -rf /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/P3800_d1e19_neohooke
+
+=== RUN P3800_d1e19_neohooke (acoplado preCICE) ===
+  $ docker compose run --rm fsi bash -lc "set -e; cd on-caso-1.2/_grid/P3800_d1e19_neohooke; rm -rf precice-run precice-Fluid-* precice-Solid-* 2>/dev/null || true; ( cd fluid && rm -rf [1-9]* processor* log.* && solids4Foam > log.solids4Foam 2>&1 ) & PF=$!; ( cd solid && rm -f main.frd main.dat main.cvg main.sta && ccx_preCICE -i main -precice-participant Solid > log.ccx 2>&1 ) & PS=$!; RF=0; RS=0; wait $PF || RF=$?; wait $PS || RS=$?; echo \"RC_FLUID=$RF RC_SOLID=$RS\"; tail -n 2 solid/log.ccx; tail -n 2 fluid/log.solids4Foam"
+ Container myopenfoam-fsi-run-8326558ce944 Creating 
+ Container myopenfoam-fsi-run-8326558ce944 Created 
+RC_FLUID= RC_SOLID=
+Total CalculiX Time: 479.444094
+________________________________________
+
+I/O    : uncollated
+  -> {'tag': 'P3800_d1e19_neohooke', 'p_target_pa': 3800.0, 'd': 1e+19, 'mat': 'neohooke', 'dura_ur_max_um': 41.82841, 'pia_ur_max_um': -6.736005, 'status': 'OK'}
+
+===== RESUMO FSI =====
+                   tag   P(Pa)       mat  dura_ur(um)   pia_ur(um)     status
+    P1333_d1e15_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e17_linear    1333    linear       14.895       -7.174         OK
+    P1333_d1e19_linear    1333    linear       14.895       -7.174         OK
+  P1333_d1e15_neohooke    1333  neohooke       14.405       -2.363         OK
+  P1333_d1e17_neohooke    1333  neohooke       14.407       -2.363         OK
+  P1333_d1e19_neohooke    1333  neohooke       14.407       -2.363         OK
+    P2000_d1e15_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e17_linear    2000    linear       22.261      -10.810         OK
+    P2000_d1e19_linear    2000    linear       22.261      -10.810         OK
+  P2000_d1e15_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e17_neohooke    2000  neohooke       21.717       -3.545         OK
+  P2000_d1e19_neohooke    2000  neohooke       21.721       -3.544         OK
+    P3000_d1e15_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e17_linear    3000    linear       33.220      -16.340         OK
+    P3000_d1e19_linear    3000    linear       33.220      -16.340         OK
+  P3000_d1e15_neohooke    3000  neohooke       32.816       -5.317         OK
+  P3000_d1e17_neohooke    3000  neohooke       32.816       -5.317         OK
+  P3000_d1e19_neohooke    3000  neohooke       32.816       -5.317         OK
+    P3800_d1e15_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e17_linear    3800    linear       41.912      -20.854         OK
+    P3800_d1e19_linear    3800    linear       41.912      -20.854         OK
+  P3800_d1e15_neohooke    3800  neohooke       41.822       -6.736         OK
+  P3800_d1e17_neohooke    3800  neohooke       41.822       -6.736         OK
+  P3800_d1e19_neohooke    3800  neohooke       41.828       -6.736         OK
+    P3900_d1e19_linear    3900    linear       42.994      -21.424         OK
+    P3900_d1e15_linear    3900    linear       42.994      -21.424         OK
+  P3900_d1e19_neohooke    3900  neohooke       42.962       -6.914         OK
+  P3900_d1e15_neohooke    3900  neohooke       42.955       -6.914         OK
+
+resultados -> /Users/brunaenne/Documents/repos/myopenfoam/cases/on-caso-1.2/_grid/grid_fsi_results.json

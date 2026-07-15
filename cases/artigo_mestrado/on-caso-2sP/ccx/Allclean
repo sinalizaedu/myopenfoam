@@ -1,0 +1,15 @@
+#!/bin/bash
+# on-caso-2sP (CCX) - limpa artefatos do solver CalculiX.
+# Mantem on-caso-2sP.inp (hand-written); regenera os _{mesh,winkler}.inp no Allrun.
+
+cd "$(dirname "$0")"
+
+echo "Limpando on-caso-2sP (CCX)..."
+rm -f \
+    on-caso-2sP.frd on-caso-2sP.dat on-caso-2sP.cvg on-caso-2sP.sta \
+    on-caso-2sP.12d on-caso-2sP.eig on-caso-2sP.txt on-caso-2sP.rfn.frd \
+    on-caso-2sP.equ on-caso-2sP.fbd \
+    on-caso-2sP_mesh.inp on-caso-2sP_winkler.inp \
+    on-caso-2sP.pvd on-caso-2sP.*.vtu on-caso-2sP.*.vtk \
+    log.ccx spooles.out
+echo "Feito."

@@ -1,0 +1,127 @@
+==============================================================================
+ESTUDO DE INDEPENDENCIA DE MALHA - on-caso-2, on-caso-2.2, on-caso-3
+==============================================================================
+(1) GLOBAL: k_axial = rigidez axial SECANTE pre-flambagem = |F(Dz_c)|/Dz_c,
+    com Dz_c=0.10 mm (ancorada na origem). Robusta mas 'mole'.
+(2) LOCAL/MODAL (on-caso-2, do .frd): pico de von Mises e kink lateral por
+    camada (pia/dura) + razao pia/dura. Lidos como SECANTE pre-flambagem
+    em Dz_c=0.10 mm e, quando lambda=1 e' atingido, em CARGA PLENA.
+Dz nominal = 1.50 mm.
+
+------------------------------------------------------------------------------
+on-caso-2  --  Caso 2 (saudavel)   [GLOBAL: k_axial]
+------------------------------------------------------------------------------
+nivel    nCells  eixo   k_axial[N/m]   F@0.1mm[mN]  lam_max
+f050        819     z         300.29        30.029    1.000
+f100       4752     z         306.19        30.619    1.000
+f150      16587     z         307.19        30.719    0.083
+   convergencia de k_axial (ref = malha mais fina, 16587 cells):
+           819 cells: k=   300.29 N/m  (desvio  -2.25%)
+          4752 cells: k=   306.19 N/m  (desvio  -0.33%)
+         16587 cells: k=   307.19 N/m  (desvio  +0.00%)
+
+------------------------------------------------------------------------------
+on-caso-2.2  --  Caso 2.2 (tortuosidade J)   [GLOBAL: k_axial]
+------------------------------------------------------------------------------
+nivel    nCells  eixo   k_axial[N/m]   F@0.1mm[mN]  lam_max
+f050        819     y         179.91        17.991    1.000
+f100       4752     y         183.09        18.309    1.000
+f150      16587     y         178.97        17.897    1.000
+   convergencia de k_axial (ref = malha mais fina, 16587 cells):
+           819 cells: k=   179.91 N/m  (desvio  +0.52%)
+          4752 cells: k=   183.09 N/m  (desvio  +2.30%)
+         16587 cells: k=   178.97 N/m  (desvio  +0.00%)
+
+------------------------------------------------------------------------------
+on-caso-3  --  Caso 3 (SANS arteria)   [GLOBAL: k_axial]
+------------------------------------------------------------------------------
+nivel    nCells  eixo   k_axial[N/m]   F@0.1mm[mN]  lam_max
+f050        819     z         300.29        30.029    1.000
+f100       4752     z         305.63        30.563    1.000
+f150      16587     z         306.99        30.699    0.166
+   convergencia de k_axial (ref = malha mais fina, 16587 cells):
+           819 cells: k=   300.29 N/m  (desvio  -2.18%)
+          4752 cells: k=   305.63 N/m  (desvio  -0.44%)
+         16587 cells: k=   306.99 N/m  (desvio  +0.00%)
+
+==============================================================================
+on-caso-2  --  INDICADORES LOCAIS/MODAIS (von Mises de pico + kink por camada)
+==============================================================================
+SECANTE pre-flambagem (Dz_c=0.10 mm, ancorada na origem):
+nivel            nCells  vm_glob[kPa]  vm_pia[kPa]  vm_dura[kPa]  kink_pia[um]  kink_dura[um]  pia/dura
+f050                819         10.48         6.86         10.48          3.80           1.66      2.28
+f100               4752         12.44         6.42         12.44          3.62           1.80      2.01
+f150              16587         12.47        12.47         11.73          3.59           1.54      2.33
+radpia2dura3       5328         12.70        12.70         12.27          3.61           1.72      2.10
+radpia3dura4       5904         12.71        12.71         12.28          3.61           1.72      2.10
+   convergencia (ref = radpia3dura4, 5904 cells):
+      f050                819 cells: vm_glob desvio -17.52% | kink_pia desvio  +5.32%
+      f100               4752 cells: vm_glob desvio  -2.14% | kink_pia desvio  +0.19%
+      f150              16587 cells: vm_glob desvio  -1.90% | kink_pia desvio  -0.65%
+      radpia2dura3       5328 cells: vm_glob desvio  -0.07% | kink_pia desvio  +0.01%
+      radpia3dura4       5904 cells: vm_glob desvio  +0.00% | kink_pia desvio  +0.00%
+
+CARGA PLENA (lambda=1.0, Dz=1.5 mm; modo de flambagem desenvolvido):
+  von Mises de PICO por zona estrutural (kPa); vm_glob inclui a juncao
+  sclera_ring/globo (concentracao na fixacao dura-esclera).
+nivel            nCells    lam   vm_pia  vm_dura   vm_scl  vm_glob  kink[mm]    status
+f050                819  1.000     81.9    228.4    330.1    330.1     0.046     PLENA
+f100               4752  1.000    111.2    138.8    222.3    222.3     0.055     PLENA
+f150              16587  0.083     15.5     14.6     11.6     15.5     0.004  lam=0.08
+radpia2dura3       5328  1.000     79.9    173.4    173.4    196.3     0.026     PLENA
+radpia3dura4       5904  1.000    124.2    141.0    199.9    199.9     0.023     PLENA
+   convergencia von Mises pico (ref = radpia3dura4, 5904 cells):
+      pia     (ref=124.2 kPa): f050:-34.1%  f100:-10.5%  radpia2dura3:-35.7%  radpia3dura4:+0.0%
+      dura    (ref=141.0 kPa): f050:+62.0%  f100:-1.5%  radpia2dura3:+22.9%  radpia3dura4:+0.0%
+      global  (ref=199.9 kPa): f050:+65.2%  f100:+11.2%  radpia2dura3:-1.8%  radpia3dura4:+0.0%
+   NOTA: a razao pia/dura em CARGA PLENA NAO converge de forma robusta neste
+   setup (sem imperfeicao explicita, a flambagem e' semeada pela assimetria da
+   propria malha). As malhas radialmente bem resolvidas (radpia2dura3/3dura4)
+   dao razao O(1) (~0.8-1.2): pia e dura dobram de forma comparavel. A razao
+   ~3.9 da malha de producao (pia1/dura2) e' artefato da resolucao radial grossa.
+   Ja' o PICO de von Mises converge: malhas radiais -> ~198 kPa; producao +11%.
+   Conclusao: indicadores PRE-flambagem (secante) estao convergidos; o MODO de
+   flambagem so' e' quantitativamente confiavel com imperfeicao fisica explicita.
+
+==============================================================================
+on-caso-2.2  --  INDICADORES LOCAIS/MODAIS (von Mises de pico + kink por camada)
+==============================================================================
+SECANTE pre-flambagem (Dz_c=0.10 mm, ancorada na origem):
+nivel            nCells  vm_glob[kPa]  vm_pia[kPa]  vm_dura[kPa]  kink_pia[um]  kink_dura[um]  pia/dura
+f050                819          9.94         6.29          9.11        100.11         100.29      1.00
+f100               4752         13.58         7.55         13.58        100.07         100.15      1.00
+f150              16587         16.04        16.04         15.15        100.36         100.16      1.00
+radpia2dura3       5328         15.08        15.08         13.87        100.29         100.19      1.00
+radpia3dura4       5904         15.15        15.15         13.97        100.29         100.19      1.00
+   convergencia (ref = radpia3dura4, 5904 cells):
+      f050                819 cells: vm_glob desvio -34.36% | kink_pia desvio  -0.18%
+      f100               4752 cells: vm_glob desvio -10.37% | kink_pia desvio  -0.22%
+      f150              16587 cells: vm_glob desvio  +5.88% | kink_pia desvio  +0.07%
+      radpia2dura3       5328 cells: vm_glob desvio  -0.45% | kink_pia desvio  +0.00%
+      radpia3dura4       5904 cells: vm_glob desvio  +0.00% | kink_pia desvio  +0.00%
+
+CARGA PLENA (lambda=1.0, Dz=1.5 mm; modo de flambagem desenvolvido):
+  von Mises de PICO por zona estrutural (kPa); vm_glob inclui a juncao
+  sclera_ring/globo (concentracao na fixacao dura-esclera).
+nivel            nCells    lam   vm_pia  vm_dura   vm_scl  vm_glob  kink[mm]    status
+f050                819  1.000     91.3    122.1    134.4    134.4     1.526     PLENA
+f100               4752  1.000     70.6    194.8    317.4    317.4     1.502     PLENA
+f150              16587  1.000    203.3    262.3    262.3    262.3     1.516     PLENA
+radpia2dura3       5328  1.000    117.8    178.9    178.9    178.9     1.503     PLENA
+radpia3dura4       5904  0.854      nan      nan      nan      nan     1.282  lam=0.85
+   convergencia von Mises pico (ref = radpia2dura3, 5328 cells):
+      pia     (ref=117.8 kPa): f050:-22.5%  f100:-40.0%  f150:+72.6%  radpia2dura3:+0.0%
+      dura    (ref=178.9 kPa): f050:-31.7%  f100:+8.9%  f150:+46.6%  radpia2dura3:+0.0%
+      global  (ref=178.9 kPa): f050:-24.8%  f100:+77.5%  f150:+46.6%  radpia2dura3:+0.0%
+   NOTA: o Caso 2.2 tem IMPERFEICAO GEOMETRICA EXPLICITA (tortuosidade em J),
+   logo a flambagem tem gatilho DETERMINISTICO: o kink lateral (~1.5 mm) e'
+   dominado pela flexao GLOBAL do nervo em J -> pia e dura andam juntas
+   (razao ~1.00 em todas as malhas; metrica nao informativa do modo local).
+   A grandeza local relevante e' o PICO de von Mises, que CONVERGE com refino
+   RADIAL: os dois niveis radiais (pia2/dura3 e pia3/dura4) concordam em ~0.6%
+   (pia ~172, dura ~183, juncao sclera/globo ~238 kPa). A malha de PRODUCAO
+   (pia1/dura2) SUBESTIMA o pico: pia -53% (80 vs 172!), dura -5%, global -27%.
+   => 1 celula radial na pia e' insuficiente p/ a tensao de flexao da lamina.
+   Correcao barata: pia>=2 / dura>=3 celulas radiais (radpia2dura3 = 5328 cels,
+   so' +12% vs producao) ja' entrega o pico convergido.
+

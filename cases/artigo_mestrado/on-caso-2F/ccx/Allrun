@@ -1,0 +1,49 @@
+#!/bin/bash
+# on-caso-2F (CCX) - variante "achatamento clinicamente realista" (Dz=-0.6 mm).
+#
+# Reutiliza a MESMA malha do on-caso-2 (mesma numeracao de nos -> PERT_NODES
+# batem). So muda a magnitude do Dz prescrito no .inp e o ARCMAX do Riks
+# (1.0 em vez de 2.5).
+#
+# Re-gera on-caso-2F_mesh.inp a partir do polyMesh do on-caso-2 para que a
+# *SURFACE DURA_INNER_SURF (interface dura<->sas) seja escrita -- necessaria
+# para o *DSLOAD da PIC na parede da dura (Rota A, validada no on-caso-2sP).
+#
+# Outputs:
+#   on-caso-2F.frd / .dat / .cvg / .sta / log.ccx
+
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+
+POLYMESH=../../on-caso-2/solid/constant/polyMesh
+WINKLER_K=${WINKLER_K:-200000}
+
+# ---------- regenera malha (com DURA_INNER_SURF) a partir do caso-2 ----------
+if [ -f "${POLYMESH}/points" ]; then
+    echo "=== on-caso-2F (CCX): polyMesh(on-caso-2) -> CalculiX .inp  [k=${WINKLER_K} Pa/m] ==="
+    python3 foam_polymesh_to_ccx_inp.py \
+        --polymesh "${POLYMESH}" \
+        --out-mesh on-caso-2F_mesh.inp \
+        --out-winkler on-caso-2F_winkler.inp \
+        --winkler-k "${WINKLER_K}"
+else
+    echo "=== on-caso-2F (CCX): polyMesh do on-caso-2 ausente -> usando on-caso-2F_mesh.inp existente ==="
+    echo "    (ATENCAO: sem DURA_INNER_SURF o *DSLOAD da PIC falha; rode o on-caso-2 antes)"
+fi
+
+echo "=== on-caso-2F (CCX): solver ccx_preCICE -i on-caso-2F ==="
+ccx_preCICE -i on-caso-2F 2>&1 | tee log.ccx
+
+if command -v ccx2paraview >/dev/null 2>&1; then
+    echo "=== on-caso-2F (CCX): convertendo .frd -> .vtu (ParaView) ==="
+    ccx2paraview on-caso-2F.frd vtu 2>&1 | tail -5 || true
+elif [ -x /tmp/ccx2pv/bin/ccx2paraview ]; then
+    /tmp/ccx2pv/bin/ccx2paraview on-caso-2F.frd vtu 2>&1 | tail -5 || true
+else
+    echo "=== on-caso-2F (CCX): ccx2paraview nao encontrado dentro do container ==="
+    echo "    (rode 'cd cases/on-caso-2F/ccx && /tmp/ccx2pv/bin/ccx2paraview on-caso-2F.frd vtu' no HOST)"
+fi
+
+echo ""
+echo "=== Concluido. Saida em on-caso-2F.{frd,dat,sta,cvg}, log.ccx ==="

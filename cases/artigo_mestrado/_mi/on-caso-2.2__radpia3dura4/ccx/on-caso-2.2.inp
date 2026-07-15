@@ -1,0 +1,322 @@
+*HEADING
+on-caso-2.2 (CCX 2.20) - SANS 8 zonas (SAS solido + dura + EOM), Riks.
+Variante de on-caso-2 V14b: a imperfeicao geometrica e a TORTUOSIDADE EM "J"
+do nervo optico (folga/slack anatomica, item 2), embutida na malha por SWEEP
+da linha de centro (warp_centerline_sweep.py), em vez do CLOAD perturbador
+antissimetrico. Globo na ORIGEM (0,0), tangente -Y; apice em (-13.29,-26.57)
+mm; arco de curvatura constante (turn=-53.13 deg), comprimento e raio iguais
+ao tubo reto. A malha esta no plano XY com a espessura da secao no eixo Z.
+**
+** ============================================================================
+** Geometria (do blockMeshDict de on-caso-1, malha reduzida para caber em
+** memoria: 6 tang/quadrante x 10 axiais no nervo): 11648 -> 2736 hex C3D8I.
+**
+**   on            : nervo neural (E=30   kPa, nu=0.49)  - miolo macio
+**   pia           : pia mater    (E=3    MPa, nu=0.49)  - casco rigido
+**   dura          : dura mater   (E=3    MPa, nu=0.49)  - casco rigido
+**   lc            : lamina cribrosa (E=0.3 MPa, nu=0.49) - rigidez intermed.
+**   sclera_peri   : esclera peripapilar (E=3 MPa, nu=0.49) - casco rigido
+**   sclera_ring   : esclera anel (E=3 MPa, nu=0.49) - casco rigido
+**   globo         : casca do globo (E=3 MPa, nu=0.49) - casco rigido
+**
+** Valores conforme Bruna (2026-05-28): pia/dura/sclera/globo agrupados em
+** E=3 MPa "casco"; LC=300 kPa (intermediaria); nervo=30 kPa "miolo"; e
+** nu=0.49 (em vez de 0.495) p/ aliviar o bulk modulus (K=50G ao inves de
+** K=100G) -> menos locking volumetrico e melhor equilibrio numerico.
+**
+** Discretizacao espacial (parametro original z em mm, ANTES do sweep; vira o
+** comprimento de arco s = zmax - z medido a partir do globo):
+**   nervo + meninges        : z = [ 0.00, 30.00 ]
+**   LC + esclera (peri+ring): z = [30.00, 30.30 ]
+**   globo                   : z = [30.30, 30.80 ]   (globo na origem, s=0)
+** Apos o sweep, o eixo do nervo curva no plano XY (globo em 0,0 -> apice em
+** ~(-13.29,-26.57) mm); a secao transversal (raio 2.5 mm) fica no plano que
+** contem o eixo Z (espessura) e a normal no plano XY.
+**
+** Lei constitutiva: NEO HOOKE compressivel (CCX *HYPERELASTIC, NEO HOOKE):
+**   W = C10 (I1_bar - 3) + (1/D1) (J - 1)^2
+**   C10 = G/2 = E / [4(1+nu)]   ;   D1 = 2/K = 6(1-2*nu) / E
+**
+** Para nu=0.49 (quase-incompressivel, vias fisiologicas):
+**   coef = 4(1+nu) = 5.96  -> C10 = E / 5.96
+**   D1   = 6 * 0.02 / E = 0.12 / E
+**
+** Elemento C3D8I (8-node hex com modos incompativeis): mitiga o volumetric
+** locking que C3D8 sofre em nu>=0.49 sem precisar montar C3D20R quadratico.
+**
+** ============================================================================
+** BCs (anatomicas, conforme guidance da Bruna):
+**   posterior_{on,pia,dura} (z=0, apice orbital, canal optico):
+**     engaste TOTAL (DOF 1,2,3 = 0). Ancoragem rigida ao osso.
+**
+**   anterior_globo (globo na origem): apos o sweep o eixo do nervo no globo
+**     aponta -Y, entao a compressao axial (globe flattening empurrando o
+**     nervo em direcao ao apice) e prescrita como Dy de 0 -> -1.5 mm via
+**     *AMPLITUDE + Riks. O confinamento lateral da orbita passa a ser nos
+**     eixos PERPENDICULARES ao nervo no globo: X (no plano) e Z (espessura).
+**
+**   dura_outer (lateral, r=2.5 mm): Winkler 200 kPa/m (gordura orbital
+**     realista) via SPRINGA -- inclui-se via on-caso-2.2_winkler.inp. Os nos
+**     ghost foram varridos com a MESMA linha de centro da dura (sem pre-tensao).
+**
+**   imperfeicao geometrica: TORTUOSIDADE EM "J" embutida na malha (item 2),
+**     aplicada por warp_centerline_sweep.py (sweep da linha de centro). NAO
+**     usa perturbation_strip nem CLOAD antissimetrico. O patch
+**     perturbation_strip ainda e' carved-out da malha (mesma geracao
+**     blockMesh/topoSet/createPatch) e continua excluido do Winkler no
+**     conversor, mas nao recebe carga.
+**
+**   sclera_ring_outer, globo_outer, fsi_*: free traction (sem coupling FSI
+**     porque este e' caso sFSI puro, dominio so' solido).
+**
+** ============================================================================
+** Solver: *STATIC, RIKS (arc-length method, Riks-Wempner-Crisfield)
+**   Riks ajusta dinamicamente o tamanho do incremento via parametro lambda
+**   (load proportionality factor). Permite passar do ponto critico P_cr
+**   sem divergencia (snap-through, bifurcacao Euler) onde Newton-Raphson
+**   puro diverge.
+**
+**   Sintaxe CCX: *STATIC, RIKS
+**     dl_init, l_total, dl_min, dl_max, lambda_max
+**   onde l_total = pseudo-tempo total e lambda_max e' o fator maximo
+**   (ARCMAX) que escala o BC. ARCMAX=1.5 = pode atingir 1.5x o Dz prescrito.
+**
+*INCLUDE, INPUT=on-caso-2.2_mesh.inp
+*INCLUDE, INPUT=on-caso-2.2_winkler.inp
+**
+** ============================================================================
+** MATERIAIS (NEO HOOKE compressivel, nu=0.49 quase-incompressivel)
+** Unidades SI: Pa (=N/m^2). Multiplicar por 1e-6 p/ ler em MPa.
+** ============================================================================
+*MATERIAL, NAME=ON_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=30 kPa, MAT_NERVO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+03, 4.0000e-06
+*DENSITY
+1000
+**
+** ============================================================================
+** Item 3 (revisitado): SAS solido em vez de molas SPRINGA
+** ============================================================================
+** Material extremamente macio + altamente compressivel (nu=0.30 baixo)
+** preenchendo o gap r=1.55-2.35 mm. Atua como "fluido solidificado":
+**   - Impede fisicamente que pia atravesse a parede da dura no buckling
+**   - Sob compressao axial, desenvolve tensao hidrostatica natural ~ PIC
+**     (substitui o DSLOAD FSI_*_SURF -- nao precisa mais)
+**   - nu=0.30 (em vez de 0.49) permite o fluido/tecido se mover lateral-
+**     mente, evitando volumetric locking severo nos elementos macios
+*MATERIAL, NAME=SAS_MAT
+** SAS solido "fluido-like": macio + ALTAMENTE compressivel (nu=0.05).
+**   E  = 3 kPa  (10x mais macio que o nervo, ainda longe do colapso numerico)
+**   nu = 0.05   (quase nulo -- impede contrapressao lateral irrealista)
+**   C10 = E / [4(1+nu)]    = 3000 / 4.2   = 714.3 Pa
+**   D1  = 6(1-2nu) / E     = 6*0.90/3000  = 1.8e-3 1/Pa
+**   K   = E / [3(1-2nu)]   = 1.11 kPa     (45x menos rigido que com nu=0.30)
+** Permite que o SAS se "esmague" sob compressao axial e flua para os lados
+** durante o kinking, sem gerar tensao hidrostatica artificial alta. Ainda
+** assim impede pia de atravessar dura por continuidade do mesh.
+*HYPERELASTIC, NEO HOOKE
+7.1430e+02, 1.8000e-03
+*DENSITY
+1000
+**
+*MATERIAL, NAME=PIA_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1100
+**
+*MATERIAL, NAME=DURA_MAT
+** ITEM 4 (ortotropia da dura) REATIVADO na variante em "J" via orientacoes
+** cilindricas POR ANEL AXIAL (gen_dura_ortho_orient.py): cada anel da dura
+** recebe uma *ORIENTATION SYSTEM=CYLINDRICAL cujo eixo e' a tangente local da
+** linha de centro varrida C(s), t(s). Assim o eixo axial (E_z) acompanha o
+** nervo curvo e a rigidez circunferencial (E_theta) bloqueia a dilatacao radial
+** sob PIC, mantendo a bainha tensa mesmo na geometria curva. Linear elastic
+** ortotropico em sistema cilindrico (1=radial, 2=circ, 3=axial), igual aos
+** demais casos (mesmos parametros de on-caso-2g).
+*ELASTIC, TYPE=ENGINEERING CONSTANTS
+** E_r,    E_theta, E_z,     nu_rt, nu_rz, nu_tz, G_rt,    G_rz
+3.000e+6, 9.000e+6, 3.000e+6, 0.30,  0.30,  0.30,  1.150e+6, 1.150e+6
+** G_tz, T
+1.150e+6, 0.0
+*DENSITY
+1100
+**
+*MATERIAL, NAME=LC_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=300 kPa, MAT_LC]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+04, 4.0000e-07
+*DENSITY
+1100
+**
+*MATERIAL, NAME=SCLERA_PERI_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=SCLERA_RING_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=GLOBO_MAT
+**                       C10 (Pa),  D1 (1/Pa)   [E=3 MPa, MAT_RIGIDO]
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*SOLID SECTION, ELSET=ON,          MATERIAL=ON_MAT
+*SOLID SECTION, ELSET=PIA,         MATERIAL=PIA_MAT
+*SOLID SECTION, ELSET=SAS,         MATERIAL=SAS_MAT
+** Dura ortotropica em "J": secoes solidas por anel + orientacoes cilindricas
+** cuja axial segue a tangente local da curva (gen_dura_ortho_orient.py).
+*INCLUDE, INPUT=on-caso-2.2_dura_orient.inp
+*SOLID SECTION, ELSET=LC,          MATERIAL=LC_MAT
+*SOLID SECTION, ELSET=SCLERA_PERI, MATERIAL=SCLERA_PERI_MAT
+*SOLID SECTION, ELSET=SCLERA_RING, MATERIAL=SCLERA_RING_MAT
+*SOLID SECTION, ELSET=GLOBO,       MATERIAL=GLOBO_MAT
+**
+** ====================================================================
+** Trabeculas SPRINGA REMOVIDAS: o SAS solido substitui as molas
+** radiais. O contato continuum impede pia atravessar dura.
+** ====================================================================
+**
+** ====================================================================
+** PIC (pressao intracraniana / liquor): ver *DSLOAD na PAREDE INTERNA da
+** dura (DURA_INNER_SURF), dentro do *STEP. Mesma rota da on-caso-2g/2sP:
+** pressao UNIFORME de 1333 Pa (~10 mmHg) na interface dura<->sas, rampada
+** com DZRAMP. (Substitui a tentativa anterior de pre-tensao inicial no SAS.)
+** ====================================================================
+**
+** ============================================================================
+** AMPLITUDE -- rampa linear do Dz axial
+** ============================================================================
+*AMPLITUDE, NAME=DZRAMP
+0.0, 0.0, 1.0, 1.0
+**
+** ============================================================================
+** STEP UNICO -- Riks arc-length escala as cargas (Dz + EOM)
+** ============================================================================
+** Juntamos compressao (Dy) + tracao EOM num unico STEP onde lambda escala as
+** cargas linearmente. No final (lambda=1):
+**   Dy_globo = -1.5 mm  (eixo do nervo no globo aponta -Y apos o sweep)
+**   EOM      = -1e-4 N/no (DOF 2 = -Y) na face anterior do globo
+**   PIC = 1333 Pa (DSLOAD na parede interna da dura, DURA_INNER_SURF)
+**   (sem CLOAD de perturbacao: a imperfeicao e a tortuosidade em "J"
+**    embutida na malha por warp_centerline_sweep.py)
+**
+** Tentativa de 2 STEPs separados (preload depois Dz) divergiu na transicao
+** por cargas residuais mal condicionadas no .sta. Single-step Riks e
+** numericamente mais robusto.
+**
+*STEP, NLGEOM=YES, INC=500
+*STATIC, RIKS
+0.025, 1.0, 1e-5, 0.05, 1.0
+**
+** ====================================================================
+** Engastes
+** ====================================================================
+** Engaste posterior (canal optico, z=0): canal e osseo, aperta o nervo
+** todo radialmente E impede deslizamento axial -> 1,2,3=0 em todas as
+** posteriores (on, pia, sas, dura).
+*BOUNDARY
+POSTERIOR_ON,   1, 3, 0.0
+POSTERIOR_PIA,  1, 3, 0.0
+POSTERIOR_SAS,  1, 3, 0.0
+POSTERIOR_DURA, 1, 3, 0.0
+**
+** Globo na origem: apos o sweep o eixo do nervo no globo aponta -Y. A orbita
+** confina as direcoes PERPENDICULARES ao eixo -> fixa X (DOF 1) e Z (DOF 2 da
+** espessura -> DOF 3). A compressao axial e prescrita em -Y (DOF 2):
+** Dy=-1.5mm controla o encurtamento axial (globe flattening + gordura
+** empurrando) -- equivalente cinematico ao desbalanco gordura-EOM. Riks escala.
+*BOUNDARY
+ANTERIOR_GLOBO, 1, 1, 0.0
+ANTERIOR_GLOBO, 3, 3, 0.0
+**
+*BOUNDARY, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 2, 2, -1.50e-3
+**
+** ====================================================================
+** Item 1 - FORCA RESIDUAL DOS MUSCULOS EXTRAOCULARES (EOM)
+** ====================================================================
+** Tracao residual de ancoragem dos 4 retos extraoculares puxando o
+** globo posteriormente (em -Y apos o sweep, tangente do nervo no globo):
+** F_EOM ~ 16 mN baseline (4 mN x 4 EOMs) distribuido nos nos da face
+** anterior do globo. Pequena CONTRIBUICAO que se soma ao Dy prescrito (nao
+** e o motor da compressao, mas representa a fisiologia do balanco
+** gordura-EOMs em SANS).
+**
+** OBS: nesta versao a compressao eh primariamente conduzida pelo Dy
+** prescrito (mais estavel numericamente). A contribuicao de tracao dos
+** EOMs e mantida como pequena carga complementar.
+*CLOAD, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 2, -1.0e-4
+**
+** ====================================================================
+** PIC (pressao intracraniana ~10 mmHg) na PAREDE INTERNA da dura
+** ====================================================================
+** P=1333 Pa na DURA_INNER_SURF (interface dura<->sas, gerada pelo conversor,
+** faces dos elementos da DURA voltadas para o SAS). Empurra a dura
+** radialmente p/ FORA -> tracao circunferencial -> mantem a bainha tensa
+** (mata a "sanfona") mesmo na geometria curva. Rota validada no on-caso-2sP.
+** Rampada com DZRAMP (cresce junto com a compressao). Pressao UNIFORME na
+** parede, independente da forma deformada (diferente do SAS mole inchando).
+*DSLOAD, AMPLITUDE=DZRAMP
+DURA_INNER_SURF, P, 1333.0
+**
+** ====================================================================
+** Item 2 - FOLGA (SLACK) NATURAL DO NERVO  =>  TORTUOSIDADE INICIAL
+** ====================================================================
+** Diferenca-chave vs on-caso-2 V14b: o modo NAO e mais "semeado" por um
+** CLOAD pontual antissimetrico (+-15 mN) na pia. Em vez disso, embutimos uma
+** TORTUOSIDADE EM "J" na malha INTEIRA (nervo+pia+SAS+dura), aplicada por
+** warp_centerline_sweep.py sobre on-caso-2.2_mesh.inp APOS o conversor: a
+** malha reta (eixo Z) e varrida ao longo de uma linha de centro curva e
+** suave no plano XY, reorientando cada secao perpendicular a tangente.
+**
+** Justificativa anatomica: o nervo optico saudavel nao e um cilindro
+** perfeitamente esticado; ele e mais longo que a distancia orbita->globo
+** (folga ~8.4 mm) e descreve um trajeto em "J"/sinuoso no espaco orbital.
+** Na microgravidade, com o achatamento do globo, essa folga e exacerbada e
+** age como a imperfeicao geometrica que guia o nervo. O solver de Riks usa
+** essa excentricidade NATURAL para desencadear o snap-through/kinking com
+** muito mais estabilidade do que com uma carga perturbadora local.
+**
+** Detalhes do sweep (warp_centerline_sweep.py):
+**   - globo na ORIGEM (0,0), tangente do nervo apontando -Y;
+**   - linha de centro = arco de curvatura CONSTANTE (suave), giro total
+**     turn=-53.130102 deg, theta0=-90 deg -> apice em ~(-13.29,-26.57) mm;
+**   - razao 2:1 (queda vertical = 2x deslocamento horizontal);
+**   - comprimento de arco PRESERVADO (~30.8 mm = tubo reto) -> nao estica;
+**   - raio da secao transversal PRESERVADO (2.5 mm); transform rigido por
+**     secao (plano XY + espessura no eixo Z), binormal fixo -> sem torcao.
+**   - mesh E winkler varridos com a MESMA referencia (--zmax) -> nos ghost
+**     do Winkler acompanham a dura curva sem pre-tensao.
+** Sem NSET de perturbacao nem CLOAD de gatilho nesta variante.
+**
+**
+** Outputs por incremento (.dat)
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_DURA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_PIA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_ON, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=ANTERIOR_GLOBO, TOTALS=ONLY
+RF, U
+**
+** Outputs de campo no .frd (ParaView via ccx2paraview)
+*NODE FILE, FREQUENCY=5
+U, RF
+*EL FILE, FREQUENCY=5
+S, E
+**
+*END STEP

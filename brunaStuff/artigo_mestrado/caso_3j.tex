@@ -1,0 +1,36 @@
+
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+
+\graphicspath{{figs/}}
+
+\begin{document}
+
+\subsection*{Caso 3J}
+\label{sec:res-caso3j}
+
+O \texttt{Caso 3J} sobrepõe os dois agravantes isolados nos casos anteriores: parte da geometria tortuosa em ``J'' do \texttt{Caso 2J} (linha de centro varrida com curvatura constante, $\mathrm{turn} = -\SI{53.13}{\degree}$, ápice em $\approx(-13{,}29;\,-26{,}57)\,\si{\milli\meter}$, comprimento de arco e raio da seção preservados) e aplica sobre ela o carregamento do \texttt{Caso 3F}: a compressão axial clínica no limite do recuo cefálico ($\Delta = -\SI{1.0}{\milli\meter}$, prescrita no eixo $-y$ do nervo no globo) somada à pressão focal da artéria oftálmica em \texttt{contact\_local}, varrida $p_c = 0 \to \SI{18068}{\pascal}$. Preservam-se a PIC basal (\SI{1333}{\pascal} na face interna da dura), a fundação de Winkler da gordura orbital ($k_w = \SI{200}{\kilo\pascal\per\meter}$), o SAS sólido e a dura ortotrópica reorientada anel a anel ao longo da curva. Assim, o \texttt{Caso 3J} difere do \texttt{Caso 2J} apenas pela adição da carga arterial focal e pela redução da rampa axial de \SI{1.5}{} para \SI{1.0}{\milli\meter}, e difere do \texttt{Caso 3F} apenas pela substituição do tubo reto pela tortuosidade anatômica em ``J''.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{on-caso-3J_pcontact_sweep.png}
+\caption{Caso 3J (geometria em ``J'' + compressão axial clínica $\Delta = -\SI{1.0}{\milli\meter}$ + artéria oftálmica). Resposta ao \emph{sweep} de $p_c$: deflexão lateral (\emph{kink}) das meninges e fechamento local do SAS \emph{versus} a pressão de contato arterial, com a coluna já pré-curvada pela tortuosidade.}
+\label{fig:res-caso3j-sweep}
+\end{figure}
+
+% NOTA DE MONTAGEM (remover na versao final):
+% Caso construido em cases/on-caso-3J (deck on-caso-3J.inp). Geometria/pipeline
+% identicos ao Caso 2J (warp_centerline_sweep + gen_dura_ortho_orient + Winkler
+% uniforme); cargas identicas ao Caso 3F (DSLOAD CONTACT_LOCAL_SURF varrido +
+% Dy=-1.0 mm + PIC). Rodar o sweep: brunaStuff/sweep_on-caso-3J_pcontact.sh.
+% Preencher os numeros (kink_dura, Ur_min, fech. SAS, lambda, F_max) apos o sweep.
+
+\end{document}

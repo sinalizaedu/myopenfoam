@@ -1,0 +1,162 @@
+*HEADING
+on-caso-2sP-temp (CCX 2.20) - PIC via INCHACO HIGROSCOPICO (swelling) no SAS
+**
+** ============================================================================
+** Variante de on-caso-2sP (sem perturbacao lateral A/B). A PIC e' aplicada
+** como um INCHACO VOLUMETRICO ISOTROPICO do SAS, implementado no solver via
+** o analogo de DILATACAO TERMICA (*EXPANSION + campo de "temperatura").
+**
+** Justificativa fisica (estado da arte): a literatura de FEM ocular modela a
+** pressurizacao de compartimentos fluidos confinados dentro de solidos via
+** "swelling" volumetrico -- p.ex. inchaco por equilibrio de Donnan (Feola et
+** al. 2018) e modelo de inchaco higroscopico para IOP/gordura orbital em SANS
+** (Nelson et al.). A deformacao higroscopica eps_H = beta*(Cw - Cw0) e'
+** matematicamente IDENTICA a deformacao termica eps = alpha*dT. O solver so
+** ve um tensor de dilatacao isotropica; por estar "preso" (bonded) entre pia
+** e dura, o SAS que quer inchar gera pressao hidrostatica contra as paredes
+** -> tracao circunferencial na dura -> elimina a flambagem local ("sanfona").
+**
+** NAO usa *DSLOAD (nao ha face livre interna no mesh bonded) nem *INITIAL
+** CONDITIONS,TYPE=STRESS (relaxa de imediato no hiperelastico).
+**
+** Implementacao:
+**   - SAS_MAT recebe *EXPANSION (coef. alpha). Demais materiais SEM expansao
+**     -> so o SAS incha mesmo com temperatura imposta em todos os nos.
+**   - temperatura de referencia (livre de deformacao) = 0 em NALL.
+**   - "temperatura" (= grau de inchaco) imposta em SAS_NODES, rampada com o
+**     pseudo-tempo. eps_livre_linear = alpha * T_aplicada.
+** ============================================================================
+*INCLUDE, INPUT=on-caso-2sP-temp_mesh.inp
+*INCLUDE, INPUT=on-caso-2sP-temp_winkler.inp
+*INCLUDE, INPUT=on-caso-2sP-temp_nsets.inp
+**
+** ============================================================================
+** MATERIAIS (NEO HOOKE compressivel, nu=0.49 quase-incompressivel)
+** ============================================================================
+*MATERIAL, NAME=ON_MAT
+*HYPERELASTIC, NEO HOOKE
+5.0335e+03, 4.0000e-06
+*DENSITY
+1000
+**
+** SAS "fluido-like": E=3 kPa, nu=0.05 (C10=714.3 Pa, D1=1.8e-3). AGORA com
+** *EXPANSION: o SAS incha isotropicamente (analogo higroscopico da PIC).
+** alpha=1.0 => deformacao livre linear = T_aplicada (T atua como o proprio
+** grau de inchaco). Pressao gerada depende da rigidez de confinamento.
+*MATERIAL, NAME=SAS_MAT
+*HYPERELASTIC, NEO HOOKE
+7.1430e+02, 1.8000e-03
+*EXPANSION
+1.0
+*DENSITY
+1000
+**
+*MATERIAL, NAME=PIA_MAT
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1100
+**
+*MATERIAL, NAME=DURA_MAT
+*ELASTIC, TYPE=ENGINEERING CONSTANTS
+3.000e+6, 9.000e+6, 3.000e+6, 0.30,  0.30,  0.30,  1.150e+6, 1.150e+6
+1.150e+6, 0.0
+*DENSITY
+1100
+**
+*MATERIAL, NAME=LC_MAT
+*HYPERELASTIC, NEO HOOKE
+5.0335e+04, 4.0000e-07
+*DENSITY
+1100
+**
+*MATERIAL, NAME=SCLERA_PERI_MAT
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=SCLERA_RING_MAT
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*MATERIAL, NAME=GLOBO_MAT
+*HYPERELASTIC, NEO HOOKE
+5.0335e+05, 4.0000e-08
+*DENSITY
+1400
+**
+*SOLID SECTION, ELSET=ON,          MATERIAL=ON_MAT
+*SOLID SECTION, ELSET=PIA,         MATERIAL=PIA_MAT
+*SOLID SECTION, ELSET=SAS,         MATERIAL=SAS_MAT
+*ORIENTATION, NAME=ORI_CYL, SYSTEM=CYLINDRICAL
+0.0, 0.0, 0.0, 0.0, 0.0, 1.0
+*SOLID SECTION, ELSET=DURA,        MATERIAL=DURA_MAT, ORIENTATION=ORI_CYL
+*SOLID SECTION, ELSET=LC,          MATERIAL=LC_MAT
+*SOLID SECTION, ELSET=SCLERA_PERI, MATERIAL=SCLERA_PERI_MAT
+*SOLID SECTION, ELSET=SCLERA_RING, MATERIAL=SCLERA_RING_MAT
+*SOLID SECTION, ELSET=GLOBO,       MATERIAL=GLOBO_MAT
+**
+** ============================================================================
+** Temperatura de referencia (estado livre de deformacao) = 0 em todos os nos
+** ============================================================================
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NALL, 0.0
+**
+** ============================================================================
+** AMPLITUDE -- rampa linear (Dz + inchaco crescem juntos no pseudo-tempo)
+** ============================================================================
+*AMPLITUDE, NAME=DZRAMP
+0.0, 0.0, 1.0, 1.0
+**
+*STEP, NLGEOM=YES, INC=500
+*STATIC, RIKS
+0.025, 1.0, 1e-5, 0.05, 2.5
+**
+** ====================================================================
+** INCHACO DO SAS (PIC) -- "temperatura" imposta nos nos do SAS
+** ====================================================================
+** T_pico = 0.10 -> deformacao livre linear 10% (vol ~30%) no SAS confinado.
+** Rampada via DZRAMP. Tune este valor para regular a pressao/hoop tension.
+*TEMPERATURE, AMPLITUDE=DZRAMP
+SAS_NODES, 0.10
+**
+** ====================================================================
+** Engastes
+** ====================================================================
+*BOUNDARY
+POSTERIOR_ON,   1, 3, 0.0
+POSTERIOR_PIA,  1, 3, 0.0
+POSTERIOR_SAS,  1, 3, 0.0
+POSTERIOR_DURA, 1, 3, 0.0
+**
+*BOUNDARY
+ANTERIOR_GLOBO, 1, 2, 0.0
+**
+*BOUNDARY, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 3, 3, -1.50e-3
+**
+** EOM (musculos extraoculares) -- "a do globo"
+*CLOAD, AMPLITUDE=DZRAMP
+ANTERIOR_GLOBO, 3, -1.0e-4
+**
+** Sem perturbacao lateral A/B (variante sP).
+**
+** Outputs por incremento (.dat)
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_DURA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_PIA, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=POSTERIOR_ON, TOTALS=ONLY
+RF, U
+*NODE PRINT, FREQUENCY=1, NSET=ANTERIOR_GLOBO, TOTALS=ONLY
+RF, U
+**
+*NODE FILE, FREQUENCY=5
+U, RF, NT
+*EL FILE, FREQUENCY=5
+S, E
+**
+*END STEP

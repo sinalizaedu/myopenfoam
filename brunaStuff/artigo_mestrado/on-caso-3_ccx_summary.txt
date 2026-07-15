@@ -1,0 +1,75 @@
+============================================================================
+on-caso-3 CCX (SANS, k=2 MPa/m) vs on-caso-2 CCX (saudavel, k=200 kPa/m)
+============================================================================
+
+CalculiX 2.20 NLGEOM + NeoHooke. Mesma malha, mesmos materiais, mesma
+cinematica. UNICA diferenca fisica: rigidez da fundacao de Winkler.
+
+----------------------------------------------------------------------------
+on-caso-2  --  Saudavel (k=200 kPa/m)
+----------------------------------------------------------------------------
+  Incrementos STEP 2 lidos     : 4
+  Range Dz                     : -1.000 a -0.250 mm
+  Rigidez axial pre-flambagem  :  965.54 N/m
+  PICO (= F_z no fim da rampa) :  983.15 mN  @ Dz=-1.000 mm  [NAO bifurcou]
+     => F_z monotono crescente, |F_lat|~0: P_cr_real > 983 mN
+  Final (|Dz|=1.000 mm):
+     F_z_total =  983.15 mN
+        dura =  542.13 mN ( 55.1%)
+        pia  =  115.96 mN ( 11.8%)
+        sas  =  256.09 mN ( 26.0%)
+        on   =   68.97 mN (  7.0%)
+     |F_lat|   =   0.000 mN  (sinal de bifurcacao lateral)
+  Hetenyi (analitico, viga sobre fundacao elastica):
+     P_cr* = 507.8 mN no modo n*=1 (lambda=30.0 mm)
+     F_z_max(CCX)/P_cr*(Hetenyi) = 194%  (sem bifurcacao)
+
+----------------------------------------------------------------------------
+on-caso-3  --  SANS (k=2 MPa/m, 10x)
+----------------------------------------------------------------------------
+  Incrementos STEP 2 lidos     : 22
+  Range Dz                     : -1.000 a -0.025 mm
+  Rigidez axial pre-flambagem  :  798.89 N/m
+  PICO (= F_z no fim da rampa) :  815.42 mN  @ Dz=-1.000 mm  [NAO bifurcou]
+     => F_z monotono crescente, |F_lat|~0: P_cr_real > 815 mN
+  Final (|Dz|=1.000 mm):
+     F_z_total =  815.42 mN
+        dura =  439.14 mN ( 53.9%)
+        pia  =   86.52 mN ( 10.6%)
+        sas  =  239.03 mN ( 29.3%)
+        on   =   50.74 mN (  6.2%)
+     |F_lat|   =   0.000 mN  (sinal de bifurcacao lateral)
+  Hetenyi (analitico, viga sobre fundacao elastica):
+     P_cr* = 1601.4 mN no modo n*=2 (lambda=15.0 mm)
+     F_z_max(CCX)/P_cr*(Hetenyi) = 51%  (sem bifurcacao)
+
+============================================================================
+COMPARACAO DIRETA SANS vs SAUDAVEL
+============================================================================
+  F_z @ |Dz|=1mm: saudavel = 983.15 mN, SANS = 815.42 mN  (razao 0.829x)
+  k_axial pre-buckle: saudavel = 965.5 N/m, SANS = 798.9 N/m  (razao 0.827x)
+
+  Hetenyi (analitico, viga sobre fundacao elastica):
+     saudavel: P_cr=508 mN no modo n*=1 (lambda=30.0 mm)
+     SANS    : P_cr=1601 mN no modo n*=2 (lambda=15.0 mm)
+     razao Hetenyi P_cr: 3.15x
+  => SANS prediz dobra mais focal (lambda 30mm -> 15mm)
+     'arco suave' do saudavel vira 'pontos de estrangulamento' no SANS.
+
+OBSERVACAO IMPORTANTE: nenhum dos dois casos bifurcou ate Dz=1mm.
+  F_z(Dz) e monotono crescente em ambos: a perturbacao lateral de 10 Pa
+  e insuficiente para destabilizar o cilindro perfeito no NLGEOM. Os valores
+  reportados como 'P_cr' sao apenas F_z no fim da rampa (limite inferior).
+  Para detectar a bifurcacao real, precisariamos:
+     - aumentar a perturbacao em ~100x (1000 Pa em vez de 10 Pa), ou
+     - rodar *BUCKLE eigenanalysis e injetar o mode-shape como imperfeicao,
+     - ou levar Dz a ~3-5 mm (acima do P_cr Hetenyi de 1.6 N no SANS).
+
+  Conclusao quantitativa: F_z(Dz=1mm) << P_cr Hetenyi SANS (1601 mN),
+  confirmando que o nervo NAO atinge flambagem no regime SANS clinico
+  (consistente com a conclusao do on-caso-2 antigo: 'flambagem axial nao e
+  modo de falha relevante para SANS'). O ganho do CCX e capturar a
+  curva F_z(Dz) real com NeoHooke (vs k_axial linear do s4f).
+
+  Para visualizar o modo deformado no CCX:
+    cgx -c cases/on-caso-3/ccx/on-caso-3.frd  # vs cases/on-caso-2/ccx/on-caso-2.frd

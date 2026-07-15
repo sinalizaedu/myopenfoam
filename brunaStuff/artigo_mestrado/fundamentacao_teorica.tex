@@ -1,0 +1,368 @@
+% =============================================================================
+%  Fundamentação teórica e métodos numéricos -- Mestrado Bruna
+%  Equações governantes e discretização do problema estrutural (CalculiX) e
+%  fluido (solver pimpleFluid do solids4foam, em modo fluid-only),
+%  acoplados em interação fluido-estrutura (FSI) via preCICE.
+% -----------------------------------------------------------------------------
+%  Como usar:
+%    \input{fundamentacao_teorica.tex}  no seu main.tex
+%      -> sugerido logo APÓS \input{metodologia_sans.tex}, fechando os pontos
+%         de física/numérica que revisores de CFD/FSI costumam cobrar.
+%
+%  Pacotes mínimos esperados no preâmbulo do main.tex (os mesmos da metodologia):
+%    \usepackage{amsmath, amssymb}
+%    \usepackage{siunitx}
+%    \usepackage{booktabs}
+%    \usepackage[round]{natbib}
+%
+%  Citações esperadas no .bib (já presentes no esqueleto da metodologia):
+%    Jasak1996, Cardiff2018s4f, Chourdakis2022, Bungartz2016, Uekermann2017,
+%    Holzapfel2000.
+%
+%  Todos os valores numéricos abaixo foram extraídos DIRETAMENTE dos arquivos
+%  de configuração do repositório (caso FSI on-caso-1.2):
+%    fluid/system/{fvSchemes,fvSolution,controlDict,fvOptions}
+%    fluid/constant/{transportProperties,turbulenceProperties,dynamicMeshDict}
+%    precice-config.xml
+%    ccx/on-caso-*.inp  (*STEP, *STATIC RIKS, *CONTROLS)
+% =============================================================================
+
+\subsection*{Fundamentação teórica e métodos numéricos}
+\label{sec:teoria}
+
+Esta seção formaliza as equações governantes e os esquemas numéricos das duas
+físicas resolvidas no estudo -- a mecânica do sólido, resolvida no
+\textsc{CalculiX}, e a dinâmica do fluido, resolvida pelo solver de volumes
+finitos \texttt{pimpleFluid} do \texttt{solids4foam}~\citep{Cardiff2018s4f} (em
+modo \emph{fluid-only}, sobre o \textsc{OpenFOAM}) -- acopladas em interação
+fluido-estrutura pelo \textsc{preCICE}. Os parâmetros de discretização,
+tolerância e estabilidade reportados correspondem exatamente aos arquivos de
+configuração do caso FSI (\texttt{on-caso-1.2}) e dos casos estruturais
+(\texttt{on-caso-2}--\texttt{4}).
+
+% =============================================================================
+\subsubsection*{Mecânica do sólido (CalculiX)}
+\label{sec:teoria-solido}
+
+\paragraph{Equação de equilíbrio.} O domínio sólido $\Omega_s$ satisfaz a
+equação do balanço de quantidade de movimento na descrição Lagrangiana total.
+Como os casos estruturais são resolvidos em regime quase-estático (rampa de
+carga por comprimento de arco), o termo inercial é desprezado e o equilíbrio se
+reduz a
+\begin{equation}
+  \nabla_{\!X}\!\cdot\,\mathbf{P} + \rho_s\,\mathbf{b} = \mathbf{0}
+  \quad\text{em } \Omega_s,
+  \label{eq:equilibrio-solido}
+\end{equation}
+onde $\mathbf{P} = \mathbf{F}\,\mathbf{S}$ é o primeiro tensor de tensões de
+Piola--Kirchhoff, $\mathbf{F} = \mathbf{I} + \nabla_{\!X}\mathbf{u}$ é o
+gradiente de deformação, $\mathbf{S}$ o segundo tensor de
+Piola--Kirchhoff, $\rho_s$ a densidade de referência e $\mathbf{b}$ as forças de
+corpo. A formulação de grandes deformações (\texttt{NLGEOM=YES}) retém os termos
+geométricos não-lineares de $\mathbf{F}$, indispensáveis para capturar a
+flambagem (bifurcação) do complexo nervo--pia.
+
+\paragraph{Lei constitutiva hiperelástica.} Os casos de instabilidade adotam o
+material Neo-Hookeano compressível, cuja energia livre de deformação $W$ é
+\begin{equation}
+  W = C_{10}\,(\bar I_1 - 3) + \frac{1}{D_1}\,(J-1)^2,
+  \qquad
+  \bar I_1 = J^{-2/3}\,\mathrm{tr}(\mathbf{C}),
+  \qquad
+  J = \det\mathbf{F},
+  \label{eq:neohooke-W}
+\end{equation}
+com $\mathbf{C} = \mathbf{F}^{\!\top}\mathbf{F}$ o tensor de Cauchy--Green à
+direita. O segundo tensor de Piola--Kirchhoff segue de
+$\mathbf{S} = 2\,\partial W/\partial \mathbf{C}$. Os coeficientes do material são
+derivados do módulo de Young $E$ e do coeficiente de Poisson $\nu$ por
+\begin{equation}
+  C_{10} = \frac{E}{4\,(1+\nu)},
+  \qquad
+  D_1 = \frac{6\,(1-2\nu)}{E},
+  \qquad
+  K = \frac{E}{3\,(1-2\nu)},
+  \label{eq:neohooke-coef}
+\end{equation}
+sendo $K$ o módulo volumétrico. A bainha dural é tratada como material
+\emph{linear elástico ortotrópico} (\texttt{*ELASTIC, TYPE=ENGINEERING
+CONSTANTS}) num sistema cilíndrico ($1=$ radial, $2=$ circunferencial,
+$3=$ axial), com $E_\theta = 3\,E_{r}=3\,E_{z}$, na linha do comportamento
+anisotrópico das fibras de colágeno \citep{Holzapfel2000}.
+
+\paragraph{Discretização espacial.} A malha hexaédrica estruturada é discretizada
+com o elemento \texttt{C3D8I} (hexaedro linear de oito nós com modos de
+deformação incompatíveis), que mitiga o travamento volumétrico
+(\emph{volumetric locking}) característico de materiais quase-incompressíveis
+($\nu = 0.49$) sem o custo de elementos quadráticos de integração reduzida.
+
+\paragraph{Solver não-linear (comprimento de arco de Riks).} A flambagem
+introduz pontos-limite e amolecimento pós-crítico em que o Newton--Raphson com
+controle de carga puro diverge. Emprega-se, então, o método de comprimento de
+arco de Riks (\texttt{*STATIC, RIKS}), que adiciona uma restrição de arco ao
+sistema e resolve simultaneamente o campo de deslocamentos $\mathbf{u}$ e o fator
+de carga $\lambda$:
+\begin{equation}
+  \mathbf{r}(\mathbf{u},\lambda)
+  = \mathbf{f}_{\mathrm{int}}(\mathbf{u}) - \lambda\,\mathbf{f}_{\mathrm{ref}}
+  = \mathbf{0},
+  \qquad
+  \lVert \Delta\mathbf{u}\rVert^2 + \psi^2\,\Delta\lambda^2 = \Delta\ell^2,
+  \label{eq:riks}
+\end{equation}
+onde $\mathbf{f}_{\mathrm{int}}$ é o vetor de forças internas,
+$\mathbf{f}_{\mathrm{ref}}$ a carga de referência e $\Delta\ell$ o comprimento de
+arco incremental. Os parâmetros do incremento usados são: incremento inicial
+$0.005$, máximo $0.02$, mínimo $\num{1e-9}$ e fator de arco máximo
+$\mathrm{ARCMAX} = 1.0$ (que trava a carga aplicada exatamente no valor
+fisiológico do estágio, sem \emph{overshoot}).
+
+\paragraph{Critério de convergência.} O CalculiX afere a convergência de cada
+incremento pela razão entre o resíduo de força e a força média de referência
+$q$. Quando a carga é focal e quase auto-equilibrada (caso 4: a pressão de
+contato arterial produz força média $\sim\si{\micro\newton}$), o critério
+relativo padrão nunca fecha; por isso fixa-se a força média de referência em
+$q_u = \SI{0.1}{\newton}$ (\texttt{*CONTROLS, PARAMETERS=FIELD}), convertendo o
+teste em \emph{absoluto} ($\lVert\mathbf{r}\rVert \le R_n\,q_u
+\approx \SI{5e-4}{\newton}$), estável em todos os estágios.
+
+% =============================================================================
+\subsubsection*{Dinâmica do fluido (OpenFOAM)}
+\label{sec:teoria-fluido}
+
+\paragraph{Equações governantes (Navier--Stokes incompressível).} No caso FSI
+(\texttt{on-caso-1.2}) o LCR é modelado como fluido Newtoniano incompressível. A
+conservação de massa e de quantidade de movimento no domínio fluido $\Omega_f$
+(resolvidas pelo solver de volumes finitos \texttt{pimpleFluid} do
+\texttt{solids4foam}, executado em modo \emph{fluid-only}; o \textsc{CalculiX}
+resolve apenas o lado sólido) são
+\begin{align}
+  \nabla\!\cdot\mathbf{U} &= 0,
+  \label{eq:continuidade}\\[2pt]
+  \frac{\partial \mathbf{U}}{\partial t}
+  + \nabla\!\cdot(\mathbf{U}\,\mathbf{U})
+  &= -\nabla p
+  + \nabla\!\cdot\!\big(\nu\,\nabla\mathbf{U}\big)
+  + \mathbf{S}_M,
+  \label{eq:momento}
+\end{align}
+onde $\mathbf{U}$ é a velocidade, $p = P/\rho$ a pressão cinemática (o solver
+incompressível resolve $p$ normalizado pela densidade),
+$\nu = \mu/\rho = \SI{1.0e-6}{\square\meter\per\second}$ a viscosidade cinemática
+($\mu = \SI{1.0e-3}{\pascal\second}$, $\rho = \SI{1000}{\kilogram\per\meter\cubed}$,
+LCR \emph{water-like} a \SI{37}{\celsius}) e $\mathbf{S}_M$ o termo de fonte de
+quantidade de movimento. Como o número de Reynolds no SAS é
+$\mathrm{Re} = U L/\nu \ll 1$ (escoamento de Stokes), o regime é tratado como
+\texttt{laminar} (\texttt{turbulenceProperties}), sem modelo de turbulência.
+
+\paragraph{Termo de fonte poroso (Darcy--Forchheimer).} O termo $\mathbf{S}_M$
+representa a resistência hidráulica do \emph{lid} poroso distal
+($z \in [\SI{30}{}; \SI{30.5}{}]\,\si{\milli\meter}$), que modela a drenagem
+perineural do LCR (vilosidades aracnoides / vias linfáticas). É implementado
+como \texttt{explicitPorositySource} com lei de Darcy--Forchheimer,
+\begin{equation}
+  \mathbf{S}_M
+  = -\Big(
+      \underbrace{\nu\,d}_{\text{Darcy (viscoso)}}
+      + \underbrace{\tfrac{1}{2}\,|\mathbf{U}|\,f}_{\text{Forchheimer (inercial)}}
+    \Big)\,\mathbf{U},
+  \label{eq:darcy}
+\end{equation}
+onde $d\;[\si{\per\meter\squared}]$ é o coeficiente de resistência viscosa de
+Darcy e $f$ o coeficiente inercial. No estudo adota-se Forchheimer nulo
+($f = 0$, escoamento rasteiro), de modo que a equação se reduz ao regime de
+Darcy, $\nabla p/\rho \approx -\nu\,d\,\mathbf{U}$. O coeficiente $d$ é o próprio
+\emph{parâmetro de fenotipagem} da drenagem: $d \sim \SI{1e15}{\per\meter\squared}$
+(saudável, compartimentalização parcial fisiológica) a
+$d \to \SI{1e17}{\per\meter\squared}$ (obstrução tipo IIH/SANS,
+compartimentalização quase total). O limite $d \to \infty$ recupera o
+\emph{cul-de-sac} fechado, e $f$ permanece nulo em todos os regimes.
+
+\paragraph{Acoplamento pressão--velocidade (PIMPLE).} A
+Eq.~\eqref{eq:momento} é resolvida pelo algoritmo PIMPLE (combinação de PISO e
+SIMPLE) do \texttt{pimpleFluid}. A configuração efetiva
+(Tabela~\ref{tab:fvsolution}) usa um corretor externo
+(\texttt{nOuterCorrectors}~$=1$, equivalente a PISO dentro da janela de
+acoplamento), três correções de pressão (\texttt{nCorrectors}~$=3$) e uma
+correção de não-ortogonalidade (\texttt{nNonOrthogonalCorrectors}~$=1$).
+
+\paragraph{Esquemas de discretização.} A Tabela~\ref{tab:fvschemes} resume os
+esquemas do \texttt{fvSchemes}. A derivada temporal usa \texttt{Euler} (Euler
+implícito, primeira ordem), adequada ao regime quase-estático em que o transiente
+é apenas o caminho de relaxação até o equilíbrio dentro de cada janela de
+acoplamento. O termo convectivo $\nabla\!\cdot(\mathbf{U}\mathbf{U})$ usa
+\texttt{Gauss linearUpwind} com limitador celular (\texttt{cellLimited
+leastSquares 1}), esquema de segunda ordem com estabilidade de \emph{upwind}.
+Gradientes empregam \texttt{leastSquares} e laplacianos \texttt{Gauss linear
+corrected} (segunda ordem, com correção explícita de não-ortogonalidade).
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Esquemas de discretização do fluido (\texttt{fvSchemes},
+\texttt{on-caso-1.2}).}
+\label{tab:fvschemes}
+\begin{tabular}{l l l}
+\toprule
+\textbf{Termo} & \textbf{Esquema} & \textbf{Ordem / observação} \\
+\midrule
+$\partial/\partial t$ (\texttt{ddtSchemes})       & \texttt{Euler} & 1ª ordem implícita (quase-estático) \\
+$\nabla$ (\texttt{gradSchemes})                   & \texttt{leastSquares} & 2ª ordem \\
+$\nabla\!\cdot(\mathbf{U}\mathbf{U})$ (\texttt{div(phi,U)}) & \texttt{Gauss linearUpwind cellLimited} & 2ª ordem limitada \\
+$\nabla\!\cdot(\nu_{\mathrm{eff}}\,\mathrm{dev}(\nabla\mathbf{U})^{\!\top})$ & \texttt{Gauss linear} & 2ª ordem \\
+$\nabla^2$ (\texttt{laplacianSchemes})            & \texttt{Gauss linear corrected} & 2ª ordem, não-ortog.\ corrigida \\
+interpolação (\texttt{interpolationSchemes})      & \texttt{linear} & 2ª ordem \\
+$\mathbf{n}\!\cdot\!\nabla$ (\texttt{snGradSchemes}) & \texttt{corrected} & não-ortog.\ corrigida \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Solvers lineares e tolerâncias.} A Tabela~\ref{tab:fvsolution} reporta
+os solvers algébricos e tolerâncias absolutas de resíduo do \texttt{fvSolution}.
+A pressão é resolvida por multigrid algébrico (GAMG) com tolerância
+$\num{1e-6}$; a velocidade por gradiente bi-conjugado precondicionado
+(PBiCG/DILU) com tolerância $\num{1e-8}$; e o movimento da malha
+(\texttt{cellDisplacement}) por GAMG com tolerância $\num{1e-6}$.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Solvers lineares e tolerâncias absolutas de resíduo
+(\texttt{fvSolution}, \texttt{on-caso-1.2}).}
+\label{tab:fvsolution}
+\begin{tabular}{l l l l}
+\toprule
+\textbf{Campo} & \textbf{Solver} & \textbf{Tolerância} & \textbf{relTol} \\
+\midrule
+$p$ (\texttt{p, pFinal, pcorr}) & GAMG (GaussSeidel) & \num{1e-6} & 0 \\
+$\mathbf{U}$ (\texttt{U, UFinal}) & PBiCG (DILU)       & \num{1e-8} & 0 \\
+malha (\texttt{cellDisplacement}) & GAMG (GaussSeidel) & \num{1e-6} & \num{1e-3} \\
+\midrule
+\multicolumn{4}{l}{PIMPLE: \texttt{nOuterCorrectors}=1, \texttt{nCorrectors}=3,
+\texttt{nNonOrthogonalCorrectors}=1} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Passo de tempo e estabilidade temporal (número de Courant).} Por
+imposição do acoplamento particionado, o passo de tempo do fluido é \emph{fixo}
+e igual à janela de acoplamento, $\Delta t = \SI{1.0}{\second}$, sem passo
+ajustável (\texttt{adjustTimeStep no}), uma vez que o \textsc{preCICE} exige
+janelas fixas. O número de Courant,
+\begin{equation}
+  \mathrm{Co} = \frac{|\mathbf{U}|\,\Delta t}{\Delta x},
+  \label{eq:courant}
+\end{equation}
+\emph{não é} a restrição governante neste estudo porque a física é
+quase-estática (escoamento de Stokes, $\mathrm{Re} \ll 1$): cada janela de
+\SI{1}{\second} é apenas o intervalo em que o sub-iterador implícito PIMPLE +
+IQN-ILS relaxa até o equilíbrio FSI, e não um avanço transiente resolvido em
+escala convectiva. A discretização temporal implícita (\texttt{Euler}) e o
+acoplamento implícito (Seção~\ref{sec:teoria-fsi}) garantem estabilidade
+incondicional ao termo difusivo; a estabilidade convectiva é assegurada pelo
+esquema \texttt{linearUpwind} limitado. Em campanhas transientes (variante
+ICP-\emph{driven} com \texttt{flowRateInletVelocity}), o regime permanece
+$\mathrm{Co} < 1$ no \emph{bulk} do SAS dada a velocidade fisiológica
+$U \sim \SI{1e-6}{\meter\per\second}$.
+
+\paragraph{Movimento de malha (ALE).} A deformação da interface FSI é propagada
+ao interior do domínio fluido por uma formulação ALE
+(\emph{arbitrary Lagrangian--Eulerian}): o solver de movimento
+\texttt{displacementLaplacian} (\texttt{dynamicMotionSolverFvMesh}) resolve
+\begin{equation}
+  \nabla\!\cdot(\gamma\,\nabla\mathbf{d}) = \mathbf{0},
+  \qquad
+  \gamma = \texttt{quadratic inverseDistance},
+  \label{eq:meshmotion}
+\end{equation}
+onde $\mathbf{d}$ é o deslocamento da malha e $\gamma$ a difusividade,
+$\propto 1/\ell^2$ em relação à distância $\ell$ às paredes FSI
+(\texttt{fsi\_pia}, \texttt{fsi\_dura}), preservando a qualidade das células
+próximas à interface.
+
+% =============================================================================
+\subsubsection*{Acoplamento fluido-estrutura (preCICE)}
+\label{sec:teoria-fsi}
+
+\paragraph{Esquema de acoplamento.} A interação fluido-estrutura é resolvida de
+forma \emph{particionada} e \emph{implícita} (Dirichlet--Neumann) pelo
+\textsc{preCICE}. Na interface $\Gamma_{\mathrm{FSI}}$
+(\texttt{fsi\_pia}, \texttt{fsi\_dura}) impõem-se as condições de compatibilidade
+cinemática e de equilíbrio dinâmico,
+\begin{equation}
+  \mathbf{U}_f = \dot{\mathbf{u}}_s
+  \quad\text{e}\quad
+  \boldsymbol{\sigma}_f\!\cdot\!\mathbf{n} = \boldsymbol{\sigma}_s\!\cdot\!\mathbf{n}
+  \quad\text{em } \Gamma_{\mathrm{FSI}},
+  \label{eq:fsi-interface}
+\end{equation}
+trocando \emph{Forces} (fluido $\rightarrow$ sólido) e \emph{Displacements}
+(sólido $\rightarrow$ fluido) a cada iteração de acoplamento. O esquema é do tipo
+\texttt{parallel-implicit} com janela de \SI{1.0}{\second} e no máximo
+$100$ iterações por janela; a campanha ICP-\emph{driven} usa seis janelas
+sucessivas (\texttt{max-time}~$=6.0$) que rampam a PIC de \SI{1333}{} a
+\SI{3800}{\pascal}.
+
+\paragraph{Aceleração e convergência do acoplamento.} O acoplamento implícito é
+acelerado pelo método quase-Newton IQN-ILS \citep{Bungartz2016} com
+precondicionador \texttt{residual-sum}, filtro \texttt{QR2} (limite
+$\num{1e-2}$), relaxação inicial $0.01$ e até $50$ iterações reaproveitadas
+(\texttt{max-used-iterations}); como a rampa altera a carga gradualmente, o
+subespaço quase-Newton de até três janelas anteriores é reaproveitado
+(\texttt{time-windows-reused}~$=3$), acelerando as janelas $2$--$6$. A
+convergência da janela é declarada quando os resíduos relativos (norma~2) dos
+dois campos da interface caem abaixo das tolerâncias
+\begin{equation}
+  \varepsilon_{\mathrm{disp}}
+  = \frac{\lVert \mathbf{u}_s^{k+1} - \mathbf{u}_s^{k}\rVert_2}
+         {\lVert \mathbf{u}_s^{k+1}\rVert_2} \le 10^{-4},
+  \qquad
+  \varepsilon_{\mathrm{force}}
+  = \frac{\lVert \mathbf{f}^{k+1} - \mathbf{f}^{k}\rVert_2}
+         {\lVert \mathbf{f}^{k+1}\rVert_2} \le 10^{-3},
+  \label{eq:fsi-conv}
+\end{equation}
+onde $k$ indexa a iteração de acoplamento dentro da janela.
+
+\paragraph{Mapeamento entre malhas não-conformes.} A transferência de dados
+entre as malhas fluida e sólida na interface usa funções de base radial (RBF) do
+tipo \emph{thin-plate-splines}, com restrição \emph{conservative} na escrita das
+forças (preserva a força total transferida) e \emph{consistent} na leitura dos
+deslocamentos (preserva campos constantes) \citep{Chourdakis2022}.
+
+\paragraph{Estabilidade de massa adicionada.} Em FSI com fluido incompressível e
+estrutura leve, o efeito de \emph{added-mass} pode desestabilizar esquemas
+particionados. Duas medidas o controlam: (i) o acoplamento implícito com
+aceleração IQN-ILS (Eq.~\ref{eq:fsi-conv}); e (ii) o \emph{desacoplamento
+seletivo} -- o acoplamento dinâmico via preCICE fica restrito às paredes
+$\Gamma_{\mathrm{FSI}}$ (\texttt{fsi\_pia}, \texttt{fsi\_dura}), enquanto as
+faces esclerais (de alta rigidez relativa) recebem a carga estática equivalente
+($p = \SI{1333}{\pascal}$), evitando a razão massa-adicionada crítica na
+interface LCR--esclera.
+
+\paragraph{Independência de malha do fluido.} As malhas fluida e sólida são
+\emph{não-conformes} na interface $\Gamma_{\mathrm{FSI}}$ -- o domínio fluido
+(\textsc{OpenFOAM}) usa quatro quadrantes de $8$ células em $\theta$, enquanto o
+sólido (\textsc{CalculiX}) usa um anel completo de $32$ células (mesma resolução
+em número de células, conectividade distinta) -- e a transferência de campos é
+assegurada pelo mapeamento RBF \emph{thin-plate-splines} descrito acima. O
+refinamento adotado para o estudo de independência estrutural
+(Seção~\ref{sec:met-geometria}) é acompanhado por um estudo de independência da
+malha do LCR conduzido de forma \emph{desacoplada} do FSI (solver estacionário
+\texttt{simpleFoam}, laminar, $\mathrm{Re}\ll 1$; três níveis de refino global,
+\num{6144}, \num{49152} e \num{165888} células; carga de compartimentalização
+SANS fixa). A grandeza fisicamente relevante para o acoplamento -- a pressão
+média transmitida à bainha, $\bar{p}_{\mathrm{SAS}}$ -- é independente de malha
+até a quarta casa decimal (\SI{1333.00}{\pascal} nos três níveis, variação
+$<0.001\%$); já os indicadores \emph{secundários} de drenagem (perda de carga no
+\emph{lid}, $\Delta p$ de Darcy, Eq.~\ref{eq:darcy}, e vazão de drenagem
+$Q_{\mathrm{outlet}}$) convergem monotonicamente, com a variação sucessiva da
+vazão caindo de $5.9\%$ para $2.0\%$ (abaixo do critério de $5\%$) entre os dois
+refinos finais (Figura~\ref{fig:meshindep-fluid}). Confirma-se, portanto, que a
+\emph{carga} transmitida ao sólido é robustamente independente da malha do LCR.
+
+\paragraph{Reprodutibilidade do termo poroso.} Registra-se que o
+\texttt{pimpleFluid.esi.C} do \texttt{solids4foam}~v2512 desabilita por padrão o
+suporte a \texttt{fvOptions}; um \emph{patch} aplicado no \texttt{Dockerfile}
+reativa a fonte porosa (Eq.~\ref{eq:darcy}) na equação de momento, sem o qual a
+drenagem do \emph{lid} seria silenciosamente ignorada.
