@@ -1,0 +1,140 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Jul 18 2026
+Time   : 01:21:59
+Host   : 82703a17521a
+PID    : 254
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 10(wall iris_wall outlet_tm lens_wall ac_inlet ac_inlet_left outlet_tm_left front back demote_wall)
+Extracted patch groups:
+    group empty with patches 2(front back)
+    group wall with patches 1(demote_wall)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 
+12
+(
+front
+back
+wall
+tm_se_wall
+inlet_demote_wall
+demote_wall
+lens_wall
+iris_wall
+ac_inlet
+ac_inlet_left
+outlet_tm
+outlet_tm_left
+)
+
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 21
+    Ignoring non-existing entry tm_se_wall
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 21
+    Ignoring non-existing entry inlet_demote_wall
+fieldDict:
+{
+    wall
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          1160;
+        startFace       385104;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          508;
+        startFace       386264;
+    }
+    outlet_tm
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          4;
+        startFace       386772;
+    }
+    lens_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          641;
+        startFace       386776;
+    }
+    ac_inlet
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          7;
+        startFace       387417;
+    }
+    ac_inlet_left
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          7;
+        startFace       387424;
+    }
+    outlet_tm_left
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          5;
+        startFace       387431;
+    }
+    front
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          164968;
+        startFace       387436;
+    }
+    back
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          164968;
+        startFace       552404;
+    }
+    demote_wall
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          24;
+        startFace       717372;
+    }
+}
+
+Writing modified boundary
+
+End
+

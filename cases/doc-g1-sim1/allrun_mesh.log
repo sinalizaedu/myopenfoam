@@ -1,0 +1,715 @@
+ Container myopenfoam-fsi-run-ddfba2c75f77 Creating 
+ Container myopenfoam-fsi-run-ddfba2c75f77 Created 
+=== doc-g1-sim1: cleaning fluid domain ===
+  fluid cleaned
+=== doc-g1-sim1: clean done ===
+=== doc-g1-sim1 (AC / vitreous / TM) MESH_LEVEL=M1 ===
+=== gmshToFoam ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : gmshToFoam eye_g1_lamminsalo.msh
+Date   : Jul 15 2026
+Time   : 21:45:16
+Host   : 9ed820063363
+PID    : 238
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Starting to read mesh format at line 2
+Read format version 2.2  ascii 0
+
+Starting to read physical names at line 5
+Physical names:8
+    Surface 2	ac_inlet
+    Surface 3	ac_inlet_left
+    Surface 4	outlet_tm
+    Surface 5	outlet_tm_left
+    Surface 6	lens_wall
+    Surface 7	iris_wall
+    Surface 8	wall
+    Volume 1	fluid
+
+Starting to read points at line 16
+Vertices to be read: 131672
+Vertices read:131672
+
+Starting to read cells at line 131691
+Cells to be read: 682157
+
+Mapping region 8 to Foam patch 0
+Mapping region 7 to Foam patch 1
+Mapping region 4 to Foam patch 2
+Mapping region 2 to Foam patch 3
+Mapping region 6 to Foam patch 4
+Mapping region 3 to Foam patch 5
+Mapping region 5 to Foam patch 6
+Mapping region 1 to Foam cellZone 0
+Cells:
+    total:668675
+    hex  :0
+    prism:0
+    pyr  :0
+    tet  :668675
+
+CellZones:
+Zone	Size
+    0	668675
+
+Patch 0 gets name wall
+Patch 1 gets name iris_wall
+Patch 2 gets name outlet_tm
+Patch 3 gets name ac_inlet
+Patch 4 gets name lens_wall
+Patch 5 gets name ac_inlet_left
+Patch 6 gets name outlet_tm_left
+
+--> FOAM Warning : 
+    From Foam::polyMesh::polyMesh(const Foam::IOobject&, Foam::pointField&&, const Foam::cellShapeList&, const Foam::faceListList&, const Foam::wordList&, const Foam::wordList&, const Foam::word&, const Foam::word&, const Foam::wordList&, bool)
+    in file meshes/polyMesh/polyMeshFromShapeMesh.C at line 635
+    Found 95966 undefined faces in mesh; adding to default patch defaultFaces
+Finding faces of patch 0
+Finding faces of patch 1
+Finding faces of patch 2
+Finding faces of patch 3
+Finding faces of patch 4
+Finding faces of patch 5
+Finding faces of patch 6
+
+FaceZones:
+Zone	Size
+
+Writing zone 0 to cellZone fluid and cellSet
+End
+
+=== topoSet zones (TM + vitreous) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.anatomical -constant
+Date   : Jul 15 2026
+Time   : 21:45:24
+Host   : 9ed820063363
+PID    : 242
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.anatomical
+
+Time = constant
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 583
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 583
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 584
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 584
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 309901
+Read set cellSet vitreous_zone size:309901
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 309901
+Read set cellSet vitreous_zone size:309901
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 309901
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 309901
+Time = 0
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 583
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 583
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 584
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 584
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 309901
+Read set cellSet vitreous_zone size:309901
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 309901
+Read set cellSet vitreous_zone size:309901
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 309901
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 309901
+
+End
+
+=== createPatch (front/back + outlets + inlets) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.frontBack -constant
+Date   : Jul 15 2026
+Time   : 21:45:29
+Host   : 9ed820063363
+PID    : 245
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.frontBack
+
+Time = constant
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 0
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.splitWall -constant
+Date   : Jul 15 2026
+Time   : 21:45:32
+Host   : 9ed820063363
+PID    : 248
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.splitWall
+
+Time = constant
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 428
+Read set faceSet outlet_tm_faces size:428
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 4600 faces
+    faceSet outlet_tm_faces now size 0
+Read set faceSet outlet_tm_faces size:0
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.00655 -0.005 -1e-05) (0.00725 -0.00435 0.001001))
+    faceSet outlet_tm_faces now size 0
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 408
+Read set faceSet outlet_tm_left_faces size:408
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 4600 faces
+    faceSet outlet_tm_left_faces now size 0
+Read set faceSet outlet_tm_left_faces size:0
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00725 -0.005 -1e-05) (-0.00655 -0.00435 0.001001))
+    faceSet outlet_tm_left_faces now size 0
+Created faceSet ac_inlet_faces
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 4600 faces
+    faceSet ac_inlet_faces now size 4600
+Read set faceSet ac_inlet_faces size:4600
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.00405 -1e-05) (0.00715 -0.00325 0.001001))
+    faceSet ac_inlet_faces now size 0
+Read set faceSet ac_inlet_faces size:0
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.4) ...
+    faceSet ac_inlet_faces now size 0
+Created faceSet ac_inlet_left_faces
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 4600 faces
+    faceSet ac_inlet_left_faces now size 4600
+Read set faceSet ac_inlet_left_faces size:4600
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00715 -0.00405 -1e-05) (-0.0067 -0.00325 0.001001))
+    faceSet ac_inlet_left_faces now size 0
+Read set faceSet ac_inlet_left_faces size:0
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.4) ...
+    faceSet ac_inlet_left_faces now size 0
+Time = 0
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 428
+Read set faceSet outlet_tm_faces size:428
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 4600 faces
+    faceSet outlet_tm_faces now size 0
+Read set faceSet outlet_tm_faces size:0
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.00655 -0.005 -1e-05) (0.00725 -0.00435 0.001001))
+    faceSet outlet_tm_faces now size 0
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 408
+Read set faceSet outlet_tm_left_faces size:408
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 4600 faces
+    faceSet outlet_tm_left_faces now size 0
+Read set faceSet outlet_tm_left_faces size:0
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00725 -0.005 -1e-05) (-0.00655 -0.00435 0.001001))
+    faceSet outlet_tm_left_faces now size 0
+Created faceSet ac_inlet_faces
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 4600 faces
+    faceSet ac_inlet_faces now size 4600
+Read set faceSet ac_inlet_faces size:4600
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.00405 -1e-05) (0.00715 -0.00325 0.001001))
+    faceSet ac_inlet_faces now size 0
+Read set faceSet ac_inlet_faces size:0
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.4) ...
+    faceSet ac_inlet_faces now size 0
+Created faceSet ac_inlet_left_faces
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 4600 faces
+    faceSet ac_inlet_left_faces now size 4600
+Read set faceSet ac_inlet_left_faces size:4600
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00715 -0.00405 -1e-05) (-0.0067 -0.00325 0.001001))
+    faceSet ac_inlet_left_faces now size 0
+Read set faceSet ac_inlet_left_faces size:0
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.4) ...
+    faceSet ac_inlet_left_faces now size 0
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : createPatch -overwrite -dict system/createPatchDict.anatomical
+Date   : Jul 15 2026
+Time   : 21:45:34
+Host   : 9ed820063363
+PID    : 251
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Reading "system/createPatchDict.anatomical"
+
+
+
+Adding patches to mesh region0
+
+Adding new patch front from 
+{
+    type            empty;
+    nFaces          0;
+    startFace       0;
+}
+
+Adding new patch back from 
+{
+    type            empty;
+    nFaces          0;
+    startFace       0;
+}
+
+
+
+
+Repatching mesh region0
+
+Read 41242 faces from faceSet frontFaces
+Read 41242 faces from faceSet backFaces
+Read 0 faces from faceSet outlet_tm_faces
+Read 0 faces from faceSet outlet_tm_left_faces
+Read 0 faces from faceSet ac_inlet_faces
+Read 0 faces from faceSet ac_inlet_left_faces
+Doing topology modification to order faces.
+
+Not synchronising points.
+
+Removing patches with no faces in them.
+
+Removed zero-sized patch defaultFaces type patch at position 7
+
+
+Writing repatched mesh region0 to 0
+
+End
+
+=== changeDictionary (patch types) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Jul 15 2026
+Time   : 21:45:41
+Host   : 9ed820063363
+PID    : 254
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 9(wall iris_wall outlet_tm ac_inlet lens_wall ac_inlet_left outlet_tm_left front back)
+Extracted patch groups:
+    group empty with patches 2(front back)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 9(front back wall lens_wall iris_wall ac_inlet ac_inlet_left outlet_tm outlet_tm_left)
+fieldDict:
+{
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          4600;
+        startFace       1289367;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          4250;
+        startFace       1293967;
+    }
+    outlet_tm
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          144;
+        startFace       1298217;
+    }
+    ac_inlet
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          239;
+        startFace       1298361;
+    }
+    lens_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          3864;
+        startFace       1298600;
+    }
+    ac_inlet_left
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          241;
+        startFace       1302464;
+    }
+    outlet_tm_left
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          144;
+        startFace       1302705;
+    }
+    front
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          41242;
+        startFace       1302849;
+    }
+    back
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          41242;
+        startFace       1344091;
+    }
+}
+
+Writing modified boundary
+
+End
+
+=== initial fields ===
+=== checkMesh ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh
+Date   : Jul 15 2026
+Time   : 21:45:43
+Host   : 9ed820063363
+PID    : 260
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+
+Time = 0
+
+Mesh stats 
+    points:           131672
+    faces:            1385333
+    internal faces:   1289367
+    cells:            668675
+    faces per cell:   4
+    boundary patches: 9
+    point zones:      0
+    face zones:       0
+    cell zones:       4
+
+Overall number of cells of each type:
+    hexahedra:     0
+    prisms:        0
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    668675
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+ ***Total number of faces on empty patches is not divisible by the number of cells in the mesh. Hence this mesh is not 1D or 2D.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Number of regions: 1 (OK).
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology
+    wall                4600     2845     ok (non-closed singly connected)  
+    iris_wall           4250     2399     ok (non-closed singly connected)  
+    outlet_tm           144      91       ok (non-closed singly connected)  
+    ac_inlet            239      161      ok (non-closed singly connected)  
+    lens_wall           3864     2266     ok (non-closed singly connected)  
+    ac_inlet_left       241      162      ok (non-closed singly connected)  
+    outlet_tm_left      144      91       ok (non-closed singly connected)  
+    front               41242    21182    ok (non-closed singly connected)  
+    back                41242    21182    ok (non-closed singly connected)  
+    ".*"                95966    47983    ok (closed singly connected)      
+
+
+Checking faceZone topology for multiply connected surfaces...
+    No faceZones found.
+
+Checking basic cellZone addressing...
+    CellZone            Cells        Points       Volume       BoundingBox
+    fluid               668675       131672       1.4629709e-07 (-0.0083688305 -0.00816 0) (0.0083688305 0.0069 0.001)
+    tm_zone             583          228          1.9881001e-10 (0.0063276775 -0.0049361077 0) (0.00693 -0.004136494 0.001)
+    tm_zone_left        584          221          1.9855651e-10 (-0.00693 -0.0049361077 0) (-0.0063749648 -0.004136494 0.001)
+    vitreous_zone       309901       60854        1.0169333e-07 (-0.00816626 -0.0016431451 0) (0.0081610248 0.0069 0.001)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (-0.0083688305 -0.00816 0) (0.0083688305 0.0069 0.001)
+    Mesh has 2 geometric (non-empty/wedge) directions (1 1 0)
+    Mesh has 2 solution (non-empty) directions (1 1 0)
+ ***Number of edges not aligned with or perpendicular to non-empty directions: 717325
+  <<Writing 130989 points on non-aligned edges to set nonAlignedEdges
+    Boundary openness (1.3994581e-17 -2.8302161e-16 -2.9938179e-15) OK.
+    Max cell openness = 5.9444249e-15 OK.
+    Max aspect ratio = 179.37731 OK.
+    Minimum face area = 3.4133459e-12. Maximum face area = 5.0079797e-08.  Face area magnitudes OK.
+    Min volume = 4.8827034e-17. Max volume = 3.6944903e-12.  Total volume = 1.4629709e-07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 89.905843 average: 21.474442
+   *Number of severely non-orthogonal (> 70 degrees) faces: 628.
+    Non-orthogonality check OK.
+  <<Writing 628 non-orthogonal faces to set nonOrthoFaces
+    Face pyramids OK.
+    Max skewness = 2.070437 OK.
+    Coupled point location match (average 0) OK.
+
+Failed 1 mesh checks.
+
+End
+
+WARNING: checkMesh reported Failed (see log.checkMesh) — continuing for ParaView
+=== patch / zone counts ===
+  ac_inlet: 239 faces
+  ac_inlet_left: 241 faces
+  outlet_tm: 144 faces
+  outlet_tm_left: 144 faces
+  wall: 4600 faces
+  front: 41242 faces
+  back: 41242 faces
+  tm_zone: 583 cells
+  tm_zone_left: 584 cells
+  vitreous_zone: 309901 cells
+=== SKIP_SOLVE=1 done ===

@@ -1,0 +1,105 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+10
+(
+    wall
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          1160;
+        startFace       385104;
+    }
+
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          508;
+        startFace       386264;
+    }
+
+    outlet_tm
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          4;
+        startFace       386772;
+    }
+
+    lens_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          641;
+        startFace       386776;
+    }
+
+    ac_inlet
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          7;
+        startFace       387417;
+    }
+
+    ac_inlet_left
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          7;
+        startFace       387424;
+    }
+
+    outlet_tm_left
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          5;
+        startFace       387431;
+    }
+
+    front
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          164968;
+        startFace       387436;
+    }
+
+    back
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          164968;
+        startFace       552404;
+    }
+
+    demote_wall
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          24;
+        startFace       717372;
+    }
+
+)
+
+
+// ************************************************************************* //

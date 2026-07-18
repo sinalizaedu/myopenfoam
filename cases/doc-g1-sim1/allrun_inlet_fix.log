@@ -1,0 +1,3161 @@
+ Container myopenfoam-fsi-run-556ec8f2a97e Creating 
+ Container myopenfoam-fsi-run-556ec8f2a97e Created 
+=== doc-g1-sim1 (AC / vitreous / TM) MESH_LEVEL=M1 ===
+=== gmshToFoam ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : gmshToFoam eye_g1_lamminsalo.msh
+Date   : Jul 16 2026
+Time   : 00:35:14
+Host   : 14cd50c10143
+PID    : 227
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Starting to read mesh format at line 2
+Read format version 2.2  ascii 0
+
+Starting to read physical names at line 5
+Physical names:8
+    Surface 2	ac_inlet
+    Surface 3	ac_inlet_left
+    Surface 4	outlet_tm
+    Surface 5	outlet_tm_left
+    Surface 6	lens_wall
+    Surface 7	iris_wall
+    Surface 8	wall
+    Volume 1	fluid
+
+Starting to read points at line 16
+Vertices to be read: 42364
+Vertices read:42364
+
+Starting to read cells at line 42383
+Cells to be read: 42364
+
+Mapping region 8 to Foam patch 0
+Mapping region 7 to Foam patch 1
+Mapping region 4 to Foam patch 2
+Mapping region 2 to Foam patch 3
+Mapping region 6 to Foam patch 4
+Mapping region 3 to Foam patch 5
+Mapping region 5 to Foam patch 6
+Mapping region 1 to Foam cellZone 0
+Cells:
+    total:41242
+    hex  :0
+    prism:41242
+    pyr  :0
+    tet  :0
+
+CellZones:
+Zone	Size
+    0	41242
+
+Patch 0 gets name wall
+Patch 1 gets name iris_wall
+Patch 2 gets name outlet_tm
+Patch 3 gets name ac_inlet
+Patch 4 gets name lens_wall
+Patch 5 gets name ac_inlet_left
+Patch 6 gets name outlet_tm_left
+
+--> FOAM Warning : 
+    From Foam::polyMesh::polyMesh(const Foam::IOobject&, Foam::pointField&&, const Foam::cellShapeList&, const Foam::faceListList&, const Foam::wordList&, const Foam::wordList&, const Foam::word&, const Foam::word&, const Foam::wordList&, bool)
+    in file meshes/polyMesh/polyMeshFromShapeMesh.C at line 635
+    Found 83606 undefined faces in mesh; adding to default patch defaultFaces
+Finding faces of patch 0
+Finding faces of patch 1
+Finding faces of patch 2
+Finding faces of patch 3
+Finding faces of patch 4
+Finding faces of patch 5
+Finding faces of patch 6
+
+FaceZones:
+Zone	Size
+
+Writing zone 0 to cellZone fluid and cellSet
+End
+
+=== topoSet zones (TM + vitreous) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.anatomical -constant
+Date   : Jul 16 2026
+Time   : 00:35:15
+Host   : 14cd50c10143
+PID    : 231
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.anatomical
+
+Time = constant
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 0
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 48
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 50
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 100
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 150
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 200
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 250
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 300
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 350
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 400
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 450
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+Time = 500
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet tm_zone now size 69
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 69
+Created cellSet tm_zone_left
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet tm_zone_left now size 67
+Created cellZoneSet tm_zone_left
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone_left ...
+    cellZoneSet tm_zone_left now size 67
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.008 -0.0015 -1e-05) (0.008 0.0074 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((0.00645 -0.005 -1e-05) (0.00718 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Read set cellSet vitreous_zone size:19682
+    Applying source boxToCell
+    Removing cells with centre within boxes 1((-0.00718 -0.005 -1e-05) (-0.00645 -0.00424 0.001001))
+    cellSet vitreous_zone now size 19682
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 19682
+
+End
+
+=== createPatch (front/back + outlets + inlets) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.frontBack -constant
+Date   : Jul 16 2026
+Time   : 00:35:17
+Host   : 14cd50c10143
+PID    : 234
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.frontBack
+
+Time = constant
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 0
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 48
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 50
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 100
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 150
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 200
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 250
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 300
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 350
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 400
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 450
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+Time = 500
+    mesh not changed.
+Created faceSet frontFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet frontFaces now size 82484
+Read set faceSet frontFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.1) ...
+    faceSet frontFaces now size 41242
+Created faceSet backFaces
+    Applying source patchToFace
+    Adding all faces of patches: (defaultFaces) ...
+    Found matching patch defaultFaces with 82484 faces
+    faceSet backFaces now size 82484
+Read set faceSet backFaces size:82484
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 -1) (to within 0.1) ...
+    faceSet backFaces now size 41242
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.splitWall -constant
+Date   : Jul 16 2026
+Time   : 00:35:19
+Host   : 14cd50c10143
+PID    : 237
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.splitWall
+
+Time = constant
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 0
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 48
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 50
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 100
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 150
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 200
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 250
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 300
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 350
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 400
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 450
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+Time = 500
+    mesh not changed.
+Created faceSet outlet_tm_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone)
+    faceSet outlet_tm_faces now size 165
+Read set faceSet outlet_tm_faces size:165
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_faces now size 148
+Read set faceSet outlet_tm_faces size:148
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0064 -0.005 -1e-05) (0.0071 -0.00445 0.001001))
+    faceSet outlet_tm_faces now size 88
+Created faceSet outlet_tm_left_faces
+    Applying source cellToFace
+    Adding faces according to cell sets: (tm_zone_left)
+    faceSet outlet_tm_left_faces now size 161
+Read set faceSet outlet_tm_left_faces size:161
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet outlet_tm_left_faces now size 144
+Read set faceSet outlet_tm_left_faces size:144
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.0071 -0.005 -1e-05) (-0.0064 -0.00445 0.001001))
+    faceSet outlet_tm_left_faces now size 88
+Created faceSet ac_inlet_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0067 -0.0045 -1e-05) (0.00705 -0.00395 0.001001))
+    faceSet ac_inlet_faces now size 80
+Read set faceSet ac_inlet_faces size:80
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_faces now size 49
+Read set faceSet ac_inlet_faces size:49
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_faces now size 5
+Created faceSet ac_inlet_left_faces
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((-0.00705 -0.0045 -1e-05) (-0.0067 -0.00395 0.001001))
+    faceSet ac_inlet_left_faces now size 71
+Read set faceSet ac_inlet_left_faces size:71
+    Applying source boundaryToFace
+    Adding all boundary faces ...
+    faceSet ac_inlet_left_faces now size 45
+Read set faceSet ac_inlet_left_faces size:45
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.5) ...
+    faceSet ac_inlet_left_faces now size 5
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : createPatch -overwrite -dict system/createPatchDict.anatomical
+Date   : Jul 16 2026
+Time   : 00:35:21
+Host   : 14cd50c10143
+PID    : 240
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Reading "system/createPatchDict.anatomical"
+
+
+
+Adding patches to mesh region0
+
+Adding new patch front from 
+{
+    type            empty;
+    nFaces          0;
+    startFace       0;
+}
+
+Adding new patch back from 
+{
+    type            empty;
+    nFaces          0;
+    startFace       0;
+}
+
+
+
+
+Repatching mesh region0
+
+Read 41242 faces from faceSet frontFaces
+Read 41242 faces from faceSet backFaces
+Read 88 faces from faceSet outlet_tm_faces
+--> FOAM Warning : 
+    From void changePatchID(const Foam::fvMesh&, const Foam::labelList&, Foam::label, Foam::bitSet&, Foam::polyTopoChange&)
+    in file createPatch.C at line 435
+    Face 62460 at (0.0068827573 -0.0044755838 0) marked for patch 2 name outlet_tm is already marked for patch 9 name back. Creating duplicate face. Suppressing further warnings
+Read 88 faces from faceSet outlet_tm_left_faces
+Read 5 faces from faceSet ac_inlet_faces
+Read 5 faces from faceSet ac_inlet_left_faces
+Doing topology modification to order faces.
+
+Not synchronising points.
+
+Removing patches with no faces in them.
+
+Removed zero-sized patch defaultFaces type patch at position 7
+
+
+Writing repatched mesh region0 to 0
+
+End
+
+=== changeDictionary (patch types) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Jul 16 2026
+Time   : 00:35:22
+Host   : 14cd50c10143
+PID    : 243
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 9(wall iris_wall outlet_tm ac_inlet lens_wall ac_inlet_left outlet_tm_left front back)
+Extracted patch groups:
+    group empty with patches 2(front back)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 9(front back wall lens_wall iris_wall ac_inlet ac_inlet_left outlet_tm outlet_tm_left)
+fieldDict:
+{
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          558;
+        startFace       61302;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          226;
+        startFace       61860;
+    }
+    outlet_tm
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          89;
+        startFace       62086;
+    }
+    ac_inlet
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          8;
+        startFace       62175;
+    }
+    lens_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          306;
+        startFace       62183;
+    }
+    ac_inlet_left
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          8;
+        startFace       62489;
+    }
+    outlet_tm_left
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          89;
+        startFace       62497;
+    }
+    front
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          41242;
+        startFace       62586;
+    }
+    back
+    {
+        type            empty;
+        inGroups        1 ( empty );
+        nFaces          41242;
+        startFace       103828;
+    }
+}
+
+Writing modified boundary
+
+End
+
+=== initial fields ===
+=== checkMesh ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh
+Date   : Jul 16 2026
+Time   : 00:35:22
+Host   : 14cd50c10143
+PID    : 249
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+
+Time = 0
+
+Mesh stats 
+    points:           42364
+    internal points:  0
+    faces:            145070
+    internal faces:   61302
+    cells:            41242
+    faces per cell:   5.003928
+    boundary patches: 9
+    point zones:      0
+    face zones:       0
+    cell zones:       4
+
+Overall number of cells of each type:
+    hexahedra:     0
+    prisms:        41162
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    0
+    polyhedra:     80
+    Breakdown of polyhedra by number of faces:
+        faces   number of cells
+            7   78
+            8   2
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Number of regions: 1 (OK).
+
+Checking patch topology for multiply connected surfaces...
+                   Patch    Faces   Points  Surface topology
+                    wall      558     1124  ok (non-closed singly connected)
+               iris_wall      226      468  ok (non-closed singly connected)
+               outlet_tm       89       68  ok (non-closed singly connected)
+                ac_inlet        8       18  ok (non-closed singly connected)
+               lens_wall      306      620  ok (non-closed singly connected)
+           ac_inlet_left        8       18  ok (non-closed singly connected)
+          outlet_tm_left       89       68  ok (non-closed singly connected)
+                   front    41242    21182  ok (non-closed singly connected)
+                    back    41242    21182  ok (non-closed singly connected)
+                    ".*"    83768    42364  multiply connected (shared edge)
+
+Detected 292 bad edges (possibly relevant for finite-area)
+
+Checking faceZone topology for multiply connected surfaces...
+    No faceZones found.
+
+Checking basic cellZone addressing...
+                CellZone        Cells       Points       VolumeBoundingBox
+                  fluid        41242        42364 1.4637633e-07 (-0.0083688305 -0.00816 0) (0.0083688305 0.0069 0.001)
+                tm_zone           69           98 2.3801519e-10 (0.0064142133 -0.0048720705 0) (0.00693 -0.0041952456 0.001)
+           tm_zone_left           67           96 2.3530585e-10 (-0.00693 -0.0048720705 0) (-0.0064137072 -0.0041944014 0.001)
+          vitreous_zone        19682        20142 1.0167695e-07 (-0.0080734505 -0.0015483274 0) (0.0080569714 0.0069 0.001)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (-0.0083688305 -0.00816 0) (0.0083688305 0.0069 0.001)
+    Mesh has 2 geometric (non-empty/wedge) directions (1 1 0)
+    Mesh has 2 solution (non-empty) directions (1 1 0)
+    All edges aligned with or perpendicular to non-empty directions.
+ ***Boundary openness (-2.3369361e-18 0.00023370075 -1.3677653e-15) possible hole in boundary description.
+ ***Open cells found, max cell openness: 0.33333333, number of open cells 2
+  <<Writing 2 non closed cells to set nonClosedCells
+    Minimum face area = 3.4133459e-12. Maximum face area = 1.8412767e-07.  Face area magnitudes OK.
+    Min volume = 3.4133459e-15. Max volume = 1.0832708e-11.  Total volume = 1.4637633e-07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 62.352341 average: 4.325432
+    Non-orthogonality check OK.
+    Face pyramids OK.
+ ***Max skewness = 4.2550004, 1 highly skew faces detected which may impair the quality of the results
+  <<Writing 1 skew faces to set skewFaces
+    Coupled point location match (average 0) OK.
+
+Failed 3 mesh checks.
+
+End
+
+WARNING: checkMesh reported Failed (see log.checkMesh) — continuing for ParaView
+=== patch / zone counts ===
+  ac_inlet: 8 faces
+  ac_inlet_left: 8 faces
+  outlet_tm: 89 faces
+  outlet_tm_left: 89 faces
+  wall: 558 faces
+  front: 41242 faces
+  back: 41242 faces
+  tm_zone: 69 cells
+  tm_zone_left: 67 cells
+  vitreous_zone: 19682 cells
+=== simpleFoam ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : simpleFoam
+Date   : Jul 16 2026
+Time   : 00:35:24
+Host   : 14cd50c10143
+PID    : 255
+I/O    : uncollated
+Case   : /simulation/doc-g1-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+
+SIMPLE: convergence criteria
+    field p	 tolerance 0.0001
+    field U	 tolerance 1e-05
+
+Reading field p
+
+Reading field U
+
+Reading/calculating face flux field phi
+
+Selecting incompressible transport model Newtonian
+Selecting turbulence model type laminar
+Selecting laminar stress model Stokes
+No MRF models present
+
+Creating finite-volume options from "system/fvOptions"
+
+Selecting finite volume options type explicitPorositySource
+    Source: tm_porous
+    State: active
+    - selecting cells using cellZones (tm_zone)
+    - selected 69 cell(s) with volume 2.3801519e-10
+Porosity region tm_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/tm_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: tm_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00051578665 0.00067682487 0.001)
+
+Selecting finite volume options type explicitPorositySource
+    Source: tm_porous_left
+    State: active
+    - selecting cells using cellZones (tm_zone_left)
+    - selected 67 cell(s) with volume 2.3530585e-10
+Porosity region tm_porous_left:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/tm_porous_left/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: tm_zone_left
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00051629278 0.00067766906 0.001)
+
+Selecting finite volume options type explicitPorositySource
+    Source: vitreous_porous
+    State: active
+    - selecting cells using cellZones (vitreous_zone)
+    - selected 19682 cell(s) with volume 1.0167695e-07
+Porosity region vitreous_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/vitreous_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: vitreous_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.016130422 0.0084483274 0.001)
+
+
+Starting time loop
+
+surfaceFieldValue flowRateTM:
+    operation     = sum
+
+
+surfaceFieldValue flowRateTM_left:
+    operation     = sum
+
+
+surfaceFieldValue pressureACinlet:
+    operation     = areaAverage
+
+
+Time = 1
+
+smoothSolver:  Solving for Ux, Initial residual = 0.99999999, Final residual = 1.1458765e-09, No Iterations 8
+smoothSolver:  Solving for Uy, Initial residual = 0.99999999, Final residual = 4.2617429e-09, No Iterations 8
+DICPCG:  Solving for p, Initial residual = 0.99999987, Final residual = 0.0099266747, No Iterations 401
+DICPCG:  Solving for p, Initial residual = 0.038396471, Final residual = 0.00038166404, No Iterations 22
+DICPCG:  Solving for p, Initial residual = 0.0047751703, Final residual = 4.6811419e-05, No Iterations 189
+DICPCG:  Solving for p, Initial residual = 0.0023264358, Final residual = 2.278825e-05, No Iterations 417
+time step continuity errors : sum local = 5.6820632e-07, global = 3.7978175e-10, cumulative = 3.7978175e-10
+ExecutionTime = 2.04 s  ClockTime = 2 s
+
+Time = 2
+
+smoothSolver:  Solving for Ux, Initial residual = 0.29386885, Final residual = 5.3471632e-09, No Iterations 5
+smoothSolver:  Solving for Uy, Initial residual = 0.05318143, Final residual = 7.1145983e-09, No Iterations 4
+DICPCG:  Solving for p, Initial residual = 0.091518336, Final residual = 0.00082051764, No Iterations 381
+DICPCG:  Solving for p, Initial residual = 0.022721201, Final residual = 0.00022306206, No Iterations 123
+DICPCG:  Solving for p, Initial residual = 0.0050417903, Final residual = 4.6870526e-05, No Iterations 192
+DICPCG:  Solving for p, Initial residual = 0.003157488, Final residual = 3.0568794e-05, No Iterations 134
+time step continuity errors : sum local = 6.9239987e-07, global = 5.5846218e-08, cumulative = 5.6226e-08
+ExecutionTime = 2.72 s  ClockTime = 3 s
+
+Time = 3
+
+smoothSolver:  Solving for Ux, Initial residual = 0.20411449, Final residual = 3.2325215e-09, No Iterations 5
+smoothSolver:  Solving for Uy, Initial residual = 0.028368468, Final residual = 3.251346e-09, No Iterations 4
+DICPCG:  Solving for p, Initial residual = 0.081799378, Final residual = 0.00077101179, No Iterations 28
+DICPCG:  Solving for p, Initial residual = 0.0099901387, Final residual = 9.9070713e-05, No Iterations 33
+DICPCG:  Solving for p, Initial residual = 0.0026022652, Final residual = 2.5085538e-05, No Iterations 151
+DICPCG:  Solving for p, Initial residual = 0.0013084966, Final residual = 1.3051264e-05, No Iterations 154
+time step continuity errors : sum local = 2.6306721e-07, global = 1.3125375e-08, cumulative = 6.9351375e-08
+ExecutionTime = 3.06 s  ClockTime = 3 s
+
+Time = 4
+
+smoothSolver:  Solving for Ux, Initial residual = 0.14966799, Final residual = 1.698937e-09, No Iterations 5
+smoothSolver:  Solving for Uy, Initial residual = 0.02009101, Final residual = 1.5996222e-09, No Iterations 4
+DICPCG:  Solving for p, Initial residual = 0.084665065, Final residual = 0.00083963595, No Iterations 356
+DICPCG:  Solving for p, Initial residual = 0.022191234, Final residual = 0.00019886469, No Iterations 24
+DICPCG:  Solving for p, Initial residual = 0.0020490119, Final residual = 1.987532e-05, No Iterations 243
+DICPCG:  Solving for p, Initial residual = 0.00065755679, Final residual = 6.5679851e-06, No Iterations 373
+time step continuity errors : sum local = 1.1982934e-07, global = -4.4737223e-10, cumulative = 6.8904003e-08
+ExecutionTime = 3.86 s  ClockTime = 4 s
+
+Time = 5
+
+smoothSolver:  Solving for Ux, Initial residual = 0.11294776, Final residual = 4.1086487e-09, No Iterations 4
+smoothSolver:  Solving for Uy, Initial residual = 0.016471332, Final residual = 3.8353844e-09, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 0.077512917, Final residual = 0.00077463609, No Iterations 357
+DICPCG:  Solving for p, Initial residual = 0.028980449, Final residual = 0.00028310405, No Iterations 23
+DICPCG:  Solving for p, Initial residual = 0.0027500096, Final residual = 2.7281037e-05, No Iterations 247
+DICPCG:  Solving for p, Initial residual = 0.0010833473, Final residual = 1.0751596e-05, No Iterations 373
+time step continuity errors : sum local = 1.7878635e-07, global = 1.37602e-09, cumulative = 7.0280023e-08
+ExecutionTime = 4.65 s  ClockTime = 5 s
+
+Time = 6
+
+smoothSolver:  Solving for Ux, Initial residual = 0.085064514, Final residual = 5.6621572e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.014342272, Final residual = 7.7014843e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.063270633, Final residual = 0.00061458848, No Iterations 355
+DICPCG:  Solving for p, Initial residual = 0.023946283, Final residual = 0.00023856674, No Iterations 126
+DICPCG:  Solving for p, Initial residual = 0.00292207, Final residual = 2.795126e-05, No Iterations 113
+DICPCG:  Solving for p, Initial residual = 0.0011162726, Final residual = 1.092559e-05, No Iterations 430
+time step continuity errors : sum local = 1.6573631e-07, global = -3.023405e-10, cumulative = 6.9977682e-08
+ExecutionTime = 5.56 s  ClockTime = 6 s
+
+Time = 7
+
+smoothSolver:  Solving for Ux, Initial residual = 0.064745465, Final residual = 2.4992838e-09, No Iterations 4
+smoothSolver:  Solving for Uy, Initial residual = 0.013098695, Final residual = 4.0509324e-09, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 0.050189939, Final residual = 0.00047613151, No Iterations 167
+DICPCG:  Solving for p, Initial residual = 0.012979055, Final residual = 0.0001264567, No Iterations 337
+DICPCG:  Solving for p, Initial residual = 0.0027352982, Final residual = 2.6318752e-05, No Iterations 387
+DICPCG:  Solving for p, Initial residual = 0.00056502748, Final residual = 5.5287601e-06, No Iterations 412
+time step continuity errors : sum local = 7.8655619e-08, global = 1.2487989e-10, cumulative = 7.0102562e-08
+ExecutionTime = 6.62 s  ClockTime = 7 s
+
+Time = 8
+
+smoothSolver:  Solving for Ux, Initial residual = 0.048953544, Final residual = 2.8378324e-09, No Iterations 4
+smoothSolver:  Solving for Uy, Initial residual = 0.012158762, Final residual = 5.5666104e-09, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 0.042034974, Final residual = 0.00041689354, No Iterations 37
+DICPCG:  Solving for p, Initial residual = 0.0073971448, Final residual = 7.2352825e-05, No Iterations 80
+DICPCG:  Solving for p, Initial residual = 0.0012686074, Final residual = 1.2515091e-05, No Iterations 130
+DICPCG:  Solving for p, Initial residual = 0.00054643848, Final residual = 5.2535255e-06, No Iterations 203
+time step continuity errors : sum local = 7.0751607e-08, global = -2.6359694e-09, cumulative = 6.7466593e-08
+ExecutionTime = 7.01 s  ClockTime = 7 s
+
+Time = 9
+
+smoothSolver:  Solving for Ux, Initial residual = 0.036043637, Final residual = 2.088392e-09, No Iterations 4
+smoothSolver:  Solving for Uy, Initial residual = 0.01081329, Final residual = 4.8506251e-09, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 0.037396411, Final residual = 0.00037069743, No Iterations 157
+DICPCG:  Solving for p, Initial residual = 0.016492335, Final residual = 0.00016403367, No Iterations 338
+DICPCG:  Solving for p, Initial residual = 0.0033439047, Final residual = 3.2845015e-05, No Iterations 409
+DICPCG:  Solving for p, Initial residual = 0.0011605346, Final residual = 1.0737147e-05, No Iterations 400
+time step continuity errors : sum local = 1.3858107e-07, global = 5.3549876e-10, cumulative = 6.8002092e-08
+ExecutionTime = 8.03 s  ClockTime = 8 s
+
+Time = 10
+
+smoothSolver:  Solving for Ux, Initial residual = 0.025315518, Final residual = 5.772772e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.0086236617, Final residual = 1.9210146e-09, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 0.033714186, Final residual = 0.00032751118, No Iterations 357
+DICPCG:  Solving for p, Initial residual = 0.018520166, Final residual = 0.00017923281, No Iterations 24
+DICPCG:  Solving for p, Initial residual = 0.0024909373, Final residual = 2.4816316e-05, No Iterations 189
+DICPCG:  Solving for p, Initial residual = 0.001123733, Final residual = 9.7595091e-06, No Iterations 206
+time step continuity errors : sum local = 1.2030639e-07, global = 8.8230782e-09, cumulative = 7.682517e-08
+ExecutionTime = 8.66 s  ClockTime = 9 s
+
+surfaceFieldValue flowRateTM write:
+    total faces   = 89
+    total area    = 1.073935e-06
+
+    sum(outlet_tm) of phi = 2.5052357e-11
+
+surfaceFieldValue flowRateTM_left write:
+    total faces   = 89
+    total area    = 1.0751392e-06
+
+    sum(outlet_tm_left) of phi = 2.4948935e-11
+
+surfaceFieldValue pressureACinlet write:
+    total faces   = 8
+    total area    = 8.4377393e-07
+
+    areaAverage(ac_inlet) of p = 1.4552385
+
+Time = 11
+
+smoothSolver:  Solving for Ux, Initial residual = 0.016576036, Final residual = 2.623428e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.0060434833, Final residual = 8.8754553e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.026259652, Final residual = 0.00025231862, No Iterations 356
+DICPCG:  Solving for p, Initial residual = 0.015952579, Final residual = 0.00015121631, No Iterations 24
+DICPCG:  Solving for p, Initial residual = 0.0021807545, Final residual = 2.0748974e-05, No Iterations 231
+DICPCG:  Solving for p, Initial residual = 0.0011276294, Final residual = 1.092096e-05, No Iterations 27
+time step continuity errors : sum local = 1.2703915e-07, global = -6.2708333e-09, cumulative = 7.0554337e-08
+ExecutionTime = 9.21 s  ClockTime = 9 s
+
+Time = 12
+
+smoothSolver:  Solving for Ux, Initial residual = 0.011609667, Final residual = 6.1257293e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.0042607972, Final residual = 3.1214613e-09, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 0.020183799, Final residual = 0.00018806686, No Iterations 329
+DICPCG:  Solving for p, Initial residual = 0.0088257619, Final residual = 8.2632265e-05, No Iterations 31
+DICPCG:  Solving for p, Initial residual = 0.0015588226, Final residual = 1.5409815e-05, No Iterations 217
+DICPCG:  Solving for p, Initial residual = 0.0010317515, Final residual = 1.013651e-05, No Iterations 29
+time step continuity errors : sum local = 1.1119978e-07, global = -3.3962415e-08, cumulative = 3.6591921e-08
+ExecutionTime = 9.72 s  ClockTime = 10 s
+
+Time = 13
+
+smoothSolver:  Solving for Ux, Initial residual = 0.008459422, Final residual = 7.5546182e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.0029911097, Final residual = 3.1261694e-09, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 0.019361891, Final residual = 0.00019052294, No Iterations 138
+DICPCG:  Solving for p, Initial residual = 0.0065435605, Final residual = 6.4989646e-05, No Iterations 19
+DICPCG:  Solving for p, Initial residual = 0.0010904503, Final residual = 1.0891645e-05, No Iterations 392
+DICPCG:  Solving for p, Initial residual = 0.0007527017, Final residual = 7.0636671e-06, No Iterations 16
+time step continuity errors : sum local = 7.4117083e-08, global = 2.2762189e-09, cumulative = 3.886814e-08
+ExecutionTime = 10.21 s  ClockTime = 10 s
+
+Time = 14
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0065150472, Final residual = 5.7955597e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.0022930712, Final residual = 1.9832848e-09, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 0.019467154, Final residual = 0.00018126251, No Iterations 158
+DICPCG:  Solving for p, Initial residual = 0.010932799, Final residual = 0.00010818326, No Iterations 99
+DICPCG:  Solving for p, Initial residual = 0.0013609993, Final residual = 1.3358083e-05, No Iterations 353
+DICPCG:  Solving for p, Initial residual = 0.00094659117, Final residual = 9.2796046e-06, No Iterations 401
+time step continuity errors : sum local = 9.5293209e-08, global = -3.3780456e-10, cumulative = 3.8530336e-08
+ExecutionTime = 11.05 s  ClockTime = 11 s
+
+Time = 15
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0067841554, Final residual = 2.7303248e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.001886057, Final residual = 4.1096891e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.017861166, Final residual = 0.0001628881, No Iterations 219
+DICPCG:  Solving for p, Initial residual = 0.01135317, Final residual = 0.00010432859, No Iterations 338
+DICPCG:  Solving for p, Initial residual = 0.0019107736, Final residual = 1.7391341e-05, No Iterations 382
+DICPCG:  Solving for p, Initial residual = 0.00053286086, Final residual = 5.3258357e-06, No Iterations 417
+time step continuity errors : sum local = 5.4227221e-08, global = -1.7145353e-10, cumulative = 3.8358882e-08
+ExecutionTime = 12.15 s  ClockTime = 12 s
+
+Time = 16
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0075166604, Final residual = 2.3278342e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.0016874815, Final residual = 5.6218017e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.014582113, Final residual = 0.0001406618, No Iterations 219
+DICPCG:  Solving for p, Initial residual = 0.008177495, Final residual = 7.8397614e-05, No Iterations 336
+DICPCG:  Solving for p, Initial residual = 0.0014550241, Final residual = 1.3783677e-05, No Iterations 363
+DICPCG:  Solving for p, Initial residual = 0.00034856333, Final residual = 3.4593184e-06, No Iterations 402
+time step continuity errors : sum local = 3.5491856e-08, global = 3.6495218e-10, cumulative = 3.8723834e-08
+ExecutionTime = 13.19 s  ClockTime = 13 s
+
+Time = 17
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0076009343, Final residual = 3.7612954e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.0015242487, Final residual = 9.917173e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.012005883, Final residual = 0.00011646328, No Iterations 196
+DICPCG:  Solving for p, Initial residual = 0.0043085473, Final residual = 4.3003529e-05, No Iterations 301
+DICPCG:  Solving for p, Initial residual = 0.00093648174, Final residual = 9.1174764e-06, No Iterations 410
+DICPCG:  Solving for p, Initial residual = 0.00031826171, Final residual = 3.0073621e-06, No Iterations 391
+time step continuity errors : sum local = 3.1373695e-08, global = -5.7586856e-11, cumulative = 3.8666248e-08
+ExecutionTime = 14.2 s  ClockTime = 14 s
+
+Time = 18
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0076512372, Final residual = 4.1521158e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.0013369193, Final residual = 1.5998212e-09, No Iterations 3
+DICPCG:  Solving for p, Initial residual = 0.012699791, Final residual = 0.00011507488, No Iterations 139
+DICPCG:  Solving for p, Initial residual = 0.0032384795, Final residual = 3.0272173e-05, No Iterations 190
+DICPCG:  Solving for p, Initial residual = 0.00051342768, Final residual = 5.0882648e-06, No Iterations 372
+DICPCG:  Solving for p, Initial residual = 0.00030988146, Final residual = 3.0077655e-06, No Iterations 415
+time step continuity errors : sum local = 3.2105046e-08, global = -3.3646621e-10, cumulative = 3.8329781e-08
+ExecutionTime = 15.08 s  ClockTime = 15 s
+
+Time = 19
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0072092804, Final residual = 2.9783357e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.0012260107, Final residual = 6.5604692e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.012628884, Final residual = 0.00011635973, No Iterations 156
+DICPCG:  Solving for p, Initial residual = 0.0046542618, Final residual = 4.4578424e-05, No Iterations 86
+DICPCG:  Solving for p, Initial residual = 0.00085857396, Final residual = 8.422395e-06, No Iterations 333
+DICPCG:  Solving for p, Initial residual = 0.00055400879, Final residual = 5.4037045e-06, No Iterations 389
+time step continuity errors : sum local = 5.876183e-08, global = -3.2585634e-10, cumulative = 3.8003925e-08
+ExecutionTime = 15.9 s  ClockTime = 16 s
+
+Time = 20
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0064131162, Final residual = 8.8323665e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.0010534146, Final residual = 2.602137e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.0099814022, Final residual = 9.6348544e-05, No Iterations 202
+DICPCG:  Solving for p, Initial residual = 0.0050744527, Final residual = 5.0178739e-05, No Iterations 24
+DICPCG:  Solving for p, Initial residual = 0.00087312251, Final residual = 8.1471625e-06, No Iterations 380
+DICPCG:  Solving for p, Initial residual = 0.00073257906, Final residual = 7.2924127e-06, No Iterations 383
+time step continuity errors : sum local = 8.0476144e-08, global = 1.3290597e-10, cumulative = 3.8136831e-08
+ExecutionTime = 16.68 s  ClockTime = 17 s
+
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5060867e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.4939152e-11
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.437535
+
+Time = 21
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0053933755, Final residual = 8.1421468e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.00083047876, Final residual = 3.2198539e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.00812084, Final residual = 7.6905296e-05, No Iterations 214
+DICPCG:  Solving for p, Initial residual = 0.00426323, Final residual = 3.9088786e-05, No Iterations 27
+DICPCG:  Solving for p, Initial residual = 0.00062037971, Final residual = 6.1366094e-06, No Iterations 380
+DICPCG:  Solving for p, Initial residual = 0.00054222136, Final residual = 5.384013e-06, No Iterations 398
+time step continuity errors : sum local = 5.9916883e-08, global = 3.0258237e-10, cumulative = 3.8439413e-08
+ExecutionTime = 17.49 s  ClockTime = 17 s
+
+Time = 22
+
+smoothSolver:  Solving for Ux, Initial residual = 0.004326557, Final residual = 1.8618774e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.00061040602, Final residual = 5.7641814e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.0081075444, Final residual = 7.7791632e-05, No Iterations 191
+DICPCG:  Solving for p, Initial residual = 0.0023230752, Final residual = 2.1712857e-05, No Iterations 346
+DICPCG:  Solving for p, Initial residual = 0.00053637593, Final residual = 5.3218168e-06, No Iterations 388
+DICPCG:  Solving for p, Initial residual = 0.00022980822, Final residual = 2.2127606e-06, No Iterations 206
+time step continuity errors : sum local = 2.4779541e-08, global = -3.1113682e-09, cumulative = 3.5328045e-08
+ExecutionTime = 18.38 s  ClockTime = 18 s
+
+Time = 23
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0033117191, Final residual = 1.9795307e-09, No Iterations 3
+smoothSolver:  Solving for Uy, Initial residual = 0.00044108568, Final residual = 5.417516e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.0084195562, Final residual = 7.9788775e-05, No Iterations 139
+DICPCG:  Solving for p, Initial residual = 0.0018974775, Final residual = 1.6184145e-05, No Iterations 95
+DICPCG:  Solving for p, Initial residual = 0.00032284754, Final residual = 3.1687315e-06, No Iterations 333
+DICPCG:  Solving for p, Initial residual = 0.000205129, Final residual = 1.9675814e-06, No Iterations 391
+time step continuity errors : sum local = 2.2083046e-08, global = -2.6918467e-11, cumulative = 3.5301127e-08
+ExecutionTime = 19.14 s  ClockTime = 19 s
+
+Time = 24
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0025181841, Final residual = 8.6243199e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.00031294101, Final residual = 3.0855243e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.0076385491, Final residual = 6.9885083e-05, No Iterations 103
+DICPCG:  Solving for p, Initial residual = 0.0025027893, Final residual = 2.2712653e-05, No Iterations 130
+DICPCG:  Solving for p, Initial residual = 0.00050314563, Final residual = 5.0281065e-06, No Iterations 93
+DICPCG:  Solving for p, Initial residual = 0.00019495255, Final residual = 1.874323e-06, No Iterations 332
+time step continuity errors : sum local = 2.1043091e-08, global = 3.7009907e-12, cumulative = 3.5304828e-08
+ExecutionTime = 19.68 s  ClockTime = 20 s
+
+Time = 25
+
+smoothSolver:  Solving for Ux, Initial residual = 0.002058828, Final residual = 6.2837411e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.00026309643, Final residual = 1.497603e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.005748333, Final residual = 5.580755e-05, No Iterations 191
+DICPCG:  Solving for p, Initial residual = 0.0023619096, Final residual = 2.2452258e-05, No Iterations 28
+DICPCG:  Solving for p, Initial residual = 0.00033735234, Final residual = 3.3690294e-06, No Iterations 353
+DICPCG:  Solving for p, Initial residual = 0.00024223688, Final residual = 2.3727032e-06, No Iterations 413
+time step continuity errors : sum local = 2.6588786e-08, global = 4.6698294e-11, cumulative = 3.5351526e-08
+ExecutionTime = 20.47 s  ClockTime = 20 s
+
+Time = 26
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0017126716, Final residual = 7.1582701e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.00023821848, Final residual = 1.9887378e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.0045491254, Final residual = 3.9937642e-05, No Iterations 211
+DICPCG:  Solving for p, Initial residual = 0.0016302152, Final residual = 1.5496075e-05, No Iterations 28
+DICPCG:  Solving for p, Initial residual = 0.00023291719, Final residual = 2.2392448e-06, No Iterations 377
+DICPCG:  Solving for p, Initial residual = 0.00018531484, Final residual = 1.7697432e-06, No Iterations 388
+time step continuity errors : sum local = 1.9813297e-08, global = 4.9747978e-11, cumulative = 3.5401274e-08
+ExecutionTime = 21.43 s  ClockTime = 21 s
+
+Time = 27
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0013875695, Final residual = 8.5128724e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.00021123963, Final residual = 2.8804028e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.0046684038, Final residual = 4.4894233e-05, No Iterations 206
+DICPCG:  Solving for p, Initial residual = 0.00096866371, Final residual = 9.1916418e-06, No Iterations 337
+DICPCG:  Solving for p, Initial residual = 0.00022276141, Final residual = 2.1844967e-06, No Iterations 355
+DICPCG:  Solving for p, Initial residual = 9.9925188e-05, Final residual = 9.6477504e-07, No Iterations 102
+time step continuity errors : sum local = 1.0780535e-08, global = 4.242898e-10, cumulative = 3.5825564e-08
+ExecutionTime = 22.24 s  ClockTime = 22 s
+
+Time = 28
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0010939189, Final residual = 7.9709863e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.0001863264, Final residual = 2.6990715e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.0050720208, Final residual = 5.0304096e-05, No Iterations 158
+DICPCG:  Solving for p, Initial residual = 0.0011324334, Final residual = 1.078074e-05, No Iterations 94
+DICPCG:  Solving for p, Initial residual = 0.00023509887, Final residual = 2.1663362e-06, No Iterations 336
+DICPCG:  Solving for p, Initial residual = 0.00016167676, Final residual = 1.6140548e-06, No Iterations 15
+time step continuity errors : sum local = 1.7996955e-08, global = -2.1078874e-09, cumulative = 3.3717676e-08
+ExecutionTime = 22.75 s  ClockTime = 23 s
+
+Time = 29
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00087166576, Final residual = 5.560902e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.0001668754, Final residual = 1.6939097e-09, No Iterations 2
+DICPCG:  Solving for p, Initial residual = 0.0045066731, Final residual = 4.110081e-05, No Iterations 96
+DICPCG:  Solving for p, Initial residual = 0.0013690726, Final residual = 1.2274005e-05, No Iterations 117
+DICPCG:  Solving for p, Initial residual = 0.00032158926, Final residual = 3.0698562e-06, No Iterations 117
+DICPCG:  Solving for p, Initial residual = 0.000188636, Final residual = 1.8656942e-06, No Iterations 18
+time step continuity errors : sum local = 2.0809352e-08, global = -1.1453869e-08, cumulative = 2.2263807e-08
+ExecutionTime = 23.06 s  ClockTime = 23 s
+
+Time = 30
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00073543679, Final residual = 3.3900565e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.00014797252, Final residual = 5.4484156e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0031456565, Final residual = 3.1301131e-05, No Iterations 207
+DICPCG:  Solving for p, Initial residual = 0.0012455952, Final residual = 1.2221345e-05, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 0.00029150154, Final residual = 2.8083969e-06, No Iterations 339
+DICPCG:  Solving for p, Initial residual = 0.00021431515, Final residual = 2.1010696e-06, No Iterations 13
+time step continuity errors : sum local = 2.3422262e-08, global = -3.1305131e-09, cumulative = 1.9133294e-08
+ExecutionTime = 23.54 s  ClockTime = 24 s
+
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5047126e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.4952416e-11
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.438863
+
+Time = 31
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00061811175, Final residual = 3.8186368e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.00013371595, Final residual = 6.939588e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0025199285, Final residual = 2.4780518e-05, No Iterations 209
+DICPCG:  Solving for p, Initial residual = 0.00079909778, Final residual = 7.3187483e-06, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 0.00020140087, Final residual = 1.9623187e-06, No Iterations 347
+DICPCG:  Solving for p, Initial residual = 0.00016630882, Final residual = 1.6241153e-06, No Iterations 11
+time step continuity errors : sum local = 1.8096026e-08, global = -9.7265711e-10, cumulative = 1.8160637e-08
+ExecutionTime = 24.03 s  ClockTime = 24 s
+
+Time = 32
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00049281223, Final residual = 3.7141056e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.00011829151, Final residual = 8.9396117e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0029258809, Final residual = 2.7772403e-05, No Iterations 204
+DICPCG:  Solving for p, Initial residual = 0.00060731168, Final residual = 5.6743785e-06, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 0.00014628917, Final residual = 1.3377315e-06, No Iterations 343
+DICPCG:  Solving for p, Initial residual = 0.00011896731, Final residual = 1.1371579e-06, No Iterations 14
+time step continuity errors : sum local = 1.2667719e-08, global = 6.1508963e-10, cumulative = 1.8775727e-08
+ExecutionTime = 24.51 s  ClockTime = 24 s
+
+Time = 33
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00036889452, Final residual = 2.6900839e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 0.00010045414, Final residual = 7.8984156e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0031045544, Final residual = 3.0827583e-05, No Iterations 51
+DICPCG:  Solving for p, Initial residual = 0.00063426319, Final residual = 6.3013411e-06, No Iterations 186
+DICPCG:  Solving for p, Initial residual = 0.00015017995, Final residual = 1.4768164e-06, No Iterations 327
+DICPCG:  Solving for p, Initial residual = 8.3296272e-05, Final residual = 8.2436192e-07, No Iterations 32
+time step continuity errors : sum local = 9.1856482e-09, global = 1.9777232e-09, cumulative = 2.075345e-08
+ExecutionTime = 25 s  ClockTime = 25 s
+
+Time = 34
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00030512285, Final residual = 1.7281349e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 8.7224416e-05, Final residual = 5.3471391e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0025789224, Final residual = 2.1093692e-05, No Iterations 103
+DICPCG:  Solving for p, Initial residual = 0.00064909715, Final residual = 6.4610119e-06, No Iterations 144
+DICPCG:  Solving for p, Initial residual = 0.00014179656, Final residual = 1.3752411e-06, No Iterations 193
+DICPCG:  Solving for p, Initial residual = 6.5783378e-05, Final residual = 6.2281088e-07, No Iterations 28
+time step continuity errors : sum local = 6.9386464e-09, global = 2.4013061e-09, cumulative = 2.3154756e-08
+ExecutionTime = 25.4 s  ClockTime = 25 s
+
+Time = 35
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00025640043, Final residual = 2.4889359e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 7.6441799e-05, Final residual = 4.4056824e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0018704995, Final residual = 1.8017424e-05, No Iterations 197
+DICPCG:  Solving for p, Initial residual = 0.00055635482, Final residual = 5.5056308e-06, No Iterations 21
+DICPCG:  Solving for p, Initial residual = 0.00010219369, Final residual = 9.5093629e-07, No Iterations 347
+DICPCG:  Solving for p, Initial residual = 7.1138876e-05, Final residual = 6.883046e-07, No Iterations 15
+time step continuity errors : sum local = 7.6569724e-09, global = 1.8429217e-09, cumulative = 2.4997678e-08
+ExecutionTime = 25.87 s  ClockTime = 26 s
+
+Time = 36
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00021104697, Final residual = 3.0597201e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 6.6379343e-05, Final residual = 4.9352398e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0016020256, Final residual = 1.5422373e-05, No Iterations 207
+DICPCG:  Solving for p, Initial residual = 0.00039149503, Final residual = 3.693349e-06, No Iterations 18
+DICPCG:  Solving for p, Initial residual = 8.9042018e-05, Final residual = 8.8156897e-07, No Iterations 348
+DICPCG:  Solving for p, Initial residual = 7.2675145e-05, Final residual = 7.0378114e-07, No Iterations 11
+time step continuity errors : sum local = 7.8253329e-09, global = 3.0663014e-10, cumulative = 2.5304308e-08
+ExecutionTime = 26.36 s  ClockTime = 26 s
+
+Time = 37
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00017182204, Final residual = 3.1532021e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 5.6752587e-05, Final residual = 5.4533157e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0016618986, Final residual = 1.5251069e-05, No Iterations 107
+DICPCG:  Solving for p, Initial residual = 0.00037269785, Final residual = 3.5696506e-06, No Iterations 124
+DICPCG:  Solving for p, Initial residual = 9.9655289e-05, Final residual = 9.9516744e-07, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 6.6660447e-05, Final residual = 6.1833591e-07, No Iterations 327
+time step continuity errors : sum local = 6.9286262e-09, global = 3.0113263e-11, cumulative = 2.5334421e-08
+ExecutionTime = 26.85 s  ClockTime = 27 s
+
+Time = 38
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0001423331, Final residual = 2.8903673e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 4.7616845e-05, Final residual = 4.6974101e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0016378166, Final residual = 1.6031508e-05, No Iterations 105
+DICPCG:  Solving for p, Initial residual = 0.00039589553, Final residual = 3.8288151e-06, No Iterations 151
+DICPCG:  Solving for p, Initial residual = 0.00011152358, Final residual = 1.0949918e-06, No Iterations 72
+DICPCG:  Solving for p, Initial residual = 7.705365e-05, Final residual = 7.4242904e-07, No Iterations 28
+time step continuity errors : sum local = 8.2647394e-09, global = -3.4053143e-09, cumulative = 2.1929107e-08
+ExecutionTime = 27.17 s  ClockTime = 27 s
+
+Time = 39
+
+smoothSolver:  Solving for Ux, Initial residual = 0.00011839544, Final residual = 2.4760828e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 3.9364787e-05, Final residual = 3.6420704e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0013300557, Final residual = 1.3295267e-05, No Iterations 162
+DICPCG:  Solving for p, Initial residual = 0.00035342345, Final residual = 3.3061787e-06, No Iterations 69
+DICPCG:  Solving for p, Initial residual = 0.00010684294, Final residual = 1.0448263e-06, No Iterations 25
+DICPCG:  Solving for p, Initial residual = 7.7341926e-05, Final residual = 7.4972917e-07, No Iterations 150
+time step continuity errors : sum local = 8.3709616e-09, global = -7.6559559e-10, cumulative = 2.1163511e-08
+ExecutionTime = 27.52 s  ClockTime = 27 s
+
+Time = 40
+
+smoothSolver:  Solving for Ux, Initial residual = 0.0001026888, Final residual = 2.3134171e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 3.1834302e-05, Final residual = 3.3918754e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0010394466, Final residual = 1.0254415e-05, No Iterations 198
+DICPCG:  Solving for p, Initial residual = 0.00024735504, Final residual = 2.2557243e-06, No Iterations 22
+DICPCG:  Solving for p, Initial residual = 8.7538313e-05, Final residual = 8.3940628e-07, No Iterations 28
+DICPCG:  Solving for p, Initial residual = 7.2509946e-05, Final residual = 6.8041659e-07, No Iterations 19
+time step continuity errors : sum local = 7.5745541e-09, global = -2.2393312e-09, cumulative = 1.892418e-08
+ExecutionTime = 27.77 s  ClockTime = 28 s
+
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5039815e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.4959857e-11
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.4387443
+
+Time = 41
+
+smoothSolver:  Solving for Ux, Initial residual = 8.7574121e-05, Final residual = 1.9939407e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 2.5302943e-05, Final residual = 3.2087959e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00098414035, Final residual = 9.1396656e-06, No Iterations 104
+DICPCG:  Solving for p, Initial residual = 0.0002161014, Final residual = 2.0909156e-06, No Iterations 18
+DICPCG:  Solving for p, Initial residual = 7.9021037e-05, Final residual = 7.14161e-07, No Iterations 65
+DICPCG:  Solving for p, Initial residual = 6.7905197e-05, Final residual = 6.7507238e-07, No Iterations 13
+time step continuity errors : sum local = 7.5133556e-09, global = -1.5030288e-09, cumulative = 1.7421151e-08
+ExecutionTime = 27.97 s  ClockTime = 28 s
+
+Time = 42
+
+smoothSolver:  Solving for Ux, Initial residual = 7.2676421e-05, Final residual = 9.9234674e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.0157744e-05, Final residual = 2.7571949e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00093301058, Final residual = 9.2624128e-06, No Iterations 118
+DICPCG:  Solving for p, Initial residual = 0.00023409265, Final residual = 2.2949544e-06, No Iterations 124
+DICPCG:  Solving for p, Initial residual = 7.9497552e-05, Final residual = 7.8075314e-07, No Iterations 25
+DICPCG:  Solving for p, Initial residual = 5.8184466e-05, Final residual = 5.624065e-07, No Iterations 15
+time step continuity errors : sum local = 6.2624756e-09, global = 2.5252241e-09, cumulative = 1.9946375e-08
+ExecutionTime = 28.23 s  ClockTime = 28 s
+
+Time = 43
+
+smoothSolver:  Solving for Ux, Initial residual = 6.1409317e-05, Final residual = 7.700621e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.5803564e-05, Final residual = 2.3048284e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00080388399, Final residual = 6.9106954e-06, No Iterations 210
+DICPCG:  Solving for p, Initial residual = 0.00022334429, Final residual = 2.1173405e-06, No Iterations 21
+DICPCG:  Solving for p, Initial residual = 6.806529e-05, Final residual = 6.2487448e-07, No Iterations 88
+DICPCG:  Solving for p, Initial residual = 5.4995567e-05, Final residual = 5.2421265e-07, No Iterations 15
+time step continuity errors : sum local = 5.8387923e-09, global = 1.6088845e-09, cumulative = 2.155526e-08
+ExecutionTime = 28.53 s  ClockTime = 29 s
+
+Time = 44
+
+smoothSolver:  Solving for Ux, Initial residual = 5.448392e-05, Final residual = 9.3260433e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.2167231e-05, Final residual = 2.4272804e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00063949304, Final residual = 6.3549559e-06, No Iterations 94
+DICPCG:  Solving for p, Initial residual = 0.00017701606, Final residual = 1.7004654e-06, No Iterations 133
+DICPCG:  Solving for p, Initial residual = 6.90331e-05, Final residual = 6.6143213e-07, No Iterations 21
+DICPCG:  Solving for p, Initial residual = 5.3471886e-05, Final residual = 5.0876788e-07, No Iterations 33
+time step continuity errors : sum local = 5.6737561e-09, global = 1.0443912e-09, cumulative = 2.2599651e-08
+ExecutionTime = 28.8 s  ClockTime = 29 s
+
+Time = 45
+
+smoothSolver:  Solving for Ux, Initial residual = 4.6868123e-05, Final residual = 1.7106065e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 9.659402e-06, Final residual = 2.6302788e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00059980964, Final residual = 5.5011465e-06, No Iterations 96
+DICPCG:  Solving for p, Initial residual = 0.0001332135, Final residual = 1.317921e-06, No Iterations 37
+DICPCG:  Solving for p, Initial residual = 6.4414381e-05, Final residual = 6.2508223e-07, No Iterations 165
+DICPCG:  Solving for p, Initial residual = 5.7607952e-05, Final residual = 4.9327561e-07, No Iterations 12
+time step continuity errors : sum local = 5.4931534e-09, global = -6.5812104e-12, cumulative = 2.259307e-08
+ExecutionTime = 29.08 s  ClockTime = 29 s
+
+Time = 46
+
+smoothSolver:  Solving for Ux, Initial residual = 4.1171254e-05, Final residual = 1.6925938e-09, No Iterations 2
+smoothSolver:  Solving for Uy, Initial residual = 8.4405296e-06, Final residual = 2.641531e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00059509413, Final residual = 5.600847e-06, No Iterations 117
+DICPCG:  Solving for p, Initial residual = 0.000143843, Final residual = 1.430898e-06, No Iterations 141
+DICPCG:  Solving for p, Initial residual = 7.1296763e-05, Final residual = 6.5277545e-07, No Iterations 18
+DICPCG:  Solving for p, Initial residual = 5.8031868e-05, Final residual = 5.4792705e-07, No Iterations 15
+time step continuity errors : sum local = 6.1010911e-09, global = -1.6527219e-09, cumulative = 2.0940348e-08
+ExecutionTime = 29.34 s  ClockTime = 29 s
+
+Time = 47
+
+smoothSolver:  Solving for Ux, Initial residual = 3.6259682e-05, Final residual = 9.8195167e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 7.2971053e-06, Final residual = 2.46488e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00053956156, Final residual = 4.9769879e-06, No Iterations 208
+DICPCG:  Solving for p, Initial residual = 0.00014899167, Final residual = 1.291482e-06, No Iterations 18
+DICPCG:  Solving for p, Initial residual = 6.6621999e-05, Final residual = 6.4997396e-07, No Iterations 29
+DICPCG:  Solving for p, Initial residual = 5.8158471e-05, Final residual = 5.45657e-07, No Iterations 15
+time step continuity errors : sum local = 6.0763593e-09, global = -3.0202876e-09, cumulative = 1.792006e-08
+ExecutionTime = 29.6 s  ClockTime = 30 s
+
+Time = 48
+
+smoothSolver:  Solving for Ux, Initial residual = 3.1329328e-05, Final residual = 9.3774085e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 6.0696265e-06, Final residual = 2.3276744e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00045274713, Final residual = 4.5256731e-06, No Iterations 133
+DICPCG:  Solving for p, Initial residual = 0.00013157328, Final residual = 1.3051811e-06, No Iterations 172
+DICPCG:  Solving for p, Initial residual = 6.6875202e-05, Final residual = 6.4426563e-07, No Iterations 15
+DICPCG:  Solving for p, Initial residual = 5.7378478e-05, Final residual = 5.6135268e-07, No Iterations 15
+time step continuity errors : sum local = 6.2506198e-09, global = -1.5194785e-09, cumulative = 1.6400582e-08
+ExecutionTime = 29.9 s  ClockTime = 30 s
+
+Time = 49
+
+smoothSolver:  Solving for Ux, Initial residual = 2.6780483e-05, Final residual = 9.2059925e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 4.8725863e-06, Final residual = 2.2431571e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00039810466, Final residual = 3.9341304e-06, No Iterations 35
+DICPCG:  Solving for p, Initial residual = 9.9725492e-05, Final residual = 9.7611968e-07, No Iterations 35
+DICPCG:  Solving for p, Initial residual = 5.9250414e-05, Final residual = 5.7348665e-07, No Iterations 25
+DICPCG:  Solving for p, Initial residual = 5.5456374e-05, Final residual = 5.1670727e-07, No Iterations 17
+time step continuity errors : sum local = 5.7553404e-09, global = -1.4213476e-09, cumulative = 1.4979234e-08
+ExecutionTime = 30.04 s  ClockTime = 30 s
+
+Time = 50
+
+smoothSolver:  Solving for Ux, Initial residual = 2.1986398e-05, Final residual = 8.6775557e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 3.7944101e-06, Final residual = 2.0901152e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0003901477, Final residual = 3.839339e-06, No Iterations 104
+DICPCG:  Solving for p, Initial residual = 9.2189307e-05, Final residual = 9.1694472e-07, No Iterations 124
+DICPCG:  Solving for p, Initial residual = 5.8750436e-05, Final residual = 5.3331145e-07, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.2771521e-05, Final residual = 5.0373207e-07, No Iterations 12
+time step continuity errors : sum local = 5.6087902e-09, global = -6.1126948e-11, cumulative = 1.4918107e-08
+ExecutionTime = 30.39 s  ClockTime = 30 s
+
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5034592e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.4965399e-11
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.4387492
+
+Time = 51
+
+smoothSolver:  Solving for Ux, Initial residual = 1.7241638e-05, Final residual = 7.8732939e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.9812248e-06, Final residual = 1.871111e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00036633077, Final residual = 3.344694e-06, No Iterations 206
+DICPCG:  Solving for p, Initial residual = 9.6731e-05, Final residual = 8.9792433e-07, No Iterations 21
+DICPCG:  Solving for p, Initial residual = 5.4204914e-05, Final residual = 5.2210981e-07, No Iterations 17
+DICPCG:  Solving for p, Initial residual = 5.1085243e-05, Final residual = 4.7928845e-07, No Iterations 28
+time step continuity errors : sum local = 5.3460734e-09, global = 8.0648013e-10, cumulative = 1.5724587e-08
+ExecutionTime = 30.64 s  ClockTime = 31 s
+
+Time = 52
+
+smoothSolver:  Solving for Ux, Initial residual = 1.299069e-05, Final residual = 7.3621047e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.2794637e-06, Final residual = 1.7476553e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00032239045, Final residual = 3.1886539e-06, No Iterations 167
+DICPCG:  Solving for p, Initial residual = 9.6123946e-05, Final residual = 9.4245557e-07, No Iterations 183
+DICPCG:  Solving for p, Initial residual = 5.7432338e-05, Final residual = 5.3636481e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.2180462e-05, Final residual = 4.5529612e-07, No Iterations 23
+time step continuity errors : sum local = 5.0765912e-09, global = 4.0649013e-10, cumulative = 1.6131078e-08
+ExecutionTime = 30.99 s  ClockTime = 31 s
+
+Time = 53
+
+smoothSolver:  Solving for Ux, Initial residual = 9.6685978e-06, Final residual = 7.3015755e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.7145621e-06, Final residual = 1.7544586e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0002927561, Final residual = 2.7572233e-06, No Iterations 93
+DICPCG:  Solving for p, Initial residual = 8.3509304e-05, Final residual = 8.3483354e-07, No Iterations 147
+DICPCG:  Solving for p, Initial residual = 5.6843566e-05, Final residual = 5.1322362e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.2302938e-05, Final residual = 4.9007109e-07, No Iterations 17
+time step continuity errors : sum local = 5.4590142e-09, global = 2.7872487e-10, cumulative = 1.6409802e-08
+ExecutionTime = 31.29 s  ClockTime = 31 s
+
+Time = 54
+
+smoothSolver:  Solving for Ux, Initial residual = 7.3535951e-06, Final residual = 7.4485999e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.3744481e-06, Final residual = 1.7853207e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00028648954, Final residual = 2.8104574e-06, No Iterations 26
+DICPCG:  Solving for p, Initial residual = 7.175074e-05, Final residual = 6.8972131e-07, No Iterations 184
+DICPCG:  Solving for p, Initial residual = 5.5473909e-05, Final residual = 5.3751626e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.234368e-05, Final residual = 5.0280355e-07, No Iterations 12
+time step continuity errors : sum local = 5.5991865e-09, global = 1.5965256e-11, cumulative = 1.6425768e-08
+ExecutionTime = 31.91 s  ClockTime = 32 s
+
+Time = 55
+
+smoothSolver:  Solving for Ux, Initial residual = 5.8392124e-06, Final residual = 7.427942e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.2409418e-06, Final residual = 1.7902553e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00027867474, Final residual = 2.7531928e-06, No Iterations 71
+DICPCG:  Solving for p, Initial residual = 7.3320375e-05, Final residual = 7.3317509e-07, No Iterations 154
+DICPCG:  Solving for p, Initial residual = 5.771155e-05, Final residual = 5.629201e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.2754814e-05, Final residual = 4.669189e-07, No Iterations 12
+time step continuity errors : sum local = 5.2009094e-09, global = -7.0222583e-10, cumulative = 1.5723542e-08
+ExecutionTime = 32.27 s  ClockTime = 32 s
+
+Time = 56
+
+smoothSolver:  Solving for Ux, Initial residual = 4.8282555e-06, Final residual = 7.2463375e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.1222706e-06, Final residual = 1.7645108e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00025723887, Final residual = 2.5664381e-06, No Iterations 93
+DICPCG:  Solving for p, Initial residual = 7.5529721e-05, Final residual = 7.4654621e-07, No Iterations 158
+DICPCG:  Solving for p, Initial residual = 5.7616178e-05, Final residual = 5.4525656e-07, No Iterations 15
+DICPCG:  Solving for p, Initial residual = 5.3396625e-05, Final residual = 5.2150149e-07, No Iterations 14
+time step continuity errors : sum local = 5.8081195e-09, global = -6.6958067e-10, cumulative = 1.5053961e-08
+ExecutionTime = 32.57 s  ClockTime = 33 s
+
+Time = 57
+
+smoothSolver:  Solving for Ux, Initial residual = 4.0554406e-06, Final residual = 7.1422925e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.0263097e-06, Final residual = 1.7340802e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00023596231, Final residual = 2.3577736e-06, No Iterations 36
+DICPCG:  Solving for p, Initial residual = 7.0318502e-05, Final residual = 6.9044353e-07, No Iterations 84
+DICPCG:  Solving for p, Initial residual = 5.5507052e-05, Final residual = 5.4580195e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.271158e-05, Final residual = 4.814885e-07, No Iterations 14
+time step continuity errors : sum local = 5.3630494e-09, global = -1.4168611e-09, cumulative = 1.36371e-08
+ExecutionTime = 32.75 s  ClockTime = 33 s
+
+Time = 58
+
+smoothSolver:  Solving for Ux, Initial residual = 3.5432954e-06, Final residual = 6.9875894e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.2325469e-07, Final residual = 1.6880718e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00022430715, Final residual = 2.1150156e-06, No Iterations 25
+DICPCG:  Solving for p, Initial residual = 6.3854815e-05, Final residual = 6.2939765e-07, No Iterations 59
+DICPCG:  Solving for p, Initial residual = 5.2939802e-05, Final residual = 4.9959211e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.132097e-05, Final residual = 4.8283626e-07, No Iterations 13
+time step continuity errors : sum local = 5.3780286e-09, global = 7.2078389e-10, cumulative = 1.4357884e-08
+ExecutionTime = 32.91 s  ClockTime = 33 s
+
+Time = 59
+
+smoothSolver:  Solving for Ux, Initial residual = 3.1032049e-06, Final residual = 6.7620338e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 7.996054e-07, Final residual = 1.618853e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00021684916, Final residual = 2.1480624e-06, No Iterations 66
+DICPCG:  Solving for p, Initial residual = 6.4423867e-05, Final residual = 6.0806239e-07, No Iterations 159
+DICPCG:  Solving for p, Initial residual = 5.4004653e-05, Final residual = 5.3547379e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.1217983e-05, Final residual = 4.7625373e-07, No Iterations 13
+time step continuity errors : sum local = 5.3057668e-09, global = 3.1805777e-10, cumulative = 1.4675942e-08
+ExecutionTime = 33.17 s  ClockTime = 33 s
+
+Time = 60
+
+smoothSolver:  Solving for Ux, Initial residual = 2.5807983e-06, Final residual = 6.5021314e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 6.7643371e-07, Final residual = 1.5399995e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00020632455, Final residual = 1.9200331e-06, No Iterations 81
+DICPCG:  Solving for p, Initial residual = 6.4813346e-05, Final residual = 6.3617531e-07, No Iterations 154
+DICPCG:  Solving for p, Initial residual = 5.4055877e-05, Final residual = 5.226495e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.114702e-05, Final residual = 4.6627991e-07, No Iterations 13
+time step continuity errors : sum local = 5.1944635e-09, global = 5.7530557e-11, cumulative = 1.4733472e-08
+ExecutionTime = 33.43 s  ClockTime = 33 s
+
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5030853e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.4969156e-11
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.43875
+
+Time = 61
+
+smoothSolver:  Solving for Ux, Initial residual = 2.1261185e-06, Final residual = 6.3143669e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 5.6752708e-07, Final residual = 1.489007e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00019463602, Final residual = 1.8814844e-06, No Iterations 44
+DICPCG:  Solving for p, Initial residual = 6.1938178e-05, Final residual = 5.5830207e-07, No Iterations 174
+DICPCG:  Solving for p, Initial residual = 5.3143167e-05, Final residual = 5.128217e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.0965971e-05, Final residual = 4.8535043e-07, No Iterations 12
+time step continuity errors : sum local = 5.405881e-09, global = 1.9735731e-10, cumulative = 1.493083e-08
+ExecutionTime = 33.68 s  ClockTime = 34 s
+
+Time = 62
+
+smoothSolver:  Solving for Ux, Initial residual = 1.7239427e-06, Final residual = 6.2393072e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 4.7753458e-07, Final residual = 1.4632381e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00018891208, Final residual = 1.7948147e-06, No Iterations 28
+DICPCG:  Solving for p, Initial residual = 5.9002248e-05, Final residual = 5.5347508e-07, No Iterations 30
+DICPCG:  Solving for p, Initial residual = 5.208077e-05, Final residual = 5.1429277e-07, No Iterations 16
+DICPCG:  Solving for p, Initial residual = 5.0992599e-05, Final residual = 4.7842439e-07, No Iterations 14
+time step continuity errors : sum local = 5.3307227e-09, global = 8.9396033e-10, cumulative = 1.582479e-08
+ExecutionTime = 33.82 s  ClockTime = 34 s
+
+Time = 63
+
+smoothSolver:  Solving for Ux, Initial residual = 1.3785676e-06, Final residual = 6.2039442e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 3.9056865e-07, Final residual = 1.4475432e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0001861197, Final residual = 1.8251836e-06, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 5.7510944e-05, Final residual = 5.5941851e-07, No Iterations 62
+DICPCG:  Solving for p, Initial residual = 5.277392e-05, Final residual = 4.7965916e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1320058e-05, Final residual = 4.6470246e-07, No Iterations 13
+time step continuity errors : sum local = 5.1766621e-09, global = -4.9041086e-10, cumulative = 1.5334379e-08
+ExecutionTime = 33.96 s  ClockTime = 34 s
+
+Time = 64
+
+smoothSolver:  Solving for Ux, Initial residual = 1.0891193e-06, Final residual = 6.1411464e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 3.2302873e-07, Final residual = 1.4312501e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00018085234, Final residual = 1.7790919e-06, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 5.8196778e-05, Final residual = 5.6515254e-07, No Iterations 98
+DICPCG:  Solving for p, Initial residual = 5.3583941e-05, Final residual = 4.6169538e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1784828e-05, Final residual = 5.0009454e-07, No Iterations 12
+time step continuity errors : sum local = 5.5699619e-09, global = -8.1143635e-10, cumulative = 1.4522943e-08
+ExecutionTime = 34.13 s  ClockTime = 34 s
+
+Time = 65
+
+smoothSolver:  Solving for Ux, Initial residual = 8.3517603e-07, Final residual = 6.0728539e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.6826712e-07, Final residual = 1.4127655e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00017310413, Final residual = 1.6673368e-06, No Iterations 21
+DICPCG:  Solving for p, Initial residual = 5.7766369e-05, Final residual = 5.7112141e-07, No Iterations 30
+DICPCG:  Solving for p, Initial residual = 5.2794259e-05, Final residual = 4.9970273e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1767478e-05, Final residual = 4.9222227e-07, No Iterations 13
+time step continuity errors : sum local = 5.4826072e-09, global = -1.3818323e-09, cumulative = 1.3141111e-08
+ExecutionTime = 34.26 s  ClockTime = 34 s
+
+Time = 66
+
+smoothSolver:  Solving for Ux, Initial residual = 6.6838967e-07, Final residual = 5.9825395e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.2332415e-07, Final residual = 1.3902163e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00016607235, Final residual = 1.5422882e-06, No Iterations 19
+DICPCG:  Solving for p, Initial residual = 5.6617296e-05, Final residual = 5.6356907e-07, No Iterations 18
+DICPCG:  Solving for p, Initial residual = 5.208568e-05, Final residual = 4.6834769e-07, No Iterations 17
+DICPCG:  Solving for p, Initial residual = 5.1402399e-05, Final residual = 5.1140625e-07, No Iterations 14
+time step continuity errors : sum local = 5.6966775e-09, global = -6.1208326e-10, cumulative = 1.2529027e-08
+ExecutionTime = 34.36 s  ClockTime = 34 s
+
+Time = 67
+
+smoothSolver:  Solving for Ux, Initial residual = 5.876068e-07, Final residual = 5.8829921e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.8747056e-07, Final residual = 1.3638076e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00016083822, Final residual = 1.6051471e-06, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 5.6312863e-05, Final residual = 5.618078e-07, No Iterations 54
+DICPCG:  Solving for p, Initial residual = 5.2341207e-05, Final residual = 4.6137067e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1190875e-05, Final residual = 5.0178732e-07, No Iterations 12
+time step continuity errors : sum local = 5.5886802e-09, global = 1.5086346e-10, cumulative = 1.2679891e-08
+ExecutionTime = 34.49 s  ClockTime = 35 s
+
+Time = 68
+
+smoothSolver:  Solving for Ux, Initial residual = 5.3417245e-07, Final residual = 5.771604e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.6266402e-07, Final residual = 1.3325592e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00015693042, Final residual = 1.5547579e-06, No Iterations 30
+DICPCG:  Solving for p, Initial residual = 5.6795838e-05, Final residual = 5.5714246e-07, No Iterations 59
+DICPCG:  Solving for p, Initial residual = 5.2504309e-05, Final residual = 4.7217722e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1229325e-05, Final residual = 4.6357583e-07, No Iterations 13
+time step continuity errors : sum local = 5.1649982e-09, global = 8.0503126e-10, cumulative = 1.3484922e-08
+ExecutionTime = 34.62 s  ClockTime = 35 s
+
+Time = 69
+
+smoothSolver:  Solving for Ux, Initial residual = 4.9139762e-07, Final residual = 5.6517434e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.4194102e-07, Final residual = 1.3000477e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.0001527343, Final residual = 1.458191e-06, No Iterations 32
+DICPCG:  Solving for p, Initial residual = 5.6314236e-05, Final residual = 5.1491216e-07, No Iterations 181
+DICPCG:  Solving for p, Initial residual = 5.2628637e-05, Final residual = 5.0668928e-07, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.1166337e-05, Final residual = 5.0719618e-07, No Iterations 11
+time step continuity errors : sum local = 5.6487005e-09, global = 1.8034689e-10, cumulative = 1.3665269e-08
+ExecutionTime = 34.85 s  ClockTime = 35 s
+
+Time = 70
+
+smoothSolver:  Solving for Ux, Initial residual = 4.4084707e-07, Final residual = 5.5284096e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.19824e-07, Final residual = 1.2685563e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00014856569, Final residual = 1.3780617e-06, No Iterations 23
+DICPCG:  Solving for p, Initial residual = 5.5049046e-05, Final residual = 5.274956e-07, No Iterations 178
+DICPCG:  Solving for p, Initial residual = 5.2431632e-05, Final residual = 5.1271555e-07, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.1050129e-05, Final residual = 4.9349715e-07, No Iterations 11
+time step continuity errors : sum local = 5.4965029e-09, global = 2.0244989e-10, cumulative = 1.3867719e-08
+ExecutionTime = 35.07 s  ClockTime = 35 s
+
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.502816e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.497187e-11
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.4387499
+
+Time = 71
+
+smoothSolver:  Solving for Ux, Initial residual = 3.8321329e-07, Final residual = 5.4214695e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.9112401e-08, Final residual = 1.2428931e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00014527269, Final residual = 1.4045158e-06, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 5.4024082e-05, Final residual = 5.2778171e-07, No Iterations 32
+DICPCG:  Solving for p, Initial residual = 5.1452275e-05, Final residual = 5.0305756e-07, No Iterations 15
+DICPCG:  Solving for p, Initial residual = 5.0973535e-05, Final residual = 4.760238e-07, No Iterations 14
+time step continuity errors : sum local = 5.3026595e-09, global = 1.6385435e-09, cumulative = 1.5506262e-08
+ExecutionTime = 35.18 s  ClockTime = 35 s
+
+Time = 72
+
+smoothSolver:  Solving for Ux, Initial residual = 3.2055372e-07, Final residual = 5.3431289e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 8.1076462e-08, Final residual = 1.2229564e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00014225278, Final residual = 1.4096759e-06, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.3835222e-05, Final residual = 5.3533851e-07, No Iterations 29
+DICPCG:  Solving for p, Initial residual = 5.1683527e-05, Final residual = 5.0685735e-07, No Iterations 16
+DICPCG:  Solving for p, Initial residual = 5.1094613e-05, Final residual = 4.9184403e-07, No Iterations 14
+time step continuity errors : sum local = 5.4787761e-09, global = 1.7475238e-09, cumulative = 1.7253786e-08
+ExecutionTime = 35.29 s  ClockTime = 35 s
+
+Time = 73
+
+smoothSolver:  Solving for Ux, Initial residual = 2.5795412e-07, Final residual = 5.2638168e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 6.511583e-08, Final residual = 1.2043906e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00013883706, Final residual = 1.359329e-06, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.3933817e-05, Final residual = 5.3677342e-07, No Iterations 122
+DICPCG:  Solving for p, Initial residual = 5.283834e-05, Final residual = 4.5734695e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.125142e-05, Final residual = 4.9343853e-07, No Iterations 12
+time step continuity errors : sum local = 5.4967176e-09, global = 2.6186098e-10, cumulative = 1.7515647e-08
+ExecutionTime = 35.47 s  ClockTime = 35 s
+
+Time = 74
+
+smoothSolver:  Solving for Ux, Initial residual = 2.0220372e-07, Final residual = 5.1706012e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 5.078967e-08, Final residual = 1.1838296e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00013528065, Final residual = 1.1630888e-06, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.3682928e-05, Final residual = 5.3321893e-07, No Iterations 17
+DICPCG:  Solving for p, Initial residual = 5.1533065e-05, Final residual = 4.9311038e-07, No Iterations 15
+DICPCG:  Solving for p, Initial residual = 5.1224561e-05, Final residual = 4.950803e-07, No Iterations 14
+time step continuity errors : sum local = 5.5158248e-09, global = 2.1454018e-09, cumulative = 1.9661049e-08
+ExecutionTime = 35.56 s  ClockTime = 36 s
+
+Time = 75
+
+smoothSolver:  Solving for Ux, Initial residual = 1.5624184e-07, Final residual = 5.0946975e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 3.9428521e-08, Final residual = 1.1644112e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00013236477, Final residual = 1.3094606e-06, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.368387e-05, Final residual = 5.3526992e-07, No Iterations 131
+DICPCG:  Solving for p, Initial residual = 5.2429199e-05, Final residual = 5.2339476e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.1226661e-05, Final residual = 4.7486335e-07, No Iterations 12
+time step continuity errors : sum local = 5.2903865e-09, global = 1.4838225e-10, cumulative = 1.9809431e-08
+ExecutionTime = 35.74 s  ClockTime = 36 s
+
+Time = 76
+
+smoothSolver:  Solving for Ux, Initial residual = 1.1950427e-07, Final residual = 5.0324342e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 3.1919862e-08, Final residual = 1.1435281e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00012984734, Final residual = 1.2255636e-06, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 5.4053896e-05, Final residual = 5.4001324e-07, No Iterations 65
+DICPCG:  Solving for p, Initial residual = 5.2235138e-05, Final residual = 4.9113914e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1315412e-05, Final residual = 4.707181e-07, No Iterations 13
+time step continuity errors : sum local = 5.244792e-09, global = 1.2818476e-09, cumulative = 2.1091279e-08
+ExecutionTime = 35.88 s  ClockTime = 36 s
+
+Time = 77
+
+smoothSolver:  Solving for Ux, Initial residual = 9.6007968e-08, Final residual = 4.9473424e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.8208267e-08, Final residual = 1.121192e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00012752049, Final residual = 1.2300218e-06, No Iterations 21
+DICPCG:  Solving for p, Initial residual = 5.4184975e-05, Final residual = 5.415991e-07, No Iterations 33
+DICPCG:  Solving for p, Initial residual = 5.1883921e-05, Final residual = 4.8544802e-07, No Iterations 15
+DICPCG:  Solving for p, Initial residual = 5.132037e-05, Final residual = 5.056654e-07, No Iterations 13
+time step continuity errors : sum local = 5.6328868e-09, global = 1.8331621e-09, cumulative = 2.2924441e-08
+ExecutionTime = 36 s  ClockTime = 36 s
+
+Time = 78
+
+smoothSolver:  Solving for Ux, Initial residual = 8.5948053e-08, Final residual = 4.8679581e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.6629536e-08, Final residual = 1.0998335e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00012556576, Final residual = 1.2387011e-06, No Iterations 20
+DICPCG:  Solving for p, Initial residual = 5.399807e-05, Final residual = 5.3381248e-07, No Iterations 139
+DICPCG:  Solving for p, Initial residual = 5.237095e-05, Final residual = 5.0524235e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.1286038e-05, Final residual = 4.4919087e-07, No Iterations 12
+time step continuity errors : sum local = 5.0050201e-09, global = 3.7190861e-10, cumulative = 2.3296349e-08
+ExecutionTime = 36.18 s  ClockTime = 36 s
+
+Time = 79
+
+smoothSolver:  Solving for Ux, Initial residual = 8.2532049e-08, Final residual = 4.7705385e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.5144185e-08, Final residual = 1.0774831e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00012388296, Final residual = 1.1840662e-06, No Iterations 19
+DICPCG:  Solving for p, Initial residual = 5.3755729e-05, Final residual = 5.3701762e-07, No Iterations 29
+DICPCG:  Solving for p, Initial residual = 5.1811083e-05, Final residual = 5.0955134e-07, No Iterations 15
+DICPCG:  Solving for p, Initial residual = 5.1382378e-05, Final residual = 4.8901565e-07, No Iterations 13
+time step continuity errors : sum local = 5.4473804e-09, global = 1.7861756e-09, cumulative = 2.5082525e-08
+ExecutionTime = 36.29 s  ClockTime = 36 s
+
+Time = 80
+
+smoothSolver:  Solving for Ux, Initial residual = 8.0262635e-08, Final residual = 4.6952892e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.3510111e-08, Final residual = 1.0580977e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00012218013, Final residual = 1.2071015e-06, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.3406015e-05, Final residual = 5.0190133e-07, No Iterations 64
+DICPCG:  Solving for p, Initial residual = 5.2286456e-05, Final residual = 4.750141e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1380535e-05, Final residual = 5.1068083e-07, No Iterations 12
+time step continuity errors : sum local = 5.6882551e-09, global = 1.2543471e-09, cumulative = 2.6336872e-08
+ExecutionTime = 36.42 s  ClockTime = 36 s
+
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5026258e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.4973926e-11
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.4387499
+
+Time = 81
+
+smoothSolver:  Solving for Ux, Initial residual = 7.603248e-08, Final residual = 4.6145149e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 2.1606974e-08, Final residual = 1.0399547e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00012057885, Final residual = 1.1912326e-06, No Iterations 11
+DICPCG:  Solving for p, Initial residual = 5.3337821e-05, Final residual = 5.2335645e-07, No Iterations 18
+DICPCG:  Solving for p, Initial residual = 5.1724709e-05, Final residual = 4.7929169e-07, No Iterations 15
+DICPCG:  Solving for p, Initial residual = 5.1366425e-05, Final residual = 4.8713664e-07, No Iterations 14
+time step continuity errors : sum local = 5.4271986e-09, global = 2.3383002e-09, cumulative = 2.8675172e-08
+ExecutionTime = 36.51 s  ClockTime = 37 s
+
+Time = 82
+
+smoothSolver:  Solving for Ux, Initial residual = 7.0414014e-08, Final residual = 4.5451576e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.9543567e-08, Final residual = 1.0230248e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00011901675, Final residual = 1.1514621e-06, No Iterations 11
+DICPCG:  Solving for p, Initial residual = 5.340275e-05, Final residual = 5.0241694e-07, No Iterations 164
+DICPCG:  Solving for p, Initial residual = 5.2952482e-05, Final residual = 5.1958573e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.1515794e-05, Final residual = 4.6098978e-07, No Iterations 12
+time step continuity errors : sum local = 5.1364298e-09, global = 2.7183271e-10, cumulative = 2.8947005e-08
+ExecutionTime = 36.71 s  ClockTime = 37 s
+
+Time = 83
+
+smoothSolver:  Solving for Ux, Initial residual = 6.483289e-08, Final residual = 4.4619453e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.7527028e-08, Final residual = 1.0047556e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00011743209, Final residual = 1.1353912e-06, No Iterations 11
+DICPCG:  Solving for p, Initial residual = 5.3542796e-05, Final residual = 5.3503594e-07, No Iterations 127
+DICPCG:  Solving for p, Initial residual = 5.2797697e-05, Final residual = 5.268187e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.1604191e-05, Final residual = 4.671602e-07, No Iterations 12
+time step continuity errors : sum local = 5.2051761e-09, global = 6.5146603e-10, cumulative = 2.9598471e-08
+ExecutionTime = 36.89 s  ClockTime = 37 s
+
+Time = 84
+
+smoothSolver:  Solving for Ux, Initial residual = 5.8838335e-08, Final residual = 4.3737116e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.5522955e-08, Final residual = 9.8691119e-10, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00011611865, Final residual = 9.871971e-07, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.3590756e-05, Final residual = 4.9830106e-07, No Iterations 28
+DICPCG:  Solving for p, Initial residual = 5.2245828e-05, Final residual = 5.1276151e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1722916e-05, Final residual = 4.6859167e-07, No Iterations 13
+time step continuity errors : sum local = 5.2219687e-09, global = 1.7724641e-09, cumulative = 3.1370935e-08
+ExecutionTime = 36.99 s  ClockTime = 37 s
+
+Time = 85
+
+smoothSolver:  Solving for Ux, Initial residual = 5.2849949e-08, Final residual = 4.306938e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.3682125e-08, Final residual = 9.7009741e-10, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00011490295, Final residual = 1.0834492e-06, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.3774858e-05, Final residual = 5.3121984e-07, No Iterations 32
+DICPCG:  Solving for p, Initial residual = 5.2430175e-05, Final residual = 5.0634962e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1777888e-05, Final residual = 5.0063619e-07, No Iterations 13
+time step continuity errors : sum local = 5.5769418e-09, global = 1.7227934e-09, cumulative = 3.3093728e-08
+ExecutionTime = 37.09 s  ClockTime = 37 s
+
+Time = 86
+
+smoothSolver:  Solving for Ux, Initial residual = 4.7561072e-08, Final residual = 4.240203e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.2207389e-08, Final residual = 9.5325943e-10, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00011362205, Final residual = 1.1351827e-06, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.3861028e-05, Final residual = 5.3007933e-07, No Iterations 63
+DICPCG:  Solving for p, Initial residual = 5.2776184e-05, Final residual = 4.7295661e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1727939e-05, Final residual = 5.0362349e-07, No Iterations 12
+time step continuity errors : sum local = 5.6101177e-09, global = 1.3075227e-09, cumulative = 3.4401251e-08
+ExecutionTime = 37.22 s  ClockTime = 37 s
+
+Time = 87
+
+smoothSolver:  Solving for Ux, Initial residual = 4.3396564e-08, Final residual = 4.1732229e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.0940666e-08, Final residual = 9.3787318e-10, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00011231168, Final residual = 1.0816751e-06, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.3731655e-05, Final residual = 5.2104031e-07, No Iterations 137
+DICPCG:  Solving for p, Initial residual = 5.2725847e-05, Final residual = 5.1881856e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.174853e-05, Final residual = 4.3658251e-07, No Iterations 12
+time step continuity errors : sum local = 4.8655406e-09, global = 2.2262383e-10, cumulative = 3.4623875e-08
+ExecutionTime = 37.4 s  ClockTime = 37 s
+
+Time = 88
+
+smoothSolver:  Solving for Ux, Initial residual = 4.0522278e-08, Final residual = 4.1156489e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.9121026e-09, Final residual = 9.9121026e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 0.00011392701, Final residual = 1.0579915e-06, No Iterations 83
+DICPCG:  Solving for p, Initial residual = 6.1171133e-05, Final residual = 5.8316021e-07, No Iterations 16
+DICPCG:  Solving for p, Initial residual = 5.2655799e-05, Final residual = 5.1706278e-07, No Iterations 16
+DICPCG:  Solving for p, Initial residual = 5.1894673e-05, Final residual = 5.009009e-07, No Iterations 15
+time step continuity errors : sum local = 5.5821216e-09, global = 2.2599413e-09, cumulative = 3.6883816e-08
+ExecutionTime = 37.55 s  ClockTime = 38 s
+
+Time = 89
+
+smoothSolver:  Solving for Ux, Initial residual = 3.7334671e-08, Final residual = 3.9072175e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.6763074e-09, Final residual = 9.6763074e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 0.00011759164, Final residual = 1.1561269e-06, No Iterations 127
+DICPCG:  Solving for p, Initial residual = 6.4465602e-05, Final residual = 5.5660437e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.2622573e-05, Final residual = 5.094733e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.175093e-05, Final residual = 5.0032298e-07, No Iterations 12
+time step continuity errors : sum local = 5.5737061e-09, global = 6.4053609e-10, cumulative = 3.7524352e-08
+ExecutionTime = 37.72 s  ClockTime = 38 s
+
+Time = 90
+
+smoothSolver:  Solving for Ux, Initial residual = 3.4663019e-08, Final residual = 3.6432479e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.9524046e-09, Final residual = 9.9524046e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 0.00011727979, Final residual = 1.1534213e-06, No Iterations 134
+DICPCG:  Solving for p, Initial residual = 6.4611532e-05, Final residual = 6.3499086e-07, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.2674937e-05, Final residual = 5.2514231e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.1786448e-05, Final residual = 4.9455747e-07, No Iterations 13
+time step continuity errors : sum local = 5.5099196e-09, global = 7.7212649e-10, cumulative = 3.8296479e-08
+ExecutionTime = 37.9 s  ClockTime = 38 s
+
+surfaceFieldValue flowRateTM write:
+    sum(outlet_tm) of phi = 2.5024776e-11
+
+surfaceFieldValue flowRateTM_left write:
+    sum(outlet_tm_left) of phi = 2.4975337e-11
+
+surfaceFieldValue pressureACinlet write:
+    areaAverage(ac_inlet) of p = 1.4387499
+
+Time = 91
+
+smoothSolver:  Solving for Ux, Initial residual = 3.217448e-08, Final residual = 3.3870635e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 1.0457145e-08, Final residual = 1.1990523e-09, No Iterations 1
+DICPCG:  Solving for p, Initial residual = 0.00011296854, Final residual = 1.1235547e-06, No Iterations 143
+DICPCG:  Solving for p, Initial residual = 5.6524002e-05, Final residual = 5.5425462e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.2026524e-05, Final residual = 5.0079584e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.1560122e-05, Final residual = 5.0952109e-07, No Iterations 12
+time step continuity errors : sum local = 5.6757196e-09, global = 6.9035266e-10, cumulative = 3.8986831e-08
+ExecutionTime = 38.08 s  ClockTime = 38 s
+
+Time = 92
+
+smoothSolver:  Solving for Ux, Initial residual = 3.1175665e-08, Final residual = 3.3691623e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.9658177e-09, Final residual = 9.9658177e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 0.00011224326, Final residual = 1.0912444e-06, No Iterations 142
+DICPCG:  Solving for p, Initial residual = 5.599592e-05, Final residual = 5.4248209e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.2072737e-05, Final residual = 5.01176e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.1614156e-05, Final residual = 5.0109261e-07, No Iterations 12
+time step continuity errors : sum local = 5.5823586e-09, global = 5.7129678e-10, cumulative = 3.9558128e-08
+ExecutionTime = 38.27 s  ClockTime = 38 s
+
+Time = 93
+
+smoothSolver:  Solving for Ux, Initial residual = 3.0378386e-08, Final residual = 3.3563981e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.634622e-09, Final residual = 9.634622e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 0.00011009207, Final residual = 1.0561834e-06, No Iterations 142
+DICPCG:  Solving for p, Initial residual = 5.5008439e-05, Final residual = 5.3391895e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1894827e-05, Final residual = 5.0462739e-07, No Iterations 13
+DICPCG:  Solving for p, Initial residual = 5.1520106e-05, Final residual = 5.0960189e-07, No Iterations 12
+time step continuity errors : sum local = 5.6767975e-09, global = 5.7165688e-10, cumulative = 4.0129785e-08
+ExecutionTime = 38.46 s  ClockTime = 38 s
+
+Time = 94
+
+smoothSolver:  Solving for Ux, Initial residual = 2.9496066e-08, Final residual = 3.3308857e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.3561901e-09, Final residual = 9.3561901e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 0.00010807483, Final residual = 1.0553308e-06, No Iterations 30
+DICPCG:  Solving for p, Initial residual = 5.4508904e-05, Final residual = 5.3871294e-07, No Iterations 137
+DICPCG:  Solving for p, Initial residual = 5.2988683e-05, Final residual = 4.6369281e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.1576758e-05, Final residual = 5.0690117e-07, No Iterations 12
+time step continuity errors : sum local = 5.6473182e-09, global = 3.9771356e-10, cumulative = 4.0527499e-08
+ExecutionTime = 38.65 s  ClockTime = 39 s
+
+Time = 95
+
+smoothSolver:  Solving for Ux, Initial residual = 2.841253e-08, Final residual = 3.2772183e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.1613772e-09, Final residual = 9.1613772e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 0.00010588787, Final residual = 1.0455764e-06, No Iterations 25
+DICPCG:  Solving for p, Initial residual = 5.4386874e-05, Final residual = 5.307344e-07, No Iterations 18
+DICPCG:  Solving for p, Initial residual = 5.1849413e-05, Final residual = 5.087001e-07, No Iterations 17
+DICPCG:  Solving for p, Initial residual = 5.1504196e-05, Final residual = 4.6605427e-07, No Iterations 17
+time step continuity errors : sum local = 5.1950132e-09, global = 1.8619714e-09, cumulative = 4.238947e-08
+ExecutionTime = 38.76 s  ClockTime = 39 s
+
+Time = 96
+
+smoothSolver:  Solving for Ux, Initial residual = 2.7072069e-08, Final residual = 3.1928563e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 9.0101742e-09, Final residual = 9.0101742e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 0.00010314955, Final residual = 9.0073745e-07, No Iterations 25
+DICPCG:  Solving for p, Initial residual = 5.4087936e-05, Final residual = 5.1716332e-07, No Iterations 17
+DICPCG:  Solving for p, Initial residual = 5.1830629e-05, Final residual = 4.8744868e-07, No Iterations 17
+DICPCG:  Solving for p, Initial residual = 5.1505058e-05, Final residual = 5.1410724e-07, No Iterations 16
+time step continuity errors : sum local = 5.7286065e-09, global = 1.6091394e-09, cumulative = 4.399861e-08
+ExecutionTime = 38.87 s  ClockTime = 39 s
+
+Time = 97
+
+smoothSolver:  Solving for Ux, Initial residual = 2.5937625e-08, Final residual = 3.1087263e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 8.882336e-09, Final residual = 8.882336e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 0.00010021992, Final residual = 9.7761639e-07, No Iterations 24
+DICPCG:  Solving for p, Initial residual = 5.3790546e-05, Final residual = 5.1806905e-07, No Iterations 48
+DICPCG:  Solving for p, Initial residual = 5.2466227e-05, Final residual = 4.8978565e-07, No Iterations 14
+DICPCG:  Solving for p, Initial residual = 5.15707e-05, Final residual = 5.0393692e-07, No Iterations 13
+time step continuity errors : sum local = 5.6139373e-09, global = 1.2883602e-09, cumulative = 4.528697e-08
+ExecutionTime = 38.99 s  ClockTime = 39 s
+
+Time = 98
+
+smoothSolver:  Solving for Ux, Initial residual = 2.4933215e-08, Final residual = 3.0315323e-09, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 8.7605514e-09, Final residual = 8.7605514e-09, No Iterations 0
+DICPCG:  Solving for p, Initial residual = 9.777295e-05, Final residual = 9.3736107e-07, No Iterations 17
+DICPCG:  Solving for p, Initial residual = 5.3381299e-05, Final residual = 5.1181258e-07, No Iterations 175
+DICPCG:  Solving for p, Initial residual = 5.2746983e-05, Final residual = 5.2493909e-07, No Iterations 12
+DICPCG:  Solving for p, Initial residual = 5.1576753e-05, Final residual = 4.5273075e-07, No Iterations 12
+time step continuity errors : sum local = 5.0439624e-09, global = 1.3238579e-10, cumulative = 4.5419356e-08
+ExecutionTime = 39.21 s  ClockTime = 39 s
+
+
+SIMPLE solution converged in 98 iterations
+
+End
+
+
+=== post-run summary ===
+  nCells = N/A
+nCells=41242
+d_TM=1.2578e+14
+IOP_AC_right=10.000 mmHg
+IOP_AC_left=10.000 mmHg
+IOP_AC_mean=10.000 mmHg
+IOP_vitreous_mean=10.000 mmHg
+delta_AC_vitreous=0.000 mmHg
+Q_TM_total=5.0000e-11 m³/s (target 5.0000e-11)
+Q_balance_error=0.00 %
+=== doc-g1-sim1 done (M1) ===

@@ -1,5 +1,6 @@
 # Local Python venv for brunaStuff scripts
 brunaStuff/.venv/
+.venv-geom/
 
 # CalculiX / OpenFOAM heavy result files (GitHub max 100MB)
 *.frd
@@ -7,3 +8,17 @@ brunaStuff/.venv/
 .DS_Store
 **/__pycache__/
 *.pyc
+
+# Heavy Gmsh meshes (regenerate with gen_lamminsalo_2d.py --mesh)
+cases/eye-fsi-tc0/geometry/*.msh
+cases/eye-fsi-tc0/geometry/*.vtk
+
+# OpenFOAM decomposed meshes and local backups
+**/processor[0-9]*/
+*.bak
+
+# doc-g1 heavy regenerable outputs (GitHub max 100MB)
+cases/doc-g1-sim1/fluid/log.refineMesh.*
+cases/doc-g1-sim1/mesh_independence/*_mesh.log
+cases/doc-g1-sim1/calibration_m2.log
+cases/doc-g1-sim1/fluid/[1-9]*

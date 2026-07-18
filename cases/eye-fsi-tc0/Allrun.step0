@@ -1,0 +1,94 @@
+#!/bin/bash
+# eye-fsi-tc0 — Allrun.step0
+# Step 0: steady simpleFoam, fluid-only hydraulic calibration (no FSI / preCICE / needles).
+#
+# Optional env:
+#   MESH_LEVEL=M1|M2|M3   — mesh refinement level (default M1)
+#   D_TM=3.08e14            — override TM Darcy coefficient before run
+
+set -e
+set -o pipefail
+
+cd "$(dirname "$0")"
+
+MESH_LEVEL="${MESH_LEVEL:-M1}"
+D_TM="${D_TM:-}"
+
+echo "=== eye-fsi-tc0 Step 0: mesh level ${MESH_LEVEL} ==="
+
+# Step-0 ICs (no internal needle baffles)
+rm -rf fluid/0
+cp -r fluid/0.step0 fluid/0
+
+# Step-0 system dictionaries
+for f in controlDict fvSchemes fvSolution; do
+    cp "fluid/system/${f}.step0" "fluid/system/${f}"
+done
+
+# Optional mesh level selection
+if [ -f "fluid/system/blockMeshDict.${MESH_LEVEL}" ]; then
+    cp "fluid/system/blockMeshDict.${MESH_LEVEL}" fluid/system/blockMeshDict
+fi
+
+if [ -n "$D_TM" ]; then
+    python3 scripts/set_d_tm.py "$D_TM"
+fi
+
+echo "=== meshing ==="
+(cd fluid && blockMesh 2>&1 | tee log.blockMesh)
+(cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+(cd fluid && checkMesh 2>&1 | tee log.checkMesh)
+
+if grep -q "Failed" fluid/log.checkMesh || grep -q "FOAM FATAL" fluid/log.checkMesh; then
+    echo "ERROR: checkMesh failed — see fluid/log.checkMesh" >&2
+    exit 1
+fi
+
+# Optional structured refinement (M2/M3)
+if [ "$MESH_LEVEL" = "M2" ] || [ "$MESH_LEVEL" = "M3" ]; then
+    (cd fluid && topoSet -dict system/topoSetDict.step0Refine 2>&1 | tee log.topoSet.step0Refine)
+    (cd fluid && refineMesh -dict system/refineMeshDict.step0 -overwrite 2>&1 | tee log.refineMesh.step0)
+    (cd fluid && checkMesh 2>&1 | tee log.checkMesh.refined)
+fi
+if [ "$MESH_LEVEL" = "M3" ]; then
+    (cd fluid && topoSet -dict system/topoSetDict.step0Refine 2>&1 | tee log.topoSet.step0Refine2)
+    (cd fluid && refineMesh -dict system/refineMeshDict.step0 -overwrite 2>&1 | tee log.refineMesh.step02)
+    (cd fluid && checkMesh 2>&1 | tee log.checkMesh.refined2)
+fi
+
+echo "=== running simpleFoam ==="
+(cd fluid && simpleFoam 2>&1 | tee log.simpleFoam)
+
+if grep -q "FOAM FATAL" fluid/log.simpleFoam; then
+    echo "ERROR: simpleFoam failed — see fluid/log.simpleFoam" >&2
+    exit 1
+fi
+
+echo ""
+echo "=== post-run summary ==="
+NCELLS=$(grep -a "nCells:" fluid/log.checkMesh 2>/dev/null | head -1 | awk '{print $2}' || true)
+if [ -z "$NCELLS" ]; then
+    NCELLS=$(grep -a "nCells:" fluid/log.checkMesh.refined2 2>/dev/null | head -1 | awk '{print $2}' || true)
+fi
+if [ -z "$NCELLS" ]; then
+    NCELLS=$(grep -a "nCells:" fluid/log.checkMesh.refined 2>/dev/null | head -1 | awk '{print $2}' || true)
+fi
+if [ -z "$NCELLS" ]; then
+    NCELLS=$(grep -a "nCells:" fluid/log.blockMesh 2>/dev/null | tail -1 | awk '{print $2}' || true)
+fi
+echo "  nCells = ${NCELLS:-N/A}"
+
+# IOP from probe (right AC, probe 0) — kinematic p × rho → mmHg
+if [ -f fluid/postProcessing/iop_probe/0/p ]; then
+    PKIN=$(grep -v '^#' fluid/postProcessing/iop_probe/0/p | tail -1 | awk '{print $2}' || true)
+    if [ -n "$PKIN" ]; then
+        IOP=$(python3 -c "p=float('${PKIN}'); print(f'{p*995/133.322:.3f}')" 2>/dev/null || echo "N/A")
+        echo "  IOP_probe_right (mmHg) = $IOP"
+    fi
+fi
+
+QTM=$(grep -a "sum(outlet_tm) of phi" fluid/log.simpleFoam 2>/dev/null | tail -1 | awk '{print $NF}' || true)
+echo "  Q_outlet_tm (m³/s) = ${QTM:-N/A}"
+
+echo ""
+echo "=== eye-fsi-tc0 Step 0: done (${MESH_LEVEL}) ==="

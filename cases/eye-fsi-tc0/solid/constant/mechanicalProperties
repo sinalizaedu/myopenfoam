@@ -6,13 +6,13 @@ FoamFile
     object      mechanicalProperties;
 }
 
-// eye-fsi-tc0 — SOLID — 5 zonas materiais
+// eye-fsi-tc0 — SOLID — rabbit ocular tissue densities (Table I)
 //
-//   iris        E=1 MPa   → D-shape visível (~1.7mm)
-//   sclera_stub E=1 MPa   → deforma solidário com íris
-//   lens        E=1 MPa   → abaulamento sob PC (~0.14mm)
-//   sclera      E=1 GPa   → parede rígida, deformação pequena (~0.5mm)
-//   cornea      E=100 MPa → abaulamento sob IOP (~0.8mm)
+//   iris/ciliary   ρ=1100 kg/m³
+//   lens           ρ=1050 kg/m³
+//   sclera/choroid ρ=1100 kg/m³
+//   cornea         ρ=1050 kg/m³
+// E values: placeholder for FSI development (not from Table I)
 
 planeStress     no;
 
@@ -21,7 +21,7 @@ mechanical
     iris
     {
         type    linearElastic;
-        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
         E       E   [ 1 -1 -2 0 0 0 0 ] 1e6;
         nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
     }
@@ -35,21 +35,21 @@ mechanical
     lens
     {
         type    linearElastic;
-        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1050;
         E       E   [ 1 -1 -2 0 0 0 0 ] 1e6;
         nu      nu  [ 0  0  0 0 0 0 0 ] 0.30;
     }
     sclera
     {
         type    linearElastic;
-        rho     rho [ 1 -3  0 0 0 0 0 ] 1300;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
         E       E   [ 1 -1 -2 0 0 0 0 ] 1e9;
         nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
     }
     cornea
     {
         type    linearElastic;
-        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1050;
         E       E   [ 1 -1 -2 0 0 0 0 ] 1e8;
         nu      nu  [ 0  0  0 0 0 0 0 ] 0.45;
     }

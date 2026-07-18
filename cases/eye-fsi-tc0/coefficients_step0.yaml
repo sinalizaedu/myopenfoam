@@ -1,0 +1,46 @@
+# Step 0 — Lamminsalo (2018) Table I BCs, recalibrated 2026-07-15
+mesh_baseline: M1
+nCells_M1: 3388
+nCells_M2: 3412
+nCells_M3: 3508
+
+# Lamminsalo operating conditions (frozen in case files)
+rho_aqueous_kg_m3: 995
+mu_aqueous_Pa_s: 6.89e-4
+nu_aqueous_m2_s: 6.925e-7
+k_vitreous_m2: 5.8e-14
+d_vit_m2_inv: 1.724e13
+Q_prod_uL_min: 3.0
+P_epi_Torr: 10
+P_epi_p_kin: 1.3399
+IOP0_target_mmHg: 15
+
+# Calibrated TM drag (d = 1/kappa_eff)
+d_TM_M1: 1.9448e14
+IOP0_achieved_M1_mmHg: 15.099
+Q_balance_error_M1_pct: 0.37
+delta_AC_vitreous_M1_mmHg: 0.148
+
+d_TM_M2: 2.6279e14
+IOP0_achieved_M2_mmHg: 15.126
+Q_balance_error_M2_pct: 31.4
+delta_AC_vitreous_M2_mmHg: 0.146
+
+d_TM_M3: 1.75e14
+IOP0_achieved_M3_mmHg: 15.018
+Q_balance_error_M3_pct: 5.27
+delta_AC_vitreous_M3_mmHg: 0.148
+
+# Previous baseline (old BCs: Q=2.2 µL/min, P_epi=8 mmHg)
+d_TM_M1_previous: 3.55e14
+IOP0_achieved_M1_mmHg_previous: 15.224
+
+mesh_verified: M3
+production_mesh: M1
+production_d_TM: 1.9448e14
+production_d_vit: 1.724e13
+
+note: >
+  Recalibration with Lamminsalo BCs lowers d_TM ~45% vs old BCs.
+  M1 best mass balance; M2 refineMesh degrades Q balance — use M1 for Sim 2.
+  M3 confirms IOP within 0.08 mmHg of M1 at separate d_TM.

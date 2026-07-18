@@ -1,0 +1,270 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// outlet_tm  = ALL mesh faces on TM SE wall (tm_cornea_void → tm_ciliary_void)
+// ac_inlet   = ALL mesh faces on AC–CB iris→vitreous (iris_ciliary_post → hyaloid)
+// No normalToFace: end-of-segment faces have normals that fail a SE/E cone.
+
+actions
+(
+    // --- full SE → outlet (right) ---
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   outlet_tm;
+    }
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   wall;
+    }
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   iris_wall;
+    }
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   demote_wall;
+    }
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        // Full straight SE edge. The normal filter below rejects faces that
+        // merely meet either endpoint, independently of refinement level.
+        box (0.00665 -0.00485 -1e-5) (0.00698 -0.00445 1.001e-3);
+    }
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        normal  (0.75 -0.65 0);
+        cos     0.40;
+    }
+
+    // --- full SE → outlet (left) ---
+    {
+        name    outlet_tm_left_faces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   outlet_tm_left;
+    }
+    {
+        name    outlet_tm_left_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   wall;
+    }
+    {
+        name    outlet_tm_left_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   iris_wall;
+    }
+    {
+        name    outlet_tm_left_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   demote_wall;
+    }
+    {
+        name    outlet_tm_left_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        box (-0.00698 -0.00485 -1e-5) (-0.00665 -0.00445 1.001e-3);
+    }
+    {
+        name    outlet_tm_left_faces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        normal  (-0.75 -0.65 0);
+        cos     0.40;
+    }
+
+    // --- full iris→vitreous → inlet (right) ---
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   ac_inlet;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   wall;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   iris_wall;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   demote_wall;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   inlet_demote_wall;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        // Full iris→hyaloid edge. ymax stops at the hyaloid vertex and the
+        // normal filter rejects outer-wall branches meeting that vertex.
+        box (0.00688 -0.00392 -1e-5) (0.00702 -0.00335 1.001e-3);
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        normal  (0.98 -0.15 0);
+        cos     0.50;
+    }
+
+    // --- full iris→vitreous → inlet (left) ---
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   ac_inlet_left;
+    }
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   wall;
+    }
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   iris_wall;
+    }
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   demote_wall;
+    }
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   inlet_demote_wall;
+    }
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        box (-0.00702 -0.00392 -1e-5) (-0.00688 -0.00335 1.001e-3);
+    }
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        normal  (-0.98 -0.15 0);
+        cos     0.50;
+    }
+
+    // demote leftover gmsh-tagged inlet/outlet faces not on the full segments
+    {
+        name    demote_to_wall;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   outlet_tm;
+    }
+    {
+        name    demote_to_wall;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   outlet_tm_left;
+    }
+    {
+        name    demote_to_wall;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   ac_inlet;
+    }
+    {
+        name    demote_to_wall;
+        type    faceSet;
+        action  add;
+        source  patchToFace;
+        patch   ac_inlet_left;
+    }
+    {
+        name    demote_to_wall;
+        type    faceSet;
+        action  delete;
+        source  faceToFace;
+        set     outlet_tm_faces;
+    }
+    {
+        name    demote_to_wall;
+        type    faceSet;
+        action  delete;
+        source  faceToFace;
+        set     outlet_tm_left_faces;
+    }
+    {
+        name    demote_to_wall;
+        type    faceSet;
+        action  delete;
+        source  faceToFace;
+        set     ac_inlet_faces;
+    }
+    {
+        name    demote_to_wall;
+        type    faceSet;
+        action  delete;
+        source  faceToFace;
+        set     ac_inlet_left_faces;
+    }
+);

@@ -8,7 +8,17 @@ FoamFile
 
 // Porous zone momentum sources — eye-fsi-tc0
 //
-// TM porous zone — DarcyForchheimer
+// Lamminsalo (2018) uses Brinkman equations in COMSOL:
+//   0 = -grad(p) + (mu/eps)*laplacian(U) - (mu/kappa)*U  [+ rho*g in full model]
+//
+// OpenFOAM approximation (Brinkman Darcy limit, creeping flow):
+//   explicitPorositySource + DarcyForchheimer, f=0
+//   S = -(mu * d) * U,   d = 1/kappa  (isotropic)
+//
+// Porosity eps and kappa: fluid/constant/porousMediaProperties
+// Governing-equation map: constant/lamminsaloGoverningEquations.md
+//
+// TM porous zone
 // TM geometry: x=[20,20.5mm] (L_mesh=0.5mm), y=[0.40,2.40mm] (H_TM=2mm)
 // outlet_tm at x=20.5mm (Schlemm's canal inside limbal tissue)
 //
@@ -40,28 +50,23 @@ FoamFile
 // The p BC at outlet_tm is fixedValue 0 (episcleral venous pressure reference).
 // IOP is measured in the interior via the iop_probe function object.
 //
-// Vitreous porous zone — DarcyForchheimer
+// Vitreous porous zone — Brinkman drag term (Darcy limit)
 //
 // Estratégia: separar AC e vítreo HIDRAULICAMENTE (não estruturalmente). O
-// vítreo é tratado como meio fluido poroso (gel hialurônico) que oferece
-// resistência viscosa de Darcy ao escoamento. Não há parede/baffle entre AC
-// e vítreo — a "separação" emerge da diferença de permeabilidade.
+// vítreo é tratado como meio poroso (gel hialurônico, eps=1, kappa=5.8e-14 m²)
+// com arrasto Brinkman -(mu/kappa)U via d = 1/kappa. Não há parede/baffle entre
+// AC e vítreo — a "separação" emerge da diferença de permeabilidade.
 //
-// Resistência viscosa alinhada ao Fluent (zona porosa isotrópica):
-//   d_vitreous = 1.72e13 m⁻²  (Direction-1 e Direction-2 iguais)
-// k_ef ≈ 1/d ≈ 5.8e-14 m² — mais permeável que a estimativa Penkova (d~1.4e14).
-// Caminho IVI: agulha → vítreo poroso → anel lateral → AC → TM poroso.
+// Rabbit ocular tissues — Table I (Lamminsalo / rabbit eye model).
 //
-// Extensão da cellZone (definida em blockMeshDict):
-//   - central:    x∈[-15,+15] mm, y∈[12.0, 24] mm
-//   - lateral:    x∈[±15,±20] mm, y∈[8.2, 14.4] mm   (anel ao redor do equador)
-//   - posterior:  x∈[-20,+20] mm, y∈[14.4, 24] mm
-// Uma única cellZone (vitreous_zone) cobre direita e esquerda, ao contrário
-// do TM (tm_zone / tm_zone_left).
+// Vitreous: k = 5.8×10⁻¹⁴ m²  →  d_vit = 1/k = 1.724×10¹³ m⁻²
+// TM: k "Adjusted" — d_TM calibrated to IOP₀ = 15 mmHg (Step 0, Sim 1)
 //
-// AVISO: a calibração d_TM = 3.08e14 (15 mmHg) feita para o caso sem vítreo
-// poroso provavelmente precisará de re-ajuste — o IOP no AC agora depende de
-// dois Darcy em série. Re-rodar plot_iop.py após a primeira simulação.
+// Step 0 calibration — anatomical G1 prism (2026-07-15):
+//   d_TM = 9.323e13 m⁻² → IOP₀ = 15.00 mmHg (8498 cells, Q err 0.0%)
+//   d_vit = 1.724e13 m⁻² (k = 5.8e-14 m²)
+//   ρ_aqueous = 995 kg/m³ @ 37 °C (Tabela I ᵈ), ν = 6.925e-7 m²/s
+// Legacy rectangular M1 had d_TM = 1.9448e14 (does not transfer).
 
 tm_porous
 {
@@ -77,9 +82,9 @@ tm_porous
 
         DarcyForchheimerCoeffs
         {
-            // d [m⁻²]: Darcy viscous resistance tensor (isotropic)
-            d   d [0 -2 0 0 0 0 0] (3.08e14 3.08e14 3.08e14);
-            // f [m⁻¹]: Forchheimer inertial resistance = 0 (creeping flow)
+            // Brinkman drag: d = 1/kappa [m⁻²]; kappa adjusted (Table I ᵍ)
+            d   d [0 -2 0 0 0 0 0] (1.257839e14 1.257839e14 1.257839e14);
+            // f = 0: creeping flow (no Forchheimer inertia)
             f   f [0 -1 0 0 0 0 0] (0 0 0);
 
             coordinateSystem
@@ -106,7 +111,8 @@ tm_porous_left
 
         DarcyForchheimerCoeffs
         {
-            d   d [0 -2 0 0 0 0 0] (3.08e14 3.08e14 3.08e14);
+            // Brinkman drag: d = 1/kappa_TM (calibrated)
+            d   d [0 -2 0 0 0 0 0] (1.257839e14 1.257839e14 1.257839e14);
             f   f [0 -1 0 0 0 0 0] (0 0 0);
 
             coordinateSystem
@@ -133,8 +139,8 @@ vitreous_porous
 
         DarcyForchheimerCoeffs
         {
-            // d [m⁻²]: Darcy viscous resistance (isotropic), Fluent 1.72e13 m⁻²
-            d   d [0 -2 0 0 0 0 0] (1.72e13 1.72e13 1.72e13);
+            // Brinkman drag: d = 1/kappa; kappa = 5.8e-14 m² (Table I ᵉᶜ)
+            d   d [0 -2 0 0 0 0 0] (1.724e13 1.724e13 1.724e13);
             // f [m⁻¹]: Forchheimer = 0 (creeping flow no gel vítreo)
             f   f [0 -1 0 0 0 0 0] (0 0 0);
 

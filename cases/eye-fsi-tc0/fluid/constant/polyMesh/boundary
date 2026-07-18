@@ -16,224 +16,62 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-32
+
+7
 (
-    needle_inlet_left
-    {
-        type            patch;
-        nFaces          1;
-        startFace       6512;
-    }
-    needle_inlet_right
-    {
-        type            patch;
-        nFaces          1;
-        startFace       6513;
-    }
-    needle_outlet_left
-    {
-        type            patch;
-        nFaces          1;
-        startFace       6514;
-    }
-    needle_outlet_right
-    {
-        type            patch;
-        nFaces          1;
-        startFace       6515;
-    }
-    sclera_left_lower
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          7;
-        startFace       6516;
-    }
-    sclera_left_upper
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          29;
-        startFace       6523;
-    }
-    sclera_right
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          7;
-        startFace       6552;
-    }
-    sclera_right_upper
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          29;
-        startFace       6559;
-    }
-    sclera_top
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          80;
-        startFace       6588;
-    }
-    cornea_fsi
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          80;
-        startFace       6668;
-    }
-    lens_bottom
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          30;
-        startFace       6748;
-    }
-    lens_bottom_left
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          30;
-        startFace       6778;
-    }
-    lens_right
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          8;
-        startFace       6808;
-    }
-    lens_left
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          8;
-        startFace       6816;
-    }
-    lens_top
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          30;
-        startFace       6824;
-    }
-    lens_top_left
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          30;
-        startFace       6854;
-    }
-    iris_bottom
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          60;
-        startFace       6884;
-    }
-    iris_pupil
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          5;
-        startFace       6944;
-    }
-    iris_pupil_left
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          5;
-        startFace       6949;
-    }
-    iris_top
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          40;
-        startFace       6954;
-    }
-    tm_limbus_wall
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          4;
-        startFace       6994;
-    }
-    ac_inlet
-    {
-        type            patch;
-        nFaces          5;
-        startFace       6998;
-    }
-    ac_inlet_left
-    {
-        type            patch;
-        nFaces          5;
-        startFace       7003;
-    }
-    outlet_tm
-    {
-        type            patch;
-        nFaces          4;
-        startFace       7008;
-    }
-    outlet_tm_left
-    {
-        type            patch;
-        nFaces          4;
-        startFace       7012;
-    }
-    front
-    {
-        type            empty;
-        inGroups        1(empty);
-        nFaces          3388;
-        startFace       7016;
-    }
     back
     {
         type            empty;
-        inGroups        1(empty);
-        nFaces          3388;
-        startFace       10404;
+        physicalType    patch;
+        nFaces          8870;
+        startFace       13090;
     }
-    defaultFaces
+
+    front
+    {
+        type            empty;
+        physicalType    patch;
+        nFaces          8870;
+        startFace       21960;
+    }
+
+    wall
     {
         type            wall;
-        inGroups        2(empty wall);
-        nFaces          20;
-        startFace       13792;
+        physicalType    patch;
+        nFaces          410;
+        startFace       30830;
     }
-    needle_int_inlet_master
+
+    outlet_tm
     {
         type            patch;
-        inGroups        1(needleIntInlet);
-        nFaces          1;
-        startFace       13812;
+        nFaces          10;
+        startFace       31240;
     }
-    needle_int_inlet_slave
+
+    outlet_tm_left
     {
         type            patch;
-        inGroups        1(needleIntInlet);
-        nFaces          1;
-        startFace       13813;
+        nFaces          8;
+        startFace       31250;
     }
-    needle_int_outlet_master
+
+    ac_inlet
     {
         type            patch;
-        inGroups        1(needleIntOutlet);
         nFaces          1;
-        startFace       13814;
+        startFace       31258;
     }
-    needle_int_outlet_slave
+
+    ac_inlet_left
     {
         type            patch;
-        inGroups        1(needleIntOutlet);
         nFaces          1;
-        startFace       13815;
+        startFace       31259;
     }
+
 )
+
 
 // ************************************************************************* //

@@ -1,0 +1,76 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Anatomical G1 cellZones (Missel/Lamminsalo planar bilateral)
+// TM boxes are exact L/R mirrors (pad=2.5e-04 m).
+
+actions
+(
+    // --- TM right ---
+    {
+        name    tm_zone;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (6.450000e-03 -5.000000e-03 -1e-5) (7.180000e-03 -4.240000e-03 1.001e-3);
+    }
+    {
+        name    tm_zone;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     tm_zone;
+    }
+
+    // --- TM left (exact mirror) ---
+    {
+        name    tm_zone_left;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-7.180000e-03 -5.000000e-03 -1e-5) (-6.450000e-03 -4.240000e-03 1.001e-3);
+    }
+    {
+        name    tm_zone_left;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     tm_zone_left;
+    }
+
+    // --- Vitreous (posterior bulk) ---
+    {
+        name    vitreous_zone;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-8.0e-3 -1.5e-3 -1e-5) (8.0e-3 7.4e-3 1.001e-3);
+    }
+    // Remove TM cells from vitreous (not needed physically but keeps zones disjoint)
+    {
+        name    vitreous_zone;
+        type    cellSet;
+        action  delete;
+        source  boxToCell;
+        box     (6.450000e-03 -5.000000e-03 -1e-5) (7.180000e-03 -4.240000e-03 1.001e-3);
+    }
+    {
+        name    vitreous_zone;
+        type    cellSet;
+        action  delete;
+        source  boxToCell;
+        box     (-7.180000e-03 -5.000000e-03 -1e-5) (-6.450000e-03 -4.240000e-03 1.001e-3);
+    }
+    {
+        name    vitreous_zone;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     vitreous_zone;
+    }
+);

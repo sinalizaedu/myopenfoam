@@ -1,0 +1,91 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// doc-g1-sim1: steady simpleFoam — AC / vitreous / TM only (Missel/Lamminsalo)
+
+application     simpleFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         1000;
+
+deltaT          1;
+
+writeControl    timeStep;
+writeInterval   50;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    flowRateTM
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet_tm;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+
+    flowRateTM_left
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet_tm_left;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+
+    pressureACinlet
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            ac_inlet;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+
+    iop_probe
+    {
+        type            probes;
+        libs            (sampling);
+        fields          (p);
+        // Anatomical eye: AC anterior pocket; vitreous posterior bulk
+        // (avoid lens hole at ~y=-5 mm on axis)
+        probeLocations
+        (
+            ( 0.0015  -0.0068  0.0005)
+            (-0.0015  -0.0068  0.0005)
+            ( 0.0020   0.0030  0.0005)
+            (-0.0020   0.0030  0.0005)
+        );
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+}

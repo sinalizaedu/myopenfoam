@@ -1,0 +1,22 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      refineMeshDict;
+}
+
+// Uniform in-plane refinement for the mesh-independence study.
+// Do not split the single cell through the 1 mm slab thickness: front/back
+// must remain valid empty patches for this planar simulation.
+set             all;
+coordinateSystem global;
+globalCoeffs
+{
+    tan1        (1 0 0);
+    tan2        (0 1 0);
+}
+directions      (tan1 tan2);
+useHexTopology  false;
+geometricCut    false;
+writeMesh       false;

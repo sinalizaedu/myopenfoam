@@ -1,0 +1,27 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// TM-only refinement for Step 0 mesh independence study.
+
+actions
+(
+    {
+        name    refineSet;
+        type    cellSet;
+        action  new;
+        source  zoneToCell;
+        zone    tm_zone;
+    }
+    {
+        name    refineSet;
+        type    cellSet;
+        action  add;
+        source  zoneToCell;
+        zone    tm_zone_left;
+    }
+);

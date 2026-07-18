@@ -1,0 +1,27 @@
+#!/bin/bash
+# eye-fsi-tc0 — Allclean.anatomical
+
+set -e
+cd "$(dirname "$0")"
+
+echo "=== eye-fsi-tc0 anatomical G1: cleaning fluid domain ==="
+
+(
+    cd fluid
+    rm -rf log.* postProcessing
+    # Explicit keep list — do not use find on 0.* templates
+    for d in ./[0-9]*; do
+        [ -e "$d" ] || continue
+        base=$(basename "$d")
+        case "$base" in
+            0.step0|0.anatomical) continue ;;
+            *) rm -rf "$d" ;;
+        esac
+    done
+    rm -rf constant/polyMesh
+    rm -f eye_g1_lamminsalo.msh
+    touch eye-fsi-tc0-fluid.foam
+    echo "  fluid cleaned"
+)
+
+echo "=== eye-fsi-tc0 anatomical G1: clean done ==="

@@ -1,0 +1,131 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volScalarField;
+    location    "0";
+    object      p;
+}
+
+dimensions      [ 0 2 -2 0 0 0 0 ];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    needle_inlet_left
+    {
+        type            zeroGradient;
+    }
+    needle_inlet_right
+    {
+        type            zeroGradient;
+    }
+    needle_outlet_left
+    {
+        type            zeroGradient;
+    }
+    needle_outlet_right
+    {
+        type            zeroGradient;
+    }
+    sclera_left_lower
+    {
+        type            zeroGradient;
+    }
+    sclera_left_upper
+    {
+        type            zeroGradient;
+    }
+    sclera_right
+    {
+        type            zeroGradient;
+    }
+    sclera_right_upper
+    {
+        type            zeroGradient;
+    }
+    sclera_top
+    {
+        type            zeroGradient;
+    }
+    cornea_fsi
+    {
+        type            zeroGradient;
+    }
+    lens_bottom
+    {
+        type            zeroGradient;
+    }
+    lens_bottom_left
+    {
+        type            zeroGradient;
+    }
+    lens_right
+    {
+        type            zeroGradient;
+    }
+    lens_left
+    {
+        type            zeroGradient;
+    }
+    lens_top
+    {
+        type            zeroGradient;
+    }
+    lens_top_left
+    {
+        type            zeroGradient;
+    }
+    iris_bottom
+    {
+        type            zeroGradient;
+    }
+    iris_pupil
+    {
+        type            zeroGradient;
+    }
+    iris_pupil_left
+    {
+        type            zeroGradient;
+    }
+    iris_top
+    {
+        type            zeroGradient;
+    }
+    tm_limbus_wall
+    {
+        type            zeroGradient;
+    }
+    ac_inlet
+    {
+        type            zeroGradient;
+    }
+    ac_inlet_left
+    {
+        type            zeroGradient;
+    }
+    outlet_tm
+    {
+        type            fixedValue;
+        value           uniform 1.3399;
+    }
+    outlet_tm_left
+    {
+        type            fixedValue;
+        value           uniform 1.3399;
+    }
+    front
+    {
+        type            empty;
+    }
+    back
+    {
+        type            empty;
+    }
+    defaultFaces
+    {
+        type            zeroGradient;
+    }
+}

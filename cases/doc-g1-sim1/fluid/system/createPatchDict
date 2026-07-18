@@ -1,0 +1,17 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+pointSync false;
+patches
+(
+    { name front; patchInfo { type empty; } constructFrom set; set frontFaces; }
+    { name back;  patchInfo { type empty; } constructFrom set; set backFaces; }
+    { name outlet_tm; patchInfo { type patch; } constructFrom set; set outlet_tm_faces; }
+    { name outlet_tm_left; patchInfo { type patch; } constructFrom set; set outlet_tm_left_faces; }
+    { name ac_inlet; patchInfo { type patch; } constructFrom set; set ac_inlet_faces; }
+    { name ac_inlet_left; patchInfo { type patch; } constructFrom set; set ac_inlet_left_faces; }
+);

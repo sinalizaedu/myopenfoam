@@ -1,0 +1,112 @@
+#!/bin/bash
+# Anatomical G1 prism slab: gmsh Extrude Layers{1} → gmshToFoam → createPatch → topoSet → checkMesh → simpleFoam
+# Simulação 1 (Step 0) on Missel/Lamminsalo 2D bilateral geometry (1 cell depth).
+#
+# Optional env:
+#   MESH_LEVEL=M1|M2|M3   (default M1)
+#   D_TM=9.323e13
+#   SKIP_SOLVE=1
+#   REBUILD_MSH=1
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+MESH_LEVEL="${MESH_LEVEL:-M1}"
+D_TM="${D_TM:-}"
+SKIP_SOLVE="${SKIP_SOLVE:-0}"
+REBUILD_MSH="${REBUILD_MSH:-0}"
+MSH="geometry/eye_g1_lamminsalo_${MESH_LEVEL}.msh"
+REPO_ROOT="$(cd ../.. && pwd)"
+
+echo "=== eye-fsi-tc0 anatomical G1 Step 0 (Sim 1) MESH_LEVEL=${MESH_LEVEL} ==="
+
+if [ "$REBUILD_MSH" = "1" ]; then
+    if [ -x "${REPO_ROOT}/.venv-geom/bin/python" ]; then
+        echo "=== rebuilding mesh ${MESH_LEVEL} (host) ==="
+        "${REPO_ROOT}/.venv-geom/bin/python" \
+            "${REPO_ROOT}/brunaStuff/gen_lamminsalo_2d.py" --mesh --mesh-level "${MESH_LEVEL}"
+    else
+        echo "ERROR: REBUILD_MSH=1 requires host run (repo + .venv-geom)." >&2
+        echo "  On host: .venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py --mesh --mesh-level ${MESH_LEVEL}" >&2
+        echo "  Then: MESH_LEVEL=${MESH_LEVEL} ./Allrun.anatomical  (inside Docker)" >&2
+        exit 1
+    fi
+fi
+if [ ! -f "$MSH" ]; then
+    echo "ERROR: missing $MSH — generate on host with --mesh --mesh-level ${MESH_LEVEL}" >&2
+    exit 1
+fi
+# Keep default name in sync with active level
+cp -f "$MSH" geometry/eye_g1_lamminsalo.msh
+
+# System dictionaries (anatomical schemes for prism non-ortho + Step-0 control)
+cp fluid/system/fvSchemes.anatomical fluid/system/fvSchemes
+cp fluid/system/fvSolution.anatomical fluid/system/fvSolution
+cp fluid/system/controlDict.anatomical fluid/system/controlDict
+[ -n "$D_TM" ] && python3 scripts/set_d_tm.py "$D_TM"
+
+echo "=== gmshToFoam ==="
+rm -rf fluid/0 fluid/constant/polyMesh
+mkdir -p fluid/0
+cp -f "$MSH" fluid/eye_g1_lamminsalo.msh
+(cd fluid && gmshToFoam eye_g1_lamminsalo.msh 2>&1 | tee log.gmshToFoam)
+rm -f fluid/eye_g1_lamminsalo.msh
+
+echo "=== topoSet zones (TM + vitreous) BEFORE createPatch ==="
+(cd fluid && topoSet -dict system/topoSetDict.anatomical -constant 2>&1 | tee log.topoSet.anatomical)
+
+echo "=== createPatch (TM-bounded outlets + inlets) ==="
+(cd fluid && topoSet -dict system/topoSetDict.splitWall -constant 2>&1 | tee log.topoSet.splitWall)
+(cd fluid && createPatch -overwrite -dict system/createPatchDict.anatomical 2>&1 | tee log.createPatch)
+
+echo "=== changeDictionary (patch types) ==="
+cp fluid/system/changeDictionaryDict.anatomical fluid/system/changeDictionaryDict
+(cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+
+# Apply BCs AFTER createPatch so named patches exist and inherit correct types
+echo "=== initial fields (anatomical BCs) ==="
+cp fluid/initial/anatomical/U fluid/0/U
+cp fluid/initial/anatomical/p fluid/0/p
+
+rm -rf fluid/0/polyMesh
+
+echo "=== checkMesh ==="
+(cd fluid && checkMesh 2>&1 | tee log.checkMesh)
+if grep -q "Failed" fluid/log.checkMesh || grep -q "FOAM FATAL" fluid/log.checkMesh; then
+    echo "ERROR: checkMesh failed" >&2
+    exit 1
+fi
+
+echo "=== patch / zone counts ==="
+python3 - <<'PY'
+from pathlib import Path
+import re
+text = Path("fluid/constant/polyMesh/boundary").read_text()
+wanted = ("ac_inlet", "ac_inlet_left", "outlet_tm", "outlet_tm_left", "wall", "front", "back")
+for name in wanted:
+    m = re.search(rf"\b{name}\b\s*\{{[^}}]*?nFaces\s+(\d+);", text, re.S)
+    print(f"  {name}: {m.group(1) if m else 'MISSING'} faces")
+cm = Path("fluid/log.checkMesh").read_text()
+for z in ("tm_zone", "tm_zone_left", "vitreous_zone"):
+    m = re.search(rf"{z}\s+(\d+)", cm)
+    print(f"  {z}: {m.group(1) if m else '?'} cells")
+PY
+
+if [ "$SKIP_SOLVE" = "1" ]; then
+    echo "=== SKIP_SOLVE=1 done ==="
+    grep -a "nCells:" fluid/log.checkMesh | head -3 || true
+    exit 0
+fi
+
+echo "=== simpleFoam ==="
+(cd fluid && simpleFoam 2>&1 | tee log.simpleFoam)
+if grep -q "FOAM FATAL" fluid/log.simpleFoam; then
+    echo "ERROR: simpleFoam failed" >&2
+    exit 1
+fi
+
+echo ""
+echo "=== post-run summary ==="
+NCELLS=$(grep -a "nCells:" fluid/log.checkMesh | head -1 | awk '{print $2}' || true)
+echo "  nCells = ${NCELLS:-N/A}"
+python3 scripts/extract_step0_metrics.py || true
+echo "=== anatomical G1 Sim 1 done (${MESH_LEVEL}) ==="

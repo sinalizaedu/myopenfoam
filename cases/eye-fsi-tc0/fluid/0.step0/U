@@ -1,0 +1,135 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+
+dimensions      [ 0 1 -1 0 0 0 0 ];
+
+internalField   uniform ( 0 0 0 );
+
+boundaryField
+{
+    needle_inlet_left
+    {
+        type            noSlip;
+    }
+    needle_inlet_right
+    {
+        type            noSlip;
+    }
+    needle_outlet_left
+    {
+        type            noSlip;
+    }
+    needle_outlet_right
+    {
+        type            noSlip;
+    }
+    sclera_left_lower
+    {
+        type            noSlip;
+    }
+    sclera_left_upper
+    {
+        type            noSlip;
+    }
+    sclera_right
+    {
+        type            noSlip;
+    }
+    sclera_right_upper
+    {
+        type            noSlip;
+    }
+    sclera_top
+    {
+        type            noSlip;
+    }
+    cornea_fsi
+    {
+        type            noSlip;
+    }
+    lens_bottom
+    {
+        type            noSlip;
+    }
+    lens_bottom_left
+    {
+        type            noSlip;
+    }
+    lens_right
+    {
+        type            noSlip;
+    }
+    lens_left
+    {
+        type            noSlip;
+    }
+    lens_top
+    {
+        type            noSlip;
+    }
+    lens_top_left
+    {
+        type            noSlip;
+    }
+    iris_bottom
+    {
+        type            noSlip;
+    }
+    iris_pupil
+    {
+        type            noSlip;
+    }
+    iris_pupil_left
+    {
+        type            noSlip;
+    }
+    iris_top
+    {
+        type            noSlip;
+    }
+    tm_limbus_wall
+    {
+        type            noSlip;
+    }
+    ac_inlet
+    {
+        type            flowRateInletVelocity;
+        massFlowRate    constant 2.4875e-08;
+        rhoInlet        995;
+        value           uniform ( 0 0 0 );
+    }
+    ac_inlet_left
+    {
+        type            flowRateInletVelocity;
+        massFlowRate    constant 2.4875e-08;
+        rhoInlet        995;
+        value           uniform ( 0 0 0 );
+    }
+    outlet_tm
+    {
+        type            zeroGradient;
+    }
+    outlet_tm_left
+    {
+        type            zeroGradient;
+    }
+    front
+    {
+        type            empty;
+    }
+    back
+    {
+        type            empty;
+    }
+    defaultFaces
+    {
+        type            noSlip;
+    }
+}

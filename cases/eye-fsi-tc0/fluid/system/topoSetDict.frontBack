@@ -1,0 +1,44 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Split gmshToFoam defaultFaces extrusion caps into front/back faceSets.
+
+actions
+(
+    {
+        name    frontFaces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   defaultFaces;
+    }
+    {
+        name    frontFaces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        normal  (0 0 1);
+        cos     0.1;
+    }
+
+    {
+        name    backFaces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   defaultFaces;
+    }
+    {
+        name    backFaces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        normal  (0 0 -1);
+        cos     0.1;
+    }
+);

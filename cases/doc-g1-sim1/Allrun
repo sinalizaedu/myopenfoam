@@ -1,0 +1,132 @@
+#!/bin/bash
+# doc-g1-sim1 — G1 Sim 1: AC + vitreous + TM only (Missel/Lamminsalo planar)
+# gmsh Extrude Layers{1} → gmshToFoam → topoSet → createPatch → simpleFoam
+#
+# Optional env:
+#   MESH_LEVEL=M1|M2|M3   (default M1)
+#     M1 = base mesh; M2 = one uniform in-plane refinement;
+#     M3 = two uniform in-plane refinements.
+#   D_TM=<value>
+#   SKIP_SOLVE=1
+#   REBUILD_MSH=1
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+MESH_LEVEL="${MESH_LEVEL:-M1}"
+case "$MESH_LEVEL" in
+    M1) REFINE_PASSES=0 ;;
+    M2) REFINE_PASSES=1 ;;
+    M3) REFINE_PASSES=2 ;;
+    *) echo "ERROR: MESH_LEVEL must be M1, M2, or M3" >&2; exit 1 ;;
+esac
+D_TM="${D_TM:-}"
+SKIP_SOLVE="${SKIP_SOLVE:-0}"
+REBUILD_MSH="${REBUILD_MSH:-0}"
+MSH="geometry/eye_g1_lamminsalo_${MESH_LEVEL}.msh"
+REPO_ROOT="$(cd ../.. && pwd)"
+
+echo "=== doc-g1-sim1 (AC / vitreous / TM) MESH_LEVEL=${MESH_LEVEL} ==="
+
+if [ "$REBUILD_MSH" = "1" ]; then
+    if [ -x "${REPO_ROOT}/.venv-geom/bin/python" ]; then
+        echo "=== rebuilding mesh ${MESH_LEVEL} (host) ==="
+        "${REPO_ROOT}/.venv-geom/bin/python" \
+            "${REPO_ROOT}/brunaStuff/gen_lamminsalo_2d.py" \
+            --case doc-g1-sim1 --mesh --mesh-level "${MESH_LEVEL}"
+    else
+        echo "ERROR: REBUILD_MSH=1 requires host + .venv-geom." >&2
+        exit 1
+    fi
+fi
+if [ ! -f "$MSH" ]; then
+    echo "ERROR: missing $MSH — generate on host:" >&2
+    echo "  .venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py --case doc-g1-sim1 --mesh --mesh-level ${MESH_LEVEL}" >&2
+    exit 1
+fi
+cp -f "$MSH" geometry/eye_g1_lamminsalo.msh
+
+[ -n "$D_TM" ] && python3 scripts/set_d_tm.py "$D_TM"
+
+echo "=== gmshToFoam ==="
+rm -rf fluid/0 fluid/constant/polyMesh
+mkdir -p fluid/0
+cp -f "$MSH" fluid/eye_g1_lamminsalo.msh
+(cd fluid && gmshToFoam eye_g1_lamminsalo.msh 2>&1 | tee log.gmshToFoam)
+rm -f fluid/eye_g1_lamminsalo.msh
+
+if [ "$REFINE_PASSES" -gt 0 ]; then
+    # Mark the slab caps as empty first so refineMesh recognises a 2D case and
+    # splits only in-plane (x/y), preserving the single cell through z.
+    echo "=== create empty front/back before 2D refinement ==="
+    (cd fluid && topoSet -dict system/topoSetDict.frontBack -constant \
+        2>&1 | tee log.topoSet.frontBack.preRefine)
+    (cd fluid && createPatch -overwrite -dict system/createPatchDict.frontBack \
+        2>&1 | tee log.createPatch.frontBack.preRefine)
+    echo "=== uniform in-plane refinement (${REFINE_PASSES} pass(es)) ==="
+    for pass in $(seq 1 "$REFINE_PASSES"); do
+        echo "  refineMesh pass ${pass}/${REFINE_PASSES}"
+        (cd fluid && refineMesh -all -overwrite -dict system/refineMeshDict \
+            2>&1 | tee "log.refineMesh.${pass}")
+    done
+fi
+
+echo "=== topoSet zones (TM + vitreous) ==="
+(cd fluid && topoSet -dict system/topoSetDict.anatomical -constant 2>&1 | tee log.topoSet.anatomical)
+
+echo "=== createPatch (front/back + outlets + inlets) ==="
+(cd fluid && topoSet -dict system/topoSetDict.frontBack -constant 2>&1 | tee log.topoSet.frontBack)
+(cd fluid && topoSet -dict system/topoSetDict.splitWall -constant 2>&1 | tee log.topoSet.splitWall)
+(cd fluid && createPatch -overwrite -dict system/createPatchDict.anatomical 2>&1 | tee log.createPatch)
+
+echo "=== changeDictionary (patch types) ==="
+(cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+
+echo "=== initial fields ==="
+cp fluid/initial/U fluid/0/U
+cp fluid/initial/p fluid/0/p
+rm -rf fluid/0/polyMesh
+
+echo "=== checkMesh ==="
+(cd fluid && checkMesh 2>&1 | tee log.checkMesh)
+if grep -q "FOAM FATAL" fluid/log.checkMesh; then
+    echo "ERROR: checkMesh FOAM FATAL" >&2
+    exit 1
+fi
+if grep -q "Failed" fluid/log.checkMesh; then
+    echo "WARNING: checkMesh reported Failed (see log.checkMesh) — continuing for ParaView" >&2
+fi
+
+echo "=== patch / zone counts ==="
+python3 - <<'PY'
+from pathlib import Path
+import re
+text = Path("fluid/constant/polyMesh/boundary").read_text()
+wanted = ("ac_inlet", "ac_inlet_left", "outlet_tm", "outlet_tm_left", "wall", "front", "back")
+for name in wanted:
+    m = re.search(rf"\b{name}\b\s*\{{[^}}]*?nFaces\s+(\d+);", text, re.S)
+    print(f"  {name}: {m.group(1) if m else 'MISSING'} faces")
+cm = Path("fluid/log.checkMesh").read_text()
+for z in ("tm_zone", "tm_zone_left", "vitreous_zone"):
+    m = re.search(rf"{z}\s+(\d+)", cm)
+    print(f"  {z}: {m.group(1) if m else '?'} cells")
+PY
+
+if [ "$SKIP_SOLVE" = "1" ]; then
+    echo "=== SKIP_SOLVE=1 done ==="
+    grep -a "nCells:" fluid/log.checkMesh | head -3 || true
+    exit 0
+fi
+
+echo "=== simpleFoam ==="
+(cd fluid && simpleFoam 2>&1 | tee log.simpleFoam)
+if grep -q "FOAM FATAL" fluid/log.simpleFoam; then
+    echo "ERROR: simpleFoam failed" >&2
+    exit 1
+fi
+
+echo ""
+echo "=== post-run summary ==="
+NCELLS=$(grep -a "nCells:" fluid/log.checkMesh | head -1 | awk '{print $2}' || true)
+echo "  nCells = ${NCELLS:-N/A}"
+python3 scripts/extract_step0_metrics.py || true
+echo "=== doc-g1-sim1 done (${MESH_LEVEL}) ==="

@@ -1,0 +1,104 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// eye-fsi-tc0 Step 0: steady simpleFoam, fluid-only hydraulic calibration.
+// No preCICE, no needles, no FSI.
+
+application     simpleFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         2000;
+
+deltaT          1;
+
+writeControl    timeStep;
+writeInterval   2000;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    flowRateTM
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet_tm;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+
+    flowRateTM_left
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet_tm_left;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+
+    pressureIOP
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            outlet_tm;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+
+    pressureACinlet
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            ac_inlet;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+
+    iop_probe
+    {
+        type            probes;
+        libs            (sampling);
+        fields          (p);
+        probeLocations
+        (
+            ( 0.010  0.004  0.0005)
+            (-0.010  0.004  0.0005)
+            ( 0.010  0.020  0.0005)
+            (-0.010  0.020  0.0005)
+        );
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+}

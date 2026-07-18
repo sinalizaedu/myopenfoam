@@ -1,0 +1,50 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// G2 90° calotte cellZones (Missel/Lamminsalo)
+// TM: single sector (no left mirror). pad=2.5e-04 m.
+
+actions
+(
+    {
+        name    tm_zone;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (6.450000e-03 -5.000000e-03 -2.500000e-04) (7.180000e-03 -4.240000e-03 7.180000e-03);
+    }
+    {
+        name    tm_zone;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     tm_zone;
+    }
+
+    {
+        name    vitreous_zone;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-1.0e-4 -1.5e-3 -1.0e-4) (8.5e-3 7.4e-3 8.5e-3);
+    }
+    {
+        name    vitreous_zone;
+        type    cellSet;
+        action  delete;
+        source  boxToCell;
+        box     (6.450000e-03 -5.000000e-03 -2.500000e-04) (7.180000e-03 -4.240000e-03 7.180000e-03);
+    }
+    {
+        name    vitreous_zone;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     vitreous_zone;
+    }
+);

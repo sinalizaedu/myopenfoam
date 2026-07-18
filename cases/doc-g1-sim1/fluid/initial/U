@@ -1,0 +1,36 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// Q_prod = 3 µL/min = 5e-11 m³/s total → 2.5e-11 per side (Lamminsalo 2018)
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+boundaryField
+{
+    ac_inlet
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate constant 2.5e-11;
+        value           uniform (0 0 0);
+    }
+    ac_inlet_left
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate constant 2.5e-11;
+        value           uniform (0 0 0);
+    }
+    outlet_tm { type zeroGradient; }
+    outlet_tm_left { type zeroGradient; }
+    wall { type noSlip; }
+    tm_se_wall { type noSlip; }
+    inlet_demote_wall { type noSlip; }
+    demote_wall { type noSlip; }
+    lens_wall { type noSlip; }
+    iris_wall { type noSlip; }
+    front { type empty; }
+    back { type empty; }
+    defaultFaces { type empty; }
+}

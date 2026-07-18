@@ -1,0 +1,25 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+dimensions      [0 2 -2 0 0 0 0];
+internalField   uniform 1.3399;
+boundaryField
+{
+    ac_inlet { type zeroGradient; }
+    ac_inlet_left { type zeroGradient; }
+    outlet_tm { type fixedValue; value uniform 1.3399; }
+    outlet_tm_left { type fixedValue; value uniform 1.3399; }
+    wall { type zeroGradient; }
+    tm_se_wall { type zeroGradient; }
+    inlet_demote_wall { type zeroGradient; }
+    demote_wall { type zeroGradient; }
+    lens_wall { type zeroGradient; }
+    iris_wall { type zeroGradient; }
+    front { type empty; }
+    back { type empty; }
+    defaultFaces { type empty; }
+}

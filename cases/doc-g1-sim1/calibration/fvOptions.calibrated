@@ -1,0 +1,156 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+
+// Porous zone momentum sources — doc-g1-sim1 (AC / vitreous / TM only)
+//
+// Lamminsalo (2018) uses Brinkman equations in COMSOL:
+//   0 = -grad(p) + (mu/eps)*laplacian(U) - (mu/kappa)*U  [+ rho*g in full model]
+//
+// OpenFOAM approximation (Brinkman Darcy limit, creeping flow):
+//   explicitPorositySource + DarcyForchheimer, f=0
+//   S = -(mu * d) * U,   d = 1/kappa  (isotropic)
+//
+// Porosity eps and kappa: fluid/constant/porousMediaProperties
+// Governing-equation map: constant/lamminsaloGoverningEquations.md
+//
+// TM porous zone
+// TM geometry: x=[20,20.5mm] (L_mesh=0.5mm), y=[0.40,2.40mm] (H_TM=2mm)
+// outlet_tm at x=20.5mm (Schlemm's canal inside limbal tissue)
+//
+// Derivation of d_eff (geometry scaling from literature):
+//   Real TM:   d_real = 2.57e13 m⁻², L_real = 5 mm
+//   Mesh TM:   L_mesh = 0.5 mm  (col4 width)
+//   To match resistance: d_eff × L_mesh = d_real × L_real
+//   d_eff = d_real × (L_real/L_mesh) = 2.57e13 × 10 = 2.57e14 m⁻²
+//
+// IOP calibration (probe-based, targeting 15 Torr = 15 mmHg):
+//   ν     = 6.97e-7 m²/s  (transportProperties, aqueous at 37°C)
+//   A_TM  = H_TM × depth = 2.0e-3 × 1e-3 = 2.0e-6 m²
+//   Q_TM  ≈ 5.011e-11 m³/s at baseline (fixed by ac_inlet BC)
+//   U_TM  = Q_TM/A_TM = 2.505e-5 m/s
+//
+//   Calibration run (d = 2.14e14):
+//     IOP_probe (AC interior, t=3-5s) = 10.43 mmHg
+//     IOP_Darcy = ν×d×L×U_TM×ρ/133.322 = 13.92 mmHg (analytical)
+//
+//   Target 15 mmHg → scale d proportionally (Q fixed by inlet BC):
+//     d_eff = 2.14e14 × (15/10.43) = 3.08e14 m⁻²
+//     IOP_probe (predicted) ≈ 10.43 × (3.08e14/2.14e14) = 15.0 mmHg  ✓
+//
+// Matrix conditioning:
+//   rAtU_normal  = dt/ρ = 0.01/993 = 1.007e-5 m³s/kg
+//   rAtU_porous  = 1/(ρ/dt + ν×d_eff) ≈ 1/(99300 + 1.145e8) ≈ 8.7e-9 m³s/kg
+//   Ratio        ≈ 1160  (handled by PCG+DIC in fvSolution)
+//
+// The p BC at outlet_tm is fixedValue 0 (episcleral venous pressure reference).
+// IOP is measured in the interior via the iop_probe function object.
+//
+// Vitreous porous zone — Brinkman drag term (Darcy limit)
+//
+// Estratégia: separar AC e vítreo HIDRAULICAMENTE (não estruturalmente). O
+// vítreo é tratado como meio poroso (gel hialurônico, eps=1, kappa=5.8e-14 m²)
+// com arrasto Brinkman -(mu/kappa)U via d = 1/kappa. Não há parede/baffle entre
+// AC e vítreo — a "separação" emerge da diferença de permeabilidade.
+//
+// Rabbit ocular tissues — Table I (Lamminsalo / rabbit eye model).
+//
+// Vitreous: k = 5.8×10⁻¹⁴ m²  →  d_vit = 1/k = 1.724×10¹³ m⁻²
+// TM: k "Adjusted" — d_TM calibrated to IOP₀ = 15 mmHg (Step 0, Sim 1)
+//
+// Step 0 calibration — doc-g1-sim1 M2 (2026-07-17):
+//   d_TM = 5.072e13 m⁻² → IOP₀ = 14.999 mmHg (164968 cells, Q err 0.0%)
+//   MESH_LEVEL=M2, full iris→hyaloid inlet + full TM SE outlet
+//   d_vit = 1.724e13 m⁻² (k = 5.8e-14 m²)
+//   ρ_aqueous = 995 kg/m³ @ 37 °C (Tabela I ᵈ)
+// Prior uncalibrated M2 (d_TM=1.257839e14) gave IOP≈22.40 mmHg.
+
+tm_porous
+{
+    type            explicitPorositySource;
+    active          true;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        tm_zone;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            // Brinkman drag: d = 1/kappa [m⁻²]; kappa adjusted (Table I ᵍ)
+            d   d [0 -2 0 0 0 0 0] (5.072e13 5.072e13 5.072e13);
+            // f = 0: creeping flow (no Forchheimer inertia)
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                coordinateRotation { type axesRotation; e1 (1 0 0); e2 (0 1 0); }
+            }
+        }
+    }
+}
+
+tm_porous_left
+{
+    type            explicitPorositySource;
+    active          true;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        tm_zone_left;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            // Brinkman drag: d = 1/kappa_TM (calibrated)
+            d   d [0 -2 0 0 0 0 0] (5.072e13 5.072e13 5.072e13);
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                coordinateRotation { type axesRotation; e1 (1 0 0); e2 (0 1 0); }
+            }
+        }
+    }
+}
+
+vitreous_porous
+{
+    type            explicitPorositySource;
+    active          true;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        vitreous_zone;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            // Brinkman drag: d = 1/kappa; kappa = 5.8e-14 m² (Table I ᵉᶜ)
+            d   d [0 -2 0 0 0 0 0] (1.724e13 1.724e13 1.724e13);
+            // f [m⁻¹]: Forchheimer = 0 (creeping flow no gel vítreo)
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                coordinateRotation { type axesRotation; e1 (1 0 0); e2 (0 1 0); }
+            }
+        }
+    }
+}

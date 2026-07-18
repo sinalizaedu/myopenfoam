@@ -1,0 +1,31 @@
+#!/bin/bash
+# doc-g1-sim1 — Allclean
+
+set -e
+cd "$(dirname "$0")"
+
+echo "=== doc-g1-sim1: cleaning fluid domain ==="
+
+(
+    cd fluid
+    rm -rf log.* postProcessing
+    for d in ./[0-9]*; do
+        [ -e "$d" ] || continue
+        base=$(basename "$d")
+        case "$base" in
+            0) ;;
+            *) rm -rf "$d" ;;
+        esac
+    done
+    # Keep field templates in 0/ via initial/; wipe solved 0 mesh only
+    rm -rf constant/polyMesh
+    rm -f eye_g1_lamminsalo.msh
+    # Restore BCs from templates
+    mkdir -p 0
+    cp -f initial/U 0/U
+    cp -f initial/p 0/p
+    touch doc-g1-sim1-fluid.foam
+    echo "  fluid cleaned"
+)
+
+echo "=== doc-g1-sim1: clean done ==="

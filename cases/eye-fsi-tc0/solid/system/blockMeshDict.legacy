@@ -1,0 +1,565 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// eye-fsi-tc0 — SOLID domain — ANATOMIA COMPLETA (17 blocos)
+//
+// Blocos:
+//
+//   Córnea              x=[-20,+20mm]   y=[-1.0,  0.0mm]  E=100 MPa
+//   Íris dir.           x=[ +5,+18mm]   y=[ 4.8,  7.2mm]  E=  1 MPa  cantilever
+//   Stub escl. dir.     x=[+18,+20mm]   y=[ 4.8,  7.2mm]  E=  1 MPa
+//   Íris esq.           x=[-18, -5mm]   y=[ 4.8,  7.2mm]  E=  1 MPa  cantilever
+//   Stub escl. esq.     x=[-20,-18mm]   y=[ 4.8,  7.2mm]  E=  1 MPa
+//   Lente               x=[-15,+15mm]   y=[ 8.2, 12.0mm]  E=  1 MPa  clamped laterais
+//   Esclera dir. lower  x=[+20,+21mm]   y=[-1.0,  0.0mm]  E=  1 GPa  → conectada à córnea
+//   Esclera dir. upper  x=[+20,+21mm]   y=[ 0.0, 24.0mm]  E=  1 GPa  (com notch TM)
+//   Esclera esq. lower  x=[-21,-20mm]   y=[-1.0,  0.0mm]  E=  1 GPa  → conectada à córnea
+//   Esclera esq. upper  x=[-21,-20mm]   y=[ 0.0, 24.0mm]  E=  1 GPa  (com notch TM)
+//   Esclera superior    x=[-21,+21mm]   y=[24.0, 25.0mm]  E=  1 GPa  clamped laterais
+//
+// Notch TM (dente de corte):
+//   DIREITA: região x=[20,20.5mm], y=[0.4,2.4mm] AUSENTE do sólido → fluido TM
+//   ESQUERDA: região x=[-20.5,-20mm], y=[0.4,2.4mm] AUSENTE do sólido → fluido TM
+//   Fronteira do notch = patch sclera_tm_gap / sclera_tm_gap_left
+//
+// Conexão limbo: esclera lower compartilha face lateral com a córnea
+//   → cornea_right/left são faces INTERNAS (nós compartilhados)
+//
+// Células totais: 80 + (260+40)×2 + 240 + 96×2 + 84 = 1196
+
+scale   1;
+
+vertices
+(
+    // ── CÓRNEA — z=0 ─────────────────────────────────────────────────────
+    (-0.020  -0.001  0.000 )  //  0  cornea: left outer bottom
+    ( 0.020  -0.001  0.000 )  //  1  cornea: right outer bottom
+    ( 0.020   0.000  0.000 )  //  2  cornea: right inner top  ← compartilhado com esclera R
+    (-0.020   0.000  0.000 )  //  3  cornea: left inner top   ← compartilhado com esclera L
+
+    // ── CÓRNEA — z=1mm ───────────────────────────────────────────────────
+    (-0.020  -0.001  0.001 )  //  4
+    ( 0.020  -0.001  0.001 )  //  5
+    ( 0.020   0.000  0.001 )  //  6  ← compartilhado com esclera R
+    (-0.020   0.000  0.001 )  //  7  ← compartilhado com esclera L
+
+    // ── ÍRIS + STUB DIREITA — z=0 ────────────────────────────────────────
+    ( 0.005  0.00480  0.000 )  //  8  iris R: pupil-bottom
+    ( 0.018  0.00480  0.000 )  //  9  iris R: iris-stub junction bottom
+    ( 0.018  0.00720  0.000 )  // 10  iris R: iris-stub junction top
+    ( 0.005  0.00720  0.000 )  // 11  iris R: pupil-top
+    ( 0.020  0.00480  0.000 )  // 12  stub R: base-bottom
+    ( 0.020  0.00720  0.000 )  // 13  stub R: base-top
+
+    // ── ÍRIS + STUB DIREITA — z=1mm ──────────────────────────────────────
+    ( 0.005  0.00480  0.001 )  // 14
+    ( 0.018  0.00480  0.001 )  // 15
+    ( 0.018  0.00720  0.001 )  // 16
+    ( 0.005  0.00720  0.001 )  // 17
+    ( 0.020  0.00480  0.001 )  // 18
+    ( 0.020  0.00720  0.001 )  // 19
+
+    // ── ÍRIS + STUB ESQUERDA — z=0 ───────────────────────────────────────
+    (-0.005  0.00480  0.000 )  // 20  iris L: pupil-bottom
+    (-0.018  0.00480  0.000 )  // 21  iris L: iris-stub junction bottom
+    (-0.018  0.00720  0.000 )  // 22  iris L: iris-stub junction top
+    (-0.005  0.00720  0.000 )  // 23  iris L: pupil-top
+    (-0.020  0.00480  0.000 )  // 24  stub L: base-bottom
+    (-0.020  0.00720  0.000 )  // 25  stub L: base-top
+
+    // ── ÍRIS + STUB ESQUERDA — z=1mm ─────────────────────────────────────
+    (-0.005  0.00480  0.001 )  // 26
+    (-0.018  0.00480  0.001 )  // 27
+    (-0.018  0.00720  0.001 )  // 28
+    (-0.005  0.00720  0.001 )  // 29
+    (-0.020  0.00480  0.001 )  // 30
+    (-0.020  0.00720  0.001 )  // 31
+
+    // ── LENTE — z=0 ──────────────────────────────────────────────────────
+    (-0.015  0.00820  0.000 )  // 32
+    ( 0.015  0.00820  0.000 )  // 33
+    ( 0.015  0.01200  0.000 )  // 34
+    (-0.015  0.01200  0.000 )  // 35
+
+    // ── LENTE — z=1mm ────────────────────────────────────────────────────
+    (-0.015  0.00820  0.001 )  // 36
+    ( 0.015  0.00820  0.001 )  // 37
+    ( 0.015  0.01200  0.001 )  // 38
+    (-0.015  0.01200  0.001 )  // 39
+
+    // ── ESCLERA DIREITA — vértices principais — z=0 ───────────────────────
+    // (vértices 2,6 reutilizados da córnea como inner-bottom)
+    ( 0.021  0.000   0.000 )  // 40  sclera R: outer, y=0
+    ( 0.021  0.024   0.000 )  // 41  sclera R: outer top
+    ( 0.020  0.024   0.000 )  // 42  sclera R: inner top
+
+    // ── ESCLERA DIREITA — z=1mm ──────────────────────────────────────────
+    ( 0.021  0.000   0.001 )  // 43
+    ( 0.021  0.024   0.001 )  // 44
+    ( 0.020  0.024   0.001 )  // 45
+
+    // ── ESCLERA ESQUERDA — vértices principais — z=0 ─────────────────────
+    // (vértices 3,7 reutilizados da córnea como inner-bottom)
+    (-0.021  0.000   0.000 )  // 46  sclera L: outer, y=0
+    (-0.020  0.024   0.000 )  // 47  sclera L: inner top
+    (-0.021  0.024   0.000 )  // 48  sclera L: outer top
+
+    // ── ESCLERA ESQUERDA — z=1mm ─────────────────────────────────────────
+    (-0.021  0.000   0.001 )  // 49
+    (-0.020  0.024   0.001 )  // 50
+    (-0.021  0.024   0.001 )  // 51
+
+    // ── ESCLERA SUPERIOR — z=0 ───────────────────────────────────────────
+    (-0.021  0.024   0.000 )  // 52  sclera top: left-bottom
+    ( 0.021  0.024   0.000 )  // 53  sclera top: right-bottom
+    ( 0.021  0.025   0.000 )  // 54  sclera top: right-top
+    (-0.021  0.025   0.000 )  // 55  sclera top: left-top
+
+    // ── ESCLERA SUPERIOR — z=1mm ─────────────────────────────────────────
+    (-0.021  0.024   0.001 )  // 56
+    ( 0.021  0.024   0.001 )  // 57
+    ( 0.021  0.025   0.001 )  // 58
+    (-0.021  0.025   0.001 )  // 59
+
+    // ── EXTENSÃO INFERIOR DAS ESCLERARAS (y=-1mm, outer x=±21mm) ─────────
+    ( 0.021  -0.001  0.000 )  // 60  sclera R: outer bottom (y=-1mm, z=0)
+    ( 0.021  -0.001  0.001 )  // 61  sclera R: outer bottom (y=-1mm, z=1mm)
+    (-0.021  -0.001  0.000 )  // 62  sclera L: outer bottom (y=-1mm, z=0)
+    (-0.021  -0.001  0.001 )  // 63  sclera L: outer bottom (y=-1mm, z=1mm)
+
+    // ── NOTCH TM DIREITA — z=0 ───────────────────────────────────────────
+    // Vértices que criam o recorte em x=[20,20.5mm], y=[0.4,2.4mm]
+    ( 0.020  0.0004  0.000 )  // 64  inner y=0.4mm
+    ( 0.020  0.0024  0.000 )  // 65  inner y=2.4mm
+    ( 0.0205 0.000   0.000 )  // 66  mid-col y=0
+    ( 0.0205 0.0004  0.000 )  // 67  mid-col y=0.4mm
+    ( 0.0205 0.0024  0.000 )  // 68  mid-col y=2.4mm
+    ( 0.0205 0.024   0.000 )  // 69  mid-col y=24mm
+    ( 0.021  0.0004  0.000 )  // 70  outer y=0.4mm
+    ( 0.021  0.0024  0.000 )  // 71  outer y=2.4mm
+    ( 0.0205 -0.001  0.000 )  // 72  mid-col y=-1mm (extensão lower)
+
+    // ── NOTCH TM DIREITA — z=1mm ─────────────────────────────────────────
+    ( 0.020  0.0004  0.001 )  // 73
+    ( 0.020  0.0024  0.001 )  // 74
+    ( 0.0205 0.000   0.001 )  // 75
+    ( 0.0205 0.0004  0.001 )  // 76
+    ( 0.0205 0.0024  0.001 )  // 77
+    ( 0.0205 0.024   0.001 )  // 78
+    ( 0.021  0.0004  0.001 )  // 79
+    ( 0.021  0.0024  0.001 )  // 80
+    ( 0.0205 -0.001  0.001 )  // 81
+
+    // ── NOTCH TM ESQUERDA — z=0 ──────────────────────────────────────────
+    // Recorte em x=[-20.5,-20mm], y=[0.4,2.4mm]
+    (-0.020  0.0004  0.000 )  // 82  inner y=0.4mm
+    (-0.020  0.0024  0.000 )  // 83  inner y=2.4mm
+    (-0.0205 0.000   0.000 )  // 84  mid-col y=0
+    (-0.0205 0.0004  0.000 )  // 85  mid-col y=0.4mm
+    (-0.0205 0.0024  0.000 )  // 86  mid-col y=2.4mm
+    (-0.0205 0.024   0.000 )  // 87  mid-col y=24mm
+    (-0.021  0.0004  0.000 )  // 88  outer y=0.4mm
+    (-0.021  0.0024  0.000 )  // 89  outer y=2.4mm
+    (-0.0205 -0.001  0.000 )  // 90  mid-col y=-1mm
+
+    // ── NOTCH TM ESQUERDA — z=1mm ────────────────────────────────────────
+    (-0.020  0.0004  0.001 )  // 91
+    (-0.020  0.0024  0.001 )  // 92
+    (-0.0205 0.000   0.001 )  // 93
+    (-0.0205 0.0004  0.001 )  // 94
+    (-0.0205 0.0024  0.001 )  // 95
+    (-0.0205 0.024   0.001 )  // 96
+    (-0.021  0.0004  0.001 )  // 97
+    (-0.021  0.0024  0.001 )  // 98
+    (-0.0205 -0.001  0.001 )  // 99
+);
+
+blocks
+(
+    // Córnea: 40×2×1 = 80 células
+    hex (  0  1  2  3   4  5  6  7 )  cornea       ( 40  2 1 )  simpleGrading ( 1 1 1 )
+
+    // Íris direita: 26×10×1 = 260 células
+    hex (  8  9 10 11  14 15 16 17 )  iris         ( 26 10 1 )  simpleGrading ( 1 1 1 )
+
+    // Escleral stub direito: 4×10×1 = 40 células
+    hex (  9 12 13 10  15 18 19 16 )  sclera_stub  (  4 10 1 )  simpleGrading ( 1 1 1 )
+
+    // Íris esquerda: 26×10×1 = 260 células
+    hex ( 21 20 23 22  27 26 29 28 )  iris         ( 26 10 1 )  simpleGrading ( 1 1 1 )
+
+    // Escleral stub esquerdo: 4×10×1 = 40 células
+    hex ( 24 21 22 25  30 27 28 31 )  sclera_stub  (  4 10 1 )  simpleGrading ( 1 1 1 )
+
+    // Lente: 30×8×1 = 240 células
+    hex ( 32 33 34 35  36 37 38 39 )  lens         ( 30  8 1 )  simpleGrading ( 1 1 1 )
+
+    // ════════════════════════════════════════════════════════════════════
+    // ESCLERA DIREITA — 7 blocos (lower 2 + upper 5 com notch TM)
+    // v2,v6 (y=0) compartilhados com córnea → limbo conectado
+    // ════════════════════════════════════════════════════════════════════
+
+    // R_lower_inner: x=[20,20.5mm], y=[-1,0mm] — 1×2×1 = 2 células
+    hex (  1 72 66  2   5 81 75  6 )  sclera       (  1  2 1 )  simpleGrading ( 1 1 1 )
+
+    // R_lower_outer: x=[20.5,21mm], y=[-1,0mm] — 1×2×1 = 2 células
+    hex ( 72 60 40 66  81 61 43 75 )  sclera       (  1  2 1 )  simpleGrading ( 1 1 1 )
+
+    // R1: x=[20,20.5mm], y=[0,0.4mm] — 1×1×1 = 1 célula
+    hex (  2 66 67 64   6 75 76 73 )  sclera       (  1  1 1 )  simpleGrading ( 1 1 1 )
+
+    // R2: x=[20.5,21mm], y=[0,0.4mm] — 1×1×1 = 1 célula
+    hex ( 66 40 70 67  75 43 79 76 )  sclera       (  1  1 1 )  simpleGrading ( 1 1 1 )
+
+    // R3: x=[20.5,21mm], y=[0.4,2.4mm] — 1×4×1 = 4 células  (TM outer strip)
+    hex ( 67 70 71 68  76 79 80 77 )  sclera       (  1  4 1 )  simpleGrading ( 1 1 1 )
+
+    // R4: x=[20,20.5mm], y=[2.4,24mm] — 1×43×1 = 43 células  (inner above TM)
+    hex ( 65 68 69 42  74 77 78 45 )  sclera       (  1 43 1 )  simpleGrading ( 1 1 1 )
+
+    // R5: x=[20.5,21mm], y=[2.4,24mm] — 1×43×1 = 43 células  (outer above TM)
+    hex ( 68 71 41 69  77 80 44 78 )  sclera       (  1 43 1 )  simpleGrading ( 1 1 1 )
+
+    // ════════════════════════════════════════════════════════════════════
+    // ESCLERA ESQUERDA — 7 blocos (simétrico, lower 2 + upper 5 com notch TM)
+    // v3,v7 (y=0) compartilhados com córnea → limbo conectado
+    // ════════════════════════════════════════════════════════════════════
+
+    // L_lower_inner: x=[-20.5,-20mm], y=[-1,0mm] — 1×2×1 = 2 células
+    hex ( 90  0  3 84  99  4  7 93 )  sclera       (  1  2 1 )  simpleGrading ( 1 1 1 )
+
+    // L_lower_outer: x=[-21,-20.5mm], y=[-1,0mm] — 1×2×1 = 2 células
+    hex ( 62 90 84 46  63 99 93 49 )  sclera       (  1  2 1 )  simpleGrading ( 1 1 1 )
+
+    // L1: x=[-20.5,-20mm], y=[0,0.4mm] — 1×1×1 = 1 célula
+    hex ( 84  3 82 85  93  7 91 94 )  sclera       (  1  1 1 )  simpleGrading ( 1 1 1 )
+
+    // L2: x=[-21,-20.5mm], y=[0,0.4mm] — 1×1×1 = 1 célula
+    hex ( 46 84 85 88  49 93 94 97 )  sclera       (  1  1 1 )  simpleGrading ( 1 1 1 )
+
+    // L3: x=[-21,-20.5mm], y=[0.4,2.4mm] — 1×4×1 = 4 células  (TM outer strip)
+    hex ( 88 85 86 89  97 94 95 98 )  sclera       (  1  4 1 )  simpleGrading ( 1 1 1 )
+
+    // L4: x=[-20.5,-20mm], y=[2.4,24mm] — 1×43×1 = 43 células  (inner above TM)
+    hex ( 86 83 47 87  95 92 50 96 )  sclera       (  1 43 1 )  simpleGrading ( 1 1 1 )
+
+    // L5: x=[-21,-20.5mm], y=[2.4,24mm] — 1×43×1 = 43 células  (outer above TM)
+    hex ( 89 86 87 48  98 95 96 51 )  sclera       (  1 43 1 )  simpleGrading ( 1 1 1 )
+
+    // Esclera superior: 42×2×1 = 84 células
+    hex ( 52 53 54 55  56 57 58 59 )  sclera       ( 42  2 1 )  simpleGrading ( 1 1 1 )
+);
+
+boundary
+(
+    // ════════════════════════════════════════════════════════════════════
+    // ══ CÓRNEA ══════════════════════════════════════════════════════════
+    cornea_bottom
+    {
+        type wall;
+        faces ( ( 0 1 5 4 ) );          // y=-1mm, exterior, livre
+    }
+    cornea_top
+    {
+        type wall;
+        faces ( ( 3 7 6 2 ) );          // y=0mm, IOP empurra para -y
+    }
+    // cornea_left e cornea_right REMOVIDAS: faces internas (limbo conectado à esclera)
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ÍRIS DIREITA ═════════════════════════════════════════════════════
+    iris_pupil
+    {
+        type wall;
+        faces ( ( 8 14 17 11 ) );
+    }
+    iris_bottom
+    {
+        type wall;
+        faces ( ( 8  9 15 14 ) );
+    }
+    iris_top
+    {
+        type wall;
+        faces ( ( 11 17 16 10 ) );
+    }
+    sclera_stub_bottom
+    {
+        type wall;
+        faces ( ( 9 12 18 15 ) );
+    }
+    sclera_stub_top
+    {
+        type wall;
+        faces ( ( 10 16 19 13 ) );
+    }
+    iris_base
+    {
+        type wall;
+        faces ( ( 12 13 19 18 ) );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ÍRIS ESQUERDA ════════════════════════════════════════════════════
+    iris_pupil_left
+    {
+        type wall;
+        faces ( ( 20 23 29 26 ) );
+    }
+    iris_bottom_left
+    {
+        type wall;
+        faces ( ( 20 21 27 26 ) );
+    }
+    iris_top_left
+    {
+        type wall;
+        faces ( ( 23 22 28 29 ) );
+    }
+    sclera_stub_bottom_left
+    {
+        type wall;
+        faces ( ( 21 24 30 27 ) );
+    }
+    sclera_stub_top_left
+    {
+        type wall;
+        faces ( ( 22 25 31 28 ) );
+    }
+    iris_base_left
+    {
+        type wall;
+        faces ( ( 24 25 31 30 ) );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ LENTE ═══════════════════════════════════════════════════════════
+    lens_bottom
+    {
+        type wall;
+        faces ( ( 32 33 37 36 ) );
+    }
+    lens_top
+    {
+        type wall;
+        faces ( ( 35 39 38 34 ) );
+    }
+    lens_left
+    {
+        type wall;
+        faces ( ( 32 36 39 35 ) );
+    }
+    lens_right
+    {
+        type wall;
+        faces ( ( 33 34 38 37 ) );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ESCLERA DIREITA ══════════════════════════════════════════════════
+    sclera_R_bottom
+    {
+        // y=-1mm — exterior da extensão lower (livre)
+        type wall;
+        faces
+        (
+            (  1 72 81  5 )    // inner strip  x=[20,20.5mm]
+            ( 72 60 61 81 )    // outer strip  x=[20.5,21mm]
+        );
+    }
+    sclera_R_top
+    {
+        // y=24mm — fixada na órbita
+        type wall;
+        faces
+        (
+            ( 69 42 45 78 )    // inner strip  x=[20,20.5mm]
+            ( 41 69 78 44 )    // outer strip  x=[20.5,21mm]
+        );
+    }
+    sclera_R_inner
+    {
+        // x=20mm — face interna da esclera (IOP): y=[0,0.4mm] e y=[2.4,24mm]
+        // y=[0.4,2.4mm] está ausente → é a parede do notch TM (sclera_tm_gap)
+        type wall;
+        faces
+        (
+            (  2  6 73 64 )    // y=[0,0.4mm]
+            ( 65 74 45 42 )    // y=[2.4,24mm]
+        );
+    }
+    sclera_R_outer
+    {
+        // x=21mm — exterior livre
+        type wall;
+        faces
+        (
+            ( 60 40 43 61 )    // lower        y=[-1,0mm]
+            ( 40 70 79 43 )    // R2           y=[0,0.4mm]
+            ( 70 71 80 79 )    // R3           y=[0.4,2.4mm]
+            ( 71 41 44 80 )    // R5           y=[2.4,24mm]
+        );
+    }
+    sclera_tm_gap
+    {
+        // Paredes do notch TM direito: x=[20,20.5mm], y=[0.4,2.4mm]
+        type wall;
+        faces
+        (
+            ( 67 76 73 64 )    // y=0.4mm (teto inferior do notch)
+            ( 65 68 77 74 )    // y=2.4mm (teto superior do notch)
+            ( 67 76 77 68 )    // x=20.5mm (parede interna do notch)
+        );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ESCLERA ESQUERDA (simétrica) ═════════════════════════════════════
+    sclera_L_bottom
+    {
+        type wall;
+        faces
+        (
+            ( 90  0  4 99 )    // inner strip  x=[-20.5,-20mm]
+            ( 62 90 99 63 )    // outer strip  x=[-21,-20.5mm]
+        );
+    }
+    sclera_L_top
+    {
+        type wall;
+        faces
+        (
+            ( 47 87 96 50 )    // inner strip  x=[-20.5,-20mm]
+            ( 87 48 51 96 )    // outer strip  x=[-21,-20.5mm]
+        );
+    }
+    sclera_L_inner
+    {
+        // x=-20mm — face interna da esclera (IOP)
+        type wall;
+        faces
+        (
+            (  3 82 91  7 )    // y=[0,0.4mm]
+            ( 83 47 50 92 )    // y=[2.4,24mm]
+        );
+    }
+    sclera_L_outer
+    {
+        // x=-21mm — exterior livre
+        type wall;
+        faces
+        (
+            ( 62 63 49 46 )    // lower        y=[-1,0mm]
+            ( 46 49 97 88 )    // L2           y=[0,0.4mm]
+            ( 88 97 98 89 )    // L3           y=[0.4,2.4mm]
+            ( 89 98 51 48 )    // L5           y=[2.4,24mm]
+        );
+    }
+    sclera_tm_gap_left
+    {
+        // Paredes do notch TM esquerdo: x=[-20.5,-20mm], y=[0.4,2.4mm]
+        type wall;
+        faces
+        (
+            ( 82 85 94 91 )    // y=0.4mm
+            ( 86 83 92 95 )    // y=2.4mm
+            ( 85 86 95 94 )    // x=-20.5mm
+        );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ ESCLERA SUPERIOR ═════════════════════════════════════════════════
+    sclera_top_bottom
+    {
+        type wall;
+        faces ( ( 52 53 57 56 ) );
+    }
+    sclera_top_top
+    {
+        type wall;
+        faces ( ( 55 59 58 54 ) );
+    }
+    sclera_top_left
+    {
+        type wall;
+        faces ( ( 52 56 59 55 ) );
+    }
+    sclera_top_right
+    {
+        type wall;
+        faces ( ( 53 54 58 57 ) );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // ══ 2D (front/back) ══════════════════════════════════════════════════
+    front
+    {
+        type empty;
+        faces
+        (
+            (  0  3  2  1 )    // cornea
+            (  8 11 10  9 )    // iris R
+            (  9 10 13 12 )    // stub R
+            ( 20 21 22 23 )    // iris L
+            ( 21 24 25 22 )    // stub L
+            ( 32 33 34 35 )    // lens
+            // sclera R lower
+            (  1  2 66 72 )    // R_lower_inner
+            ( 72 66 40 60 )    // R_lower_outer
+            // sclera R upper (com notch)
+            (  2 64 67 66 )    // R1
+            ( 66 67 70 40 )    // R2
+            ( 67 68 71 70 )    // R3
+            ( 65 42 69 68 )    // R4
+            ( 68 69 41 71 )    // R5
+            // sclera L lower
+            ( 90 84  3  0 )    // L_lower_inner
+            ( 62 46 84 90 )    // L_lower_outer
+            // sclera L upper (com notch)
+            ( 84 85 82  3 )    // L1
+            ( 46 88 85 84 )    // L2
+            ( 88 89 86 85 )    // L3
+            ( 86 87 47 83 )    // L4
+            ( 89 48 87 86 )    // L5
+            // sclera top
+            ( 52 55 54 53 )
+        );
+    }
+    back
+    {
+        type empty;
+        faces
+        (
+            (  4  5  6  7 )    // cornea
+            ( 14 15 16 17 )    // iris R
+            ( 15 18 19 16 )    // stub R
+            ( 26 27 28 29 )    // iris L
+            ( 27 30 31 28 )    // stub L
+            ( 36 37 38 39 )    // lens
+            // sclera R lower
+            (  5 81 75  6 )    // R_lower_inner
+            ( 81 61 43 75 )    // R_lower_outer
+            // sclera R upper (com notch)
+            (  6 73 76 75 )    // R1
+            ( 75 76 79 43 )    // R2
+            ( 76 77 80 79 )    // R3
+            ( 74 45 78 77 )    // R4
+            ( 77 78 44 80 )    // R5
+            // sclera L lower
+            ( 99  4  7 93 )    // L_lower_inner
+            ( 63 99 93 49 )    // L_lower_outer
+            // sclera L upper (com notch)
+            ( 93  7 91 94 )    // L1
+            ( 49 93 94 97 )    // L2
+            ( 97 94 95 98 )    // L3
+            ( 95 92 50 96 )    // L4
+            ( 98 95 96 51 )    // L5
+            // sclera top
+            ( 56 57 58 59 )
+        );
+    }
+);

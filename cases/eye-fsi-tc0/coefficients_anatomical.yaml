@@ -1,0 +1,31 @@
+# Anatomical G1 — Simulação 1 (Step 0) calibrated 2026-07-15
+mesh: prism_extrude_layers1
+production_mesh: M1
+nCells_M1: 8870
+nCells_M2: 15735
+nCells_M3: 22200
+rho: 995
+nu: 6.925e-7
+Q_prod_uL_per_min: 3.0
+P_tm_Torr: 10
+P_epi_p_kin: 1.3399
+IOP0_target_mmHg: 15.0
+
+d_vit: 1.724e13
+d_TM: 1.257839e14   # calibrated on refined M1 (TM-bounded outlets)
+
+IOP0_achieved_M1_mmHg: 15.000
+IOP0_fixed_dTM_M2_mmHg: 14.405
+IOP0_fixed_dTM_M3_mmHg: 14.410
+IOP_spread_fixed_dTM_mmHg: 0.595   # 4.0% of 15 — PASS (<=5%)
+Q_balance_error_pct: 0.00
+
+tm_cells_M1: 164/162
+tm_cells_M2: 409/415
+tm_cells_M3: 810/837
+Q_right_pct_M1: 56.1   # residual unstructured L/R asymmetry
+
+note: >
+  Mesh independence run with fixed d_TM (scripts/run_anatomical_mesh_study.py).
+  Outlets restricted to TM-cell boundary faces (no clear bypass).
+  Legacy rectangular d_TM does not transfer.

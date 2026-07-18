@@ -1,0 +1,61 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      porousMediaProperties;
+}
+
+// Lamminsalo (2018) Brinkman porous media — reference for fvOptions calibration.
+// Not read by simpleFoam directly; documents κ, ε and OpenFOAM mapping.
+//
+// COMSOL Brinkman (creeping, steady):
+//   0 = -∇p + (μ/ε)∇²U - (μ/κ)U + ρg   [+ inertial terms if transient]
+//   ∇·U = Q_br/ρ
+//
+// OpenFOAM Darcy-Forchheimer (f=0) momentum source in porous cellZones:
+//   S = -(μ d) U     with  d = 1/κ  (isotropic κ)
+//
+// Brinkman viscous diffusion (μ/ε)∇²U is NOT in standard fvOptions; negligible
+// when Br = κ/L² << 1 (vitreous, TM). See constant/lamminsaloGoverningEquations.md
+
+model           Brinkman_Darcy_limit;
+
+vitreous_zone
+{
+    cellZone        vitreous_zone;
+    epsilon         1.0;          // Table I porosity
+    kappa           5.8e-14;      // m²  — Table I ᵉᶜ
+    d               1.724e13;     // m⁻² — 1/kappa → fvOptions Darcy coeff
+    f               (0 0 0);      // m⁻¹ — Forchheimer off (creeping flow)
+    calibrate       false;
+}
+
+tm_zone
+{
+    cellZone        tm_zone;
+    epsilon         1.0;          // Table I
+    kappa           adjusted;     // Table I ᵍ — calibrated to IOP₀
+    d               3.55e14;      // m⁻² — pending recalibration (Lamminsalo BCs)
+    f               (0 0 0);
+    calibrate       true;
+    IOP_target_Torr 15;
+}
+
+tm_zone_left
+{
+    cellZone        tm_zone_left;
+    epsilon         1.0;
+    kappa           adjusted;
+    d               3.55e14;
+    f               (0 0 0);
+    calibrate       true;
+    IOP_target_Torr 15;
+}
+
+// Free fluid (câmara anterior) — no fvOptions source; ε = 0 in Table I
+ac_fluid
+{
+    epsilon         0.0;          // Table I — humor aquoso, não poroso
+    model           NavierStokes; // COMSOL: incompressible flow, no Brinkman
+}

@@ -1,0 +1,20 @@
+#!/bin/bash
+# eye-fsi-tc0 — Allclean.step0 (fluid-only Step 0)
+
+set -e
+cd "$(dirname "$0")"
+
+echo "=== eye-fsi-tc0 Step 0: cleaning fluid domain ==="
+
+(
+    cd fluid
+    rm -rf log.* postProcessing
+    find . -maxdepth 1 -name '[0-9]*' ! -name '0' ! -name '0.step0' -exec rm -rf {} +
+    rm -rf constant/polyMesh
+    touch eye-fsi-tc0-fluid.foam
+    echo "  fluid cleaned"
+)
+
+rm -f run_log_step0.txt
+
+echo "=== eye-fsi-tc0 Step 0: clean done ==="

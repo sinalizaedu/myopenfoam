@@ -1,0 +1,109 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Outlet = wall faces that bound TM cells (no clear bypass).
+// Requires tm_zone / tm_zone_left cellSets from topoSetDict.anatomical first.
+// Inlet remains one-sided iris-root faces (normalToFace).
+
+actions
+(
+    // --- outlet_tm: boundary faces of tm_zone ∩ wall ∩ SE box ---
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  new;
+        source  cellToFace;
+        set     tm_zone;
+        option  outside;
+    }
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  subset;
+        source  patchToFace;
+        patch   wall;
+    }
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        // SE outer face of TM (voids)
+        box (0.00655 -0.00500 -1e-5) (0.00725 -0.00435 1.001e-3);
+    }
+
+    {
+        name    outlet_tm_left_faces;
+        type    faceSet;
+        action  new;
+        source  cellToFace;
+        set     tm_zone_left;
+        option  outside;
+    }
+    {
+        name    outlet_tm_left_faces;
+        type    faceSet;
+        action  subset;
+        source  patchToFace;
+        patch   wall;
+    }
+    {
+        name    outlet_tm_left_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        box (-0.00725 -0.00500 -1e-5) (-0.00655 -0.00435 1.001e-3);
+    }
+
+    // --- ac_inlet: one-sided (posterior iris root) ---
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   wall;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        box (0.00670 -0.00405 -1e-5) (0.00715 -0.00325 1.001e-3);
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        normal  (-1 0 0);
+        cos     0.4;
+    }
+
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   wall;
+    }
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        box (-0.00715 -0.00405 -1e-5) (-0.00670 -0.00325 1.001e-3);
+    }
+    {
+        name    ac_inlet_left_faces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        normal  (1 0 0);
+        cos     0.4;
+    }
+);
