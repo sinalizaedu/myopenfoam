@@ -2,7 +2,8 @@
 
 Missel 2012 / Lamminsalo 2018 **2D planar bilateral** rabbit eye.
 
-For the 3D 90° calotte (G2), see [`../doc-g2-sim1`](../doc-g2-sim1).
+For the 3D 90° calottes see [`../doc-g2-sim1`](../doc-g2-sim1):
+**G2** (from G1 anatomy) and **G2-fluid** (from G1-fluid).
 
 ## Fluid domain
 

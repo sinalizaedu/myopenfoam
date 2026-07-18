@@ -8,7 +8,7 @@ from Missel 2012. Units in tables: **cm**. OpenFOAM uses **metres** via
 
 - **G1** = anatomical 2D planar bilateral (Missel/Lamminsalo).
 - **Sim 1 fluid domain** = **AC + vitreous + TM only** (no sclera/choroid/retina/cornea stroma).
-- **G2** = right-half revolved 90° calotte (`doc-g2-sim1`, `gen_lamminsalo_g2.py`).
+- **G2** = G1 right-half × 90° revolve; **G2-fluid** = G1-fluid × 90° (`doc-g2-sim1`).
 
 ## Table SI (selected)
 

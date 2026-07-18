@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
 """
-G2 anatomical rabbit-eye geometry (Missel 2012 / Lamminsalo 2018).
+G2 / G2-fluid anatomical rabbit-eye geometry (Missel 2012 / Lamminsalo 2018).
 
-G1 right-half meridional fluid silhouette, revolved 90° about the optical
-axis → 3D quarter-calotte (1/4 of the eye). The two cut planes are symmetry
-faces; four copies recover the full 360° eye.
+Naming (mirrors G1):
+  G1        = full anatomical 2D planar bilateral
+  G1-fluid  = AC ∪ vitreous ∪ TM only (Sim 1 CFD domain)
 
-Coordinate tables are in cm (Missel):
-  X = radial (perpendicular to optical axis)
-  Z = optical axis, positive = posterior
+  G2        = G1 right-half, revolved 90° about optical axis (+y)
+  G2-fluid  = G1-fluid right-half, revolved 90° about +y
 
-OpenFOAM mapping (SI meters):
-  x = X * 1e-2   (meridional radial; G2 uses x ≥ 0 half only)
-  y = Z * 1e-2   (optical axis = revolve axis)
-  revolve about +y by +90° → octant x ≥ 0, z ≥ 0
+Both are quarter-calottes with symmetry faces at θ=0° and θ=90°
+(4 × 90° = 360° eye).
 
 Usage:
   .venv-geom/bin/python brunaStuff/gen_lamminsalo_g2.py
-  .venv-geom/bin/python brunaStuff/gen_lamminsalo_g2.py --mesh
+  .venv-geom/bin/python brunaStuff/gen_lamminsalo_g2.py --mesh          # G2-fluid mesh
+  .venv-geom/bin/python brunaStuff/gen_lamminsalo_g2.py --mesh-anatomy  # G2 multi-volume (experimental)
   .venv-geom/bin/python brunaStuff/gen_lamminsalo_g2.py --case doc-g2-sim1 --mesh
 """
 
@@ -60,7 +58,7 @@ def case_paths(case_name: str = DEFAULT_CASE):
 
 
 # ---------------------------------------------------------------------------
-# Right-half fluid rings (meridional plane z = 0, x ≥ 0)
+# Right-half rings (meridional plane z = 0, x ≥ 0)
 # ---------------------------------------------------------------------------
 def build_half_ac_m(bi: dict[str, np.ndarray]) -> np.ndarray:
     """Closed right-half AC ∪ TM (cornea → TM → iris margin → hyaloid → lens front → axis)."""
@@ -70,7 +68,7 @@ def build_half_ac_m(bi: dict[str, np.ndarray]) -> np.ndarray:
     hy_r = bi["hyaloid_right"]
     lens_r = bi["lens_right"]
     ie = int(np.argmax(np.abs(lens_r[:, 0])))
-    lens_eq_to_apex = lens_r[: ie + 1][::-1]  # eq → front apex
+    lens_eq_to_apex = lens_r[: ie + 1][::-1]
     iris_run = iris_r[:6]
     purple = hy_r[1]
     eq = hy_r[0]
@@ -87,7 +85,6 @@ def build_half_ac_m(bi: dict[str, np.ndarray]) -> np.ndarray:
             lens_eq_to_apex[1:],
         ]
     )
-    # Close on optical axis: front lens apex → cornea apex
     apex_cor = cor_r[0].copy()
     apex_cor[0] = 0.0
     apex_lens = path[-1].copy()
@@ -108,19 +105,17 @@ def build_half_vitreous_m(bi: dict[str, np.ndarray]) -> np.ndarray:
     vit_r[-1, 0] = 0.0
     lens_r = bi["lens_right"]
     ie = int(np.argmax(np.abs(lens_r[:, 0])))
-    lens_rear = lens_r[ie:].copy()  # eq → rear apex
+    lens_rear = lens_r[ie:].copy()
     lens_rear[-1, 0] = 0.0
-    pole = vit_r[-1].copy()
-    pole[0] = 0.0
     rear_apex = lens_rear[-1].copy()
     rear_apex[0] = 0.0
 
     path = np.vstack(
         [
-            hy_r,  # eq → purple → … → ora
-            vit_r[1:],  # ora → pole
-            rear_apex.reshape(1, 2),  # axis pole → rear apex
-            lens_rear[-2::-1],  # rear → eq
+            hy_r,
+            vit_r[1:],
+            rear_apex.reshape(1, 2),
+            lens_rear[-2::-1],
         ]
     )
     if np.linalg.norm(path[-1] - path[0]) > 1e-12:
@@ -128,63 +123,97 @@ def build_half_vitreous_m(bi: dict[str, np.ndarray]) -> np.ndarray:
     return _clean_ring(path)
 
 
-def build_half_fluid_rings(bi: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
-    ac = build_half_ac_m(bi)
-    vit = build_half_vitreous_m(bi)
-    iris = _clean_ring(_iris_loop_m(bi["iris_right"]))
-    return {"band_ac_half": ac, "band_vitreous_half": vit, "iris_half": iris}
+def build_half_lens_m(bi: dict[str, np.ndarray]) -> np.ndarray:
+    """Closed right-half lens (front apex → eq → rear apex → axis back)."""
+    lens_r = bi["lens_right"].copy()
+    lens_r[0, 0] = 0.0
+    lens_r[-1, 0] = 0.0
+    # Close on optical axis: rear apex → front apex
+    if np.linalg.norm(lens_r[-1] - lens_r[0]) > 1e-12:
+        lens_r = np.vstack([lens_r, lens_r[0:1]])
+    return _clean_ring(lens_r)
+
+
+def _ensure_closed_half(pts: np.ndarray) -> np.ndarray:
+    p = np.asarray(pts, dtype=float).copy()
+    if len(p) < 3:
+        return p
+    # Snap any near-axis endpoints
+    if abs(p[0, 0]) < 1e-9:
+        p[0, 0] = 0.0
+    if abs(p[-1, 0]) < 1e-9:
+        p[-1, 0] = 0.0
+    return _clean_ring(p)
+
+
+def build_g2_anatomy_half(bi: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
+    """
+    G2 = full G1 anatomy, right half only.
+
+    Tissue shells + solids + fluid chambers (same regions as g1_anatomy_2d).
+    """
+    half: dict[str, np.ndarray] = {}
+
+    # Tissue shells (already closed half-bands in outlines)
+    for key in (
+        "band_sclera_right",
+        "band_choroid_right",
+        "band_retina_right",
+        "band_cornea_right",
+        "band_ciliary_right",
+    ):
+        src = key.replace("_right", "")
+        # Prefer continuous right band from bi
+        if key in bi:
+            half[src] = _ensure_closed_half(bi[key])
+        elif f"{src}_right" in bi:
+            half[src] = _ensure_closed_half(bi[f"{src}_right"])
+
+    half["lens"] = build_half_lens_m(bi)
+    half["iris"] = _clean_ring(_iris_loop_m(bi["iris_right"]))
+
+    # Fluid chambers (also part of full anatomy view)
+    half["ac"] = build_half_ac_m(bi)
+    half["vitreous"] = build_half_vitreous_m(bi)
+
+    # Context outlines (open curves for plotting)
+    for k in (
+        "outer_wall_right",
+        "cornea_outside_right",
+        "cornea_inside_right",
+        "vitreous_retina_right",
+        "hyaloid_right",
+        "tm_markers_right",
+        "sclera_tm_wrap_right",
+    ):
+        if k in bi:
+            half[k] = bi[k]
+
+    return half
+
+
+def build_g2_fluid_half(bi: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
+    """
+    G2-fluid = G1-fluid right half only (AC ∪ vitreous ∪ TM − lens − iris).
+    """
+    return {
+        "band_ac_half": build_half_ac_m(bi),
+        "band_vitreous_half": build_half_vitreous_m(bi),
+        "iris_half": _clean_ring(_iris_loop_m(bi["iris_right"])),
+        "lens_half": build_half_lens_m(bi),
+        # context
+        "cornea_inside_right": bi["cornea_inside_right"],
+        "vitreous_retina_right": bi["vitreous_retina_right"],
+        "hyaloid_right": bi["hyaloid_right"],
+        "tm_markers_right": bi["tm_markers_right"],
+        "lens_right": bi["lens_right"],
+    }
 
 
 # ---------------------------------------------------------------------------
-# Figures
+# Revolve helper (plotting)
 # ---------------------------------------------------------------------------
-def plot_half_meridional(
-    bi: dict[str, np.ndarray],
-    half: dict[str, np.ndarray],
-    path: Path,
-) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fig, ax = plt.subplots(figsize=(7.2, 8.0))
-    mm = 1.0e3
-
-    def stroke(pts, **kw):
-        p = np.asarray(pts) * mm
-        ax.plot(p[:, 0], p[:, 1], **kw)
-
-    def fill(pts, color, label, alpha=0.35):
-        p = np.asarray(pts) * mm
-        ax.fill(p[:, 0], p[:, 1], color=color, alpha=alpha, label=label, linewidth=0)
-
-    fill(half["band_ac_half"], "#7ec8c8", "AC ∪ TM (half)", alpha=0.40)
-    fill(half["band_vitreous_half"], "#6fa8dc", "Vitreous (half)", alpha=0.40)
-    fill(half["iris_half"], "#c0392b", "Iris (hole)", alpha=0.55)
-
-    stroke(bi["lens_right"], color="#1e8449", lw=1.6, label="Lens (half)")
-    stroke(bi["cornea_inside_right"], color="#e67e22", lw=1.2, label="Cornea inside")
-    stroke(bi["vitreous_retina_right"], color="#2874a6", lw=1.2, label="Vitreous–retina")
-    stroke(bi["hyaloid_right"], color="#8e44ad", lw=1.2, label="Hyaloid")
-    stroke(bi["tm_markers_right"], color="#d35400", lw=1.4, marker="o", ms=3, label="TM")
-
-    ax.axvline(0.0, color="0.35", ls="--", lw=0.9, label="Optical axis (revolve)")
-    ax.set_aspect("equal", adjustable="box")
-    ax.set_xlabel("x [mm]  (radial, half-domain x ≥ 0)")
-    ax.set_ylabel("y [mm]  (optical axis, + posterior)")
-    ax.set_title(
-        "G2 meridional half — Missel / Lamminsalo\n"
-        f"revolve {REVOLVE_DEG:.0f}° about +y → quarter calotte"
-    )
-    ax.legend(loc="upper right", fontsize=7, framealpha=0.92)
-    ax.grid(True, alpha=0.25)
-    ax.set_xlim(-0.5, 10.5)
-    ax.set_ylim(-9.5, 9.0)
-    fig.tight_layout()
-    fig.savefig(path, dpi=160, bbox_inches="tight")
-    plt.close(fig)
-    print(f"Wrote {path}")
-
-
 def _revolve_polyline(pts_xy: np.ndarray, n_theta: int = 24) -> tuple[np.ndarray, list]:
-    """Revolve (x,y) polyline about +y over [0, 90°]; return verts and faces."""
     pts = np.asarray(pts_xy, dtype=float)
     if np.linalg.norm(pts[0] - pts[-1]) < 1e-14:
         pts = pts[:-1]
@@ -202,89 +231,236 @@ def _revolve_polyline(pts_xy: np.ndarray, n_theta: int = 24) -> tuple[np.ndarray
             i2 = (i + 1) % n
             a = j * n + i
             b = j * n + i2
-            c = (j + 1) * n + i2
+            c_ = (j + 1) * n + i2
             d = (j + 1) * n + i
-            faces.append([a, b, c, d])
+            faces.append([a, b, c_, d])
     return verts, faces
 
 
-def plot_calotte_3d(half: dict[str, np.ndarray], path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fig = plt.figure(figsize=(8.5, 7.0))
-    ax = fig.add_subplot(111, projection="3d")
-    mm = 1.0e3
+def _add_revolved(
+    ax, pts, *, color, alpha, label, n_theta=24, edge_alpha=0.06
+):
+    verts, faces = _revolve_polyline(pts, n_theta=n_theta)
+    vmm = verts * 1.0e3
+    polys = [[vmm[i] for i in f] for f in faces]
+    coll = Poly3DCollection(
+        polys,
+        alpha=alpha,
+        facecolor=color,
+        edgecolor=(0.1, 0.1, 0.1, edge_alpha),
+        linewidths=0.12,
+        label=label,
+    )
+    ax.add_collection3d(coll)
 
-    # Outer fluid silhouette only (cleaner 3D calotte)
-    outer = half["band_vitreous_half"]
-    # Prefer fused-looking envelope: vitreous + AC outline via cornea/TM from AC ring
-    # Draw both volumes with denser angular samples
-    for key, color, alpha, label in (
-        ("band_vitreous_half", "#2874a6", 0.45, "Vitreous"),
-        ("band_ac_half", "#48a9a6", 0.50, "AC ∪ TM"),
-    ):
-        verts, faces = _revolve_polyline(half[key], n_theta=28)
-        vmm = verts * mm
-        polys = [[vmm[i] for i in f] for f in faces]
-        coll = Poly3DCollection(
-            polys,
-            alpha=alpha,
-            facecolor=color,
-            edgecolor=(0.15, 0.15, 0.15, 0.08),
-            linewidths=0.15,
-            label=label,
-        )
-        ax.add_collection3d(coll)
 
-    # Symmetry plane outlines (θ=0 solid, θ=90 dashed)
-    for key, color in (("band_ac_half", "#1a5276"), ("band_vitreous_half", "#1a5276")):
-        p = np.asarray(half[key]) * mm
-        ax.plot(p[:, 0], p[:, 1], np.zeros_like(p[:, 0]), color=color, lw=1.1)
-        ax.plot(np.zeros_like(p[:, 0]), p[:, 1], p[:, 0], color="#7d3c98", lw=1.1, ls="--")
-
-    ax.plot([0, 0], [-8.5, 8.0], [0, 0], color="#c0392b", lw=1.6, label="Optical axis +y")
-    ax.plot([], [], [], color="#1a5276", lw=1.1, label="symmetry_0 (θ=0°)")
-    ax.plot([], [], [], color="#7d3c98", lw=1.1, ls="--", label="symmetry_90 (θ=90°)")
+def _style_3d_axes(ax, title: str):
+    ax.plot([0, 0], [-8.5, 8.0], [0, 0], color="#c0392b", lw=1.5, label="Optical axis +y")
     ax.set_xlabel("x [mm]")
     ax.set_ylabel("y [mm] (optical)")
     ax.set_zlabel("z [mm]")
-    ax.set_title("G2 — 90° calotte · 4× symmetry → 360° eye")
+    ax.set_title(title)
     ax.legend(loc="upper left", fontsize=7)
     ax.set_box_aspect((1, 1.15, 1))
     ax.view_init(elev=22, azim=-48)
     ax.set_xlim(0, 10)
     ax.set_ylim(-9, 8)
     ax.set_zlim(0, 10)
+
+
+# ---------------------------------------------------------------------------
+# Figures — G2 (full anatomy)
+# ---------------------------------------------------------------------------
+def plot_g2_anatomy_half(anatomy: dict[str, np.ndarray], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(7.2, 8.2))
+    mm = 1.0e3
+
+    def fill(key, color, label, alpha=0.75):
+        if key not in anatomy:
+            return
+        p = anatomy[key] * mm
+        ax.fill(p[:, 0], p[:, 1], color=color, alpha=alpha, label=label, linewidth=0, zorder=1)
+
+    def stroke(key, **kw):
+        if key not in anatomy:
+            return
+        p = anatomy[key] * mm
+        ax.plot(p[:, 0], p[:, 1], **kw)
+
+    # Same colours as G1 anatomy
+    fill("band_sclera", "#4a6fa5", "Sclera")
+    fill("band_choroid", "#c1666b", "Choroid")
+    fill("band_retina", "#e4c15f", "Retina")
+    fill("band_cornea", "#e8a87c", "Cornea")
+    fill("band_ciliary", "#9b59b6", "Ciliary", alpha=0.65)
+    fill("vitreous", "#5dade2", "Vitreous", alpha=0.45)
+    fill("ac", "#a8dadc", "AC", alpha=0.55)
+    fill("lens", "#2d6a4f", "Lens", alpha=0.75)
+    fill("iris", "#c0392b", "Iris", alpha=0.80)
+
+    stroke("outer_wall_right", color="#1d3557", lw=0.9, label="Outer wall", zorder=3)
+    stroke("tm_markers_right", color="#f4a261", lw=1.4, marker="o", ms=3, label="TM", zorder=4)
+    stroke("hyaloid_right", color="#8e44ad", lw=1.0, label="Hyaloid", zorder=3)
+
+    ax.axvline(0.0, color="0.35", ls="--", lw=0.9, label="Optical axis (revolve)")
+    ax.set_aspect("equal", adjustable="box")
+    ax.set_xlabel("x [mm]  (radial, half-domain x ≥ 0)")
+    ax.set_ylabel("y [mm]  (optical axis, + posterior)")
+    ax.set_title(
+        "G2 anatomy — meridional half (from G1)\n"
+        f"revolve {REVOLVE_DEG:.0f}° about +y → quarter calotte"
+    )
+    ax.legend(loc="upper right", fontsize=7, framealpha=0.92)
+    ax.grid(True, alpha=0.25)
+    ax.set_xlim(-0.5, 10.5)
+    ax.set_ylim(-9.5, 9.0)
     fig.tight_layout()
     fig.savefig(path, dpi=160, bbox_inches="tight")
     plt.close(fig)
     print(f"Wrote {path}")
+
+
+def plot_g2_anatomy_3d(anatomy: dict[str, np.ndarray], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig = plt.figure(figsize=(9.0, 7.2))
+    ax = fig.add_subplot(111, projection="3d")
+
+    # Outer → inner (matching G1 anatomy colours)
+    layers = (
+        ("band_sclera", "#4a6fa5", 0.55, "Sclera"),
+        ("band_choroid", "#c1666b", 0.55, "Choroid"),
+        ("band_retina", "#e4c15f", 0.50, "Retina"),
+        ("band_cornea", "#e8a87c", 0.55, "Cornea"),
+        ("vitreous", "#5dade2", 0.30, "Vitreous"),
+        ("ac", "#a8dadc", 0.40, "AC"),
+        ("lens", "#2d6a4f", 0.65, "Lens"),
+        ("iris", "#c0392b", 0.70, "Iris"),
+        ("band_ciliary", "#9b59b6", 0.55, "Ciliary"),
+    )
+    for key, color, alpha, label in layers:
+        if key in anatomy and len(anatomy[key]) >= 3:
+            _add_revolved(ax, anatomy[key], color=color, alpha=alpha, label=label, n_theta=22)
+
+    # Symmetry outlines on outer wall / sclera
+    for key, c0, c90 in (
+        ("band_sclera", "#1a5276", "#7d3c98"),
+        ("band_cornea", "#1a5276", "#7d3c98"),
+    ):
+        if key not in anatomy:
+            continue
+        p = anatomy[key] * 1e3
+        ax.plot(p[:, 0], p[:, 1], np.zeros_like(p[:, 0]), color=c0, lw=1.0)
+        ax.plot(np.zeros_like(p[:, 0]), p[:, 1], p[:, 0], color=c90, lw=1.0, ls="--")
+
+    ax.plot([], [], [], color="#1a5276", lw=1.0, label="symmetry_0 (θ=0°)")
+    ax.plot([], [], [], color="#7d3c98", lw=1.0, ls="--", label="symmetry_90 (θ=90°)")
+    _style_3d_axes(ax, "G2 anatomy — 90° calotte (from G1) · 4× → 360°")
+    fig.tight_layout()
+    fig.savefig(path, dpi=160, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Wrote {path}")
+
+
+# ---------------------------------------------------------------------------
+# Figures — G2-fluid
+# ---------------------------------------------------------------------------
+def plot_g2_fluid_half(fluid: dict[str, np.ndarray], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(7.2, 8.0))
+    mm = 1.0e3
+
+    def fill(pts, color, label, alpha=0.40):
+        p = np.asarray(pts) * mm
+        ax.fill(p[:, 0], p[:, 1], color=color, alpha=alpha, label=label, linewidth=0)
+
+    def stroke(pts, **kw):
+        p = np.asarray(pts) * mm
+        ax.plot(p[:, 0], p[:, 1], **kw)
+
+    fill(fluid["band_ac_half"], "#7ec8c8", "AC ∪ TM (half)", alpha=0.45)
+    fill(fluid["band_vitreous_half"], "#6fa8dc", "Vitreous (half)", alpha=0.45)
+    fill(fluid["iris_half"], "#c0392b", "Iris (hole)", alpha=0.55)
+    fill(fluid["lens_half"], "#2d6a4f", "Lens (hole)", alpha=0.55)
+
+    stroke(fluid["cornea_inside_right"], color="#e67e22", lw=1.2, label="Cornea inside")
+    stroke(fluid["vitreous_retina_right"], color="#2874a6", lw=1.2, label="Vitreous–retina")
+    stroke(fluid["hyaloid_right"], color="#8e44ad", lw=1.2, label="Hyaloid")
+    stroke(fluid["tm_markers_right"], color="#d35400", lw=1.4, marker="o", ms=3, label="TM")
+
+    ax.axvline(0.0, color="0.35", ls="--", lw=0.9, label="Optical axis (revolve)")
+    ax.set_aspect("equal", adjustable="box")
+    ax.set_xlabel("x [mm]  (radial, half-domain x ≥ 0)")
+    ax.set_ylabel("y [mm]  (optical axis, + posterior)")
+    ax.set_title(
+        "G2-fluid — meridional half (from G1-fluid)\n"
+        f"AC / vitreous / TM · revolve {REVOLVE_DEG:.0f}° about +y"
+    )
+    ax.legend(loc="upper right", fontsize=7, framealpha=0.92)
+    ax.grid(True, alpha=0.25)
+    ax.set_xlim(-0.5, 10.5)
+    ax.set_ylim(-9.5, 9.0)
+    fig.tight_layout()
+    fig.savefig(path, dpi=160, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Wrote {path}")
+
+
+def plot_g2_fluid_3d(fluid: dict[str, np.ndarray], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig = plt.figure(figsize=(8.5, 7.0))
+    ax = fig.add_subplot(111, projection="3d")
+
+    _add_revolved(
+        ax, fluid["band_vitreous_half"], color="#2874a6", alpha=0.45, label="Vitreous", n_theta=28
+    )
+    _add_revolved(
+        ax, fluid["band_ac_half"], color="#48a9a6", alpha=0.50, label="AC ∪ TM", n_theta=28
+    )
+
+    for key, c0, c90 in (
+        ("band_ac_half", "#1a5276", "#7d3c98"),
+        ("band_vitreous_half", "#1a5276", "#7d3c98"),
+    ):
+        p = fluid[key] * 1e3
+        ax.plot(p[:, 0], p[:, 1], np.zeros_like(p[:, 0]), color=c0, lw=1.0)
+        ax.plot(np.zeros_like(p[:, 0]), p[:, 1], p[:, 0], color=c90, lw=1.0, ls="--")
+
+    ax.plot([], [], [], color="#1a5276", lw=1.0, label="symmetry_0 (θ=0°)")
+    ax.plot([], [], [], color="#7d3c98", lw=1.0, ls="--", label="symmetry_90 (θ=90°)")
+    _style_3d_axes(ax, "G2-fluid — 90° calotte (from G1-fluid) · 4× → 360°")
+    fig.tight_layout()
+    fig.savefig(path, dpi=160, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Wrote {path}")
+
 
 # ---------------------------------------------------------------------------
 # Docs
 # ---------------------------------------------------------------------------
 def write_tables_md(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    text = f"""# G2 geometry tables (Missel / Lamminsalo ESM)
+    path.write_text(
+        f"""# G2 / G2-fluid geometry (Missel / Lamminsalo ESM)
 
 Same SI–SII tables as G1. Units in tables: **cm**. OpenFOAM uses **metres**.
 
 ## Nomenclature
 
-- **G1** = anatomical 2D planar bilateral (empty slab in z).
-- **G2** = G1 **right-half** meridional fluid silhouette, **revolved {REVOLVE_DEG:.0f}°**
-  about the optical axis (`+y`) → 3D quarter-calotte.
-- Two planar cut faces = **symmetry** patches; **4 × 90° = 360°** of the eye.
-- **Sim 1 fluid domain** = AC + vitreous + TM only (lens / iris are holes).
+| Name | Source | Domain |
+|------|--------|--------|
+| **G1** | Missel/Lamminsalo | full anatomy, 2D planar bilateral |
+| **G1-fluid** | subset of G1 | AC + vitreous + TM only |
+| **G2** | G1 right-half × revolve {REVOLVE_DEG:.0f}° | full anatomy calotte |
+| **G2-fluid** | G1-fluid right-half × revolve {REVOLVE_DEG:.0f}° | CFD fluid calotte |
+
+Two planar cut faces = **symmetry** patches; **4 × 90° = 360°** of the eye.
 
 ## Construction
 
-1. Build right-half rings in the plane `z = 0`, `x ≥ 0` (same curves as G1).
-2. Fuse AC ∪ vitreous, cut iris hole.
-3. `OCC revolve` about `(0,1,0)` by `{REVOLVE_DEG:.0f}°`.
-4. Physical patches:
-   - `symmetry_0` — original meridional plane (`z = 0`)
-   - `symmetry_90` — revolved plane (`x = 0`, `z ≥ 0`)
-   - `ac_inlet`, `outlet_tm`, `lens_wall`, `iris_wall`, `wall`
+1. Take the **right half** (`x ≥ 0`) of the corresponding G1 silhouette.
+2. `OCC revolve` about optical axis `(0,1,0)` by `{REVOLVE_DEG:.0f}°`.
+3. Patches: `symmetry_0` (θ=0°, `z=0`), `symmetry_90` (θ=90°, `x=0`), plus walls/inlets.
 
 ## Coordinate map
 
@@ -294,39 +470,129 @@ Same SI–SII tables as G1. Units in tables: **cm**. OpenFOAM uses **metres**.
 | Z (optical) | `y = Z·10⁻²` (**revolve axis**) |
 | — | `z` from revolution |
 
-## Model choices (shared with G1)
-
-- No canal of Petit.
-- Iris = Table SII polyline; iris–lens gap ≥ 30 µm.
-- Single-sided TM / inlet (no left mirrors).
-
 ## Generated artefacts
 
-- `geometry/eye_g2_lamminsalo.{{geo,msh,vtk}}`
-- `figures/g2_half_meridional.png`
-- `figures/g2_calotte_3d.png`
+### G2 (anatomy)
+- `figures/g2_anatomy_half.png`
+- `figures/g2_anatomy_3d.png`
+- `geometry/eye_g2_lamminsalo.geo`
+
+### G2-fluid (CFD)
+- `figures/g2_fluid_half.png`
+- `figures/g2_fluid_3d.png`
+- `geometry/eye_g2_fluid_lamminsalo.{{geo,msh,vtk}}` (with `--mesh`)
 """
-    path.write_text(text)
+    )
     print(f"Wrote {path}")
 
 
-def write_geo_stub(half: dict[str, np.ndarray], path: Path) -> None:
+def write_readme(path: Path) -> None:
+    path.write_text(
+        f"""# doc-g2-sim1 — G2 / G2-fluid (90° calotte)
+
+Missel 2012 / Lamminsalo 2018 **3D quarter-eye**.
+
+## Naming (same split as G1)
+
+| Name | Based on | Content |
+|------|----------|---------|
+| **G2** | **G1** | full anatomy (sclera, choroid, retina, cornea, lens, iris, ciliary, AC, vitreous, TM) |
+| **G2-fluid** | **G1-fluid** | AC + vitreous + TM only (Sim 1 CFD domain) |
+
+Both: right-half meridional profile revolved **{REVOLVE_DEG:.0f}°** about the optical
+axis → calotte with two **symmetry** faces (4× recovers 360°).
+
+## Generate (host)
+
+```bash
+# figures + geo for G2 and G2-fluid
+.venv-geom/bin/python brunaStuff/gen_lamminsalo_g2.py --case doc-g2-sim1
+
+# + G2-fluid volume mesh (CFD)
+.venv-geom/bin/python brunaStuff/gen_lamminsalo_g2.py --case doc-g2-sim1 --mesh
+```
+
+## Artefacts
+
+- `figures/g2_anatomy_{{half,3d}}.png` — **G2** from G1
+- `figures/g2_fluid_{{half,3d}}.png` — **G2-fluid** from G1-fluid
+- `geometry/eye_g2_lamminsalo.geo` — anatomy stub
+- `geometry/eye_g2_fluid_lamminsalo.msh` — fluid mesh (`--mesh`)
+
+## Patches (G2-fluid)
+
+| Patch | Role |
+|-------|------|
+| `symmetry_0` | θ = 0° (`z = 0`) — `symmetryPlane` |
+| `symmetry_90` | θ = 90° (`x = 0`) — `symmetryPlane` |
+| `ac_inlet` | AC–CB production (1/4 eye) |
+| `outlet_tm` | TM SE outlet (1/4 eye) |
+| `lens_wall` / `iris_wall` / `wall` | no-slip |
+"""
+    )
+    print(f"Wrote {path}")
+
+
+def write_geo_stub_anatomy(anatomy: dict[str, np.ndarray], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        "// G2 Missel/Lamminsalo — 90° calotte (revolve half about optical axis)",
+        "// G2 Missel/Lamminsalo — full anatomy 90° calotte (from G1)",
         "// Generated by brunaStuff/gen_lamminsalo_g2.py",
         "SetFactory(\"OpenCASCADE\");",
         f"angle = {REVOLVE_RAD:.10f};  // {REVOLVE_DEG:.0f} deg",
         "lc = 4.0e-4;",
         "",
-        "// NOTE: Boolean fluid + revolve are built via the gmsh Python API (--mesh).",
+        "// Closed right-half rings (z=0). Revolve about +y via --mesh-anatomy.",
         "",
     ]
     pid = 1
-    for name in ("band_ac_half", "band_vitreous_half", "iris_half"):
-        pts = half[name]
+    for name in (
+        "band_sclera",
+        "band_choroid",
+        "band_retina",
+        "band_cornea",
+        "band_ciliary",
+        "lens",
+        "iris",
+        "ac",
+        "vitreous",
+    ):
+        if name not in anatomy:
+            continue
+        pts = anatomy[name]
+        core = pts[:-1] if np.linalg.norm(pts[0] - pts[-1]) < 1e-14 else pts
         ids = []
-        for x, y in pts[:-1] if np.linalg.norm(pts[0] - pts[-1]) < 1e-14 else pts:
+        for x, y in core:
+            lines.append(f"Point({pid}) = {{{x:.8e}, {y:.8e}, 0, lc}};")
+            ids.append(pid)
+            pid += 1
+        if len(ids) >= 2:
+            lines.append(f"Spline({pid}) = {{{', '.join(map(str, ids + [ids[0]]))}}};")
+            lines.append(f"// {name} curve {pid}")
+            pid += 1
+            lines.append("")
+    path.write_text("\n".join(lines) + "\n")
+    print(f"Wrote {path}")
+
+
+def write_geo_stub_fluid(fluid: dict[str, np.ndarray], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [
+        "// G2-fluid Missel/Lamminsalo — AC/vitreous/TM 90° calotte (from G1-fluid)",
+        "// Generated by brunaStuff/gen_lamminsalo_g2.py",
+        "SetFactory(\"OpenCASCADE\");",
+        f"angle = {REVOLVE_RAD:.10f};",
+        "lc = 4.0e-4;",
+        "",
+        "// Boolean fluid + revolve via gmsh Python API (--mesh).",
+        "",
+    ]
+    pid = 1
+    for name in ("band_ac_half", "band_vitreous_half", "iris_half", "lens_half"):
+        pts = fluid[name]
+        core = pts[:-1] if np.linalg.norm(pts[0] - pts[-1]) < 1e-14 else pts
+        ids = []
+        for x, y in core:
             lines.append(f"Point({pid}) = {{{x:.8e}, {y:.8e}, 0, lc}};")
             ids.append(pid)
             pid += 1
@@ -338,8 +604,7 @@ def write_geo_stub(half: dict[str, np.ndarray], path: Path) -> None:
     print(f"Wrote {path}")
 
 
-def write_toposet_g2(path: Path) -> None:
-    """topoSetDict for vitreous / TM cellZones on the G2 90° sector."""
+def write_toposet_g2_fluid(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tm = PTS["tm_cornea_void"]
     t2 = PTS["tm_ciliary_void"]
@@ -348,9 +613,9 @@ def write_toposet_g2(path: Path) -> None:
     x1 = max(tm[0], t2[0]) * M_PER_CM + pad
     y0 = min(tm[1], t2[1]) * M_PER_CM - pad
     y1 = max(tm[1], t2[1]) * M_PER_CM + pad
-    # After 90° revolve, TM sits in x≥0, z≥0 — use a cylindrical pad via box
-    z1 = x1  # same radial extent
-    text = f"""FoamFile
+    z1 = x1
+    path.write_text(
+        f"""FoamFile
 {{
     version     2.0;
     format      ascii;
@@ -358,8 +623,8 @@ def write_toposet_g2(path: Path) -> None:
     object      topoSetDict;
 }}
 
-// G2 90° calotte cellZones (Missel/Lamminsalo)
-// TM: single sector (no left mirror). pad={pad:.1e} m.
+// G2-fluid 90° calotte cellZones (from G1-fluid)
+// TM: single sector. pad={pad:.1e} m.
 
 actions
 (
@@ -401,35 +666,30 @@ actions
     }}
 );
 """
-    path.write_text(text)
+    )
     print(f"Wrote {path}")
 
 
 # ---------------------------------------------------------------------------
-# Gmsh mesh
+# Gmsh — G2-fluid mesh
 # ---------------------------------------------------------------------------
-def mesh_with_gmsh(
-    half: dict[str, np.ndarray],
+def mesh_g2_fluid(
+    fluid: dict[str, np.ndarray],
     msh_path: Path,
     *,
     mesh_level: str = "M1",
 ) -> None:
-    """
-    G2 fluid calotte for OpenFOAM (gmshToFoam):
-      (AC ∪ vitreous ∪ TM)_half − iris, revolved 90° about +y.
-    Patches: symmetry_0, symmetry_90, ac_inlet, outlet_tm, lens_wall, iris_wall, wall.
-    """
+    """G2-fluid: (AC ∪ vitreous ∪ TM)_half − iris, revolved 90° about +y."""
     import gmsh
 
     if mesh_level not in MESH_LEVELS:
         raise ValueError(f"unknown mesh_level {mesh_level}")
     sizes = MESH_LEVELS[mesh_level]
-    # 3D sector needs slightly coarser bulk than the 1-layer G1 slab
     lc_bulk = max(sizes["lc"], 4.0e-4)
     lc_fine = sizes["lc_fine"]
 
     gmsh.initialize()
-    gmsh.model.add("eye_g2_lamminsalo")
+    gmsh.model.add("eye_g2_fluid_lamminsalo")
     gmsh.option.setNumber("General.Terminal", 1)
     gmsh.option.setNumber("Mesh.CharacteristicLengthMin", lc_fine)
     gmsh.option.setNumber("Mesh.CharacteristicLengthMax", lc_bulk * 1.5)
@@ -442,7 +702,6 @@ def mesh_with_gmsh(
         if n_per_seg:
             pts = densify_polyline(pts, n_per_seg=n_per_seg)
         pts = _clean_ring(pts, tol=1e-9)[:-1]
-        # Keep OCC stable
         if len(pts) > 160:
             idx = np.linspace(0, len(pts) - 1, 160).astype(int)
             pts = pts[idx]
@@ -454,14 +713,14 @@ def mesh_with_gmsh(
                 ltags.append(occ.addLine(a, b))
         return occ.addPlaneSurface([occ.addCurveLoop(ltags)])
 
-    s_ac = add_ring(half["band_ac_half"], lc=lc_fine, n_per_seg=3)
-    s_vit = add_ring(half["band_vitreous_half"], lc=lc_bulk, n_per_seg=3)
+    s_ac = add_ring(fluid["band_ac_half"], lc=lc_fine, n_per_seg=3)
+    s_vit = add_ring(fluid["band_vitreous_half"], lc=lc_bulk, n_per_seg=3)
     fused = occ.fuse([(2, s_ac)], [(2, s_vit)], removeObject=True, removeTool=True)
     occ.synchronize()
     if not fused[0]:
         raise RuntimeError("OCC fuse AC∪vitreous (half) produced nothing")
 
-    iris = densify_polyline(half["iris_half"], n_per_seg=8)
+    iris = densify_polyline(fluid["iris_half"], n_per_seg=8)
     try:
         cut = occ.cut(
             [e for e in fused[0] if e[0] == 2],
@@ -478,26 +737,13 @@ def mesh_with_gmsh(
         print(f"WARNING: iris hole cut failed ({exc}); keeping AC∪vit fuse only")
         fluid_surfaces = [e for e in fused[0] if e[0] == 2]
 
-    print(f"INFO: fluid faces before revolve: {len(fluid_surfaces)}")
-    seed_caps = [s[1] for s in fluid_surfaces]
+    print(f"INFO: G2-fluid faces before revolve: {len(fluid_surfaces)}")
 
-    # Revolve about optical axis (+y) by 90°
-    out = occ.revolve(
-        fluid_surfaces,
-        0,
-        0,
-        0,  # point on axis
-        0,
-        1,
-        0,  # +y
-        REVOLVE_RAD,
-    )
+    out = occ.revolve(fluid_surfaces, 0, 0, 0, 0, 1, 0, REVOLVE_RAD)
     occ.synchronize()
-
     volume_tags = [e[1] for e in out if e[0] == 3]
     if not volume_tags:
         raise RuntimeError("No revolved volume")
-    print(f"INFO: revolved volumes: {volume_tags}")
 
     groups: dict[str, list[int]] = {
         "symmetry_0": [],
@@ -509,13 +755,11 @@ def mesh_with_gmsh(
         "wall": [],
     }
 
-    # Landmark points (m) — right half only
     tm_se_a = np.array(PTS["tm_cornea_void"]) * M_PER_CM
     tm_se_b = np.array(PTS["tm_ciliary_void"]) * M_PER_CM
     tm_se = tm_se_b - tm_se_a
     tm_se_L = float(np.linalg.norm(tm_se))
     tm_se_u = tm_se / max(tm_se_L, 1e-16)
-
     iris_post = np.array(PTS["iris_ciliary_post"]) * M_PER_CM
     purple = np.array(PTS["hyaloid_curved_flat"]) * M_PER_CM
     inl_seg = purple - iris_post
@@ -550,18 +794,14 @@ def mesh_with_gmsh(
         cy = 0.5 * (ymin + ymax)
         cz = 0.5 * (zmin + zmax)
         dx, dy, dz = xmax - xmin, ymax - ymin, zmax - zmin
-        # Cylindrical radius in xz
         r = math.hypot(cx, cz)
 
-        # Symmetry planes
         if abs(zmin) < plane_tol and abs(zmax) < plane_tol and dx * dy > 1e-12:
             groups["symmetry_0"].append(tag)
             continue
         if abs(xmin) < plane_tol and abs(xmax) < plane_tol and dy * dz > 1e-12:
             groups["symmetry_90"].append(tag)
             continue
-
-        # Skip tiny / degenerate
         if max(dx, dy, dz) < 1e-7:
             continue
 
@@ -569,15 +809,13 @@ def mesh_with_gmsh(
             groups["outlet_tm"].append(tag)
         elif on_ac_inlet(r, cy):
             groups["ac_inlet"].append(tag)
-        elif r < 4.5e-3 and -0.0065 < cy < 0.0015 and abs(r) + abs(cy - lens_c[1]) < 6e-3:
-            # lens surface of revolution
+        elif r < 4.5e-3 and -0.0065 < cy < 0.0015:
             groups["lens_wall"].append(tag)
         elif 2.5e-3 < r < 7.2e-3 and -0.0056 < cy < -0.0036:
             groups["iris_wall"].append(tag)
         else:
             groups["wall"].append(tag)
 
-    # Fallbacks for mandatory patches
     laterals = [
         tag
         for dim, tag in boundaries
@@ -606,13 +844,6 @@ def mesh_with_gmsh(
     ensure("outlet_tm", lambda r, y: math.hypot(r - tm_mid[0], y - tm_mid[1]))
     ensure("ac_inlet", lambda r, y: math.hypot(r - inl_mid[0], y - inl_mid[1]))
 
-    if not groups["symmetry_0"] or not groups["symmetry_90"]:
-        print(
-            f"WARNING: symmetry faces incomplete: "
-            f"sym0={len(groups['symmetry_0'])} sym90={len(groups['symmetry_90'])} "
-            f"(seed caps={seed_caps})"
-        )
-
     gmsh.model.addPhysicalGroup(3, volume_tags, tag=1, name="fluid")
     pid = 2
     for name, tags in groups.items():
@@ -630,60 +861,20 @@ def mesh_with_gmsh(
     gmsh.write(str(msh_path))
     gmsh.write(str(msh_path.with_suffix(".vtk")))
     report = {k: len(v) for k, v in groups.items()}
-    (msh_path.parent / "patch_groups_g2.json").write_text(json.dumps(report, indent=2))
+    (msh_path.parent / "patch_groups_g2_fluid.json").write_text(json.dumps(report, indent=2))
     print(f"Wrote {msh_path}")
     print(f"Patch groups: {report}")
     gmsh.finalize()
 
 
-def write_readme(path: Path) -> None:
-    path.write_text(
-        f"""# doc-g2-sim1 — G2 Simulação 1 (90° calotte)
-
-Missel 2012 / Lamminsalo 2018 **3D quarter-eye** from the G1 right-half profile.
-
-## What this is
-
-- **G1** = 2D planar bilateral, empty slab.
-- **G2** = G1 cut to the **right half**, revolved **{REVOLVE_DEG:.0f}°** about the
-  optical axis → calotte with two **symmetry** faces (4× recovers 360°).
-
-## Fluid domain
-
-Same as G1 Sim 1: **AC + vitreous + TM** only (lens / iris holes).
-
-## Generate geometry + mesh (host)
-
-```bash
-.venv-geom/bin/python brunaStuff/gen_lamminsalo_g2.py --case doc-g2-sim1 --mesh
-# optional: --mesh-level M2|M3
-```
-
-Artefacts: `geometry/eye_g2_lamminsalo*.{{geo,msh,vtk}}`,
-`figures/g2_half_meridional.png`, `figures/g2_calotte_3d.png`, `geometry_tables.md`.
-
-## Patches
-
-| Patch | Role |
-|-------|------|
-| `symmetry_0` | cut plane θ = 0° (`z = 0`) — `symmetryPlane` |
-| `symmetry_90` | cut plane θ = 90° (`x = 0`) — `symmetryPlane` |
-| `ac_inlet` | AC–CB production (single sector) |
-| `outlet_tm` | TM SE outlet (single sector) |
-| `lens_wall` / `iris_wall` / `wall` | no-slip walls |
-"""
-    )
-    print(f"Wrote {path}")
-
-
 def main():
-    ap = argparse.ArgumentParser(description="G2 90° Lamminsalo calotte")
-    ap.add_argument("--mesh", action="store_true", help="Build revolved 3D mesh with gmsh")
+    ap = argparse.ArgumentParser(description="G2 anatomy + G2-fluid 90° calottes")
+    ap.add_argument("--mesh", action="store_true", help="Build G2-fluid revolved mesh")
     ap.add_argument(
         "--mesh-level",
         default="M1",
         choices=sorted(MESH_LEVELS),
-        help="Size field level (default M1)",
+        help="Size field level for G2-fluid (default M1)",
     )
     ap.add_argument(
         "--case",
@@ -695,33 +886,61 @@ def main():
     case, out_geom, out_fig = case_paths(args.case)
     outlines = build_outlines_cm()
     bi = build_bilateral_m(outlines)
-    half = build_half_fluid_rings(bi)
+    anatomy = build_g2_anatomy_half(bi)
+    fluid = build_g2_fluid_half(bi)
 
     out_geom.mkdir(parents=True, exist_ok=True)
     out_fig.mkdir(parents=True, exist_ok=True)
     (case / "fluid" / "system").mkdir(parents=True, exist_ok=True)
 
-    # Export half rings
-    export = {k: v.tolist() for k, v in half.items()}
-    (out_geom / "half_rings_m.json").write_text(json.dumps(export))
+    # Export rings
+    (out_geom / "g2_anatomy_half_m.json").write_text(
+        json.dumps({k: np.asarray(v).tolist() for k, v in anatomy.items() if np.asarray(v).ndim == 2})
+    )
+    (out_geom / "g2_fluid_half_m.json").write_text(
+        json.dumps({k: np.asarray(v).tolist() for k, v in fluid.items() if np.asarray(v).ndim == 2})
+    )
 
     write_tables_md(case / "geometry_tables.md")
     write_readme(case / "README.md")
-    write_toposet_g2(case / "fluid" / "system" / "topoSetDict.g2")
-    write_geo_stub(half, out_geom / "eye_g2_lamminsalo.geo")
+    write_toposet_g2_fluid(case / "fluid" / "system" / "topoSetDict.g2")
+    write_geo_stub_anatomy(anatomy, out_geom / "eye_g2_lamminsalo.geo")
+    write_geo_stub_fluid(fluid, out_geom / "eye_g2_fluid_lamminsalo.geo")
 
-    plot_half_meridional(bi, half, out_fig / "g2_half_meridional.png")
-    plot_calotte_3d(half, out_fig / "g2_calotte_3d.png")
+    # G2 = anatomy (from G1)
+    plot_g2_anatomy_half(anatomy, out_fig / "g2_anatomy_half.png")
+    plot_g2_anatomy_3d(anatomy, out_fig / "g2_anatomy_3d.png")
+
+    # G2-fluid = fluid (from G1-fluid)
+    plot_g2_fluid_half(fluid, out_fig / "g2_fluid_half.png")
+    plot_g2_fluid_3d(fluid, out_fig / "g2_fluid_3d.png")
+
+    # Remove obsolete names from the first (wrong) G2 attempt
+    for obsolete in (
+        out_fig / "g2_half_meridional.png",
+        out_fig / "g2_calotte_3d.png",
+        out_geom / "eye_g2_lamminsalo.msh",
+        out_geom / "eye_g2_lamminsalo.vtk",
+        out_geom / "eye_g2_lamminsalo_M1.msh",
+        out_geom / "eye_g2_lamminsalo_M1.vtk",
+        out_geom / "half_rings_m.json",
+        out_geom / "patch_groups_g2.json",
+    ):
+        if obsolete.exists():
+            obsolete.unlink()
+            print(f"Removed obsolete {obsolete.name}")
 
     if args.mesh:
-        msh = out_geom / f"eye_g2_lamminsalo_{args.mesh_level}.msh"
-        mesh_with_gmsh(half, msh, mesh_level=args.mesh_level)
-        shutil.copy2(msh, out_geom / "eye_g2_lamminsalo.msh")
+        msh = out_geom / f"eye_g2_fluid_lamminsalo_{args.mesh_level}.msh"
+        mesh_g2_fluid(fluid, msh, mesh_level=args.mesh_level)
+        shutil.copy2(msh, out_geom / "eye_g2_fluid_lamminsalo.msh")
         vtk = msh.with_suffix(".vtk")
         if vtk.exists():
-            shutil.copy2(vtk, out_geom / "eye_g2_lamminsalo.vtk")
+            shutil.copy2(vtk, out_geom / "eye_g2_fluid_lamminsalo.vtk")
 
     print(f"Done. Case: {case}")
+    print("  G2        = anatomy (from G1)       → figures/g2_anatomy_*")
+    print("  G2-fluid  = fluid   (from G1-fluid) → figures/g2_fluid_*")
 
 
 if __name__ == "__main__":
