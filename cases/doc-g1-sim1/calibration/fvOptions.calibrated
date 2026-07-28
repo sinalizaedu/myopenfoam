@@ -62,12 +62,13 @@ FoamFile
 // Vitreous: k = 5.8×10⁻¹⁴ m²  →  d_vit = 1/k = 1.724×10¹³ m⁻²
 // TM: k "Adjusted" — d_TM calibrated to IOP₀ = 15 mmHg (Step 0, Sim 1)
 //
-// Step 0 calibration — doc-g1-sim1 M2 (2026-07-17):
-//   d_TM = 5.072e13 m⁻² → IOP₀ = 14.999 mmHg (164968 cells, Q err 0.0%)
+// Step 0 calibration — doc-g1-sim1 M2 (2026-07-19, velocity inlet):
+//   d_TM = 1.1064e15 m⁻² → IOP₀ = 14.999 mmHg (164968 cells, Q err 0.0%)
+//   U_inlet = 2.22e-6 m/s (Q_3D/A_3D); Q_2D ≈ 2.292e-12 m³/s
 //   MESH_LEVEL=M2, full iris→hyaloid inlet + full TM SE outlet
 //   d_vit = 1.724e13 m⁻² (k = 5.8e-14 m²)
 //   ρ_aqueous = 995 kg/m³ @ 37 °C (Tabela I ᵈ)
-// Prior uncalibrated M2 (d_TM=1.257839e14) gave IOP≈22.40 mmHg.
+// Prior (flowRateInletVelocity Q=3 µL/min on slab): d_TM=5.072e13 → IOP≈15.
 
 tm_porous
 {
@@ -84,7 +85,7 @@ tm_porous
         DarcyForchheimerCoeffs
         {
             // Brinkman drag: d = 1/kappa [m⁻²]; kappa adjusted (Table I ᵍ)
-            d   d [0 -2 0 0 0 0 0] (5.072e13 5.072e13 5.072e13);
+            d   d [0 -2 0 0 0 0 0] (1.1064e+15 1.1064e+15 1.1064e+15);
             // f = 0: creeping flow (no Forchheimer inertia)
             f   f [0 -1 0 0 0 0 0] (0 0 0);
 
@@ -113,7 +114,7 @@ tm_porous_left
         DarcyForchheimerCoeffs
         {
             // Brinkman drag: d = 1/kappa_TM (calibrated)
-            d   d [0 -2 0 0 0 0 0] (5.072e13 5.072e13 5.072e13);
+            d   d [0 -2 0 0 0 0 0] (1.1064e+15 1.1064e+15 1.1064e+15);
             f   f [0 -1 0 0 0 0 0] (0 0 0);
 
             coordinateSystem

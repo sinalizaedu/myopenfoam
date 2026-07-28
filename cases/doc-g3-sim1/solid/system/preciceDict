@@ -1,0 +1,36 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+// preCICE adapter — SOLID (solids4Foam)
+// One-way: reads Force on fsi_active from fluid.
+
+participant   Solid;
+
+preciceConfig "../precice-config.xml";
+
+modules ( FSI );
+
+interfaces
+{
+    Interface1
+    {
+        mesh          Solid-Mesh;
+        patches       ( fsi_active );
+        locations     faceCenters;
+        readData      ( Force );
+        writeData     ();
+    }
+}
+
+FSI
+{
+    solverType              solid;
+    namePointDisplacement   unused;
+    nameCellDisplacement    unused;
+    nameForce               solidForce;
+}

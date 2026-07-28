@@ -1,0 +1,86 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.splitWallFSI -constant
+Date   : Jul 23 2026
+Time   : 01:03:06
+Host   : 4ff9dbe41f39
+PID    : 245
+I/O    : uncollated
+Case   : /simulation/doc-g3-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.splitWallFSI
+
+Time = constant
+    mesh not changed.
+Created faceSet wall_pool
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 346 faces
+    faceSet wall_pool now size 346
+Created faceSet iris_wall_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet iris_wall_faces now size 346
+Read set faceSet iris_wall_faces size:346
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0025 -0.0056 -0.008) (0.0075 -0.0036 0.008))
+    faceSet iris_wall_faces now size 27
+Created faceSet lens_wall_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet lens_wall_faces now size 346
+Read set faceSet lens_wall_faces size:346
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0 -0.0063 -0.005) (0.005 0.0008 0.005))
+    faceSet lens_wall_faces now size 134
+Read set faceSet lens_wall_faces size:134
+    Applying source faceToFace
+    Removing all elements of face sets: (iris_wall_faces)
+    faceSet lens_wall_faces now size 112
+Time = 0
+    mesh not changed.
+Created faceSet wall_pool
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 346 faces
+    faceSet wall_pool now size 346
+Created faceSet iris_wall_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet iris_wall_faces now size 346
+Read set faceSet iris_wall_faces size:346
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0.0025 -0.0056 -0.008) (0.0075 -0.0036 0.008))
+    faceSet iris_wall_faces now size 27
+Created faceSet lens_wall_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet lens_wall_faces now size 346
+Read set faceSet lens_wall_faces size:346
+    Applying source boxToFace
+    Adding faces with centre within boxes 1((0 -0.0063 -0.005) (0.005 0.0008 0.005))
+    faceSet lens_wall_faces now size 134
+Read set faceSet lens_wall_faces size:134
+    Applying source faceToFace
+    Removing all elements of face sets: (iris_wall_faces)
+    faceSet lens_wall_faces now size 112
+
+End
+

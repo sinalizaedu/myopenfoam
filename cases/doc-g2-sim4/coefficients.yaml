@@ -1,0 +1,31 @@
+# doc-g2-sim4 — IVI + ACP combined (G2-fluid, Robin)
+
+geometry: G2-fluid
+parent_case: doc-g2-sim3
+mesh_level: M1
+nCells_M1_post_tip: 33866   # ivi + acp @ y=-7 mm (25+15 cells carved)
+
+porous:
+  d_TM: 7.779e14
+  d_vit: 1.724e13
+
+bcs_baseline:
+  Q_prod_quarter: 1.25e-11
+  P_TM_kinematic: 1.3399
+
+experiment:
+  endTime: 30
+  phases:
+    - {name: baseline, t0: 0,  t1: 5}
+    - {name: ivi,      t0: 5,  t1: 11}
+    - {name: gap,      t0: 11, t1: 15}
+    - {name: acp,      t0: 15, t1: 21}
+    - {name: recovery, t0: 21, t1: 30}
+  Q_ivi_quarter: 2.08325e-9
+  Q_acp_quarter: 2.08325e-9
+  ivi_tip_origin_m: [0.0, 0.0030, -0.00040]
+  ivi_tip_radius_m: 0.00007
+  acp_origin_m: [0.0, -0.0070, 0.00040]
+  acp_radius_m: 0.00007
+  needle_gauge: 30G
+  wall: volume_matched_robin

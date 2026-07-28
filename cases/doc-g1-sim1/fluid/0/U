@@ -5,21 +5,25 @@ FoamFile
     class       volVectorField;
     object      U;
 }
-// Q_prod = 3 µL/min = 5e-11 m³/s total → 2.5e-11 per side (Lamminsalo 2018)
+// G1 planar 2D — velocity inlet matched to 3D Re / U (not absolute Q).
+// Lamminsalo (2018): Q_3D = 3 µL/min through inlet port area A_3D
+//   → U = Q_3D / A_3D = 0.1332 mm/min = 2.22e-6 m/s (no Petit's canal).
+// OpenFOAM: surfaceNormalFixedValue (negative = into domain).
+// See Documents/doutorado/plano_doutorado.md (G1 2D velocity-inlet decision).
 dimensions      [0 1 -1 0 0 0 0];
 internalField   uniform (0 0 0);
 boundaryField
 {
     ac_inlet
     {
-        type            flowRateInletVelocity;
-        volumetricFlowRate constant 2.5e-11;
+        type            surfaceNormalFixedValue;
+        refValue        uniform -2.22e-6;
         value           uniform (0 0 0);
     }
     ac_inlet_left
     {
-        type            flowRateInletVelocity;
-        volumetricFlowRate constant 2.5e-11;
+        type            surfaceNormalFixedValue;
+        refValue        uniform -2.22e-6;
         value           uniform (0 0 0);
     }
     outlet_tm { type zeroGradient; }

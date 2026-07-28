@@ -1,0 +1,184 @@
+#!/bin/bash
+# doc-g3-sim1 — G3 FSI: G2-fluid + G2-solid (90° calotte)
+#
+# Modes:
+#   SKIP_SOLVE=1     import meshes + checkMesh only (default safe start)
+#   MODE=fluid       steady simpleFoam only (rigid wall, no solid)
+#   MODE=fsi         coupled preCICE (requires solid mesh)
+#   REBUILD_MSH=1    regenerate fluid+solid on host (.venv-geom)
+#   STRUCTURED=1     pass --structured to gen_lamminsalo_g2 (with REBUILD_MSH=1)
+#   MESH_LEVEL=M1|M2|M3
+#   SKIP_MESH_IMPORT=1   skip gmshToFoam (reuse polyMesh; mesh-study FSI leg)
+#   FSI_MAX_TIME=1       preCICE / pimpleFoam endTime (default 1 s)
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+
+MESH_LEVEL="${MESH_LEVEL:-M1}"
+SKIP_MESH_IMPORT="${SKIP_MESH_IMPORT:-0}"
+FSI_MAX_TIME="${FSI_MAX_TIME:-1}"
+case "$MESH_LEVEL" in
+    M1|M2|M3) ;;
+    *) echo "ERROR: MESH_LEVEL must be M1, M2, or M3" >&2; exit 1 ;;
+esac
+MODE="${MODE:-fluid}"
+SKIP_SOLVE="${SKIP_SOLVE:-0}"
+REBUILD_MSH="${REBUILD_MSH:-0}"
+STRUCTURED="${STRUCTURED:-0}"
+D_TM="${D_TM:-}"
+REPO_ROOT="$(cd ../.. && pwd)"
+MSH_F="geometry/eye_g2_fluid_lamminsalo_${MESH_LEVEL}.msh"
+MSH_S="geometry/eye_g2_solid_lamminsalo_${MESH_LEVEL}.msh"
+
+echo "=== doc-g3-sim1 MESH_LEVEL=${MESH_LEVEL} MODE=${MODE} ==="
+
+if [ "$REBUILD_MSH" = "1" ]; then
+    if [ ! -x "${REPO_ROOT}/.venv-geom/bin/python" ]; then
+        echo "ERROR: REBUILD_MSH=1 requires host + .venv-geom." >&2
+        exit 1
+    fi
+    echo "=== rebuilding fluid + solid meshes (${MESH_LEVEL}) ==="
+    EXTRA=()
+    [ "$STRUCTURED" = "1" ] && EXTRA=(--structured)
+    "${REPO_ROOT}/.venv-geom/bin/python" \
+        "${REPO_ROOT}/brunaStuff/gen_lamminsalo_g2.py" \
+        --case doc-g3-sim1 --mesh --mesh-solid --mesh-level "${MESH_LEVEL}" \
+        "${EXTRA[@]}"
+fi
+
+if [ ! -f "$MSH_F" ]; then
+    echo "ERROR: missing $MSH_F — generate on host:" >&2
+    echo "  .venv-geom/bin/python brunaStuff/gen_lamminsalo_g2.py --case doc-g3-sim1 --mesh --mesh-level ${MESH_LEVEL}" >&2
+    exit 1
+fi
+cp -f "$MSH_F" geometry/eye_g2_fluid_lamminsalo.msh
+[ -n "$D_TM" ] && python3 scripts/set_d_tm.py "$D_TM"
+
+if [ "$SKIP_MESH_IMPORT" = "1" ]; then
+    echo "=== SKIP_MESH_IMPORT=1 — reusing existing polyMesh ==="
+else
+    # ── Fluid import ──────────────────────────────────────────────────────
+    echo "=== fluid: gmshToFoam ==="
+    rm -rf fluid/constant/polyMesh
+    find fluid -maxdepth 1 -type d \( -name '[0-9]*' -o -name 'processor*' \) -exec rm -rf {} +
+    mkdir -p fluid/0
+    cp -f "$MSH_F" fluid/eye_g2_fluid_lamminsalo.msh
+    (cd fluid && gmshToFoam eye_g2_fluid_lamminsalo.msh 2>&1 | tee log.gmshToFoam)
+    rm -f fluid/eye_g2_fluid_lamminsalo.msh
+
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+    (cd fluid && topoSet -dict system/topoSetDict.g2 -constant 2>&1 | tee log.topoSet)
+
+    if grep -q 'ac_inlet' fluid/constant/polyMesh/boundary 2>/dev/null; then
+        (cd fluid && createPatch -overwrite -dict system/createPatchDict.demote 2>&1 | tee log.createPatch.demote)
+        (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.demote)
+    fi
+    (cd fluid && topoSet -dict system/topoSetDict.splitPatches -constant 2>&1 | tee log.topoSet.splitPatches)
+    (cd fluid && createPatch -overwrite -dict system/createPatchDict.splitPatches 2>&1 | tee log.createPatch.splitPatches)
+    if grep -qE '^\s*fsi_wall\s*$' fluid/constant/polyMesh/boundary 2>/dev/null; then
+        echo "=== fluid: conformal mesh — skip splitWallFSI (fsi_wall already in .msh) ==="
+        (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+    else
+        (cd fluid && topoSet -dict system/topoSetDict.splitWallFSI -constant 2>&1 | tee log.topoSet.splitWallFSI)
+        (cd fluid && createPatch -overwrite -dict system/createPatchDict.splitWallFSI 2>&1 | tee log.createPatch.splitWallFSI)
+        (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+    fi
+
+    for d in fluid/[1-9]*; do
+        [ -e "$d" ] || continue
+        rm -rf "$d"
+    done
+    rm -rf fluid/postProcessing
+    cp fluid/initial/U fluid/0/U
+    cp fluid/initial/p fluid/0/p
+    rm -rf fluid/0/polyMesh
+
+    echo "=== fluid: checkMesh ==="
+    (cd fluid && checkMesh 2>&1 | tee log.checkMesh)
+    if grep -q "FOAM FATAL" fluid/log.checkMesh; then
+        echo "ERROR: fluid checkMesh FOAM FATAL" >&2
+        exit 1
+    fi
+
+    # ── Solid import (required for MODE=fsi; optional otherwise) ──────────
+    if [ -f "$MSH_S" ] || [ "$MODE" = "fsi" ]; then
+        if [ ! -f "$MSH_S" ]; then
+            echo "ERROR: MODE=fsi needs $MSH_S — generate with --mesh-solid" >&2
+            exit 1
+        fi
+        cp -f "$MSH_S" geometry/eye_g2_solid_lamminsalo.msh
+        echo "=== solid: gmshToFoam ==="
+        rm -rf solid/constant/polyMesh
+        cp -f "$MSH_S" solid/eye_g2_solid_lamminsalo.msh
+        (cd solid && gmshToFoam eye_g2_solid_lamminsalo.msh 2>&1 | tee log.gmshToFoam)
+        rm -f solid/eye_g2_solid_lamminsalo.msh
+        (cd solid && changeDictionary 2>&1 | tee log.changeDictionary)
+        mkdir -p solid/0
+        cp -f solid/initial/D solid/0/D
+        cp -f solid/initial/solidForce solid/0/solidForce
+        echo "=== solid: checkMesh ==="
+        (cd solid && checkMesh 2>&1 | tee log.checkMesh)
+        if grep -q "FOAM FATAL" solid/log.checkMesh; then
+            echo "ERROR: solid checkMesh FOAM FATAL" >&2
+            exit 1
+        fi
+    else
+        echo "=== solid mesh absent — skip solid import (MODE=${MODE}) ==="
+    fi
+fi
+
+if [ "$SKIP_SOLVE" = "1" ]; then
+    echo "=== SKIP_SOLVE=1 done ==="
+    grep -a "nCells:" fluid/log.checkMesh | head -3 || true
+    [ -f solid/log.checkMesh ] && grep -a "nCells:" solid/log.checkMesh | head -3 || true
+    exit 0
+fi
+
+if [ "$MODE" = "fluid" ]; then
+    cp -f fluid/system/controlDict.fluid fluid/system/controlDict
+    echo "=== simpleFoam (fluid-only baseline) ==="
+    (cd fluid && simpleFoam 2>&1 | tee log.simpleFoam)
+    if grep -q "FOAM FATAL" fluid/log.simpleFoam; then
+        echo "ERROR: simpleFoam failed" >&2
+        exit 1
+    fi
+    python3 scripts/extract_step0_metrics.py || true
+    echo "=== doc-g3-sim1 fluid-only done ==="
+    exit 0
+fi
+
+if [ "$MODE" = "fsi" ]; then
+    cp -f fluid/system/controlDict.fsi fluid/system/controlDict
+    sed -i "s/^endTime[[:space:]]*.*/endTime         ${FSI_MAX_TIME};/" fluid/system/controlDict
+    sed -i "s/^endTime[[:space:]]*.*/endTime         ${FSI_MAX_TIME};/" solid/system/controlDict
+    sed -i "s/<max-time value=\"[^\"]*\"/<max-time value=\"${FSI_MAX_TIME}\"/" precice-config.xml
+    if [ "${FLUID_PREWARM:-1}" = "1" ]; then
+        echo "=== FSI: steady fluid warm-start (simpleFoam) ==="
+        (cd fluid && simpleFoam 2>&1 | tee log.simpleFoam.prewarm)
+        if grep -q "FOAM FATAL" fluid/log.simpleFoam.prewarm; then
+            echo "ERROR: simpleFoam prewarm failed" >&2
+            exit 1
+        fi
+    else
+        echo "=== FSI: skipping fluid prewarm (FLUID_PREWARM=0) ==="
+    fi
+    rm -rf precice-run
+    echo "=== FSI: solids4Foam (bg) + pimpleFoam ==="
+else
+    echo "ERROR: MODE must be fluid or fsi" >&2
+    exit 1
+fi
+(cd solid && solids4Foam 2>&1 | tee log.solids4Foam) &
+SOLID_PID=$!
+PRECICE_WAIT=15
+echo "  Waiting ${PRECICE_WAIT}s for solid preCICE..."
+for i in $(seq 1 $PRECICE_WAIT); do
+    if ! kill -0 "$SOLID_PID" 2>/dev/null; then
+        echo "ERROR: solid exited early — see solid/log.solids4Foam" >&2
+        exit 1
+    fi
+    sleep 1
+done
+(cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
+wait $SOLID_PID || true
+echo "=== doc-g3-sim1 FSI done ==="

@@ -1,0 +1,66 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      D;
+}
+
+// doc-g3-sim1 — solid displacement template (copied to 0/ after mesh import)
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    symmetry_0 { type symmetry; }
+    symmetry_90 { type symmetry; }
+
+    fsi_active
+    {
+        type        solidForce;
+        forceField  solidForce;
+        value       uniform (0 0 0);
+    }
+
+    fsi_iris
+    {
+        type            fixedDisplacement;
+        displacement    uniform (0 0 0);
+        value           uniform (0 0 0);
+    }
+
+    fsi_lens
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+
+    lens_rim
+    {
+        type            robin;
+        coeff0          uniform 1e4;
+        coeff1          uniform 0;
+        rhs             uniform (0 0 0);
+        value           uniform (0 0 0);
+    }
+
+    outer
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+
+    defaultFaces
+    {
+        type        solidTraction;
+        traction    uniform (0 0 0);
+        pressure    uniform 0;
+        value       uniform (0 0 0);
+    }
+}

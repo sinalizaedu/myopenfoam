@@ -1,0 +1,58 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Split fluid wall → iris_wall / lens_wall (no preCICE Force).
+// Remaining `wall` = fsi_active (cornea + vitreous envelope).
+
+actions
+(
+    {
+        name    wall_pool;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   wall;
+    }
+
+    {
+        name    iris_wall_faces;
+        type    faceSet;
+        action  new;
+        source  faceToFace;
+        set     wall_pool;
+    }
+    {
+        name    iris_wall_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        box     (0.0025 -0.0056 -0.008) (0.0075 -0.0036 0.008);
+    }
+
+    {
+        name    lens_wall_faces;
+        type    faceSet;
+        action  new;
+        source  faceToFace;
+        set     wall_pool;
+    }
+    {
+        name    lens_wall_faces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        box     (0 -0.0063 -0.005) (0.0050 0.0008 0.005);
+    }
+    {
+        name    lens_wall_faces;
+        type    faceSet;
+        action  delete;
+        source  faceToFace;
+        set     iris_wall_faces;
+    }
+);

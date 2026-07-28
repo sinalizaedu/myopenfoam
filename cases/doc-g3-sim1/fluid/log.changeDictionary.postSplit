@@ -1,0 +1,108 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Jul 27 2026
+Time   : 22:48:38
+Host   : 34e0a1629220
+PID    : 249
+I/O    : uncollated
+Case   : /simulation/doc-g3-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 8(symmetry_0 symmetry_90 lens_wall iris_wall fsi_wall wall outlet_tm ac_inlet)
+Extracted patch groups:
+    group symmetry with patches 2(symmetry_0 symmetry_90)
+    group wall with patches 3(lens_wall iris_wall wall)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 8(symmetry_0 symmetry_90 wall lens_wall iris_wall ac_inlet outlet_tm defaultFaces)
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 11 to 18
+    Ignoring non-existing entry defaultFaces
+fieldDict:
+{
+    symmetry_0
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          1140;
+        startFace       15924;
+    }
+    symmetry_90
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          930;
+        startFace       17064;
+    }
+    lens_wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          126;
+        startFace       17994;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          40;
+        startFace       18120;
+    }
+    fsi_wall
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          312;
+        startFace       18160;
+    }
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          356;
+        startFace       18472;
+    }
+    outlet_tm
+    {
+        type            patch;
+        nFaces          18;
+        startFace       18828;
+    }
+    ac_inlet
+    {
+        type            patch;
+        nFaces          6;
+        startFace       18846;
+    }
+}
+
+Writing modified boundary
+
+End
+

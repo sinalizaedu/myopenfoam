@@ -1,0 +1,128 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : Jul 21 2026
+Time   : 03:37:52
+Host   : 6a8d98061c2f
+PID    : 230
+I/O    : uncollated
+Case   : /simulation/doc-g3-sim1/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel unsLinearGeometry
+Creating solidForce boundary condition
+    force is specified as a field
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+Creating solidTraction boundary condition
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Number of cells in new mesh : 4368
+Number of faces in new mesh : 12305
+Number of points in new mesh: 3519
+Number of cells in new mesh : 18064
+Number of faces in new mesh : 49113
+Number of points in new mesh: 12614
+Number of cells in new mesh : 10496
+Number of faces in new mesh : 29568
+Number of points in new mesh: 8432
+Number of cells in new mesh : 16032
+Number of faces in new mesh : 42698
+Number of points in new mesh: 10251
+Number of cells in new mesh : 31520
+Number of faces in new mesh : 81906
+Number of points in new mesh: 17969
+Number of cells in new mesh : 44640
+Number of faces in new mesh : 115638
+Number of points in new mesh: 25058
+Number of cells in new mesh : 2432
+Number of faces in new mesh : 6856
+Number of points in new mesh: 1972
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[preCICE] This is preCICE version 3.3.1
+---[preCICE] Revision info: v3.3.1
+---[preCICE] Build type: Release (without debug log)
+---[preCICE] Working directory "/simulation/doc-g3-sim1/solid"
+---[preCICE] Configuring preCICE with configuration "../precice-config.xml"
+---[preCICE] I am participant "Solid"
+---[preCICE] Setting up primary communication to coupling partner/s
+---[preCICE] Primary ranks are connected
+---[preCICE] Setting up preliminary secondary communication to coupling partner/s
+---[preCICE] Receive global mesh Fluid-Mesh
+---[preCICE] Prepare partition for mesh Solid-Mesh
+---[preCICE] Setting up secondary communication to coupling partner/s
+---[preCICE] Secondary ranks are connected
+---[preCICE] Computing "nearest-neighbor" mapping from mesh "Fluid-Mesh" to mesh "Solid-Mesh" in "read" direction.
+---[preCICE] Mapping distance min:0 max:0.0065066 avg: 0.00168182 var: 4.40451e-06 cnt: 2686
+---[preCICE] Mapping "Force" for t=0 from "Fluid-Mesh" to "Solid-Mesh" (skipped zero sample)
+---[preCICE] Mapping "Force" for t=0.01 from "Fluid-Mesh" to "Solid-Mesh"
+---[preCICE] time-window 1, t 0 (max: 0.01), Dt 0.01, max-dt 0.01
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+Time = 0.01
+
+Evolving solid solver
+Solving the momentum equation for D
+setCellDisplacements: reading cellDisplacements
+    Corr, res, relRes, matRes, iters
+    50, 0.0010588997, 0.013947494, 0, 3
+    100, 0.00047977821, 0.0071729568, 0, 3
+    150, 0.00030814884, 0.0048508045, 0, 3
+--> FOAM Warning : Max iterations reached within momentum loop
+ExecutionTime = 50.76 s  ClockTime = 80 s
+
+---[preCICE] Time window completed
+---[preCICE] Reached end at: final time-window: 1, final time: 0.01
+---[preciceAdapter] The coupling completed.
+---[preCICE] Close communication channels
+---[preciceAdapter] The simulation was ended by preCICE. Calling the end() methods of any functionObject explicitly.
+---[preciceAdapter] Great that you are using the OpenFOAM-preCICE adapter! Next to the preCICE library and any other components, please also cite this adapter. Find how on https://precice.org/adapter-openfoam-overview.html.
+--> FOAM Warning : 
+    From unsLinearGeometry::end()
+    in file solidModels/solidModel/solidModel.C at line 1354
+    The maximum momentum correctors were reached in 1 time-steps
+
+
+End
+
+I/O    : uncollated

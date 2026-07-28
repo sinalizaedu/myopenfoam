@@ -1,0 +1,117 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh
+Date   : Jul 21 2026
+Time   : 02:07:17
+Host   : 6e43a5169928
+PID    : 282
+I/O    : uncollated
+Case   : /simulation/doc-g3-sim1/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+
+Time = 0
+
+Mesh stats 
+    points:           22449
+    faces:            90934
+    internal faces:   74606
+    cells:            33108
+    faces per cell:   5
+    boundary patches: 7
+    point zones:      0
+    face zones:       0
+    cell zones:       7
+
+Overall number of cells of each type:
+    hexahedra:     0
+    prisms:        33108
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    0
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+   *Number of regions: 7
+    The mesh has multiple regions which are not connected by any face.
+  <<Writing region information to "0/cellToRegion"
+  <<Writing region 0 with 1638 cells to cellSet region0
+  <<Writing region 1 with 2148 cells to cellSet region1
+  <<Writing region 2 with 888 cells to cellSet region2
+  <<Writing region 3 with 5934 cells to cellSet region3
+  <<Writing region 4 with 11700 cells to cellSet region4
+  <<Writing region 5 with 10488 cells to cellSet region5
+  <<Writing region 6 with 312 cells to cellSet region6
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology
+    symmetry_0          5662     3381     ok (non-closed singly connected)  
+    symmetry_90         5518     3207     ok (non-closed singly connected)  
+    outer               2784     3283     ok (non-closed singly connected)  
+    fsi_active          1386     1673     ok (non-closed singly connected)  
+    fsi_iris            168      224      ok (non-closed singly connected)  
+    lens_rim            24       35       ok (non-closed singly connected)  
+    fsi_lens            786      938      ok (non-closed singly connected)  
+    ".*"                16328    10824    ok (closed singly connected)      
+
+
+Checking faceZone topology for multiply connected surfaces...
+    No faceZones found.
+
+Checking basic cellZone addressing...
+    CellZone            Cells        Points       Volume       BoundingBox
+    sclera              1638         1449         5.7162827e-08 (1.110223e-22 -0.0048688354 -0.0089996164) (0.0089996164 0.0075272046 0)
+    choroid             2148         1750         2.5610701e-08 (1.110223e-22 -0.0020823209 -0.0086687084) (0.0086687084 0.0072 0)
+    retina              888          1015         1.2331583e-08 (1.110223e-22 -0.0020244787 -0.0084687382) (0.0084687382 0.007 0)
+    cornea              5934         3962         1.5453792e-08 (1.110223e-22 -0.00852 -0.00686988) (0.00686988 -0.00468 0)
+    ciliary             11700        7322         1.23992e-08  (4.2666333e-19 -0.0044208116 -0.0082994902) (0.0082994902 -0.0019968027 0)
+    lens                10488        6636         7.0462788e-08 (6.123234e-23 -0.00607 -0.0047394693) (0.0047394693 0.00063834648 0)
+    iris                312          315          4.7402636e-09 (1.912286e-19 -0.00538 -0.00692) (0.00692 -0.00386 0)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (6.123234e-23 -0.00852 -0.0089996164) (0.0089996164 0.0075272046 0)
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+    Boundary openness (-7.6536557e-17 7.837084e-19 7.3690209e-17) OK.
+    Max cell openness = 3.5706585e-15 OK.
+    Max aspect ratio = 44.697388 OK.
+    Minimum face area = 2.6105238e-11. Maximum face area = 9.8267903e-07.  Face area magnitudes OK.
+    Min volume = 4.4417722e-14. Max volume = 7.815039e-11.  Total volume = 1.9816116e-07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 70.51308 average: 7.4821426
+   *Number of severely non-orthogonal (> 70 degrees) faces: 6.
+    Non-orthogonality check OK.
+  <<Writing 6 non-orthogonal faces to set nonOrthoFaces
+    Face pyramids OK.
+    Max skewness = 3.1952665 OK.
+    Coupled point location match (average 0) OK.
+
+Mesh OK.
+
+End
+

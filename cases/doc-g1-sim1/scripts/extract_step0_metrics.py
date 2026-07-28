@@ -8,7 +8,8 @@ import sys
 
 RHO = 995  # kg/m³ — Lamminsalo Tabela I ᵈ @ 37 °C
 PA_TO_MMHG = 0.0075006
-Q_TARGET = 3.0e-9 / 60.0  # m³/s total (Lamminsalo 2018)
+# Legacy absolute-Q target (pre velocity-inlet). Balance now vs measured inlet flux.
+Q_TARGET_LEGACY = 3.0e-9 / 60.0  # m³/s (3 µL/min) — unused for balance after U-inlet
 
 
 def pkin_to_mmhg(p: float) -> float:
@@ -41,19 +42,24 @@ def main():
     delta_ac_vit = abs(((iop_ac_r + iop_ac_l) / 2) - ((iop_vit_r + iop_vit_l) / 2))
 
     log = fluid / "log.simpleFoam"
-    q_tm = q_tm_l = None
+    q_tm = q_tm_l = q_in = q_in_l = None
     for line in reversed(log.read_text().splitlines()):
-        if q_tm is None and "flowRateTM write:" in line:
-            continue
         if q_tm is None and "sum(outlet_tm) of phi" in line:
             q_tm = float(line.split("=")[-1].strip())
         if q_tm_l is None and "sum(outlet_tm_left) of phi" in line:
             q_tm_l = float(line.split("=")[-1].strip())
-        if q_tm is not None and q_tm_l is not None:
+        if q_in is None and "sum(ac_inlet) of phi" in line:
+            q_in = float(line.split("=")[-1].strip())
+        if q_in_l is None and "sum(ac_inlet_left) of phi" in line:
+            q_in_l = float(line.split("=")[-1].strip())
+        if None not in (q_tm, q_tm_l, q_in, q_in_l):
             break
 
     q_out = (q_tm or 0.0) + (q_tm_l or 0.0)
-    q_err = abs(q_out - Q_TARGET) / Q_TARGET * 100.0
+    # Inlet phi is negative (into domain); use magnitude as Q_in
+    q_in_total = abs(q_in or 0.0) + abs(q_in_l or 0.0)
+    q_target = q_in_total if q_in_total > 0 else Q_TARGET_LEGACY
+    q_err = abs(q_out - q_target) / q_target * 100.0 if q_target else float("nan")
 
     ncells = None
     owner = fluid / "constant" / "polyMesh" / "owner"
@@ -90,7 +96,8 @@ def main():
     print(f"IOP_AC_mean={(iop_ac_r+iop_ac_l)/2:.3f} mmHg")
     print(f"IOP_vitreous_mean={(iop_vit_r+iop_vit_l)/2:.3f} mmHg")
     print(f"delta_AC_vitreous={delta_ac_vit:.3f} mmHg")
-    print(f"Q_TM_total={q_out:.4e} m³/s (target {Q_TARGET:.4e})")
+    print(f"Q_in_total={q_in_total:.4e} m³/s")
+    print(f"Q_TM_total={q_out:.4e} m³/s (target = Q_in)")
     print(f"Q_balance_error={q_err:.2f} %")
 
 

@@ -1,0 +1,123 @@
+#!/bin/bash
+# doc-g2-sim1 — G2-fluid Sim 1: AC + vitreous + TM, 90° calotte
+# gmsh revolve → gmshToFoam → changeDictionary → topoSet → simpleFoam
+#
+# Optional env:
+#   MESH_LEVEL=M1|M2|M3   (default M1) — gmsh size levels from gen_lamminsalo_g2.py
+#   D_TM=<value>
+#   SKIP_SOLVE=1
+#   REBUILD_MSH=1
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+MESH_LEVEL="${MESH_LEVEL:-M1}"
+case "$MESH_LEVEL" in
+    M1|M2|M3|M4|M5) ;;
+    *) echo "ERROR: MESH_LEVEL must be M1, M2, M3, M4, or M5" >&2; exit 1 ;;
+esac
+D_TM="${D_TM:-}"
+SKIP_SOLVE="${SKIP_SOLVE:-0}"
+REBUILD_MSH="${REBUILD_MSH:-0}"
+MSH="geometry/eye_g2_fluid_lamminsalo_${MESH_LEVEL}.msh"
+REPO_ROOT="$(cd ../.. && pwd)"
+
+echo "=== doc-g2-sim1 G2-fluid MESH_LEVEL=${MESH_LEVEL} ==="
+
+if [ "$REBUILD_MSH" = "1" ]; then
+    if [ -x "${REPO_ROOT}/.venv-geom/bin/python" ]; then
+        echo "=== rebuilding mesh ${MESH_LEVEL} (host) ==="
+        "${REPO_ROOT}/cases/doc-g2-sim1/scripts/gen_mesh_g2_fluid.sh" "${MESH_LEVEL}"
+    else
+        echo "ERROR: REBUILD_MSH=1 requires host + .venv-geom." >&2
+        exit 1
+    fi
+fi
+if [ ! -f "$MSH" ]; then
+    echo "ERROR: missing $MSH — generate on host:" >&2
+    echo "  cases/doc-g2-sim1/scripts/gen_mesh_g2_fluid.sh ${MESH_LEVEL}" >&2
+    exit 1
+fi
+cp -f "$MSH" geometry/eye_g2_fluid_lamminsalo.msh
+
+[ -n "$D_TM" ] && python3 scripts/set_d_tm.py "$D_TM"
+
+echo "=== gmshToFoam ==="
+rm -rf fluid/0 fluid/constant/polyMesh
+find fluid -maxdepth 1 -type d \( -name '[0-9]*' -o -name 'processor*' \) -exec rm -rf {} +
+mkdir -p fluid/0
+cp -f "$MSH" fluid/eye_g2_fluid_lamminsalo.msh
+(cd fluid && gmshToFoam eye_g2_fluid_lamminsalo.msh 2>&1 | tee log.gmshToFoam)
+rm -f fluid/eye_g2_fluid_lamminsalo.msh
+
+echo "=== changeDictionary (patch types) ==="
+(cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+
+echo "=== topoSet zones (TM + vitreous) ==="
+(cd fluid && topoSet -dict system/topoSetDict.g2 -constant 2>&1 | tee log.topoSet)
+
+echo "=== carve ac_inlet / outlet_tm from wall ==="
+# Prefer gmsh physical patches (Lamminsalo landmarks). Fallback: topoSet cylinders.
+if grep -q 'ac_inlet' fluid/constant/polyMesh/boundary 2>/dev/null \
+   && grep -q 'outlet_tm' fluid/constant/polyMesh/boundary 2>/dev/null \
+   && grep -q 'iris_wall' fluid/constant/polyMesh/boundary 2>/dev/null; then
+    echo "=== gmsh patches ac_inlet / outlet_tm / iris_wall present — skip topoSet carve ==="
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+else
+    echo "=== topoSet carve (fallback) ==="
+    (cd fluid && topoSet -dict system/topoSetDict.splitPatches -constant 2>&1 | tee log.topoSet.splitPatches)
+    (cd fluid && createPatch -overwrite -dict system/createPatchDict.splitPatches 2>&1 | tee log.createPatch.splitPatches)
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+fi
+
+echo "=== initial fields ==="
+find fluid -maxdepth 1 -type d \( -name '[0-9]*' -o -name 'processor*' \) -exec rm -rf {} +
+rm -rf fluid/postProcessing
+mkdir -p fluid/0
+cp fluid/initial/U fluid/0/U
+cp fluid/initial/p fluid/0/p
+rm -rf fluid/0/polyMesh
+
+echo "=== checkMesh ==="
+(cd fluid && checkMesh 2>&1 | tee log.checkMesh)
+if grep -q "FOAM FATAL" fluid/log.checkMesh; then
+    echo "ERROR: checkMesh FOAM FATAL" >&2
+    exit 1
+fi
+if grep -q "Failed" fluid/log.checkMesh; then
+    echo "WARNING: checkMesh reported Failed (see log.checkMesh) — continuing" >&2
+fi
+
+echo "=== patch / zone counts ==="
+python3 - <<'PY'
+from pathlib import Path
+import re
+text = Path("fluid/constant/polyMesh/boundary").read_text()
+wanted = ("ac_inlet", "outlet_tm", "wall", "lens_wall", "iris_wall", "symmetry_0", "symmetry_90")
+for name in wanted:
+    m = re.search(rf"\b{name}\b\s*\{{[^}}]*?nFaces\s+(\d+);", text, re.S)
+    print(f"  {name}: {m.group(1) if m else 'MISSING'} faces")
+cm = Path("fluid/log.checkMesh").read_text()
+for z in ("tm_zone", "vitreous_zone"):
+    m = re.search(rf"{z}\s+(\d+)", cm)
+    print(f"  {z}: {m.group(1) if m else '?'} cells")
+PY
+
+if [ "$SKIP_SOLVE" = "1" ]; then
+    echo "=== SKIP_SOLVE=1 done ==="
+    grep -a "nCells:" fluid/log.checkMesh | head -3 || true
+    exit 0
+fi
+
+echo "=== simpleFoam ==="
+(cd fluid && simpleFoam 2>&1 | tee log.simpleFoam)
+if grep -q "FOAM FATAL" fluid/log.simpleFoam; then
+    echo "ERROR: simpleFoam failed" >&2
+    exit 1
+fi
+
+echo ""
+echo "=== post-run summary ==="
+NCELLS=$(grep -a "nCells:" fluid/log.checkMesh | head -1 | awk '{print $2}' || true)
+echo "  nCells = ${NCELLS:-N/A}"
+python3 scripts/extract_step0_metrics.py || true
+echo "=== doc-g2-sim1 done (${MESH_LEVEL}) ==="

@@ -29,7 +29,7 @@ onde $p_r$ é a pressão reduzida, $\mathbf{g}$ gravidade e $Q_{br}$ fonte/sumid
 | Pressão reduzida | `p` cinemática (p_kin = p/ρ) | **Ativo** |
 | Gravidade + Boussinesq | `buoyantBoussinesqSimpleFoam` | **Não implementar** |
 | Nonisothermal Flow | `buoyantBoussinesqPimpleFoam` + `T` | **Não implementar** |
-| $Q_{br}$ na porta ciliar | `flowRateInletVelocity` em `ac_inlet` | **Ativo** (3 µL/min) |
+| $Q_{br}$ / influxo 3D | `surfaceNormalFixedValue` \(U=Q_{3D}/A_{3D}\) em `ac_inlet` | **Ativo** (U = 2,22×10⁻⁶ m/s) |
 | μ, ρ @ 37 °C | `phaseProperties` + `transportProperties` | **Ativo** (isotérmico) |
 
 **Decisão:** física térmica do Lamminsalo é para **drug delivery** (PK, mistura AC). IVI/paracentese = segundos–minutos, dominados por volume e complacência — **sem** `buoyantBoussinesq*`, sem equação de energia (plano §13.1).
@@ -85,9 +85,9 @@ $$\mathrm{Br} = \frac{\kappa}{L^2} \ll 1$$
 
 | Lamminsalo | OpenFOAM G1 |
 |------------|-------------|
-| Formação AH na porta posterior (3 mm³/min) | `flowRateInletVelocity` total ṁ = 4,97×10⁻⁸ kg/s |
-| Velocidade 0,1332 mm/min (sem Petit) | equivalente hidráulico via Q (área inlet G1 ≠ Missel) |
-| Sem $Q_{br}$ volumétrico no domínio | produção só na BC de inlet |
+| Formação AH na porta posterior (3 mm³/min) | define \(U=Q/A\); G1 usa velocity inlet (não Q no slab) |
+| Velocidade 0,1332 mm/min (sem Petit) | **imposta** como U_n = 2,22×10⁻⁶ m/s (velocity match 2D↔3D) |
+| Sem $Q_{br}$ volumétrico no domínio | produção só na BC de inlet (não Q absoluto no slab) |
 
 ---
 

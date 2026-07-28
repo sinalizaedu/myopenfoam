@@ -1,0 +1,23 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      solidForce;
+}
+
+dimensions      [1 1 -2 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    symmetry_0 { type symmetry; }
+    symmetry_90 { type symmetry; }
+    fsi_active { type calculated; value uniform (0 0 0); }
+    fsi_iris { type calculated; value uniform (0 0 0); }
+    fsi_lens { type calculated; value uniform (0 0 0); }
+    lens_rim { type calculated; value uniform (0 0 0); }
+    outer { type calculated; value uniform (0 0 0); }
+    defaultFaces { type calculated; value uniform (0 0 0); }
+}

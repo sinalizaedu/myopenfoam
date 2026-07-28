@@ -33,7 +33,7 @@ Verificação vítreo: $d = 1 / (5{,}8\times10^{-14}) = 1{,}724\times10^{13}$ m�
 | P_outlet TM / esclera | **10 Torr** → p_kin = 1,340 m²/s² | `0.step0/p` |
 | P_córnea externa | **0 Torr** | N/A G1 (G2) |
 | IOP calibração TM | **15 Torr** (faixa 10,1–20) | calibração `d_TM` |
-| U_inlet (referência Missel) | 0,1332 mm/min (sem Petit) | G1 usa Q imposta |
+| U_inlet (Missel/Lamminsalo) | **2,22e-6 m/s** (`surfaceNormalFixedValue`) | G1 planar: velocity-matched, não Q absoluto |
 
 ## Lamminsalo (2018) — equações governantes
 
@@ -50,7 +50,7 @@ Ver `constant/lamminsaloGoverningEquations.md` e plano §13.1.
 - Geometria-alvo **G1** = silhueta anatômica Missel/Lamminsalo 2D planar bilateral (ver `geometry_tables.md` e `figures/g1_anatomy_2d.png`). O `blockMesh` retangular antigo é **G1 legacy** (`*.blockMeshDict.legacy`).
 - **G2** = futuro 2D-axisimétrico / 3D (não este caso).
 - Sem canal de Petit no modelo base.
-- Inlet: G1 usa Q imposta (área do inlet planar ≠ Missel 360°).
+- Inlet: G1 planar impõe **U = Q_3D/A_3D** (velocity match); Q absoluto só no G2/360°.
 
 ## Corrida anterior (jul/2026)
 

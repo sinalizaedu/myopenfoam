@@ -1,0 +1,46 @@
+# Frozen / staging coefficients — doc-g3-sim1 (G3 FSI)
+# Geometry: G2-fluid + G2-solid, 90° calotte
+# Parent fluid calib: doc-g2-sim1 (2026-07-19)
+
+geometry: G3                 # G2-fluid ∪ G2-solid
+parent_fluid_case: doc-g2-sim1
+mesh_level: M1
+
+porous:
+  d_TM: 7.779e14             # m⁻² — G2-calibrated IOP₀ ≈ 15 mmHg
+  d_vit: 1.724e13            # m⁻² — κ_vit = 5.8e-14 m²
+  kappa_vit: 5.8e-14         # m²
+
+fluid:
+  rho: 995                   # kg/m³ @ 37 °C
+  nu: 6.925e-7               # m²/s
+
+bcs_baseline:
+  Q_prod_quarter: 1.25e-11   # m³/s = (3 µL/min)/4
+  P_TM_Torr: 10
+  P_TM_kinematic: 1.3399     # m²/s²
+
+# Solid materials — PLACEHOLDERS until confirmed
+# ρ from rabbit ocular Table I / eye-fsi-tc0; E, ν NOT validated for G3.
+solid_materials_status: PLACEHOLDER
+solid:
+  sclera:   {rho: 1100, E: 1.0e7, nu: 0.45}   # PLACEHOLDER
+  choroid:  {rho: 1100, E: 1.0e6, nu: 0.45}   # PLACEHOLDER
+  retina:   {rho: 1100, E: 1.0e5, nu: 0.45}   # PLACEHOLDER
+  cornea:   {rho: 1050, E: 1.0e7, nu: 0.45}   # PLACEHOLDER
+  ciliary:  {rho: 1100, E: 1.0e6, nu: 0.45}   # PLACEHOLDER
+  lens:     {rho: 1050, E: 1.0e6, nu: 0.30}   # PLACEHOLDER
+  iris:     {rho: 1100, E: 1.0e6, nu: 0.30}   # PLACEHOLDER
+
+# Winkler spring on lens equator (zonula model) — PLACEHOLDER
+# Same order of magnitude as pipe-lens-spring (k=1e4 Pa/m).
+winkler:
+  k_winkler_lens: 1.0e4                      # Pa/m — PLACEHOLDER
+  patch: lens_rim
+  status: PLACEHOLDER
+
+fsi:
+  coupling: serial-explicit
+  direction: one-way_force    # Force fluid→solid; Displacement feedback = later
+  time_window: 0.01           # s
+  max_time: 1.0               # s — smoke; raise after solid meshes OK

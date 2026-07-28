@@ -1,0 +1,22 @@
+#!/bin/bash
+# doc-g2-sim4 — Allclean
+set -e
+cd "$(dirname "$0")"
+echo "=== doc-g2-sim4: cleaning ==="
+(
+    cd fluid
+    rm -rf log.* postProcessing dynamicCode codeStream
+    for d in ./[0-9]*; do
+        [ -e "$d" ] || continue
+        [ "$(basename "$d")" = "0" ] || rm -rf "$d"
+    done
+    rm -rf constant/polyMesh
+    mkdir -p 0
+    cp -f initial/U.experiment.robin initial/U.experiment
+    cp -f initial/U.baseline initial/U
+    cp -f initial/p.baseline initial/p
+    cp -f initial/U.baseline 0/U
+    cp -f initial/p.baseline 0/p
+    touch doc-g2-sim4-fluid.foam
+)
+echo "=== doc-g2-sim4: clean done ==="

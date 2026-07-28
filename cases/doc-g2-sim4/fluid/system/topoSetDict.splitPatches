@@ -1,0 +1,63 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Fallback carve from Table SI/SII landmarks (m). Prefer gmsh physical patches.
+
+actions
+(
+    {
+        name    wall_pool;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   wall;
+    }
+
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  new;
+        source  faceToFace;
+        set     wall_pool;
+    }
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  subset;
+        source  cylinderAnnulusToFace;
+        p1      (0.00670 -0.00500 0);
+        p2      (0.00693 -0.00424 0);
+        outerRadius 0.00731;
+        innerRadius 0.00632;
+    }
+
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  new;
+        source  faceToFace;
+        set     wall_pool;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  subset;
+        source  cylinderAnnulusToFace;
+        p1      (0.00692 -0.00411 0);
+        p2      (0.00700 -0.00310 0);
+        outerRadius 0.00738;
+        innerRadius 0.00654;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  delete;
+        source  faceToFace;
+        set     outlet_tm_faces;
+    }
+);

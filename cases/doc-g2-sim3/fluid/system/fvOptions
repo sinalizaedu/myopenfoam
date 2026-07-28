@@ -1,0 +1,66 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+
+// G2-fluid porous zones — AC / vitreous / TM (1/4 eye calotte)
+//
+// Vitreous: k = 5.8×10⁻¹⁴ m²  →  d_vit = 1.724×10¹³ m⁻²
+// TM: G2-calibrated d_TM = 7.779e14 → IOP₀ ≈ 15 mmHg (M1, 2026-07-18)
+
+tm_porous
+{
+    type            explicitPorositySource;
+    active          true;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        tm_zone;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            d   d [0 -2 0 0 0 0 0] (7.779e14 7.779e14 7.779e14);
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                coordinateRotation { type axesRotation; e1 (1 0 0); e2 (0 1 0); }
+            }
+        }
+    }
+}
+
+vitreous_porous
+{
+    type            explicitPorositySource;
+    active          true;
+
+    explicitPorositySourceCoeffs
+    {
+        selectionMode   cellZone;
+        cellZone        vitreous_zone;
+
+        type            DarcyForchheimer;
+
+        DarcyForchheimerCoeffs
+        {
+            d   d [0 -2 0 0 0 0 0] (1.724e13 1.724e13 1.724e13);
+            f   f [0 -1 0 0 0 0 0] (0 0 0);
+
+            coordinateSystem
+            {
+                type    cartesian;
+                origin  (0 0 0);
+                coordinateRotation { type axesRotation; e1 (1 0 0); e2 (0 1 0); }
+            }
+        }
+    }
+}

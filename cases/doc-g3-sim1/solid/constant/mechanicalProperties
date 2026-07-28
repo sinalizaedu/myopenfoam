@@ -1,0 +1,68 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// doc-g3-sim1 — SOLID mechanical properties
+//
+// STATUS: PLACEHOLDER — awaiting user confirmation of literature E/ν.
+// Densities (ρ) follow rabbit ocular Table I / eye-fsi-tc0.
+// Do NOT publish results until materials are confirmed.
+
+planeStress     no;
+
+mechanical
+(
+    sclera
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1e7;   // PLACEHOLDER
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45; // PLACEHOLDER
+    }
+    choroid
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1e6;   // PLACEHOLDER
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45; // PLACEHOLDER
+    }
+    retina
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1e5;   // PLACEHOLDER
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45; // PLACEHOLDER
+    }
+    cornea
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1050;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1e7;   // PLACEHOLDER
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45; // PLACEHOLDER
+    }
+    ciliary
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1e6;   // PLACEHOLDER
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.45; // PLACEHOLDER
+    }
+    lens
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1050;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1e6;   // PLACEHOLDER
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30; // PLACEHOLDER
+    }
+    iris
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1100;
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1e6;   // PLACEHOLDER
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.30; // PLACEHOLDER
+    }
+);

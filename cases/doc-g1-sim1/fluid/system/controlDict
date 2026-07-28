@@ -57,6 +57,34 @@ functions
         writeInterval   10;
     }
 
+    flowRateAC
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            ac_inlet;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+
+    flowRateAC_left
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            ac_inlet_left;
+        writeFields     false;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   10;
+    }
+
     pressureACinlet
     {
         type            surfaceFieldValue;

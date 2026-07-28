@@ -1539,10 +1539,12 @@ def export_json(outlines_cm: dict, path: Path) -> None:
 
 
 MESH_LEVELS = {
-    # bulk / lens-iris / TM local sizes [m]
+    # G2-fluid mesh independence (doc-g2-sim4): M5 coarsest → M3 finest; M1 = production ref.
+    "M5": {"lc": 2.0e-3, "lc_fine": 5.5e-4, "lc_tm": 2.2e-4},
+    "M4": {"lc": 1.4e-3, "lc_fine": 4.0e-4, "lc_tm": 1.5e-4},
     "M1": {"lc": 1.0e-3, "lc_fine": 3.0e-4, "lc_tm": 1.2e-4},
-    "M2": {"lc": 5.0e-4, "lc_fine": 1.2e-4, "lc_tm": 5.0e-5},
-    "M3": {"lc": 3.5e-4, "lc_fine": 8.0e-5, "lc_tm": 3.5e-5},
+    "M2": {"lc": 7.0e-4, "lc_fine": 2.2e-4, "lc_tm": 8.5e-5},
+    "M3": {"lc": 5.0e-4, "lc_fine": 1.6e-4, "lc_tm": 6.0e-5},
 }
 
 

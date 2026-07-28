@@ -6,8 +6,8 @@ FoamFile
     object      topoSetDict;
 }
 
-// G2-fluid 90° calotte cellZones (from G1-fluid)
-// TM: single sector. pad=2.5e-04 m.
+// G2-fluid 90° calotte cellZones.
+// TM is a revolved annulus about +y — use cylinderAnnulusToCell (not a box).
 
 actions
 (
@@ -15,8 +15,11 @@ actions
         name    tm_zone;
         type    cellSet;
         action  new;
-        source  boxToCell;
-        box     (6.450000e-03 -5.000000e-03 -2.500000e-04) (7.180000e-03 -4.240000e-03 7.180000e-03);
+        source  cylinderAnnulusToCell;
+        p1      (0.00000 -0.00483 0.00000);
+        p2      (0.00000 -0.00434 0.00000);
+        outerRadius 0.00725;
+        innerRadius 0.00643;
     }
     {
         name    tm_zone;
@@ -31,14 +34,14 @@ actions
         type    cellSet;
         action  new;
         source  boxToCell;
-        box     (-1.0e-4 -1.5e-3 -1.0e-4) (8.5e-3 7.4e-3 8.5e-3);
+        box     (-1.0e-4 -1.5e-3 -9.0e-3) (9.0e-3 7.5e-3 1.0e-4);
     }
     {
         name    vitreous_zone;
         type    cellSet;
         action  delete;
-        source  boxToCell;
-        box     (6.450000e-03 -5.000000e-03 -2.500000e-04) (7.180000e-03 -4.240000e-03 7.180000e-03);
+        source  cellToCell;
+        set     tm_zone;
     }
     {
         name    vitreous_zone;

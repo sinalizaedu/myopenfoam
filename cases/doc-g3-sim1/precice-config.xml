@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  doc-g3-sim1: preCICE coupling (G3 FSI, G2 geometry)
+  ────────────────────────────────────────────────────
+  Participants : Fluid ↔ Solid (solids4Foam)
+
+  Step 0 strategy: serial-explicit, Force-only (one-way).
+  Fluid mesh static. Displacement feedback (two-way) comes later.
+-->
+
+<precice-configuration>
+
+  <log>
+    <sink filter="%Severity% > debug" format="---[preCICE] %Message%" enabled="on"/>
+  </log>
+
+  <data:vector name="Force"/>
+
+  <mesh name="Fluid-Mesh" dimensions="3">
+    <use-data name="Force"/>
+  </mesh>
+
+  <mesh name="Solid-Mesh" dimensions="3">
+    <use-data name="Force"/>
+  </mesh>
+
+  <participant name="Fluid">
+    <provide-mesh name="Fluid-Mesh"/>
+    <write-data name="Force" mesh="Fluid-Mesh"/>
+  </participant>
+
+  <participant name="Solid">
+    <provide-mesh name="Solid-Mesh"/>
+    <receive-mesh name="Fluid-Mesh" from="Fluid"/>
+    <read-data    name="Force" mesh="Solid-Mesh"/>
+    <!-- Conformal hex FSI: fsi_wall (fluid) ↔ fsi_active (solid) share 3D nodes. -->
+    <mapping:nearest-neighbor
+      direction="read"
+      from="Fluid-Mesh"
+      to="Solid-Mesh"
+      constraint="conservative"/>
+  </participant>
+
+  <m2n:sockets acceptor="Fluid" connector="Solid" exchange-directory=".."/>
+
+  <coupling-scheme:serial-explicit>
+    <time-window-size value="0.01"/>
+    <max-time value="0.01"/>
+    <participants first="Fluid" second="Solid"/>
+    <exchange data="Force" mesh="Fluid-Mesh" from="Fluid" to="Solid"/>
+  </coupling-scheme:serial-explicit>
+
+</precice-configuration>

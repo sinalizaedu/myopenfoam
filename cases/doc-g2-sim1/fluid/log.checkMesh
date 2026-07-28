@@ -1,0 +1,101 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh
+Date   : Jul 28 2026
+Time   : 01:53:07
+Host   : 64cf732eede2
+PID    : 252
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+
+Time = 0
+
+Mesh stats 
+    points:           104250
+    faces:            469243
+    internal faces:   407081
+    cells:            175362
+    faces per cell:   4.9972286
+    boundary patches: 6
+    point zones:      0
+    face zones:       0
+    cell zones:       3
+
+Overall number of cells of each type:
+    hexahedra:     0
+    prisms:        174366
+    wedges:        0
+    pyramids:      510
+    tet wedges:    0
+    tetrahedra:    486
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Number of regions: 1 (OK).
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology
+    symmetry_0          29317    15054    ok (non-closed singly connected)  
+    wall                2676     3158     ok (non-closed singly connected)  
+    symmetry_90         29227    14964    ok (non-closed singly connected)  
+    iris_wall           834      994      ok (non-closed singly connected)  
+    ac_inlet            54       70       ok (non-closed singly connected)  
+    outlet_tm           54       70       ok (non-closed singly connected)  
+    ".*"                62162    32925    ok (closed singly connected)      
+
+
+Checking faceZone topology for multiply connected surfaces...
+    No faceZones found.
+
+Checking basic cellZone addressing...
+    CellZone            Cells        Points       Volume       BoundingBox
+    fluid               175362       104250       4.5374544e-07 (0 -0.00816 -0.0083687509) (0.0083687509 0.0069 0)
+    tm_zone             516          406          1.4153553e-09 (3.9498182e-19 -0.0048080333 -0.00693) (0.00693 -0.0043109676 0)
+    vitreous_zone       120108       70966        3.1582759e-07 (0 -0.0015422225 -0.0083687509) (0.0083687509 0.0069 0)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (0 -0.00816 -0.0083687509) (0.0083687509 0.0069 0)
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+    Boundary openness (1.2375323e-15 5.1932552e-17 -1.2602564e-15) OK.
+    Max cell openness = 1.6470406e-15 OK.
+    Max aspect ratio = 28.258889 OK.
+    Minimum face area = 6.8008893e-11. Maximum face area = 2.1844627e-07.  Face area magnitudes OK.
+    Min volume = 9.5538977e-15. Max volume = 8.1286958e-12.  Total volume = 4.5374544e-07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 35.981904 average: 2.2399348
+    Non-orthogonality check OK.
+    Face pyramids OK.
+    Max skewness = 1.8867963 OK.
+    Coupled point location match (average 0) OK.
+
+Mesh OK.
+
+End
+

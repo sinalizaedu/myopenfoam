@@ -1,0 +1,92 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+8
+(
+    symmetry_0
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          1140;
+        startFace       15924;
+    }
+
+    symmetry_90
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          930;
+        startFace       17064;
+    }
+
+    lens_wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          126;
+        startFace       17994;
+    }
+
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          40;
+        startFace       18120;
+    }
+
+    fsi_wall
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          312;
+        startFace       18160;
+    }
+
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          356;
+        startFace       18472;
+    }
+
+    outlet_tm
+    {
+        type            patch;
+        nFaces          18;
+        startFace       18828;
+    }
+
+    ac_inlet
+    {
+        type            patch;
+        nFaces          6;
+        startFace       18846;
+    }
+
+)
+
+
+// ************************************************************************* //

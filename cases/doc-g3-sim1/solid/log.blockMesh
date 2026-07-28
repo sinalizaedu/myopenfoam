@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh
+Date   : Jul 27 2026
+Time   : 00:58:49
+Host   : 559c794725e6
+PID    : 220
+I/O    : uncollated
+Case   : /simulation/doc-g3-sim1/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating block mesh from "system/blockMeshDict"
+No non-linear block edges defined
+No non-planar block faces defined
+Creating topology blocks
+--> FOAM Warning : 
+    From Foam::vector Foam::cellModel::centre(const Foam::labelUList&, const Foam::UList<Foam::Vector<double> >&) const
+    in file meshes/meshShapes/cellModel/cellModel.C at line 90
+    zero or negative pyramid volume: -8.5585703e-14 for face 1
+--> FOAM Warning : 
+    From Foam::vector Foam::cellModel::centre(const Foam::labelUList&, const Foam::UList<Foam::Vector<double> >&) const
+    in file meshes/meshShapes/cellModel/cellModel.C at line 90
+    zero or negative pyramid volume: -8.3020756e-14 for face 3
+
+
+--> FOAM FATAL IO ERROR: (openfoam-2512)
+Block hex (28658 28662 28663 28659 28660 28664 28665 28661) (1 1 8) grading (1(1) 1(1) 1(1)) has inward-pointing faces
+    4(28662 28663 28665 28664) 4(28659 28661 28665 28663) 
+
+file: system/blockMeshDict/blocks at line 44943.
+
+    From void Foam::blockDescriptor::check(const Foam::Istream&)
+    in file blockDescriptor/blockDescriptor.C at line 147.
+
+FOAM exiting
+

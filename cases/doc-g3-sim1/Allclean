@@ -1,0 +1,12 @@
+#!/bin/bash
+# doc-g3-sim1 — clean run artefacts (keep geometry/*.msh and dictionaries)
+set -e
+cd "$(dirname "$0")"
+rm -rf fluid/0 fluid/constant/polyMesh fluid/postProcessing fluid/[1-9]* fluid/[0-9]*.*
+rm -f fluid/log.* fluid/*.msh fluid/*.foam
+rm -rf solid/constant/polyMesh solid/[1-9]* solid/[0-9]*.* solid/postProcessing
+rm -f solid/log.* solid/*.msh solid/*.foam
+# Keep solid/0 templates and solid/initial if present
+rm -rf precice-run
+rm -f precice-*-*.log
+echo "doc-g3-sim1 cleaned (geometry meshes kept)"

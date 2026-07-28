@@ -1,0 +1,141 @@
+#!/bin/bash
+# doc-g2-sim4 — G2 Sim 4: IVI + ACP combined + Robin wall
+#
+# Optional env: MODE, MESH_LEVEL, D_TM, SKIP_SOLVE, REUSE_MESH (required for experiment), END_TIME
+# Experiment uses volume-matched Robin only (rigid comparison is doc-g2-sim2).
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+MODE="${MODE:-baseline}"
+MESH_LEVEL="${MESH_LEVEL:-M1}"
+case "$MESH_LEVEL" in M1|M2|M3|M4|M5) ;; *) echo "ERROR: MESH_LEVEL" >&2; exit 1 ;; esac
+case "$MODE" in baseline|experiment) ;; *) echo "ERROR: MODE" >&2; exit 1 ;; esac
+D_TM="${D_TM:-}"
+SKIP_SOLVE="${SKIP_SOLVE:-0}"
+REUSE_MESH="${REUSE_MESH:-0}"
+END_TIME="${END_TIME:-}"
+if [ "$MODE" = "experiment" ] && [ "$REUSE_MESH" != "1" ]; then
+    echo "ERROR: MODE=experiment requires REUSE_MESH=1 (init 0/ from calibrated baseline)" >&2
+    exit 1
+fi
+MSH="geometry/eye_g2_fluid_lamminsalo_${MESH_LEVEL}.msh"
+REPO_ROOT="$(cd ../.. && pwd)"
+SIM1_MSH="${REPO_ROOT}/cases/doc-g2-sim1/geometry/eye_g2_fluid_lamminsalo_${MESH_LEVEL}.msh"
+
+echo "=== doc-g2-sim4 MODE=${MODE} MESH_LEVEL=${MESH_LEVEL} REUSE_MESH=${REUSE_MESH} ==="
+
+if [ "$MODE" = "experiment" ]; then
+    cp -f fluid/initial/U.experiment.robin fluid/initial/U.experiment
+fi
+cp -f "fluid/system/controlDict.${MODE}" fluid/system/controlDict
+cp -f "fluid/system/fvSchemes.${MODE}" fluid/system/fvSchemes
+cp -f "fluid/system/fvSolution.${MODE}" fluid/system/fvSolution
+cp -f "fluid/initial/U.${MODE}" fluid/initial/U
+cp -f "fluid/initial/p.${MODE}" fluid/initial/p
+
+[ -n "$D_TM" ] && python3 scripts/set_d_tm.py "$D_TM"
+if [ -n "$END_TIME" ]; then
+    sed -i.bak -E "s/^(endTime[[:space:]]+).*/\\1${END_TIME};/" fluid/system/controlDict
+    rm -f fluid/system/controlDict.bak
+fi
+
+if [ "$REUSE_MESH" = "1" ]; then
+    if [ ! -d fluid/constant/polyMesh ]; then
+        echo "ERROR: REUSE_MESH=1 but no polyMesh — run baseline first" >&2
+        exit 1
+    fi
+    if [ "$MODE" = "experiment" ]; then
+        python3 scripts/init_experiment_from_baseline.py
+        find fluid -maxdepth 1 -type d -regex '.*/[0-9]+\.[0-9]+' -exec rm -rf {} +
+        rm -rf fluid/postProcessing/iop_probe fluid/postProcessing/flowRateIVI \
+               fluid/postProcessing/flowRateACP fluid/postProcessing/flowRateWall \
+               fluid/postProcessing/flowRateTM fluid/postProcessing/pressureACinlet \
+               2>/dev/null || true
+        rm -rf fluid/dynamicCode fluid/codeStream 2>/dev/null || true
+    else
+        REUSE_MESH=0
+    fi
+fi
+
+if [ "$REUSE_MESH" != "1" ]; then
+    if [ ! -f "$MSH" ]; then
+        if [ -f "$SIM1_MSH" ]; then
+            mkdir -p geometry
+            ln -sfn "../../doc-g2-sim1/geometry/eye_g2_fluid_lamminsalo_${MESH_LEVEL}.msh" "$MSH"
+        else
+            echo "ERROR: missing $MSH" >&2
+            exit 1
+        fi
+    fi
+    MSH_REAL="$(python3 -c "import os; print(os.path.realpath('$MSH'))")"
+    cp -f "$MSH_REAL" geometry/eye_g2_fluid_lamminsalo.msh
+
+    rm -rf fluid/0 fluid/constant/polyMesh
+    find fluid -maxdepth 1 -type d \( -name '[0-9]*' -o -name 'processor*' \) -exec rm -rf {} +
+    mkdir -p fluid/0
+    cp -f geometry/eye_g2_fluid_lamminsalo.msh fluid/eye_g2_fluid_lamminsalo.msh
+    (cd fluid && gmshToFoam eye_g2_fluid_lamminsalo.msh 2>&1 | tee log.gmshToFoam)
+    rm -f fluid/eye_g2_fluid_lamminsalo.msh
+
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+    if grep -q 'ac_inlet' fluid/constant/polyMesh/boundary 2>/dev/null; then
+        (cd fluid && createPatch -overwrite -dict system/createPatchDict.demote 2>&1 | tee log.createPatch.demote)
+        (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.demote)
+    fi
+    (cd fluid && topoSet -dict system/topoSetDict.splitPatches -constant 2>&1 | tee log.topoSet.splitPatches)
+    (cd fluid && createPatch -overwrite -dict system/createPatchDict.splitPatches 2>&1 | tee log.createPatch.splitPatches)
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+
+    echo "=== IVI tip cavity ==="
+    (cd fluid && topoSet -dict system/topoSetDict.iviTip -constant 2>&1 | tee log.topoSet.iviTip)
+    N_IVI=$(grep -E "cellSet ivi_tip_cells now size" fluid/log.topoSet.iviTip | tail -1 | awk '{print $NF}')
+    echo "  ivi_tip_cells: ${N_IVI}"
+    [ -z "$N_IVI" ] || [ "$N_IVI" = "0" ] && { echo "ERROR: ivi_tip_cells empty" >&2; exit 1; }
+    (cd fluid && subsetMesh fluid_keep -patch ivi_tip -overwrite 2>&1 | tee log.subsetMesh.iviTip)
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postIviTip)
+
+    echo "=== ACP tip cavity ==="
+    (cd fluid && topoSet -dict system/topoSetDict.acpTip -constant 2>&1 | tee log.topoSet.acpTip)
+    N_ACP=$(grep -E "cellSet acp_tip_cells now size" fluid/log.topoSet.acpTip | tail -1 | awk '{print $NF}')
+    echo "  acp_tip_cells: ${N_ACP}"
+    [ -z "$N_ACP" ] || [ "$N_ACP" = "0" ] && { echo "ERROR: acp_tip_cells empty" >&2; exit 1; }
+    (cd fluid && subsetMesh fluid_keep -patch acp_tip -overwrite 2>&1 | tee log.subsetMesh.acpTip)
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postAcpTip)
+
+    (cd fluid && topoSet -dict system/topoSetDict.g2 -constant 2>&1 | tee log.topoSet)
+    cp fluid/initial/U fluid/0/U
+    cp fluid/initial/p fluid/0/p
+    rm -rf fluid/0/polyMesh
+    (cd fluid && checkMesh 2>&1 | tee log.checkMesh)
+    grep -q "FOAM FATAL" fluid/log.checkMesh && { echo "ERROR: checkMesh failed" >&2; exit 1; }
+fi
+
+echo "=== patch counts ==="
+python3 - <<'PY'
+from pathlib import Path
+import re
+text = Path("fluid/constant/polyMesh/boundary").read_text()
+for name in ("ac_inlet", "outlet_tm", "ivi_tip", "acp_tip", "wall", "symmetry_0", "symmetry_90"):
+    m = re.search(rf"\b{name}\b\s*\{{[^}}]*?nFaces\s+(\d+);", text, re.S)
+    print(f"  {name}: {m.group(1) if m else 'MISSING'} faces")
+PY
+
+if [ "$SKIP_SOLVE" = "1" ]; then
+    grep -a "nCells:" fluid/log.checkMesh | head -1 || true
+    exit 0
+fi
+
+if [ "$MODE" = "baseline" ]; then
+    (cd fluid && simpleFoam 2>&1 | tee log.simpleFoam)
+    grep -q "FOAM FATAL" fluid/log.simpleFoam && exit 1
+    python3 scripts/extract_step0_metrics.py || true
+    python3 scripts/save_baseline_calibration.py || true
+else
+    (cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
+    grep -q "FOAM FATAL" fluid/log.pimpleFoam && exit 1
+    python3 scripts/extract_metrics.py --protocol ivi_acp || true
+    python3 scripts/archive_experiment_results.py || true
+    python3 scripts/plot_iop_acp.py || true
+fi
+
+echo "=== doc-g2-sim4 done (MODE=${MODE}, ${MESH_LEVEL}) ==="

@@ -1,0 +1,93 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Jul 28 2026
+Time   : 01:53:06
+Host   : 64cf732eede2
+PID    : 242
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 6(symmetry_0 wall symmetry_90 iris_wall ac_inlet outlet_tm)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 8(symmetry_0 symmetry_90 wall lens_wall iris_wall ac_inlet outlet_tm defaultFaces)
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 11 to 18
+    Ignoring non-existing entry lens_wall
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 11 to 18
+    Ignoring non-existing entry defaultFaces
+fieldDict:
+{
+    symmetry_0
+    {
+        type            symmetry;
+        physicalType    patch;
+        nFaces          29317;
+        startFace       407081;
+    }
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          2676;
+        startFace       436398;
+    }
+    symmetry_90
+    {
+        type            symmetry;
+        physicalType    patch;
+        nFaces          29227;
+        startFace       439074;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          834;
+        startFace       468301;
+    }
+    ac_inlet
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          54;
+        startFace       469135;
+    }
+    outlet_tm
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          54;
+        startFace       469189;
+    }
+}
+
+Writing modified boundary
+
+End
+

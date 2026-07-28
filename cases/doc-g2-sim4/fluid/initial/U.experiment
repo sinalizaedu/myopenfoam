@@ -1,0 +1,77 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// G2-fluid Sim 4 — IVI (5–11 s) + ACP (15–21 s) + volume-matched Robin wall
+// IVI:  ivi_tip +Q,  wall −Q
+// ACP:  acp_tip −Q, wall +Q
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+boundaryField
+{
+    ac_inlet
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate constant 1.25e-11;
+        value           uniform (0 0 0);
+    }
+    outlet_tm { type zeroGradient; }
+
+    ivi_tip
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate table
+        (
+            (0    0)
+            (5    0)
+            (5.05 2.08325e-9)
+            (11   2.08325e-9)
+            (11.05 0)
+            (1e6  0)
+        );
+        value           uniform (0 0 0);
+    }
+
+    acp_tip
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate table
+        (
+            (0    0)
+            (15   0)
+            (15.05 -2.08325e-9)
+            (21   -2.08325e-9)
+            (21.05 0)
+            (1e6  0)
+        );
+        value           uniform (0 0 0);
+    }
+
+    wall
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate table
+        (
+            (0    0)
+            (5    0)
+            (5.05 -2.08325e-9)
+            (11   -2.08325e-9)
+            (11.05 0)
+            (15   0)
+            (15.05 2.08325e-9)
+            (21   2.08325e-9)
+            (21.05 0)
+            (1e6  0)
+        );
+        value           uniform (0 0 0);
+    }
+
+    lens_wall { type noSlip; }
+    iris_wall { type noSlip; }
+    symmetry_0 { type symmetry; }
+    symmetry_90 { type symmetry; }
+    defaultFaces { type noSlip; }
+}

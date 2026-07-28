@@ -1,0 +1,86 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.splitPatches -constant
+Date   : Jul 27 2026
+Time   : 22:48:37
+Host   : 34e0a1629220
+PID    : 242
+I/O    : uncollated
+Case   : /simulation/doc-g3-sim1/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.splitPatches
+
+Time = constant
+    mesh not changed.
+Created faceSet wall_pool
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 380 faces
+    faceSet wall_pool now size 380
+Created faceSet outlet_tm_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet outlet_tm_faces now size 380
+Read set faceSet outlet_tm_faces size:380
+    Applying source cylinderAnnulusToFace
+    Adding faces with centres within cylinder, with point1 = (0 -0.00478 0), point2 = (0 -0.00445 0), radius = 0.00698, inner radius = 0.0066
+    faceSet outlet_tm_faces now size 18
+Created faceSet ac_inlet_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet ac_inlet_faces now size 380
+Read set faceSet ac_inlet_faces size:380
+    Applying source cylinderAnnulusToFace
+    Adding faces with centres within cylinder, with point1 = (0 -0.00388 0), point2 = (0 -0.0034 0), radius = 0.00705, inner radius = 0.00685
+    faceSet ac_inlet_faces now size 6
+Read set faceSet ac_inlet_faces size:6
+    Applying source faceToFace
+    Removing all elements of face sets: (outlet_tm_faces)
+    faceSet ac_inlet_faces now size 6
+Time = 0
+    mesh not changed.
+Created faceSet wall_pool
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 380 faces
+    faceSet wall_pool now size 380
+Created faceSet outlet_tm_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet outlet_tm_faces now size 380
+Read set faceSet outlet_tm_faces size:380
+    Applying source cylinderAnnulusToFace
+    Adding faces with centres within cylinder, with point1 = (0 -0.00478 0), point2 = (0 -0.00445 0), radius = 0.00698, inner radius = 0.0066
+    faceSet outlet_tm_faces now size 18
+Created faceSet ac_inlet_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet ac_inlet_faces now size 380
+Read set faceSet ac_inlet_faces size:380
+    Applying source cylinderAnnulusToFace
+    Adding faces with centres within cylinder, with point1 = (0 -0.00388 0), point2 = (0 -0.0034 0), radius = 0.00705, inner radius = 0.00685
+    faceSet ac_inlet_faces now size 6
+Read set faceSet ac_inlet_faces size:6
+    Applying source faceToFace
+    Removing all elements of face sets: (outlet_tm_faces)
+    faceSet ac_inlet_faces now size 6
+
+End
+

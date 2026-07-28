@@ -1,0 +1,94 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Jul 27 2026
+Time   : 22:48:39
+Host   : 34e0a1629220
+PID    : 267
+I/O    : uncollated
+Case   : /simulation/doc-g3-sim1/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 7(symmetry_0 symmetry_90 outer fsi_iris fsi_lens fsi_active defaultFaces)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 8(symmetry_0 symmetry_90 fsi_active fsi_iris fsi_lens lens_rim outer defaultFaces)
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 13 to 20
+    Ignoring non-existing entry lens_rim
+fieldDict:
+{
+    symmetry_0
+    {
+        type            symmetry;
+        physicalType    patch;
+        nFaces          496;
+        startFace       6007;
+    }
+    symmetry_90
+    {
+        type            symmetry;
+        physicalType    patch;
+        nFaces          426;
+        startFace       6503;
+    }
+    outer
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          378;
+        startFace       6929;
+    }
+    fsi_iris
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          78;
+        startFace       7307;
+    }
+    fsi_lens
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          44;
+        startFace       7385;
+    }
+    fsi_active
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          312;
+        startFace       7429;
+    }
+    defaultFaces
+    {
+        type            wall;
+        nFaces          688;
+        startFace       7741;
+    }
+}
+
+Writing modified boundary
+
+End
+
