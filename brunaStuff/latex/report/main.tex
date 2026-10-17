@@ -1,0 +1,69 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[portuguese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{placeins}
+\usepackage{textcomp}
+\usepackage{newunicodechar}
+\newunicodechar{µ}{\textmu}
+\usepackage{siunitx}
+\sisetup{text-micro=\textmu,output-decimal-marker={,},group-digits=integer}
+\usepackage{graphicx}
+\usepackage[authoryear,round]{natbib}
+\addto\extrasportuguese{\def\biband{ e }}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\geometry{margin=2.6cm}
+
+% Secoes renumeradas em cada \part (I: 1--4, II: 1--3, III: 1--5)
+\numberwithin{section}{part}
+\numberwithin{subsection}{section}
+
+% --- comandos auxiliares usados no relatorio WP1 (fill-in) ---
+\newcommand{\blank}[1][3cm]{\makebox[#1]{\dotfill}}
+\newcommand{\checkbox}{$\square$\ }
+\newcommand{\notebox}[1]{%
+  \begin{quote}
+  \small\itshape\color{gray!70!black} Nota: #1
+  \end{quote}
+}
+
+% --- estilo de secao usado no WP1, aplicado ao documento combinado ---
+\titleformat{\section}{\Large\bfseries\color{blue!40!black}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{blue!40!black}}{\thesubsection}{1em}{}
+
+\title{Biomecânica do Pico Pressórico Pós-IVI \\[4pt]
+\large WP0 (Núcleo 0D), WP1 (Modelagem Mecânica) e WP4 (Perfusão pós-IVI)}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\part{WP0 --- Modelo 0D para globo ocular}
+
+\input{wp0}
+
+\newpage
+\part{WP1 --- Modelagem Mecânica}
+
+\input{wp1}
+
+\newpage
+\part{WP4 --- Perfusão pós-IVI}
+
+\input{wp4}
+
+\bibliographystyle{plainnat-pt}
+\bibliography{ref}
+
+\end{document}

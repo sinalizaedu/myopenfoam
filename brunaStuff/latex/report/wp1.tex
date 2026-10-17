@@ -1,0 +1,341 @@
+\section{WP1.1 --- Verificação numérica}
+ 
+\subsection{Introdução}
+ 
+O WP0 calcula a rigidez ocular $K$, a relação entre pressão e volume $dP/dV$, a partir da fórmula fechada de casca fina esférica já apresentada na Equação~\ref{eq:casca_fina}. Conforme já visto, essa equação é uma simplificação válida quando a parede é muito fina em relação ao raio. Nessa seção, a fórmula será substituída por uma simulação de elementos finitos (FEA) no programa CalculiX \citep{dhondt2004finite}.
+ 
+Internamente, o solver monta, a partir das funções de forma de cada elemento e das propriedades de material, uma matriz de rigidez local, somada numa matriz de rigidez global $\mathbf{K}_{\text{global}}$ (operador de equilíbrio do FEA, distinto da rigidez ocular $K=\Delta P/\Delta V$ do WP0). A pressão aplicada vira um vetor de forças nodais equivalentes $\mathbf{F}$ e o solver resolve o sistema linear \citep{bathe1996}
+ 
+\begin{equation}
+\mathbf{K}_{\text{global}}\cdot\mathbf{u}=\mathbf{F}
+\label{eq:sistema_fea}
+\end{equation}
+ 
+para o vetor de deslocamentos nodais $\mathbf{u}$. A saída direta do CalculiX é o deslocamento $(u_x,u_y,u_z)$ de cada nó da malha. A variação de volume $\Delta V$, o próprio $K_{FEA}=\Delta P/\Delta V$, a comparação contra $K_{\text{analítico}}$ e o desvio do deslocamento radial não são produto do software e devem ser calculados por uma rotina externa.
+ 
+A diferença central entre os dois métodos aparece em três pontos. Primeiramente, em vez de uma fórmula única, o método de elementos finitos divide a malha em pequenos elementos, cada um com a sua própria rigidez local. Assim, monta-se uma matriz de rigidez que é resolvida numericamente. Isso permite representar geometrias mais complexas, como um olho anatômico completo, com córnea, íris e cristalino. Esse método também permite leis de material não lineares que capturam o enrijecimento progressivo da esclera conforme ela se deforma, diferentemente da seção anterior, que assumia material elástico linear com tensão sempre proporcional à deformação. E, por último, a inclusão de rigidez à flexão, própria da formulação de casca usada aqui (elemento quadrático de 8 nós), inexistente na equação anterior.
+ 
+No CalculiX, utiliza-se uma malha, com a posição de cada nó e a lista de elementos, a lei de material, definida pelo comando \texttt{*ELASTIC} com os valores de $E$ e $\nu$, a espessura da casca, definida pelo comando \texttt{*SHELL SECTION}, as condições de contorno, definidas pelo comando \texttt{*BOUNDARY}, e o carregamento, definido pelo comando \texttt{*DSLOAD}, que aplica uma pressão distribuída sobre uma superfície escolhida. O comando \texttt{*STATIC} pede uma análise estática, sem inércia e sem variável de tempo, no regime de pequena deformação (linear). A opção \texttt{NLGEOM}, que ativa grandes deformações, associa-se ao passo \texttt{*STEP} (como no WP1.2), não ao \texttt{*STATIC} desta verificação.
+ 
+\subsection{Metodologia}
+ 
+A geometria usada nesta verificação é um octante, delimitado pelos três planos coordenados $x=0$, $y=0$ e $z=0$, com condição de simetria em cada um desses três planos. Dois casos foram rodados, um representando o olho humano, com raio médio de $12$ mm \citep{moosajee2023} e espessura de parede de $0{,}5$ mm \citep{vurgese2012}, e outro representando o olho de coelho, com raio de $7{,}6$ mm \citep{bozkir1997, missel2012, lamminsalo2018} e espessura de $0{,}33$ mm \citep{missel2012, zhang2014cxl, lamminsalo2018}. Em ambos, o material foi definido como elástico linear, com módulo de elasticidade $E$ de $3{,}0$ MPa e coeficiente de Poisson $\nu$ de $0{,}47$ \citep{aloy2017vibrational}. Esses são os mesmos valores já usados no WP0 para as duas espécies, o que isola a diferença de $K$ entre humano e coelho numa diferença puramente geométrica, já que o material adotado é idêntico nos dois casos.
+ 
+Uma esfera fechada não tem apoio natural, e é preciso remover os seis modos de corpo rígido sem adicionar rigidez artificial. Pinos discretos travando nós isolados resolveriam isso no material elástico linear, mas concentram curvatura no ponto do pino, o que mal-condiciona a rigidez tangente em material hiperelástico com grandes deformações (\texttt{NLGEOM=YES}) e podem fazer o Newton-Raphson divergir. Por isso, adotou-se restringir os três planos de simetria, solução usada em todas as etapas seguintes do WP1.
+ 
+O polo do sistema de coordenadas esféricas usado para gerar a malha (onde os planos $x=0$ e $y=0$ se encontrariam) é evitado por uma pequena calota não malhada, com área da ordem de $0{,}07\%$ da esfera em cada polo, deixada com borda livre. O carregamento foi uma pressão interna uniforme de $1$ mmHg na face de carga do \texttt{S8R} (superfície média da casca), pequena o suficiente para garantir regime linear. Os cálculos usam CalculiX \citep{dhondt2004finite} via \texttt{ccx\_preCICE} 2.20 \citep{dhondt2022manual}.
+ 
+A partir do deslocamento obtido pelo CalculiX, a variação de volume da esfera foi calculada por uma integral sobre a superfície do octante, multiplicada por $8$ pela simetria. Essa variação de volume, dividida pela pressão aplicada, dá a rigidez numérica $K_{FEA}$, diretamente comparável à fórmula analítica $K_{\text{analítico}}$. O programa expande cada nó de casca em dois, um no topo e outro na base da espessura ($R+t/2$ e $R-t/2$), e é nesses nós expandidos que o deslocamento é gravado por padrão \citep{dhondt2022manual}. Calcular o deslocamento da superfície média exige, então, uma média entre o nó de topo e o de base na mesma direção radial.
+ 
+Um teste de independência de malha, feito para as duas espécies, rodou quatro níveis sucessivos de refinamento do octante, multiplicando por $4$ o número de elementos equivalentes a cada passo ($72\to288\to1152\to4608$ na esfera completa), medindo a variação relativa de $K$, $\varepsilon_i$. O critério de parada é quando a variação relativa cai abaixo de $1\%$ em dois refinamentos seguidos \citep{roache1997, asmevv10}.
+ 
+A Tabela~\ref{tab:wp1_independencia} mostra o resultado desse teste. Nas duas espécies, $K$ já está estabilizado desde o nível mais grosso, com $\varepsilon_i$ bem abaixo do critério de $1\%$ já na primeira transição de malha.
+ 
+\begin{table}[h]
+\centering
+\caption{Independência de malha, humano e coelho.}
+\label{tab:wp1_independencia}
+\begin{tabular}{@{}r cc cc@{}}
+\toprule
+ & \multicolumn{2}{c}{Humano} & \multicolumn{2}{c}{Coelho} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+Elementos\textsuperscript{*} & $K_{FEA}$ (mmHg/µL) & $\varepsilon_i$ (\%) & $K_{FEA}$ (mmHg/µL) & $\varepsilon_i$ (\%) \\
+\midrule
+72   & 0,163307 & --     & 0,670114 & --     \\
+288  & 0,163338 & 0,0193 & 0,670183 & 0,0104 \\
+1152 & 0,163334 & 0,0028 & 0,670164 & 0,0028 \\
+4608 & 0,163334 & $<0{,}0001$ & 0,670164 & $<0{,}0001$ \\
+\bottomrule
+\end{tabular}
+ 
+\vspace{2pt}
+\footnotesize\textsuperscript{*}Contagem equivalente na esfera completa (elementos do octante $\times\,8$).
+\end{table}
+ 
+A recomendação para a verificação linear é usar a malha de $288$ elementos equivalentes como referência. Embora $\varepsilon_i$ de $K$ já esteja abaixo do critério com $72$ elementos, o desvio quadrático médio (RMS) de $u_r$ frente a $PR^2(1-\nu)/(2tE)$ é o critério informativo do campo. Em $72$ elementos (humano), $37{,}1\%$ em todos os nós, mas $\approx3{,}3\%$ excluindo os sete nós da borda livre da calota (RMS $\approx88\%$ nesses nós). Cai para $1{,}79\%$ em $288$ ($0{,}76\%$ em $1152$). O resultado do FEA foi comparado contra a fórmula analítica, para as duas espécies, com critério de aceitação de erro em $K$ menor que $2\%$.
+ 
+\subsection{Resultados}
+ 
+A Tabela~\ref{tab:wp1_sensibilidade} mostra a comparação final contra a fórmula analítica. Os dois casos ficam bem dentro do critério, com erro de $+0{,}25\%$ no humano e $+0{,}27\%$ no coelho. Essa diferença não é erro de malha, que é $89$ a $96$ vezes menor ($0{,}0028\%$ entre $288$ e $1152$ elementos), mas o termo de segunda ordem em espessura desprezado pela fórmula de membrana \citep{timoshenko1959}. Entre as duas espécies ela escala com $(t/R)^2$, com razão observada de $1{,}085$ contra $1{,}086$ prevista.
+ 
+\begin{table}[h]
+\centering
+\caption{Comparação contra a fórmula analítica, humano e coelho, geometria de octante.}
+\label{tab:wp1_sensibilidade}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Caso & Elementos\textsuperscript{*} & $K_{FEA}$ (mmHg/µL) & $K_{\text{analítico}}$ (mmHg/µL) & Erro (\%) \\
+\midrule
+Humano & 288 & 0,163338 & 0,162933 & $+0{,}25$ \\
+Coelho & 288 & 0,670183 & 0,668380 & $+0{,}27$ \\
+\bottomrule
+\end{tabular}
+ 
+\vspace{2pt}
+\footnotesize\textsuperscript{*}Contagem equivalente na esfera completa.
+\end{table}
+ 
+
+ 
+\section{WP1.2 --- Modelo constitutivo}
+ 
+\subsection{Introdução}
+ 
+A verificação feita no WP1.1 usou um material elástico linear com uma única rigidez, constante, independente do quanto ele já foi deformado. A esclera real não se comporta assim. Em tração uniaxial ex vivo, o módulo tangente da esclera humana (regiões anterior, equatorial e posterior) passa de $13$--$31$ MPa a $3\%$ para $20$--$52$ MPa a $7\%$ de deformação \citep{park2021sclera}. Como $\bar I_1-3=12\varepsilon^2$ em tração equibiaxial e $3\varepsilon^2$ em tração uniaxial, a deformação de membrana de $\approx0{,}5\%$ desta casca equivale, no primeiro invariante, a $\approx1\%$ uniaxial. Com os $C_{10}$ e $C_{20}$ regionais de \citet{park2021sclera} e $\bar I_1-3\approx3\times10^{-4}$ na faixa IVI, o termo quadrático Yeoh contribui com $2C_{20}(\bar I_1-3)/C_{10}$ de $+14\%$ (posterior) a $+39\%$ (equatorial) ao fator $W_{\bar I_1}$ e, na rigidez tangente equibiaxial ($72\,C_{20}\varepsilon^2/C_{10}$ com $\varepsilon=0{,}5\%$), com $+41\%$ (posterior), $+47\%$ (peripapilar), $+100\%$ (anterior) e $+116\%$ (equatorial). A curva $P(V)$ do globo reflete o envelope da córnea e esclera \citep{ethier2004biomech}. A lei de Friedenwald \citep{friedenwald1937} descreve empiricamente essa resposta global pressão--volume. O WP1.2 calibra Ogden e Yeoh de dois parâmetros contra curvas $P(V)$ in vivo \citep{pallikaris2005, silvergeyer2000} e contra Friedenwald recalibrada no WP0 (alvo sintético ancorado no pico \citep{knecht2009}, $P_0$ assumido) na faixa da IVI, e verifica o enrijecimento efetivo do alvo. Como o alvo de Friedenwald é sintético, o ajuste mostra o quanto duas leis hiperelásticas imitam uma exponencial. Ele não mede propriedades da esclera.
+ 
+Adotam-se Ogden \citep{ogden1972large} e Yeoh \citep{yeoh1993some} por serem leis de poucos parâmetros. O neo-Hookeano ($N=1$) é o truncamento de ordem $1$. O Yeoh de dois termos usado aqui é de ordem $2$ na família de polinômios reduzidos de ordem $4$ a $6$ ajustada à esclera humana por \citet{park2021sclera}, com $C_{10}$ entre $0{,}17$ e $0{,}93$ MPa e $C_{20}$ entre $44$ e $512$ MPa em tração uniaxial ex vivo (no artigo, $\nu=0{,}49$). O termo de comparação nulo inclui o linear do WP1.1 e, para o alvo Friedenwald, uma reta $P(V)$ ajustada nos mesmos pontos (Tabela~\ref{tab:wp12_linear}).
+ 
+Na forma usada aqui \citep{dhondt2022manual}, o Ogden tem um único termo ($N=1$), com densidade de energia de deformação
+ 
+\begin{equation}
+W_{\text{Ogden}}=\frac{2\mu_1}{\alpha_1^2}\left(\bar\lambda_1^{\alpha_1}+\bar\lambda_2^{\alpha_1}+\bar\lambda_3^{\alpha_1}-3\right)+\frac{1}{D_1}(J-1)^2,
+\label{eq:ogden}
+\end{equation}
+ 
+em que $\bar\lambda_i$ são os alongamentos principais isocóricos e $J$ é a razão de volume \citep{holzapfel2000}, e o Yeoh tem dois termos,
+ 
+\begin{equation}
+W_{\text{Yeoh}}=C_{10}\left(\bar I_1-3\right)+C_{20}\left(\bar I_1-3\right)^2+\frac{1}{D_1}(J-1)^2,
+\label{eq:yeoh}
+\end{equation}
+ 
+em que $\bar I_1$ é o primeiro invariante isocórico. Em nenhum dos dois a compressibilidade entra como parâmetro livre. No Ogden usa-se $D_1=0{,}5102/\mu_1$ ($\mu_1$ em MPa, $D_1$ em MPa$^{-1}$), o que fixa $K_0/G=3{,}92$ ($\nu\approx0{,}38$) para qualquer $\mu_1$. No Yeoh usa-se $D_1=0{,}12$ MPa$^{-1}$, equivalente a $K_0=2/D_1\approx16{,}7$ MPa, o mesmo $K_0$ do material linear do WP1.1 ($E=3{,}0$ MPa, $\nu=0{,}47$). Com $G=\mu_1$ (Ogden), $G=2C_{10}$ (Yeoh) e $K_0=2/D_1$, adota-se $\nu=(3K_0-2G)/[2(3K_0+G)]$ \citep{holzapfel2000}. O Ogden fica com $\nu\approx0{,}38$ e o Yeoh, ao variar $C_{10}$ com $D_1$ fixo, entre $0{,}34$ e $0{,}44$, ambos abaixo de $\nu=0{,}49$ de \citet{park2021sclera} e do $\nu=0{,}47$ do WP1.1. A mudança de $\nu$ de $0{,}38$ a $0{,}47$ altera a rigidez biaxial de membrana em $\approx24\%$ a módulo de cisalhamento fixo, efeito não descontado nos seis ajustes. $C_{10}$ do globo não deve ser lido como igual ao $C_{10}$ uniaxial do artigo. Cada ajuste tem dois parâmetros livres na parte isocórica ($\mu_1$, $\alpha_1$ ou $C_{10}$, $C_{20}$). Com $u/R\approx0{,}5\%$ na faixa IVI, $\bar I_1-3\approx3\times10^{-4}$, de modo que $\alpha_1$ e $C_{20}$ só se separam de um ajuste de rigidez secante se a caixa de busca permitir enrijecimento na escala de tecido.
+ 
+O ajuste inverso repete a simulação de casca pressurizada, compara $\Delta P(V)$ simulado e alvo nos volumes do alvo, e minimiza a soma dos quadrados dos resíduos \citep{branch1999,virtanen2020scipy,kling2014airpuff,bronte2021airpuff}.
+ 
+\subsection{Metodologia}
+\label{sec:wp12_metodologia}
+
+A simulação usa a mesma casca esférica em octante do WP1.1, com malha descarregada e sem tensão residual, embora $R=12$ mm descreva o olho sob $P_0$. A pressão interna é aplicada em um único passo de grandes deformações, com $0$ a $P_0=16{,}9$ mmHg no primeiro incremento e mais $16$ incrementos até $50$ mmHg. O incremento de volume $\Delta V$ é medido a partir do estado em $P_0$. Em cada nível, vem do deslocamento normal da superfície média da casca, integrado sobre a face interna da malha indeformada. Essa aproximação difere do volume exato em cerca de $0{,}3\%$ na faixa da IVI.
+
+Cada ajuste compara $\Delta P$ acima de $P_0$ nos volumes do alvo, com a curva do FEA interpolada linearmente. O trecho de $0$ a $P_0$ fica fora do ajuste. Os parâmetros minimizam a soma dos quadrados das diferenças de $\Delta P$ entre modelo e alvo, por mínimos quadrados não lineares com limites e método de região de confiança refletiva \citep{branch1999,virtanen2020scipy}, com no máximo $30$ avaliações do FEA no Ogden e $50$ no Yeoh. No Ogden, $\mu_1$ varia de $0{,}05$ a $15$ MPa e $\alpha_1$ de $0{,}5$ a $100$, com partida em $\mu_1=2{,}14$ MPa e $\alpha_1=1{,}77$. No Yeoh, $C_{10}$ varia de $10^{-4}$ a $5$ MPa e $C_{20}$ de $0{,}1$ a $10^{3}$ MPa. Como $C_{20}$ cobre quatro ordens de grandeza, o otimizador trabalha com $\log_{10}C_{20}$, de $-1$ a $3$. A partida é $C_{10}=0{,}612$ MPa e $C_{20}=0{,}1$ MPa, e cada ajuste do Yeoh usa dois pontos iniciais, adotando-se o de melhor $R^2$. O $R^2$ e o resíduo máximo são calculados sobre $\Delta P$ (mmHg) nos pontos do alvo. Como termo de comparação, uma reta a partir de $P_0$ tem o $K$ ajustado por mínimos quadrados nos mesmos pontos.
+
+
+ 
+O teto de $50$ mmHg foi escolhido a partir dos picos de pressão medidos na clínica após a injeção intravítrea padrão de $50$ µL \citep{knecht2009, sharei2010}, reunidos na Tabela~\ref{tab:literatura_master} do WP0.
+ 
+Três curvas-alvo geram seis ajustes (Ogden e Yeoh em cada uma). A primeira é a lei de \citet{friedenwald1937} recalibrada no WP0 ao pico de \citet{knecht2009}, $P=P_0\cdot10^{K_fV}$ com $K_f=0{,}00581$ µL$^{-1}$, amostrada em onze volumes de $0$ a $50$ µL.
+
+A segunda são os pontos digitalizados da Fig.~2 de \citet{pallikaris2005}, onze no total e dez usados no ajuste. O artigo descreve $P_{\mathrm{art}}=\SI{10}{\milli\meter Hg}\cdot10^{K_f V}$ com $K_f=0{,}0126$ µL$^{-1}$. Com $P_0=\SI{16{,}9}{\milli\meter Hg}$ adota-se $P=P_0+(P_{\mathrm{art}}-10)$, que soma ao basal só o aumento lido no gráfico. O ponto em $4{,}5$ µL ($10{,}3$ mmHg) foi excluído, porque a lei do artigo prevê $\approx11{,}4$ mmHg nesse volume, cerca de $1{,}1$ mmHg acima da leitura e mais que o dobro da incerteza declarada de $0{,}5$ mmHg. No maior volume digitalizado ($44{,}5$ µL), a forma aditiva dá $\Delta P\approx\SI{26{,}4}{\milli\meter Hg}$ e a multiplicativa, $P_0\cdot10^{K_f V}$, daria $\approx\SI{44{,}6}{\milli\meter Hg}$.
+
+A terceira é a regressão de \citet{silvergeyer2000}, $\Delta V=-49{,}8+30{,}2\ln P+0{,}242\,P$, com $P$ em mmHg absolutos e $\Delta V$ em µL relativo a $\Delta V(P_0)$, obtida de $182$ itens de dados manométricos reunidos de $21$ olhos vivos. O ajuste usa volumes até $\SI{38}{\micro\liter}$ ($P\approx\SI{47}{\milli\meter Hg}$ com $P_0=\SI{16{,}9}{\milli\meter Hg}$). Esse limite fica acima da faixa que concentra a maioria dos dados do estudo, então o trecho final é parcialmente extrapolado.
+
+Os ajustes finais usam $ne=8$ no octante ($512$ elementos equivalentes). A independência de malha rodou simulação direta NLGEOM com parâmetros fixos dos seis ajustes da Tabela~\ref{tab:wp12_ajuste}, com $ne\in\{6,8,10,12\}$ e critério $\varepsilon_i<1\%$ em dois refinamentos seguidos sobre $\Delta V$ em $P_{\text{final}}=50$ mmHg \citep{roache1997, asmevv10}. Nos seis casos, o máximo observado foi $\varepsilon_i=0{,}003\%$ entre $ne=6$ e $ne=8$, $0{,}0004\%$ entre $ne=8$ e $ne=10$ e $0{,}0003\%$ entre $ne=10$ e $ne=12$. Adotou-se $ne=8$.
+
+Para robustez (resultados na subseção seguinte), Friedenwald--Ogden foi repetido com quinze pontos de partida em $(\mu_1,\alpha_1)$ na mesma caixa da matriz principal, $\alpha_1\in[0{,}5;\,100]$ (Tabela~\ref{tab:wp12_multistart_friedenwald}), incluindo o mínimo da partida única da Tabela~\ref{tab:wp12_ajuste} ($\mu_1\approx1{,}93$ MPa, $\alpha_1\approx10{,}4$), o par de partida ($2{,}27$, $1{,}06$) e pares de cobertura. Os demais alvos$\times$Ogden seguiram esquema análogo na caixa principal. No Yeoh, nove pares $(C_{10},\log_{10}C_{20})$ foram construídos da mesma forma. Testes auxiliares com $P_{\text{final}}=50$ mmHg incluem Ogden com $D_1$ livre, múltiplas partidas e sensibilidade à caixa de $\alpha_1$. Na Tabela~\ref{tab:wp12_ajuste}, \textsuperscript{*} marca parâmetro a $\lesssim2\%$ do intervalo de busca.
+
+ 
+\subsection{Resultados}
+ 
+Na Tabela~\ref{tab:wp12_ajuste}, $R^2$ fica entre $0{,}97$ e $0{,}997$ nos seis ajustes. Resíduos máximos contra \citet{silvergeyer2000} ficam entre $0{,}5$ e $3$ mmHg. $C_{20}$ ótimo do Yeoh fica em centenas de MPa contra Friedenwald recalibrada e contra \citet{pallikaris2005} ($285$ e $143$ MPa). Subir o teto de $C_{20}$ de $5$ para $10^3$ MPa melhora o ajuste Silver--Yeoh de $0{,}9748$ para $0{,}9776$. Nesse alvo \citep{silvergeyer2000}, $\alpha_1$ (Ogden) e $C_{20}$ (Yeoh) encostaram no limite de busca.
+
+Os $C_{10}$ Yeoh vão de $0{,}27$ MPa no alvo Friedenwald recalibrada \citep{friedenwald1937,knecht2009} a $2{,}8$--$2{,}9$ MPa nos alvos \citep{pallikaris2005,silvergeyer2000}. Mudar a curva $P(V)$ altera $C_{10}$ mais do que mudar Ogden por Yeoh. Só Friedenwald recalibrada devolve $C_{10}$ compatível com esclera uniaxial \citep{park2021sclera}. Pallikaris e Silver--Geyer pedem $\approx3\times$ mais rigidez. Daqui em diante adota-se Friedenwald recalibrada, $33{,}0$ mmHg em $50$ µL, embora seja o alvo menos rígido. \citet{pallikaris2005} ($P=P_0+P_{\mathrm{art}}-10$) e \citet{silvergeyer2000} ($38$ µL) permanecem só como comparação in vivo.
+
+Para avaliar a robustez dos ajustes na matriz principal, cada combinação alvo$\times$material foi repetida a partir de nove pontos de partida distintos, exceto Friedenwald--Ogden, com quinze (Metodologia e Tabela~\ref{tab:wp12_multistart_friedenwald}). Testaram-se também a liberação de $D_1$, em vez de amarrá-lo a $\mu_1$, e caixas alternativas de $\alpha_1$ nos testes auxiliares.
+ 
+\begin{table}[h]
+\centering
+\small
+\caption{Ajuste hiperelástico contra as curvas-alvo, geometria humana, a partir de $16{,}9$ mmHg e até o volume máximo de cada alvo.}
+\label{tab:wp12_ajuste}
+\begin{tabular}{@{}llrrrrrr@{}}
+\toprule
+Alvo & Material & $V_{\text{máx}}$ & $\mu_1$ ou $C_{10}$ & $\alpha_1$ ou $C_{20}$ & $R^2$ & Res. máx. & $n_{\text{fev}}$ \\
+\midrule
+Friedenwald & Ogden & 50 & 1,925 & 10,385           & 0,9865 & 1,15 & 17 \\
+Friedenwald & Yeoh  & 50 & 0,271 & 284,859          & 0,9969 & 0,51 & 12 \\
+Pallikaris  & Ogden & 44,5 & 4,410 & 1,973            & 0,9974 & 1,02 & 17 \\
+Pallikaris  & Yeoh  & 44,5 & 2,884 & 143,0            & 0,9966 & 1,39 & 29 \\
+Silver      & Ogden & 38 & 4,498 & 0,500\textsuperscript{*} & 0,9756 & 2,53 & 14 \\
+Silver      & Yeoh  & 38 & 2,814 & 999,2\textsuperscript{*} & 0,9776 & 2,95 & 18 \\
+\bottomrule
+\end{tabular}
+ 
+\vspace{2pt}
+\footnotesize $V_{\text{máx}}$ em µL. $\mu_1$, $C_{10}$ e $C_{20}$ em MPa. $\alpha_1$ adimensional. Resíduo máximo em mmHg. $n_{\text{fev}}$ = avaliações FEA do \texttt{least\_squares}. No Yeoh, o módulo de cisalhamento inicial é $2C_{10}$. \textsuperscript{*}Parâmetro a menos de $2\%$ do limite de busca ($C_{20}\in[0{,}1;\,10^{3}]$ MPa, $\alpha_1\in[0{,}5;\,100]$).
+\end{table}
+
+A Tabela~\ref{tab:wp12_linear} compara Friedenwald recalibrada, o linear do WP1.1 ($K=0{,}163$ mmHg/µL), um linear ajustado ao mesmo alvo ($K=0{,}298$ mmHg/µL) e Ogden e Yeoh da Tabela~\ref{tab:wp12_ajuste}, todos com a mesma pressão basal. O linear do WP1.1 só acompanha a curva perto da pressão basal e se afasta dela conforme o volume cresce. Seu erro sobe de $-8{,}7\%$ em $20$ µL para $-24{,}0\%$ em $50$ µL. O Ogden ajustado erra $+3{,}2\%$ e $-3{,}6\%$ nesses volumes (Tabela~\ref{tab:wp12_linear}) e a rigidez secante modelo ainda subestima parte do enrijecimento do alvo entre $20$ e $50$ µL. O Yeoh ajustado erra $+1{,}9\%$ e $-1{,}6\%$ nos mesmos pontos. A rigidez secante modelo ($\Delta P/\Delta V$ sobre $P_0$) sobe $+11\%$ ($0{,}281\to0{,}312$ mmHg/µL) entre $20$ e $50$ µL. O alvo sobe $+24\%$ ($0{,}259\to0{,}322$ mmHg/µL) na mesma faixa. Contra Friedenwald, Yeoh melhora $R^2$ ($0{,}997$ contra $0{,}987$) e o resíduo máximo ($0{,}51$ contra $1{,}15$ mmHg). Ogden e Yeoh seguem em paralelo nas etapas seguintes \citep{ogden1972large,yeoh1993some}.
+
+ 
+\begin{table}[h]
+\centering
+\caption{Pressão (mmHg) prevista pelo linear do WP1.1, por um linear ajustado ($K=0{,}298$ mmHg/µL) e por Ogden e Yeoh ajustados à Friedenwald recalibrada.}
+\label{tab:wp12_linear}
+\begin{tabular}{@{}rrrrrrrrrr@{}}
+\toprule
+$V$ (µL) & Alvo & Linear & Erro (\%) & Linear ajustado & Erro (\%) & Ogden & Erro (\%) & Yeoh & Erro (\%) \\
+\midrule
+20 & 22,1 & 20,2 & $-8{,}7$  & 22,9 & $+3{,}6$ & 22,8 & $+3{,}2$ & 22,5 & $+1{,}9$ \\
+50 & 33,0 & 25,1 & $-24{,}0$ & 31,8 & $-3{,}5$ & 31,8 & $-3{,}6$ & 32,5 & $-1{,}6$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+ 
+Com $P_{\text{final}}=50$ mmHg e $D_1$ amarrado a $\mu_1$, as múltiplas partidas do Ogden na caixa principal ($\alpha_1\in[0{,}5;\,100]$, quinze partidas) convergem para dois mínimos equivalentes com $\alpha_1\approx9{,}4$--$10{,}4$ e $R^2\approx0{,}987$ (Tabela~\ref{tab:wp12_multistart_friedenwald}), em linha com a partida única da Tabela~\ref{tab:wp12_ajuste}. Partidas a partir de $\alpha_1\approx1$--$2$ caem em mínimos locais com $\alpha_1\le6$ ($R^2\approx0{,}977$). Sete das quinze partidas não convergiram. Com $\alpha_1$ parcialmente identificável nesse alvo, $\alpha_1$ não deve ser lido isoladamente como propriedade física da esclera. Em Pallikaris e Silver, as múltiplas partidas confirmam a partida única da matriz. No Yeoh, Friedenwald e Pallikaris repetem o mesmo $R^2$ da partida única. Contra Pallikaris, múltiplas partidas expõem degenerescência do par $(C_{10},C_{20})$ (vários $C_{20}$ com o mesmo $R^2$).
+ 
+\begin{table}[h]
+\centering
+\caption{Ogden contra Friedenwald recalibrada, melhor partida única ($\alpha_1\in[0{,}5;\,100]$) e mínimos locais em $\alpha_1\le6$.}
+\label{tab:wp12_multistart_friedenwald}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Origem & $\mu_1$ (MPa) & $\alpha_1$ & $R^2$ & Custo rel. \\
+\midrule
+Partida única (matriz) & 1,925 & 10,385 & 0,9865 & 1,00 \\
+Múltiplas partidas ($x_0=1{,}925$, $10{,}38$) & 1,925 & 10,380 & 0,9865 & 1,00 \\
+Múltiplas partidas ($x_0=2{,}27$, $1{,}06$) & 1,919 & 9,371 & 0,9866 & 0,99 \\
+Múltiplas partidas ($x_0=1{,}00$, $2{,}50$) & 1,861 & 2,153 & 0,9768 & $\approx1{,}73$ \\
+\midrule
+\multicolumn{5}{@{}l}{\footnotesize Mínimos locais em $\alpha_1\le6$ (curvas $P(V)$ quase coincidentes).} \\
+C1 & 2,270 & 1,060 & 0,9770 & $\approx1{,}00$ \\
+C6 & 2,271 & 1,338 & 0,9770 & $\approx1{,}00$ \\
+C4 & 2,275 & 0,507\textsuperscript{*} & 0,9769 & $\approx1{,}01$ \\
+C3 & 2,293 & 4,874 & 0,9767 & $\approx1{,}01$ \\
+C5 & 2,298 & 6,000\textsuperscript{*} & 0,9766 & $\approx1{,}02$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+ 
+Deixar $D_1$ livre no Ogden reabriu vários mínimos, mas sem ganho real de ajuste frente ao melhor com $D_1$ amarrado na caixa $\alpha_1\in[0{,}5;\,100]$ ($R^2=0{,}9865$ em Friedenwald). Amarrar $D_1$ a $\mu_1$ não piora o ajuste dentro dessa caixa. A ampliação de $\alpha_1$ melhora o $R^2$ apenas no Friedenwald.
+
+No intervalo da IVI a Friedenwald recalibrada é quase reta. Ogden, Yeoh e uma reta com $K=\SI{0{,}298}{\milli\meter Hg\per\micro\liter}$ erram o alvo em poucos por cento (até $\pm3{,}6\%$, Tabela~\ref{tab:wp12_linear}). O enrijecimento não linear pesa pouco no pico pós-injeção. As $P(V)$ calibradas alimentam o WP0 e os capítulos seguintes. Com $K=0{,}668$ do WP1.1, sem recalibração, a casca linear erra cerca de $-24\%$ em $\SI{50}{\micro\liter}$.
+
+\section{WP1.3 --- Pré-tensionamento}
+
+\subsection{Introdução}
+
+Biometria e OCT medem o olho já inflado em $P_0$, não descarregado \citep{grytz2013}. Simular sem corrigir isso equivale a ignorar tensão residual na esclera.
+
+O WP1.3 estima uma geometria descarregada por deslocamento reverso na esfera do WP1.2 e compara FEA com membrana analítica (mesmos Ogden e Yeoh calibrados). Com raio de referência um pouco menor, $u=R_{\text{obs}}-R_{\text{ref}}$, a rigidez secante $K=\Delta P/\Delta V$ sobe. Só pela geometria de casca fina espera-se $K_{\text{pre}}/K_{\text{ref}}\approx1+4u/R_{\text{obs}}$ \citep{timoshenko1959}. Ogden e Yeoh desviam desse número porque o módulo tangente muda com o alongamento, e o enrijecimento do material reduz o ganho.
+
+O bloco valida o algoritmo e o acoplamento numérico. Nas três combinações Ogden o critério em $\Delta K$ falha (Tabela~\ref{tab:wp13_analytic}). Yeoh passa. Permanece esfera idealizada, sem anatomia clínica.
+
+O deslocamento reverso \citep{bols2013} busca uma geometria de referência descarregada tal que, ao aplicar $P_0$, reproduza-se a forma observada. Na esfera idealizada adota-se iteração só no raio, equivalente a escalar radialmente a malha, com $R_{\text{ref}}^{(0)}=R_{\text{obs}}=12$ mm.
+
+Pressuriza-se a esfera de raio $R_{\text{ref}}^{(k)}$ até $P_0$ e mede-se o incremento de volume $\Delta V$ da cavidade (mesmo functional do WP1.2). Define-se o raio equivalente
+\begin{equation}
+R_{\text{new}}=\left(\left(R_{\text{ref}}^{(k)}\right)^{3}+\frac{3\,\Delta V}{4\pi}\right)^{1/3},
+\label{eq:Rnew}
+\end{equation}
+e atualiza-se
+\begin{equation}
+R_{\text{ref}}^{(k+1)}=R_{\text{ref}}^{(k)}-\beta\left(R_{\text{new}}-R_{\text{obs}}\right),
+\label{eq:backward_r}
+\end{equation}
+com $\beta=0{,}7$. Ao convergir, $u=R_{\text{obs}}-R_{\text{ref}}$.
+
+\subsection{Metodologia}
+
+A forma observada é a esfera idealizada do WP1.2, em octante, com $R_{\text{obs}}=12$ mm, espessura de referência descarregada $t=0{,}5$ mm (sem correção pela inflação em $P_0$), $ne=8$ e $P_0=16{,}9$ mmHg assumido. Para cada um dos seis ajustes da Tabela~\ref{tab:wp12_ajuste} usa-se o parâmetro constitutivo final do WP1.2. O deslocamento reverso radial itera as Equações~\ref{eq:Rnew}--\ref{eq:backward_r} até $|\delta R|<10^{-3}$ mm entre iterações.
+
+Em seguida, a pressão é aplicada em um único passo, primeiro de $0$ a $P_0$ e depois em $24$ incrementos de $P_0$ a $50$ mmHg ($25$ pressões tabuladas). As duas corridas, com $R_{\text{ref}}$ e com $R_{\text{obs}}$ sem deslocamento reverso, usam a mesma discretização. Extrai-se $P(V)$ com $\Delta V=0$ em $P_0$. A rigidez secante é $K=\Delta P/\Delta V$ em $\Delta P=10$, $20$ e $30$ mmHg acima de $P_0$, com $V(P)$ interpolado por PCHIP monótono \citep{fritsch1980,virtanen2020scipy}. Esses incrementos cobrem e excedem o $\Delta P$ típico da IVI ($\approx8$ a $16$ mmHg) e permitem verificar se o efeito se mantém nessa faixa. Registram-se $u=R_{\text{obs}}-R_{\text{ref}}$, $100\times4u/R_{\text{obs}}$, a variação percentual da rigidez secante frente à corrida de referência, $\Delta K/K_{\text{ref}}$, e o número de iterações do ponto fixo.
+
+O FEA é comparado com a membrana esférica analítica descrita na Introdução, com os mesmos parâmetros dos ajustes do WP1.2, incluindo $D_1$. Aceita-se $|\Delta K_{\text{FEA}}-\Delta K_{\text{analítico}}|\le0{,}1$ pp e $|u_{\text{FEA}}-u_{\text{analítico}}|\le5\%$.
+
+\subsection{Resultados}
+
+A Tabela~\ref{tab:wp13_pretensao} resume o deslocamento reverso radial, com $u=R_{\text{obs}}-R_{\text{ref}}$, $100\times4u/R_{\text{obs}}$ e $\Delta K/K_{\text{ref}}$ na secante $+10$, $+20$ e $+30$ mmHg acima de $P_0$. O ponto fixo convergiu em três a cinco iterações nos seis casos. Dentro de cada linha, $\Delta K/K_{\text{ref}}$ varia no máximo $0{,}01$ pp entre $+10$ e $+30$ mmHg e fica entre $0{,}4$ e $1{,}9\%$ nos seis casos.
+
+A Tabela~\ref{tab:wp13_analytic} confronta o FEA com a membrana analítica, com os mesmos parâmetros da Tabela~\ref{tab:wp12_ajuste}. Nas três linhas Yeoh, $u_{\text{FEA}}$ difere do analítico em $0{,}5$ a $4{,}5\%$ e $\Delta K_{\text{FEA}}$ em até $0{,}02$ pp, dentro do critério de $5\%$ em $u$ e $0{,}1$ pp em $\Delta K$. No Yeoh ajustado à Friedenwald, $\Delta K$ é $+1{,}85\%$ no FEA e $+1{,}86\%$ no analítico, contra $4u/R=2{,}16\%$ pela escala puramente geométrica. Nas três linhas Ogden, $u_{\text{FEA}}$ fica $20$ a $22\%$ abaixo do analítico e $\Delta K$ difere em $0{,}12$ a $0{,}26$ pp (no Ogden ajustado à Friedenwald, $+1{,}04\%$ contra $+1{,}30\%$), fora dos dois critérios. A causa não foi identificada, e os resultados do Ogden têm incerteza de $\approx20\%$ em $u$.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Deslocamento reverso radial (Bols). $u=R_{\text{obs}}-R_{\text{ref}}$ após ponto fixo em $\Delta V(P_0)$, e variação da rigidez secante $K=\Delta P/\Delta V$ (corrida com $R_{\text{ref}}$ frente à referência em $R_{\text{obs}}$).}
+\label{tab:wp13_pretensao}
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Alvo & Material & $u$ (mm) & $4u/R$ (\%) & $\Delta K_{+10}$ (\%) & $\Delta K_{+20}$ (\%) & $\Delta K_{+30}$ (\%) \\
+\midrule
+Friedenwald & Ogden & 0,030 & 1,02 & $+1{,}04$ & $+1{,}04$ & $+1{,}04$ \\
+Friedenwald & Yeoh  & 0,065 & 2,16 & $+1{,}84$ & $+1{,}85$ & $+1{,}85$ \\
+Pallikaris  & Ogden & 0,013 & 0,43 & $+0{,}43$ & $+0{,}43$ & $+0{,}43$ \\
+Pallikaris  & Yeoh  & 0,013 & 0,44 & $+0{,}44$ & $+0{,}44$ & $+0{,}44$ \\
+Silver      & Ogden & 0,013 & 0,42 & $+0{,}42$ & $+0{,}42$ & $+0{,}42$ \\
+Silver      & Yeoh  & 0,013 & 0,44 & $+0{,}44$ & $+0{,}44$ & $+0{,}44$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\footnotesize $\Delta K_{+k}=100\,(K_{\mathrm{pre}}-K_{\mathrm{ref}})/K_{\mathrm{ref}}$ com secante em $\Delta P=k$ mmHg acima de $P_0=16{,}9$ mmHg. PCHIP em $P(V)$ como na metodologia.
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Membrana analítica em $P_0$ frente ao FEA da Tabela~\ref{tab:wp13_pretensao} ($R_{\text{obs}}=12$ mm, $t=0{,}5$ mm, parâmetros da Tabela~\ref{tab:wp12_ajuste}). $\Delta K$ na secante $+10$ mmHg.}
+\label{tab:wp13_analytic}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Alvo & Material & $u_{\text{anal}}$ (mm) & $u_{\text{FEA}}$ (mm) & $\Delta K_{\text{anal}}$ (\%) & $\Delta K_{\text{FEA}}$ (\%) \\
+\midrule
+Friedenwald & Ogden & 0,038 & 0,030 & $+1{,}30$ & $+1{,}04$ \\
+Friedenwald & Yeoh  & 0,065 & 0,065 & $+1{,}86$ & $+1{,}85$ \\
+Pallikaris  & Ogden & 0,0165 & 0,013 & $+0{,}55$ & $+0{,}43$ \\
+Pallikaris  & Yeoh  & 0,0137 & 0,013 & $+0{,}46$ & $+0{,}44$ \\
+Silver      & Ogden & 0,0161 & 0,013 & $+0{,}54$ & $+0{,}42$ \\
+Silver      & Yeoh  & 0,0139 & 0,013 & $+0{,}46$ & $+0{,}44$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \section{WP1.4 --- Varredura paramétrica}
+
+% \subsection{Introdução}
+
+% A simulação de elementos finitos completa ainda é lenta demais para ser rodada em tempo real para cada paciente, ou repetidamente dentro de uma calibração estatística mais ampla. O objetivo dessa seção é rodar essa simulação completa, variando sistematicamente os parâmetros anatômicos de entrada, e usar esses resultados para treinar um modelo estatístico rápido que aproxima a mesma resposta da simulação completa numa fração do tempo de cálculo.
+
+% \subsection{Metodologia}
+
+% Varia-se, dentro de faixas realistas, o comprimento axial do olho, a espessura escleral equatorial e posterior, os parâmetros do modelo de material ajustado no WP1.2, a profundidade da câmara anterior, e outras variáveis como a presença do cristalino e a realização prévia de vitrectomia. Essas combinações serão amostradas por um método chamado hipercubo latino \citep{mckay1979comparison}, que distribui os pontos de forma mais eficiente pelo espaço de parâmetros do que uma varredura em grade regular, permitindo cobrir um número maior de combinações com um número menor de simulações. A meta é rodar entre duzentas e quinhentas simulações completas e treinar sobre esses resultados um emulador do tipo processo gaussiano ou expansão em caos polinomial, dois métodos que, além de aproximar a resposta, também estimam a incerteza da própria aproximação. O critério de aceitação do emulador é um erro de validação cruzada menor que $5\%$.
+
+% Antes da varredura completa, foi feito um piloto para verificar se o modelo responde de forma consistente à variação da geometria. Mantendo fixo o material ajustado à curva de Friedenwald no WP1.2, Ogden e Yeoh, foram rodados catorze olhos esféricos com raio entre $11{,}0$ e $13{,}5$ mm e espessura entre $0{,}40$ e $0{,}60$ mm, na mesma casca em octante, sem pré tensionamento. Para cada caso foi registrado $V_{\text{máx}}$, o volume injetado necessário para levar a pressão de $P_0=16{,}9$ mmHg até $50$ mmHg.
+
+% \subsection{Resultados}
+
+% As $28$ simulações do piloto convergiram, e a Tabela~\ref{tab:wp14_piloto} mostra os resultados.
+
+% \begin{table}[h]
+% \centering
+% \caption{Piloto de biometria. Volume para levar a pressão de $16{,}9$ a $50$ mmHg, material ajustado à curva de Friedenwald.}
+% \label{tab:wp14_piloto}
+% \begin{tabular}{@{}rrrrr@{}}
+% \toprule
+% Caso & $R$ (mm) & $t$ (mm) & $V_{\text{máx}}$ Ogden (µL) & $V_{\text{máx}}$ Yeoh (µL) \\
+% \midrule
+% B01 & 11,0 & 0,45 & 90,5  & 87,5  \\
+% B02 & 11,0 & 0,55 & 73,3  & 71,1  \\
+% B03 & 11,5 & 0,45 & 108,4 & 104,7 \\
+% B04 & 11,5 & 0,55 & 87,7  & 85,0  \\
+% B05 & 12,0 & 0,45 & 128,8 & 124,4 \\
+% B06 & 12,0 & 0,55 & 104,3 & 101,0 \\
+% B07 & 12,5 & 0,45 & 152,1 & 146,7 \\
+% B08 & 12,5 & 0,55 & 123,0 & 119,1 \\
+% B09 & 13,0 & 0,45 & 178,3 & 171,9 \\
+% B10 & 13,0 & 0,55 & 144,2 & 139,5 \\
+% B11 & 13,5 & 0,45 & 207,8 & 200,2 \\
+% B12 & 13,5 & 0,55 & 168,1 & 162,5 \\
+% B13 & 12,0 & 0,40 & 146,0 & 140,6 \\
+% B14 & 12,0 & 0,60 & 95,1  & 92,3  \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+% A variação com a geometria segue de perto a teoria de casca fina, em que a variação de volume sob pressão é proporcional a $R^4/t$. Partindo do caso B05 ($R=12$ mm, $t=0{,}45$ mm), essa proporção prevê $177{,}5$ µL para $R=13$ mm, contra $178{,}3$ µL simulados, e $105{,}4$ µL para $t=0{,}55$ mm, contra $104{,}3$ µL simulados, com diferenças de $+0{,}5\%$ e $-1{,}1\%$. Ou seja, mesmo com material não linear, o efeito da geometria continua essencialmente o previsto pela teoria de casca fina, e a faixa anatômica testada muda $V_{\text{máx}}$ por um fator de quase três. O Yeoh ficou sistematicamente $3{,}3\%$ a $3{,}7\%$ abaixo do Ogden em todos os casos, sem inversão de tendência.
+
+% Os valores absolutos de $V_{\text{máx}}$ exigem cautela, porque o material foi ajustado só até $50$ µL, onde a pressão chega a cerca de $33$ mmHg. Na geometria de referência, o modelo ajustado leva cerca de $115$ µL para chegar a $50$ mmHg, enquanto a própria curva de Friedenwald chega a $50$ mmHg em $81$ µL. Acima do volume de calibração, portanto, o modelo é menos rígido que a curva-alvo, e os valores de $V_{\text{máx}}$ são uma extrapolação. As tendências relativas com $R$ e $t$ não dependem dessa extrapolação. A varredura completa por hipercubo latino e o emulador ainda não foram feitos.
