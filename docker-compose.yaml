@@ -1,6 +1,10 @@
 # docker compose build        — build the image
-# docker compose run --rm fsi  — start an interactive session
+# docker compose run --rm fsi  — start an interactive session (cwd /simulation = ./cases)
 # docker compose up            — run a default simulation (edit command below)
+#
+# LaTeX report audit needs the full repo mounted:
+#   ./run_report_verification.sh
+#   (or: docker compose run --rm -v "$PWD:/repo" -w /repo fsi bash -lc 'cases/scripts/run_report_verification.sh')
 
 services:
   fsi:
@@ -17,6 +21,8 @@ services:
     volumes:
       # Mount your local simulation case(s) into the container
       - ./cases:/simulation
+      # Mesh tooling used by the Allrun scripts (e.g. fluent_bin_to_ascii.py)
+      - ./brunaStuff:/opt/brunaStuff:ro
       # Bind-mount the patched solids4foam library (fvOptions/Darcy fix in pimpleFluid).
       # See README "solids4foam pimpleFluid + fvOptions patch" for context.
       - ./cases/_lib/libsolids4FoamModels.so:/opt/of-user/lib/libsolids4FoamModels.so:ro

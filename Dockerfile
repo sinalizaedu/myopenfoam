@@ -88,6 +88,15 @@ RUN source /usr/lib/openfoam/openfoam2512/etc/bashrc && \
     export S4F_NO_FILE_FIXES=1 && \
     ./Allwmake -j"$(nproc)" 2>&1 | tee /tmp/log.s4f
 
+# ---------- Incompressible solver with continuity fvOptions ----------
+# Canonical pimpleFoam only applies fvOptions to U. This variant additionally
+# applies scalar sources registered for p directly to the pressure equation,
+# allowing cellZone sources to inject/remove actual incompressible volume.
+COPY brunaStuff/pimpleFoamMassSource /build/pimpleFoamMassSource
+RUN source /usr/lib/openfoam/openfoam2512/etc/bashrc && \
+    cd /build/pimpleFoamMassSource && \
+    wmake
+
 # ---------- Stage OpenFOAM compiled artifacts ----------
 RUN source /usr/lib/openfoam/openfoam2512/etc/bashrc && \
     for d in src/solids4FoamModels src/blockCoupledSolids4FoamTools; do \

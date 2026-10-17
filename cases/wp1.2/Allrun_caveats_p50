@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+NE="${NE:-8}"
+MAX_NFEV_OG="${MAX_NFEV_OG:-30}"
+MAX_NFEV_D1F="${MAX_NFEV_D1F:-40}"
+OUT="${OUT:-output_caveats_p50}"
+mkdir -p "$OUT"
+
+echo "=== [1/3] Yeoh multi-start ==="
+python3 scripts/run_yeoh_multistart_matrix.py --ne "$NE" --max-nfev "$MAX_NFEV_OG" --out "$OUT/yeoh_multistart"
+
+echo "=== [2/3] Ogden D1 livre multi-start ==="
+python3 scripts/run_ogden_multistart_d1free_matrix.py --ne "$NE" --max-nfev "$MAX_NFEV_D1F" --out "$OUT/ogden_d1free_multistart"
+
+echo "=== [3/3] Ogden D1 amarrado, alpha ampliado [0.15, 10] ==="
+python3 scripts/run_ogden_multistart_matrix.py \
+  --ne "$NE" --max-nfev "$MAX_NFEV_OG" \
+  --alpha-lo 0.15 --alpha-hi 10.0 \
+  --out "$OUT/ogden_alpha_wide"
+
+echo "Done. See $OUT/*/MULTISTART_SUMMARY.md"

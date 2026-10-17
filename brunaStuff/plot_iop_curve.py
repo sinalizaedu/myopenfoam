@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 # ── Data paths ────────────────────────────────────────────────────────────────
-BASE = '/Users/brunaenne/Documents/repos/myopenfoam/cases/eye-fsi-tc0'
+BASE = '/Users/brunaenne/Documents/repos/myopenfoam/cases/old/eye-fsi-tc0'
 TM_FILE = f'{BASE}/fluid/postProcessing/flowRateTM/0/surfaceFieldValue.dat'
 
 # ── Physical constants ────────────────────────────────────────────────────────

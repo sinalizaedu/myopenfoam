@@ -1,0 +1,11 @@
+#!/bin/bash
+# Formal mesh-independence study (ne=6,12,24,48) — wp1.1 human + rabbit
+#   cd cases/wp1.1 && ./Allrun_mesh_indep
+#   docker compose run --rm fsi bash -lc 'cd /simulation/wp1.1 && ./Allrun_mesh_indep'
+set -euo pipefail
+cd "$(dirname "$0")"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc 2>/dev/null || echo 4)}"
+mkdir -p ccx output_wp1.1/mesh_independence
+echo "=== mesh independence (OMP_NUM_THREADS=$OMP_NUM_THREADS) ==="
+python3 scripts/mesh_independence.py | tee output_wp1.1/mesh_independence/run.log
+echo "DONE — see output_wp1.1/mesh_independence/MESH_INDEPENDENCE.md"

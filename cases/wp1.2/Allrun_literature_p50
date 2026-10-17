@@ -1,0 +1,21 @@
+#!/bin/bash
+# WP1.2 — matriz principal: 3 alvos × Ogden/Yeoh (6 fits), Pallikaris digitizado
+#   cd cases/wp1.2 && ./Allrun_literature_p50
+#   docker compose run --rm fsi bash -lc 'cd /simulation/wp1.2 && ./Allrun_literature_p50'
+set -euo pipefail
+cd "$(dirname "$0")"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc 2>/dev/null || echo 4)}"
+
+OUT="${OUT:-output_literature_p50_digitized}"
+TARGETS="${TARGETS:-friedenwald,pallikaris,silver}"
+MATERIALS="${MATERIALS:-ogden,yeoh}"
+
+echo "=== wp1.2 literature matrix (6 cases) ==="
+echo "  out=$OUT  targets=$TARGETS  materials=$MATERIALS  OMP_NUM_THREADS=$OMP_NUM_THREADS"
+
+python3 scripts/run_literature_matrix.py \
+  --targets "$TARGETS" \
+  --materials "$MATERIALS" \
+  --out "$OUT"
+
+echo "DONE — see $OUT/LITERATURE_MATRIX_SUMMARY.md"

@@ -1,0 +1,36 @@
+#!/bin/bash
+# wp0 — 0D Goldmann IOP solver aligned with report (wp0.tex)
+#   cd cases/wp0 && ./Allrun
+set -euo pipefail
+cd "$(dirname "$0")"
+
+VENV=".venv"
+if ! python3 -c "import numpy, scipy, matplotlib" 2>/dev/null; then
+    if [ ! -d "$VENV" ]; then
+        echo "Creating $VENV and installing requirements..."
+        python3 -m venv "$VENV"
+        "$VENV/bin/pip" install -q -r requirements.txt
+    fi
+    # shellcheck disable=SC1091
+    source "$VENV/bin/activate"
+fi
+
+PY="${VENV}/bin/python"
+if [ ! -x "$PY" ]; then
+    PY=python3
+fi
+
+mkdir -p output_wp0
+echo "=== verify_ruffini.py (§4.1) ==="
+"$PY" verify_ruffini.py | tee output_wp0/verify_ruffini.log
+
+echo "=== verify_wp0_standards.py (scalar checks) ==="
+"$PY" verify_wp0_standards.py | tee output_wp0/verify.log
+
+echo "=== wp0_report.py (figures + full metrics) ==="
+"$PY" wp0_report.py | tee output_wp0/report.log
+
+echo "=== generate_text_updates.py ==="
+"$PY" generate_text_updates.py | tee output_wp0/text_updates.log
+
+echo "DONE wp0 — figures: output_wp0/figures/ (+ brunaStuff/latex/report/Figuras if present)"

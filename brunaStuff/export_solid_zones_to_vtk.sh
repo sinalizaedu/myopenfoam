@@ -11,7 +11,7 @@
 #
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
-SOLID="${1:-$REPO/cases/eye-fsi-tc0/solid}"
+SOLID="${1:-$REPO/cases/old/eye-fsi-tc0/solid}"
 cd "$SOLID"
 
 echo ">>> Caso: $SOLID"

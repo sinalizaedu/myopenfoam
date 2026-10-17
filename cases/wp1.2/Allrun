@@ -1,0 +1,33 @@
+#!/bin/bash
+# wp1.2 — hyperelastic inverse FEA fit to Ensaio A P-V curve
+#   cd cases/wp1.2 && ./Allrun
+#   docker compose run --rm fsi bash -lc 'cd /simulation/wp1.2 && ./Allrun'
+set -euo pipefail
+cd "$(dirname "$0")"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc 2>/dev/null || echo 4)}"
+
+DATA="${DATA:-data/ensaio_A_template.csv}"
+EYE_ID="${EYE_ID:-pig01}"
+R="${R:-9.0}"
+T="${T:-0.45}"
+GEOM_SOURCE="${GEOM_SOURCE:-literature estimate (suíno — substituir por dissecção)}"
+OUT="${OUT:-output_wp1.2}"
+
+echo "=== wp1.2 inverse hyperelastic fit ==="
+echo "  data=$DATA  eye=$EYE_ID  R=$R mm  t=$T mm"
+
+python3 scripts/fit_hyperelastic.py \
+  --data "$DATA" \
+  --eye-id "$EYE_ID" \
+  --R "$R" --t "$T" \
+  --geom-source "$GEOM_SOURCE" \
+  --out "$OUT" \
+  --ne 6 \
+  --max-nfev 8
+
+python3 scripts/plot_fit.py \
+  --results "$OUT/fit_results.json" \
+  --overlay "$OUT/pv_overlay.csv" \
+  --out "$OUT/pv_fit.png"
+
+echo "DONE wp1.2 — see $OUT/RESULTS.md"

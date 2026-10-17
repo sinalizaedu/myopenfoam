@@ -1,0 +1,35 @@
+#!/bin/bash
+# wp1.1 — verificação FEA octante (wp1.tex): ne=6 → 288 elem. equivalentes na esfera
+#   cd cases/wp1.1 && ./Allrun
+#   docker compose run --rm fsi bash -lc 'cd /simulation/wp1.1 && ./Allrun'
+set -euo pipefail
+cd "$(dirname "$0")"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc 2>/dev/null || echo 4)}"
+mkdir -p ccx output_octant output_wp1.1
+
+echo "=== verify_wp1_methodology.py (octante, wp1.tex) ==="
+python3 scripts/verify_wp1_methodology.py | tee output_wp1.1/verify_methodology.log
+
+have_ccx=0
+for cmd in ccx ccx_preCICE ccx_2.23 ccx_2.21; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    have_ccx=1
+    break
+  fi
+done
+
+if [ "$have_ccx" -eq 1 ]; then
+  echo "=== run_verification_octant.py (OMP_NUM_THREADS=$OMP_NUM_THREADS) ==="
+  python3 scripts/run_verification_octant.py | tee output_octant/run.log
+else
+  echo "=== CalculiX not in PATH — reprocess_octant.py (existing .frd) ==="
+  python3 scripts/reprocess_octant.py | tee output_octant/reprocess.log
+fi
+
+echo "=== verify_wp1_octant_report.py (K @ 288 elem vs PDF) ==="
+python3 scripts/verify_wp1_octant_report.py | tee output_wp1.1/verify_octant_report.log
+
+echo "=== wp1_octant_ur_rms.py (radial displacement RMS vs analytic) ==="
+python3 scripts/wp1_octant_ur_rms.py | tee output_octant/ur_rms.log
+
+echo "DONE wp1.1 — octante: output_octant/ + output_wp1.1/RESULTS.md"

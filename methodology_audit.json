@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "purpose": "Canonical pipeline for brunaStuff/latex/report (wp0.tex, wp1.tex)",
+    "supersedes_manual_audit_2026-10-09": true,
+    "generated_by": "cases/scripts/audit_latex_report_numbers.py --write-methodology-audit-root",
+    "git_head": "unknown",
+    "audit_latex_command": "docker compose run --rm -v \"$PWD:/repo\" -w /repo fsi bash -lc 'python3 cases/scripts/audit_latex_report_numbers.py'"
+  },
+  "pipelines": {
+    "wp0": {
+      "command": "cd cases/wp0 && ./Allrun",
+      "docker": "docker compose run --rm -v \"$PWD:/repo\" -w /repo fsi bash -lc 'cd cases/wp0 && ./Allrun'",
+      "artifacts": [
+        "cases/wp0/output_wp0/report_metrics.json",
+        "cases/wp0/output_wp0/verify_wp0_standards.json",
+        "cases/wp0/output_wp0/verify_ruffini.json",
+        "brunaStuff/latex/report/Figuras/fig*.png"
+      ]
+    },
+    "wp1.1": {
+      "command": "cd cases/wp1.1 && ./Allrun",
+      "docker": "docker compose run --rm -v \"$PWD:/repo\" -w /repo fsi bash -lc 'cd cases/wp1.1 && ./Allrun'",
+      "artifacts": [
+        "cases/wp1.1/output_octant/summary.json"
+      ]
+    },
+    "wp1.2_matrix": {
+      "command": "cd cases/wp1.2 && ./Allrun_literature_p50",
+      "artifacts": [
+        "cases/wp1.2/output_literature_p50_digitized/*/fit_results.json"
+      ]
+    },
+    "wp1.2_multistart": {
+      "note": "Wide α∈[0.5,100] fifteen starts + local C1–C6 from output_ogden_multistart_p50",
+      "commands": [
+        "cd cases/wp1.2 && python3 scripts/run_ogden_multistart_matrix.py --targets friedenwald --out output_multistart_friedenwald_alpha100 --alpha-lo 0.5 --alpha-hi 100",
+        "cd cases/wp1.2 && python3 scripts/run_ogden_multistart_matrix.py --targets friedenwald --out output_ogden_multistart_p50 --alpha-lo 0.5 --alpha-hi 6"
+      ],
+      "artifacts": [
+        "cases/wp1.2/output_multistart_friedenwald_alpha100/friedenwald/multistart_results.json",
+        "cases/wp1.2/output_ogden_multistart_p50/friedenwald/multistart_results.json"
+      ]
+    },
+    "wp1.3": {
+      "command": "cd cases/wp1.3 && ./Allrun_backward_displacement_6",
+      "artifacts": [
+        "cases/wp1.3/output_backward_displacement_6/table10_summary.json",
+        "cases/wp1.3/data/analytic_membrane_reference_wp13.json"
+      ]
+    }
+  },
+  "verification_status": {
+    "verify_wp0_standards_json_present": true,
+    "verify_wp0_standards_all_ok": true,
+    "report_metrics_json_present": true,
+    "wp12_wp13_stub": "/repo/methodology_audit_wp12_wp13.json"
+  },
+  "note": "Numeric truth is enforced by audit_latex_report_numbers.py, not by this file."
+}

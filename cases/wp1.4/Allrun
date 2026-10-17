@@ -1,0 +1,7 @@
+#!/bin/bash
+# WP1.4 — 14-case biometry pilot (Ogden + Yeoh, Friedenwald P_final=50)
+set -euo pipefail
+cd "$(dirname "$0")"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc 2>/dev/null || echo 4)}"
+python3 scripts/run_pilot_biometry.py --ne "${NE:-8}" --out output_pilot_biometry_p50
+echo "DONE wp1.4 — see output_pilot_biometry_p50/RESULTS.md"

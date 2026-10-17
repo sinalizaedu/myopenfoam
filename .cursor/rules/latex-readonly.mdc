@@ -1,0 +1,40 @@
+---
+description: Do not edit LaTeX/bibliography files unless the user explicitly asks
+alwaysApply: true
+---
+
+# LaTeX — somente leitura (padrão)
+
+**Nunca** altere arquivos LaTeX ou de bibliografia, exceto quando o usuário **pedir explicitamente** na mensagem atual que você edite LaTeX.
+
+## Arquivos cobertos
+
+- `**/*.tex`, `**/*.bib`
+- Artefatos de compilação editáveis: `**/*.sty`, `**/*.cls`, `**/*.bbl` (se existirem no repo)
+- Pastas de relatório/tese, p.ex. `report/**`, `**/artigo_mestrado/**`, `**/*-texto-tese*.tex`
+
+## Proibido (sem pedido explícito)
+
+- `Write`, `StrReplace`, ou qualquer patch em arquivos cobertos
+- “Aproveitar” uma tarefa em código/dados para atualizar o relatório LaTeX
+- Recriar ou esvaziar `.tex`/`.bib` porque parece conveniente
+
+## Permitido sempre
+
+- **Ler** arquivos LaTeX para contexto, citações ou números
+- **Sugerir** trechos, tabelas ou `\cite{}` **no chat** (blocos markdown), sem gravar no disco
+- Editar **código, scripts, JSON, figuras** que alimentam o relatório — desde que isso não inclua editar os `.tex`/`.bib`
+
+## O que conta como pedido explícito
+
+Frases claras na **mesma** mensagem do usuário, por exemplo:
+
+- “edite `report/wp4.tex`”
+- “atualize o LaTeX do WP4.1”
+- “escreva a seção de resultados no `main.tex`”
+
+Pedidos vagos (“documenta isso”, “coloca no relatório”) **não** autorizam editar arquivos LaTeX — responda no chat ou pergunte se deve gravar em `.tex`.
+
+## Conflito com outras instruções
+
+Esta regra **prevalece** sobre sugestões genéricas de “atualizar docs” ou criar markdown/LaTeX por iniciativa própria.

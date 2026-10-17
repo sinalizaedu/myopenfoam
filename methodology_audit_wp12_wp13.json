@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "purpose": "Pointer only — use cases/scripts/audit_latex_report_numbers.py for numeric truth",
+    "supersedes_stale_v2_mulf_audit": true,
+    "canonical_outputs": {
+      "wp12_matrix": "cases/wp1.2/output_literature_p50_digitized",
+      "wp12_multistart_wide": "cases/wp1.2/output_multistart_friedenwald_alpha100/friedenwald",
+      "wp12_multistart_local_C": "cases/wp1.2/output_ogden_multistart_p50/friedenwald",
+      "wp13_pretension": "cases/wp1.3/output_backward_displacement_6/table10_summary.json",
+      "wp13_analytic": "cases/wp1.3/data/analytic_membrane_reference_wp13.json"
+    },
+    "audit_command": "docker compose run --rm -v \"$PWD:/repo\" -w /repo fsi bash -lc 'python3 cases/scripts/audit_latex_report_numbers.py'"
+  },
+  "fit_table7_snapshot": {
+    "friedenwald_ogden": {
+      "vmax": 50.0,
+      "p1": 1.924816,
+      "p2": 10.384531,
+      "r2": 0.98652,
+      "max_res": 1.147406,
+      "nfev": 17
+    },
+    "friedenwald_yeoh": {
+      "vmax": 50.0,
+      "p1": 0.271433,
+      "p2": 284.859,
+      "r2": 0.996865,
+      "max_res": 0.509684,
+      "nfev": 12
+    },
+    "pallikaris_ogden": {
+      "vmax": 44.5,
+      "p1": 4.409687,
+      "p2": 1.970339,
+      "r2": 0.997404,
+      "max_res": 1.019142,
+      "nfev": 17
+    },
+    "pallikaris_yeoh": {
+      "vmax": 44.5,
+      "p1": 2.884162,
+      "p2": 142.995652,
+      "r2": 0.996627,
+      "max_res": 1.386189,
+      "nfev": 29
+    },
+    "silver_ogden": {
+      "vmax": 38.0,
+      "p1": 4.497965,
+      "p2": 0.500289,
+      "r2": 0.975598,
+      "max_res": 2.530365,
+      "nfev": 14
+    },
+    "silver_yeoh": {
+      "vmax": 38.0,
+      "p1": 2.814273,
+      "p2": 999.160419,
+      "r2": 0.977573,
+      "max_res": 2.949779,
+      "nfev": 18
+    }
+  }
+}

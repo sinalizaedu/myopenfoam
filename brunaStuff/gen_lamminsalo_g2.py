@@ -89,6 +89,7 @@ try:
         lumen_sizing_points,
         sync_case_topo_sets,
         tip_origins_for,
+        toposet_refine_dist_for_level,
     )
 except ImportError:
     from brunaStuff.g2_needle import (  # noqa: E402
@@ -111,6 +112,7 @@ except ImportError:
         lumen_sizing_points,
         sync_case_topo_sets,
         tip_origins_for,
+        toposet_refine_dist_for_level,
     )
 
 DEFAULT_CASE = "doc-g2-sim1"
@@ -734,7 +736,7 @@ actions
         type    cellSet;
         action  new;
         source  boxToCell;
-        box     (-1.0e-4 -1.5e-3 -9.0e-3) (9.0e-3 7.5e-3 1.0e-4);
+        box     (-1.0e-4 -3.60e-3 -9.0e-3) (9.0e-3 7.5e-3 1.0e-4);
     }}
     {{
         name    vitreous_zone;
@@ -763,9 +765,14 @@ IRIS_REFINE_LC_FRAC = 0.62
 IRIS_INFERIOR_LC_FRAC = 0.55
 IRIS_INFERIOR_TIP_LC_FRAC = 0.42
 IRIS_REFINE_DIST_M = {
+    "M6": 0.68e-3,
     "M5": 0.42e-3,
     "M4": 0.38e-3,
     "M1": 0.34e-3,
+    "M7": 0.34e-3,
+    "M8": 0.34e-3,
+    "N1": 0.38e-3,
+    "N2": 0.35e-3,
     "M2": 0.26e-3,
     "M3": 0.20e-3,
 }
@@ -786,6 +793,121 @@ VITREOUS_SYM0_IVI_AXIS_LC_FACTOR = 1.25
 TM_ANNULUS_RADIAL_M = 0.8e-3  # matches topoSet inner/outer Δr (6.4–7.2 mm)
 TM_SEED_BAND_M = 0.38e-3
 
+# Adaptive bulk coarsening on structured seed rings (M7/M8/N1/N2).
+ADAPTIVE_MESH: dict[str, dict] = {
+    "M7": {
+        "lc_bulk": 1.25e-3,
+        "lc_coarse_seed": 3.0e-3,
+        "seed_min_edge_fine_m": 50.0e-6,
+        "seed_min_edge_coarse_m": 0.28e-3,
+        "feature_band_m": 0.42e-3,
+        "seed_min_verts_ac": 62,
+        "seed_min_verts_vit": 52,
+        "n_theta": 3,
+        "sym0_layers": 4,
+        "sym0_ivi_only": True,
+        "sym0_ivi_y_half_m": 1.2e-3,
+        "bulk_quadrant_coarsen": True,
+        "bulk_quadrant_lc_m": 3.0e-3,
+        "bulk_quadrant_z_m": -0.12e-3,
+        "toposet_ball_r_m": 7.0e-4,
+    },
+    "M8": {
+        "lc_bulk": 1.38e-3,
+        "lc_coarse_seed": 3.2e-3,
+        "seed_min_edge_fine_m": 50.0e-6,
+        "seed_min_edge_coarse_m": 0.28e-3,
+        "feature_band_m": 0.42e-3,
+        "seed_min_verts_ac": 62,
+        "seed_min_verts_vit": 52,
+        "n_theta": 3,
+        "sym0_layers": 4,
+        "sym0_ivi_only": True,
+        "sym0_ivi_y_half_m": 1.2e-3,
+        "bulk_quadrant_coarsen": True,
+        "bulk_quadrant_lc_m": 3.2e-3,
+        "bulk_quadrant_z_m": -0.12e-3,
+        "toposet_ball_r_m": 7.0e-4,
+        "seed_decimate": True,
+    },
+    "N1": {
+        "lc_bulk": 1.70e-3,
+        "lc_coarse_seed": 3.6e-3,
+        "seed_min_edge_fine_m": 50.0e-6,
+        "seed_min_edge_coarse_m": 0.28e-3,
+        "feature_band_m": 0.42e-3,
+        "seed_min_verts_ac": 62,
+        "seed_min_verts_vit": 52,
+        "n_theta": 3,
+        "sym0_layers": 3,
+        "sym0_ivi_only": True,
+        "sym0_ivi_y_half_m": 0.90e-3,
+        "bulk_quadrant_coarsen": True,
+        "bulk_quadrant_lc_m": 3.6e-3,
+        "bulk_quadrant_z_m": -0.12e-3,
+        "toposet_ball_r_m": 7.0e-4,
+        "seed_decimate": True,
+        "interior_coarsen": True,
+        "interior_dist_m": 0.70e-3,
+    },
+    "N2": {
+        "lc_bulk": 1.38e-3,
+        "lc_coarse_seed": 3.2e-3,
+        "seed_min_edge_fine_m": 50.0e-6,
+        "seed_min_edge_coarse_m": 0.28e-3,
+        "feature_band_m": 0.42e-3,
+        "seed_min_verts_ac": 62,
+        "seed_min_verts_vit": 52,
+        "n_theta": 3,
+        "sym0_layers": 4,
+        "sym0_ivi_only": True,
+        "sym0_ivi_y_half_m": 1.2e-3,
+        "bulk_quadrant_coarsen": True,
+        "bulk_quadrant_lc_m": 3.2e-3,
+        "bulk_quadrant_z_m": -0.12e-3,
+        "toposet_ball_r_m": 7.0e-4,
+        "seed_decimate": True,
+    },
+}
+
+
+def _adaptive_lc_max(adapt: dict | None, lc_bulk: float) -> float:
+    lc_max = lc_bulk * 1.2
+    if not adapt:
+        return lc_max
+    for key in ("lc_coarse_seed", "bulk_quadrant_lc_m"):
+        if key in adapt:
+            lc_max = max(lc_max, float(adapt[key]) * 1.05)
+    return lc_max
+
+
+def _adaptive_cfg(mesh_level: str) -> dict | None:
+    return ADAPTIVE_MESH.get(mesh_level)
+
+
+def _adaptive_seed_decimate(mesh_level: str) -> bool:
+    cfg = _adaptive_cfg(mesh_level)
+    return bool(cfg and cfg.get("seed_decimate", True))
+
+
+def _sym0_layers_for_level(mesh_level: str) -> int:
+    cfg = _adaptive_cfg(mesh_level)
+    if cfg and "sym0_layers" in cfg:
+        return int(cfg["sym0_layers"])
+    return VITREOUS_SYM0_LAYERS
+
+
+def _sym0_ivi_only_for_level(mesh_level: str) -> bool:
+    cfg = _adaptive_cfg(mesh_level)
+    return bool(cfg and cfg.get("sym0_ivi_only"))
+
+
+def _sym0_ivi_y_half_for_level(mesh_level: str) -> float:
+    cfg = _adaptive_cfg(mesh_level)
+    if cfg and "sym0_ivi_y_half_m" in cfg:
+        return float(cfg["sym0_ivi_y_half_m"])
+    return VITREOUS_SYM0_IVI_Y_HALF_M
+
 
 def _lc_vitreous_sym0_for_level(mesh_level: str) -> dict[str, float]:
     """Structured symmetry_0 wall bands: inner layers + IVI-local finest tier."""
@@ -793,14 +915,15 @@ def _lc_vitreous_sym0_for_level(mesh_level: str) -> dict[str, float]:
     lc_inner = max(lc_topo * VITREOUS_SYM0_LC_INNER_FRAC, 7.5e-5)
     lc_mid = max(lc_topo * VITREOUS_SYM0_LC_MID_FRAC, lc_inner * 1.12)
     lc_ivi = max(lc_topo * VITREOUS_SYM0_IVI_LC_FRAC, 6.5e-5)
-    dist_inner = VITREOUS_SYM0_LAYERS * lc_inner * 1.08
+    n_layers = _sym0_layers_for_level(mesh_level)
+    dist_inner = n_layers * lc_inner * 1.08
     return {
         "lc_topo": lc_topo,
         "lc_inner": lc_inner,
         "lc_mid": lc_mid,
         "lc_ivi": lc_ivi,
         "dist_inner": dist_inner,
-        "dist_mid": TOPOSET_REFINE_DIST_M,
+        "dist_mid": toposet_refine_dist_for_level(mesh_level),
     }
 
 
@@ -879,18 +1002,21 @@ def _gmsh_vitreous_sym0_refinement_fields(
     lc_bulk: float,
     dist_inner: float,
     dist_mid: float,
+    ivi_y_half: float = VITREOUS_SYM0_IVI_Y_HALF_M,
+    ivi_only: bool = False,
 ) -> list[int]:
-    """symmetry_0 vitreous wall: structured layers everywhere incl. IVI band."""
+    """symmetry_0 vitreous wall: IVI band (+ optional full-wall bands)."""
     wall = np.asarray(wall_poly, dtype=float)
     fields: list[int] = []
     y_ivi = float(IVI_TIP_ORIGIN_M[1])
     ivi_seg = _polyline_y_window(
         wall,
-        y_ivi - VITREOUS_SYM0_IVI_Y_HALF_M,
-        y_ivi + VITREOUS_SYM0_IVI_Y_HALF_M,
+        y_ivi - ivi_y_half,
+        y_ivi + ivi_y_half,
     )
+    n_layers = max(4, int(round(dist_inner / max(lc_inner * 1.08, 1e-8))))
     if ivi_seg is not None:
-        dist_ivi = VITREOUS_SYM0_LAYERS * lc_ivi * 1.05
+        dist_ivi = n_layers * lc_ivi * 1.05
         dist_wall = 3.0 * lc_ivi * 1.05
         fields.extend(
             _gmsh_vitreous_sym0_layer_fields(
@@ -905,6 +1031,12 @@ def _gmsh_vitreous_sym0_refinement_fields(
                 dist_wall=dist_wall,
             )
         )
+    if ivi_only:
+        print(
+            f"INFO: vitreous symmetry_0 IVI-only band y±{ivi_y_half*1e3:.2f} mm "
+            f"lc_ivi={lc_ivi:.2e} ivi_seg={'yes' if ivi_seg is not None else 'no'}"
+        )
+        return fields
     y_gap = VITREOUS_SYM0_IVI_Y_GAP_M
     wall_segs = _split_polyline_by_y_exclusion(
         wall,
@@ -1030,8 +1162,8 @@ def _tm_toposet_cylinder_params(
     rs = np.abs(tm[:, 0])
     y0 = float(tm[:, 1].min()) - 0.08e-3
     y1 = float(tm[:, 1].max()) + 0.08e-3
-    inner_r = max(float(rs.min()) - 0.18e-3, 5.8e-3)
-    outer_r = min(float(rs.max()) + 0.32e-3, 7.4e-3)
+    inner_r = max(float(rs.min()) - 0.40e-3, 5.8e-3)
+    outer_r = min(float(rs.max()) + 0.40e-3, 7.5e-3)
     return (0.0, y0, 0.0), (0.0, y1, 0.0), outer_r, inner_r
 
 
@@ -1498,14 +1630,273 @@ def _ring_lc_near_tips(
 
 # Coarser cells near x=0 (symmetry_0 wedge) → lower max non-orthogonality there.
 AXIS_COARSEN_M = {
+    "M6": 1.7e-3,
     "M5": 1.0e-3,
     "M4": 0.92e-3,
     "M1": 0.85e-3,
+    "M7": 1.05e-3,
+    "M8": 1.25e-3,
+    "N1": 1.40e-3,
+    "N2": 1.30e-3,
     "M2": 0.75e-3,
     "M3": 0.65e-3,
 }
-AXIS_LC_FACTOR = {"M5": 2.5, "M4": 2.35, "M1": 2.2, "M2": 2.0, "M3": 1.8}
-N_THETA_LEVELS = {"M5": 4, "M4": 5, "M1": 6, "M2": 8, "M3": 10}
+AXIS_LC_FACTOR = {
+    "M6": 2.6,
+    "M5": 2.5,
+    "M4": 2.35,
+    "M1": 2.2,
+    "M7": 2.45,
+    "M8": 2.6,
+    "N1": 2.75,
+    "N2": 2.65,
+    "M2": 2.0,
+    "M3": 1.8,
+}
+N_THETA_LEVELS = {
+    "M6": 3,
+    "M5": 4,
+    "M4": 5,
+    "M1": 6,
+    "M7": 3,
+    "M8": 3,
+    "N1": 3,
+    "N2": 3,
+    "M2": 8,
+    "M3": 10,
+}
+
+
+def _seed_ring_limits(mesh_level: str) -> tuple[float, int]:
+    del mesh_level
+    return 50.0e-6, 120
+
+
+def _m7_ring_feature_proximity_m(
+    pts_m: np.ndarray,
+    *,
+    tm_markers: np.ndarray | None = None,
+    iris_poly: np.ndarray | None = None,
+    vit_wall_poly: np.ndarray | None = None,
+    include_ivi: bool = True,
+    include_acp: bool = True,
+) -> np.ndarray:
+    """Distance from each seed-ring vertex to nearest TM / IVI / ACP / iris / sym0 wall."""
+    pts = np.asarray(pts_m, dtype=float)
+    prox = np.full(len(pts), np.inf, dtype=float)
+    ivi_y = float(IVI_TIP_ORIGIN_M[1])
+    acp_y = float(ACP_TIP_ORIGIN_M[1])
+    tm = (
+        _clean_ring(np.asarray(tm_markers, dtype=float), tol=1e-9)[:-1]
+        if tm_markers is not None and len(tm_markers) >= 2
+        else None
+    )
+    iris = (
+        _clean_ring(np.asarray(iris_poly, dtype=float), tol=1e-9)[:-1]
+        if iris_poly is not None and len(iris_poly) >= 2
+        else None
+    )
+    wall = np.asarray(vit_wall_poly, dtype=float) if vit_wall_poly is not None else None
+    for i, (x, y) in enumerate(pts):
+        p = np.array([abs(float(x)), float(y)], dtype=float)
+        dvals: list[float] = []
+        if include_ivi:
+            dvals.append(float(np.linalg.norm(p - np.array([0.0, ivi_y]))))
+        if include_acp:
+            dvals.append(float(np.linalg.norm(p - np.array([0.0, acp_y]))))
+        if tm is not None:
+            dvals.append(_dist_to_polyline_xy(p, tm))
+        if iris is not None:
+            dvals.append(_dist_to_polyline_xy(p, iris))
+        if wall is not None and len(wall) >= 2:
+            dvals.append(_dist_to_polyline_xy(p, wall))
+        prox[i] = min(dvals) if dvals else np.inf
+    return prox
+
+
+def _decimate_ring_m7_selective(
+    pts_m: np.ndarray,
+    lc_arr: np.ndarray,
+    prox_m: np.ndarray,
+    *,
+    min_fine: float,
+    min_coarse: float,
+    feature_band_m: float,
+    lc_coarse: float,
+    min_verts: int = 40,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Keep M1 seed density near features; drop vertices on coarse bulk arcs."""
+    pts = _snap_axis_ring(_clean_ring(np.asarray(pts_m, dtype=float))[:-1])
+    lc = np.asarray(lc_arr, dtype=float).copy()
+    prox = np.asarray(prox_m, dtype=float)
+    if not (len(pts) == len(lc) == len(prox)):
+        raise ValueError("M7 selective decimate: pts/lc/prox length mismatch")
+    if len(pts) < 3:
+        return pts, lc
+
+    lc[prox > feature_band_m] = np.maximum(lc[prox > feature_band_m], lc_coarse)
+
+    def _min_seg(i: int, j: int) -> float:
+        return min_fine if min(prox[i], prox[j]) <= feature_band_m else min_coarse
+
+    keep = [0]
+    for i in range(1, len(pts)):
+        j = keep[-1]
+        if float(np.linalg.norm(pts[i] - pts[j])) >= _min_seg(i, j):
+            keep.append(i)
+    while len(keep) > 3 and float(np.linalg.norm(pts[keep[-1]] - pts[keep[0]])) < _min_seg(
+        keep[-1], keep[0]
+    ):
+        keep.pop()
+    if len(keep) < min_verts:
+        idx = np.linspace(0, len(pts) - 1, min_verts).astype(int)
+        keep = sorted(set(int(i) for i in idx))
+    return pts[keep], lc[keep]
+
+
+def _gmsh_m7_interior_coarsen_field(
+    surface_tags: list[tuple[int, int]],
+    *,
+    lc_fine: float,
+    lc_bulk: float,
+    dist_m: float,
+) -> int:
+    """Coarsen 2D/3D interior beyond dist_m from outer fluid boundary (M7 only)."""
+    import gmsh
+
+    f_dist = gmsh.model.mesh.field.add("Distance")
+    gmsh.model.mesh.field.setNumbers(
+        f_dist, "SurfacesList", [t for dim, t in surface_tags if dim == 2]
+    )
+    f_th = gmsh.model.mesh.field.add("Threshold")
+    gmsh.model.mesh.field.setNumber(f_th, "InField", f_dist)
+    gmsh.model.mesh.field.setNumber(f_th, "SizeMin", lc_fine)
+    gmsh.model.mesh.field.setNumber(f_th, "SizeMax", lc_bulk)
+    gmsh.model.mesh.field.setNumber(f_th, "Sigmoid", 0)
+    gmsh.model.mesh.field.setNumber(f_th, "DistMin", 0.0)
+    gmsh.model.mesh.field.setNumber(f_th, "DistMax", dist_m)
+    return f_th
+
+
+def _build_fluid_bg_fields(
+    *,
+    mesh_level: str,
+    lc_bulk: float,
+    lc_fine: float,
+    lc_iris: float,
+    lc_topo: float | None,
+    lc_tip: float | None,
+    tip_refine: bool,
+    tip_sites: str,
+    tm_markers: np.ndarray | None,
+    tm_layers: int,
+    tm_size_field: bool,
+    lc_tm_val: float | None,
+    iris_refine: bool,
+    iris_poly: np.ndarray,
+    vitreous_sym0_refine: bool,
+    vit_wall_poly: np.ndarray | None,
+    sym0_sizes: dict[str, float] | None,
+    surface_tags: list[tuple[int, int]] | None = None,
+) -> list[int]:
+    """Gmsh background size fields for G2-fluid (tips / TM / iris / symmetry_0)."""
+    bg_fields: list[int] = []
+    if tip_refine and lc_tip is not None:
+        n_across = (
+            TIP_CELLS_ACROSS_IVI.get(mesh_level, 10)
+            if tip_sites == "ivi"
+            else TIP_CELLS_ACROSS
+        )
+        fields, _embed = _gmsh_tip_refinement_fields(
+            list(tip_origins_for(tip_sites)),
+            lc_bulk=lc_bulk,
+            lc_tip=lc_tip,
+            n_cells_across=n_across,
+        )
+        bg_fields.extend(fields)
+    elif lc_topo is not None:
+        adapt = _adaptive_cfg(mesh_level)
+        ball_r = (
+            float(adapt["toposet_ball_r_m"])
+            if adapt and "toposet_ball_r_m" in adapt
+            else toposet_refine_dist_for_level(mesh_level)
+        )
+        bg_fields.extend(
+            _gmsh_toposet_refinement_fields(
+                TIP_ORIGINS_M,
+                lc_bulk=lc_bulk,
+                lc_topo=lc_topo,
+                ball_r=ball_r,
+                skip_ivi=vitreous_sym0_refine,
+            )
+        )
+    if tm_markers is not None and tm_layers >= 5 and tm_size_field:
+        lm = _g2_fluid_landmarks_m()
+        bg_fields.extend(
+            _gmsh_tm_refinement_fields(
+                np.asarray(tm_markers, dtype=float),
+                _tm_se_segment_polyline(lm),
+                lc_tm=lc_tm_val or _lc_tm_for_level(mesh_level, tm_layers),
+                lc_bulk=lc_bulk,
+                tm_layers=tm_layers,
+            )
+        )
+    if iris_refine:
+        bg_fields.extend(
+            _gmsh_iris_refinement_fields(
+                iris_poly,
+                lc_iris=lc_iris,
+                lc_bulk=lc_bulk,
+                tm_markers=tm_markers,
+                mesh_level=mesh_level,
+            )
+        )
+    if vitreous_sym0_refine and vit_wall_poly is not None and sym0_sizes is not None:
+        bg_fields.extend(
+            _gmsh_vitreous_sym0_refinement_fields(
+                vit_wall_poly,
+                lc_inner=sym0_sizes["lc_inner"],
+                lc_mid=sym0_sizes["lc_mid"],
+                lc_ivi=sym0_sizes["lc_ivi"],
+                lc_bulk=lc_bulk,
+                dist_inner=sym0_sizes["dist_inner"],
+                dist_mid=sym0_sizes["dist_mid"],
+                ivi_y_half=_sym0_ivi_y_half_for_level(mesh_level),
+                ivi_only=_sym0_ivi_only_for_level(mesh_level),
+            )
+        )
+    adapt = _adaptive_cfg(mesh_level)
+    if adapt and adapt.get("bulk_quadrant_coarsen"):
+        lc_q = float(adapt.get("bulk_quadrant_lc_m", lc_bulk))
+        z_q = float(adapt.get("bulk_quadrant_z_m", -0.15e-3))
+        bg_fields.append(
+            _gmsh_quadrant_bulk_coarsen_field(
+                lc=lc_q,
+                z_cut_m=z_q,
+                y_vit_min_m=float(adapt.get("bulk_quadrant_y_vit_min_m", 0.0)),
+                y_ac_max_m=float(adapt.get("bulk_quadrant_y_ac_max_m", 0.0)),
+            )
+        )
+        print(
+            f"INFO: {mesh_level} bulk quadrant coarsen lc={lc_q:.2e} "
+            f"(vitreous y>{adapt.get('bulk_quadrant_y_vit_min_m', 0.0):.2e} & "
+            f"AC y<{adapt.get('bulk_quadrant_y_ac_max_m', 0.0):.2e}, z<{z_q:.2e})"
+        )
+    if adapt and surface_tags and adapt.get("interior_coarsen"):
+        lc_interior = float(adapt.get("lc_coarse_seed", lc_bulk))
+        bg_fields.append(
+            _gmsh_m7_interior_coarsen_field(
+                surface_tags,
+                lc_fine=lc_fine,
+                lc_bulk=lc_interior,
+                dist_m=adapt["interior_dist_m"],
+            )
+        )
+        print(
+            f"INFO: {mesh_level} interior coarsen beyond {adapt['interior_dist_m']:.2e} m "
+            f"lc_interior={lc_interior:.2e}"
+        )
+    return bg_fields
 
 
 def _ring_lc_axis_coarsen(
@@ -1520,6 +1911,30 @@ def _ring_lc_axis_coarsen(
         return np.full(len(pts), lc_base, dtype=float)
     w = np.exp(-np.maximum(pts[:, 0], 0.0) / x_coarsen)
     return lc_base * (1.0 + w * (factor - 1.0))
+
+
+def _gmsh_quadrant_bulk_coarsen_field(
+    *,
+    lc: float,
+    z_cut_m: float = -0.15e-3,
+    y_vit_min_m: float = 0.0,
+    y_ac_max_m: float = 0.0,
+) -> int:
+    """Coarse bulk in posterior vitreous (y>0, z<0) and anterior AC (y<0, z<0).
+
+    Uses 1e10 outside the quadrants so Min() keeps TM / iris / tip refinements.
+    """
+    import gmsh
+
+    zc = float(z_cut_m)
+    yv = float(y_vit_min_m)
+    ya = float(y_ac_max_m)
+    vit = f"step(y-{yv})*step({zc}-z)"
+    ac = f"step({ya}-y)*step({zc}-z)"
+    mask = f"max({vit},{ac})"
+    field = gmsh.model.mesh.field.add("MathEval")
+    gmsh.model.mesh.field.setString(field, "F", f"{lc}*{mask}+1e10*(1-{mask})")
+    return field
 
 
 def _gmsh_axis_coarsen_field(lc: float, *, x_coarsen: float, factor: float) -> int | None:
@@ -1624,19 +2039,69 @@ def _iris_cut_polyline(fluid: dict[str, np.ndarray]) -> np.ndarray:
     return pts
 
 
-def _face_xy_samples(tag: int) -> list[tuple[float, float]]:
-    """Meridional (|x|, y) samples at bbox corners — robust for revolved micro-faces."""
+def _iris_cut_occ_tool_polyline(fluid: dict[str, np.ndarray]) -> np.ndarray:
+    """Densified Table-SII loop for a stable OCC iris hole (matches G1-fluid punch)."""
+    return densify_polyline(_iris_cut_polyline(fluid), n_per_seg=10)
+
+
+# Revolved wedge faces span axis→outer wall. Patch tags must require *every* bbox
+# corner on the target curve/segment; centroid-only tests mis-tag whole structured
+# sheets (ParaView z-fighting at iris/TM).
+TM_OUTLET_CLASSIFY_TOL_M = 0.12e-3
+TM_OUTLET_SHELL_TOL_M = 0.18e-3
+IRIS_WALL_CLASSIFY_TOL_M = 0.10e-3
+INLET_SHELL_TOL_M = 0.18e-3
+
+
+def _face_bbox_corner_xy(tag: int) -> list[tuple[float, float]]:
+    """Meridional (x, y) at OCC-face bbox corners (Table-SII iris loop lives in x–y)."""
     import gmsh
 
     xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(2, tag)
+    seen: set[tuple[float, float]] = set()
     out: list[tuple[float, float]] = []
     for x in (xmin, xmax):
         for y in (ymin, ymax):
             for _z in (zmin, zmax):
-                out.append((abs(float(x)), float(y)))
-    cx, cy = 0.5 * (xmin + xmax), 0.5 * (ymin + ymax)
-    out.append((abs(float(cx)), float(cy)))
+                key = (round(float(x), 12), round(float(y), 12))
+                if key in seen:
+                    continue
+                seen.add(key)
+                out.append((float(x), float(y)))
     return out
+
+
+def _face_bbox_corner_ry(tag: int) -> tuple[list[tuple[float, float]], float]:
+    """Meridional (r, y) at bbox corners; r = hypot(x, z) on the revolved wedge."""
+    import gmsh
+
+    xmin, ymin, zmin, xmax, ymax, zmax = gmsh.model.getBoundingBox(2, tag)
+    seen: set[tuple[float, float]] = set()
+    out: list[tuple[float, float]] = []
+    r_max = 0.0
+    for x in (xmin, xmax):
+        for y in (ymin, ymax):
+            for z in (zmin, zmax):
+                r = math.hypot(float(x), float(z))
+                r_max = max(r_max, r)
+                key = (round(r, 12), round(float(y), 12))
+                if key in seen:
+                    continue
+                seen.add(key)
+                out.append((r, float(y)))
+    return out, r_max
+
+
+def _face_xy_samples(tag: int) -> list[tuple[float, float]]:
+    """Meridional (r, y) samples at bbox corners — r = hypot(x, z) on the wedge."""
+    corners, r_max = _face_bbox_corner_ry(tag)
+    if not corners:
+        return [(0.0, 0.0)]
+    rs = [r for r, _y in corners]
+    ys = [y for _r, y in corners]
+    ax_c = sum(rs) / len(rs)
+    cy_c = sum(ys) / len(ys)
+    return [*corners, (ax_c, cy_c)]
 
 
 def _face_y_extent_m(tag: int) -> tuple[float, float]:
@@ -1646,41 +2111,220 @@ def _face_y_extent_m(tag: int) -> tuple[float, float]:
     return float(ymin), float(ymax)
 
 
+def _face_meridional_centroid(tag: int) -> tuple[float, float, float, float, float]:
+    """Mean (r, y), max r, and outer-shell (r, y) from bbox corners."""
+    samples = _face_xy_samples(tag)
+    ax_c, cy_c = samples[-1]
+    r_max = max(ax for ax, _cy in samples)
+    outer = [(ax, cy) for ax, cy in samples[:-1] if ax >= r_max - 1.0e-9]
+    if outer:
+        ax_o = sum(ax for ax, _cy in outer) / len(outer)
+        cy_o = sum(cy for _ax, cy in outer) / len(outer)
+    else:
+        ax_o, cy_o = ax_c, cy_c
+    return ax_c, cy_c, r_max, ax_o, cy_o
+
+
+def _on_outer_shell(ax_c: float, r_max: float, *, shell_tol: float) -> bool:
+    return ax_c >= r_max - shell_tol
+
+
+def _classify_g2_fluid_surface_nodes(
+    node_xyz: np.ndarray,
+    *,
+    iris_poly: np.ndarray,
+    lm: dict[str, np.ndarray | float],
+    tm_tol: float = TM_OUTLET_CLASSIFY_TOL_M,
+    inlet_tol: float = 1.0e-4,
+    iris_tol: float = IRIS_WALL_CLASSIFY_TOL_M,
+) -> str:
+    """Classify one 2D mesh element from its node coordinates (post mesh.generate)."""
+    rs = np.hypot(node_xyz[:, 0], node_xyz[:, 2])
+    ys = node_xyz[:, 1]
+    xs = node_xyz[:, 0]
+    r_min = float(rs.min())
+    r_max = float(rs.max())
+    r_span = r_max - r_min
+    iris_x_min = float(np.min(iris_poly[:, 0]))
+    tm_r_min = float(lm["tm_se_a"][0]) - tm_tol
+
+    outer_tm = [
+        (float(r), float(y))
+        for r, y in zip(rs, ys)
+        if _on_outer_shell(float(r), r_max, shell_tol=TM_OUTLET_SHELL_TOL_M)
+        and _on_tm_se_face_m(float(r), float(y), lm, tol=tm_tol)
+    ]
+    if (
+        len(outer_tm) == len(rs)
+        and r_min >= tm_r_min
+        and r_span <= 0.15e-3
+    ):
+        return "outlet_tm"
+
+    outer_inl = [
+        (float(r), float(y))
+        for r, y in zip(rs, ys)
+        if _on_outer_shell(float(r), r_max, shell_tol=INLET_SHELL_TOL_M)
+        and _on_ac_inlet_face_m(float(r), float(y), lm, tol=inlet_tol)
+    ]
+    if len(outer_inl) == len(rs) and r_span <= 0.15e-3:
+        return "ac_inlet"
+
+    iris_d = [
+        _dist_to_polyline_xy(np.array([float(x), float(y)], dtype=float), iris_poly)
+        for x, y in zip(xs, ys)
+    ]
+    if (
+        all(d <= iris_tol for d in iris_d)
+        and r_min >= iris_x_min - iris_tol
+        and r_span <= 0.15e-3
+    ):
+        return "iris_wall"
+    return "wall"
+
+
+G2_FLUID_PHYS_TAGS = {
+    "symmetry_0": 2,
+    "symmetry_90": 3,
+    "iris_wall": 4,
+    "outlet_tm": 5,
+    "wall": 6,
+    "ac_inlet": 7,
+}
+
+
+def _reassign_g2_fluid_patch_tags_meshio(
+    msh_path: Path,
+    *,
+    iris_poly: np.ndarray,
+    lm: dict[str, np.ndarray | float],
+) -> dict[str, int]:
+    """Split wall elements into iris/TM/inlet using node-based rules (OpenFOAM/gmsToFoam)."""
+    import meshio
+
+    mesh = meshio.read(str(msh_path))
+    pts = mesh.points
+    counts: dict[str, int] = {k: 0 for k in G2_FLUID_PHYS_TAGS}
+
+    new_cell_data: dict[str, list[np.ndarray]] = {"gmsh:physical": [], "gmsh:geometrical": []}
+    has_geo = "gmsh:geometrical" in mesh.cell_data
+
+    for i, block in enumerate(mesh.cells):
+        if block.type not in ("triangle", "quad"):
+            new_cell_data["gmsh:physical"].append(mesh.cell_data["gmsh:physical"][i])
+            if has_geo:
+                new_cell_data["gmsh:geometrical"].append(mesh.cell_data["gmsh:geometrical"][i])
+            continue
+
+        old_tags = mesh.cell_data["gmsh:physical"][i]
+        old_geo = mesh.cell_data["gmsh:geometrical"][i] if has_geo else None
+        new_tags = np.array(old_tags, copy=True)
+        for j, (conn, ptag) in enumerate(zip(block.data, old_tags)):
+            if int(ptag) in (G2_FLUID_PHYS_TAGS["symmetry_0"], G2_FLUID_PHYS_TAGS["symmetry_90"]):
+                counts[{2: "symmetry_0", 3: "symmetry_90"}[int(ptag)]] += 1
+                continue
+            xyz = pts[conn]
+            patch = _classify_g2_fluid_surface_nodes(xyz, iris_poly=iris_poly, lm=lm)
+            new_tags[j] = G2_FLUID_PHYS_TAGS[patch]
+            counts[patch] += 1
+        new_cell_data["gmsh:physical"].append(new_tags)
+        if has_geo and old_geo is not None:
+            new_cell_data["gmsh:geometrical"].append(old_geo)
+
+    out = meshio.Mesh(
+        points=pts,
+        cells=mesh.cells,
+        cell_data=new_cell_data,
+        point_data=mesh.point_data,
+        field_data={
+            "symmetry_0": np.array([G2_FLUID_PHYS_TAGS["symmetry_0"], 2]),
+            "symmetry_90": np.array([G2_FLUID_PHYS_TAGS["symmetry_90"], 2]),
+            "iris_wall": np.array([G2_FLUID_PHYS_TAGS["iris_wall"], 2]),
+            "outlet_tm": np.array([G2_FLUID_PHYS_TAGS["outlet_tm"], 2]),
+            "wall": np.array([G2_FLUID_PHYS_TAGS["wall"], 2]),
+            "ac_inlet": np.array([G2_FLUID_PHYS_TAGS["ac_inlet"], 2]),
+            "fluid": np.array([1, 3]),
+        },
+    )
+    meshio.write(str(msh_path), out, file_format="gmsh22")
+    return counts
+
+
+def _face_centroid_xy(tag: int) -> tuple[float, float]:
+    corners = _face_bbox_corner_xy(tag)
+    if not corners:
+        return 0.0, 0.0
+    cx = sum(x for x, _y in corners) / len(corners)
+    cy = sum(y for _x, y in corners) / len(corners)
+    return cx, cy
+
+
 def _classify_g2_fluid_face(
     tag: int,
     *,
     iris_poly: np.ndarray,
     lm: dict[str, np.ndarray | float],
-    tm_tol: float = 8.0e-5,
+    tm_tol: float = TM_OUTLET_CLASSIFY_TOL_M,
     inlet_tol: float = 1.0e-4,
-    iris_tol: float = 1.5e-4,
+    iris_tol: float = IRIS_WALL_CLASSIFY_TOL_M,
 ) -> str:
-    samples = _face_xy_samples(tag)
-    if any(_on_tm_se_face_m(ax, cy, lm, tol=tm_tol) for ax, cy in samples):
+    corners_ry, r_max = _face_bbox_corner_ry(tag)
+    if not corners_ry:
+        return "wall"
+    r_min = min(r for r, _y in corners_ry)
+    r_span = r_max - r_min
+    iris_x_min = float(np.min(iris_poly[:, 0]))
+    tm_r_min = float(lm["tm_se_a"][0]) - tm_tol
+
+    outer_ry = [
+        (r, y)
+        for r, y in corners_ry
+        if _on_outer_shell(r, r_max, shell_tol=TM_OUTLET_SHELL_TOL_M)
+    ]
+    if (
+        outer_ry
+        and len(outer_ry) >= max(2, len(corners_ry) // 2)
+        and all(_on_tm_se_face_m(r, y, lm, tol=tm_tol) for r, y in outer_ry)
+        and r_min >= tm_r_min
+        and r_span <= 0.15e-3
+    ):
         return "outlet_tm"
 
-    # ac_inlet: outer-wall samples on Table-SI segment; y-extent must stay on that edge.
-    y_inl_a = float(lm["iris_post"][1])
-    y_inl_b = float((lm["iris_post"] + lm["inl_seg"])[1])
-    y_lo = min(y_inl_a, y_inl_b) - inlet_tol
-    y_hi = max(y_inl_a, y_inl_b) + inlet_tol
-    r_min_inlet = float(lm["iris_post"][0]) - 0.3e-3
-    ymin, ymax = _face_y_extent_m(tag)
-    outer = [(ax, cy) for ax, cy in samples if ax >= r_min_inlet]
+    outer_inl = [
+        (r, y)
+        for r, y in corners_ry
+        if _on_outer_shell(r, r_max, shell_tol=INLET_SHELL_TOL_M)
+    ]
     if (
-        ymin >= y_lo
-        and ymax <= y_hi
-        and outer
-        and any(_on_ac_inlet_face_m(ax, cy, lm, tol=inlet_tol) for ax, cy in outer)
+        outer_inl
+        and len(outer_inl) >= max(2, len(corners_ry) // 2)
+        and all(_on_ac_inlet_face_m(r, y, lm, tol=inlet_tol) for r, y in outer_inl)
+        and r_span <= 0.15e-3
     ):
         return "ac_inlet"
 
-    if any(
-        _dist_to_polyline_xy(np.array([ax, cy], dtype=float), iris_poly) <= iris_tol
-        for ax, cy in samples
+    cx, cy = _face_centroid_xy(tag)
+    if (
+        _dist_to_polyline_xy(np.array([cx, cy], dtype=float), iris_poly) <= iris_tol
+        and r_min >= iris_x_min - iris_tol
+        and r_span <= 0.15e-3
     ):
         return "iris_wall"
     return "wall"
+
+
+def _y_axis_annulus_block(a: np.ndarray, b: np.ndarray, pad_r: float, pad_y: float) -> str:
+    """cylinderAnnulus about +y (90° revolve). Do not use meridional (x,y) as the axis."""
+    y0 = float(min(a[1], b[1]) - pad_y)
+    y1 = float(max(a[1], b[1]) + pad_y)
+    r0 = float(min(abs(float(a[0])), abs(float(b[0]))) - pad_r)
+    r1 = float(max(abs(float(a[0])), abs(float(b[0]))) + pad_r)
+    return (
+        f"p1      (0 {y0:.5f} 0);\n"
+        f"        p2      (0 {y1:.5f} 0);\n"
+        f"        outerRadius {r1:.5f};\n"
+        f"        innerRadius {r0:.5f};"
+    )
 
 
 def sync_g2_fluid_split_patches(case_name: str = DEFAULT_CASE) -> None:
@@ -1691,9 +2335,8 @@ def sync_g2_fluid_split_patches(case_name: str = DEFAULT_CASE) -> None:
     inl_a, inl_b = lm["iris_post"], lm["iris_post"] + lm["inl_seg"]
     pad_r = 5.5e-4
     pad_y = 3.0e-4
-
-    def _vec(v: np.ndarray) -> str:
-        return f"({v[0]:.5f} {v[1]:.5f} 0)"
+    tm_cyl = _y_axis_annulus_block(tm_a, tm_b, pad_r, pad_y)
+    inl_cyl = _y_axis_annulus_block(inl_a, inl_b, pad_r, pad_y)
 
     text = f"""FoamFile
 {{
@@ -1703,7 +2346,9 @@ def sync_g2_fluid_split_patches(case_name: str = DEFAULT_CASE) -> None:
     object      topoSetDict;
 }}
 
-// Fallback carve from Table SI/SII landmarks (m). Prefer gmsh physical patches.
+// Fallback carve: annulus about +y (same axis as the 90° revolve / tm_zone).
+// Using the meridional TM segment as a 3D cylinder axis picks wall faces
+// ~6–7 mm away from the TM (IOP stuck at P_TM). Prefer gmsh physical patches.
 
 actions
 (
@@ -1727,10 +2372,7 @@ actions
         type    faceSet;
         action  subset;
         source  cylinderAnnulusToFace;
-        p1      {_vec(tm_a - np.array([0.0, pad_y]))};
-        p2      {_vec(tm_b + np.array([0.0, pad_y]))};
-        outerRadius {max(tm_a[0], tm_b[0]) + pad_r:.5f};
-        innerRadius {min(tm_a[0], tm_b[0]) - pad_r:.5f};
+        {tm_cyl}
     }}
 
     {{
@@ -1745,10 +2387,7 @@ actions
         type    faceSet;
         action  subset;
         source  cylinderAnnulusToFace;
-        p1      {_vec(inl_a - np.array([0.0, pad_y]))};
-        p2      {_vec(inl_b + np.array([0.0, pad_y]))};
-        outerRadius {max(inl_a[0], inl_b[0]) + pad_r:.5f};
-        innerRadius {min(inl_a[0], inl_b[0]) - pad_r:.5f};
+        {inl_cyl}
     }}
     {{
         name    ac_inlet_faces;
@@ -1793,17 +2432,23 @@ def mesh_g2_fluid(
     sizes = MESH_LEVELS[mesh_level]
     # Keep min size from collapsing on the optical axis
     lc_bulk = max(sizes["lc"], 5.0e-4)
+    adapt = _adaptive_cfg(mesh_level)
+    if adapt:
+        lc_bulk = max(adapt["lc_bulk"], lc_bulk)
     lc_fine = max(sizes["lc_fine"], 1.5e-4)
     lc_iris = _lc_iris_for_level(mesh_level, lc_fine)
     n_theta = n_theta_override or N_THETA_LEVELS.get(mesh_level, 6)
+    if adapt and "n_theta" in adapt:
+        n_theta = int(adapt["n_theta"])
     x_coarsen = AXIS_COARSEN_M.get(mesh_level, 0.85e-3)
     axis_factor = AXIS_LC_FACTOR.get(mesh_level, 2.2)
+    lc_max = _adaptive_lc_max(adapt, lc_bulk)
 
     gmsh.initialize()
     gmsh.model.add("eye_g2_fluid_lamminsalo")
     gmsh.option.setNumber("General.Terminal", 1)
     gmsh.option.setNumber("Mesh.CharacteristicLengthMin", lc_fine)
-    gmsh.option.setNumber("Mesh.CharacteristicLengthMax", lc_bulk * 1.2)
+    gmsh.option.setNumber("Mesh.CharacteristicLengthMax", lc_max)
     gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 1)
     gmsh.option.setNumber("Mesh.MeshSizeExtendFromBoundary", 1)
     gmsh.option.setNumber("Mesh.MshFileVersion", 2.2)
@@ -1814,6 +2459,8 @@ def mesh_g2_fluid(
     gmsh.option.setNumber("Mesh.RecombineAll", 0)
 
     occ = gmsh.model.occ
+    seed_min_edge_m, seed_max_verts = _seed_ring_limits(mesh_level)
+    iris_poly_seed = _iris_cut_polyline(fluid)
 
     def add_ring(
         pts_m,
@@ -1823,18 +2470,20 @@ def mesh_g2_fluid(
         tm_lc: tuple[np.ndarray, float] | None = None,
         vit_wall_lc: tuple[np.ndarray, float, float, float, float] | None = None,
         iris_cut_lc: float | None = None,
+        *,
+        m7_ring: str | None = None,
     ):
         pts = np.asarray(pts_m, dtype=float)
         if n_per_seg:
             pts = densify_polyline(pts, n_per_seg=n_per_seg)
         pts = _clean_ring(pts, tol=1e-9)[:-1]
-        if len(pts) > 120:
-            idx = np.linspace(0, len(pts) - 1, 120).astype(int)
+        if len(pts) > seed_max_verts:
+            idx = np.linspace(0, len(pts) - 1, seed_max_verts).astype(int)
             pts = pts[idx]
-        # Remove sub-50 µm consecutive edges (ora/hyaloid micro-vertices from outlines).
+        # Drop micro-edges on the seed ring (M7 uses coarser spacing in bulk arcs).
         merged = [pts[0]]
         for p in pts[1:]:
-            if float(np.linalg.norm(p - merged[-1])) >= 50.0e-6:
+            if float(np.linalg.norm(p - merged[-1])) >= seed_min_edge_m:
                 merged.append(p)
         pts = _snap_axis_ring(np.asarray(merged))
         if tm_lc is not None:
@@ -1865,6 +2514,33 @@ def mesh_g2_fluid(
         else:
             lc_arr = _ring_lc_axis_coarsen(
                 pts, lc, x_coarsen=x_coarsen, factor=axis_factor
+            )
+        if _adaptive_seed_decimate(mesh_level) and iris_cut_lc is None and m7_ring in ("ac", "vit"):
+            adapt = _adaptive_cfg(mesh_level)
+            assert adapt is not None
+            prox = _m7_ring_feature_proximity_m(
+                pts,
+                tm_markers=tm_markers if m7_ring == "ac" else None,
+                iris_poly=iris_poly_seed if m7_ring == "ac" else None,
+                vit_wall_poly=None,
+                include_ivi=True,
+                include_acp=m7_ring == "ac",
+            )
+            n_before = len(pts)
+            pts, lc_arr = _decimate_ring_m7_selective(
+                pts,
+                lc_arr,
+                prox,
+                min_fine=adapt["seed_min_edge_fine_m"],
+                min_coarse=adapt["seed_min_edge_coarse_m"],
+                feature_band_m=adapt["feature_band_m"],
+                lc_coarse=adapt["lc_coarse_seed"],
+                min_verts=adapt["seed_min_verts_ac" if m7_ring == "ac" else "seed_min_verts_vit"],
+            )
+            print(
+                f"INFO: {mesh_level} selective {m7_ring} seed {n_before}→{len(pts)} verts "
+                f"(coarse edge≥{adapt['seed_min_edge_coarse_m']:.2e} m, "
+                f"band={adapt['feature_band_m']:.2e} m)"
             )
         ptags = [
             occ.addPoint(float(x), float(y), 0.0, float(lc_arr[i]))
@@ -1898,6 +2574,7 @@ def mesh_g2_fluid(
         lc=min(lc_fine, lc_tm_val) if lc_tm_val is not None else lc_fine,
         n_per_seg=2,
         tm_lc=tm_lc_arg,
+        m7_ring="ac" if _adaptive_seed_decimate(mesh_level) else None,
     )
     if tip_refine:
         n_across = (
@@ -1907,13 +2584,17 @@ def mesh_g2_fluid(
         )
         lc_tip = lc_tip_for_level(mesh_level, n_cells_across=n_across)
         refine_origins = tip_origins_for(tip_sites)
-        if tip_sites in ("ivi", "both"):
+        if tip_sites in ("ivi", "both") and not _sym0_ivi_only_for_level(mesh_level):
             vit_pts = _inject_axis_stations(
                 vit_pts, [(IVI_TIP_ORIGIN_M[1], lc_tip)]
             )
         vit_tip_lc = (refine_origins, lc_bulk, lc_tip)
     vit_wall_lc_arg = None
-    if vit_wall_poly is not None and sym0_sizes is not None:
+    if (
+        vit_wall_poly is not None
+        and sym0_sizes is not None
+        and not _sym0_ivi_only_for_level(mesh_level)
+    ):
         vit_wall_lc_arg = (
             vit_wall_poly,
             sym0_sizes["lc_mid"],
@@ -1927,6 +2608,7 @@ def mesh_g2_fluid(
         n_per_seg=2,
         tip_lc=vit_tip_lc,
         vit_wall_lc=vit_wall_lc_arg,
+        m7_ring="vit" if _adaptive_seed_decimate(mesh_level) else None,
     )
     fused = occ.fuse([(2, s_ac)], [(2, s_vit)], removeObject=True, removeTool=True)
     occ.synchronize()
@@ -1934,11 +2616,12 @@ def mesh_g2_fluid(
         raise RuntimeError("OCC fuse AC∪vitreous (half) produced nothing")
 
     iris_poly = _iris_cut_polyline(fluid)
-    iris_seed = _iris_cut_seed_polyline(iris_poly)
+    iris_tool = _iris_cut_occ_tool_polyline(fluid)
+    lc_iris_cut = min(lc_iris, 4.0e-5)
     try:
         cut = occ.cut(
             [e for e in fused[0] if e[0] == 2],
-            [(2, add_ring(iris_seed, lc=lc_iris, n_per_seg=None, iris_cut_lc=lc_iris))],
+            [(2, add_ring(iris_tool, lc=lc_iris_cut, n_per_seg=None))],
             removeObject=True,
             removeTool=True,
         )
@@ -1948,7 +2631,7 @@ def mesh_g2_fluid(
             raise RuntimeError("iris cut emptied fluid")
         print(
             f"INFO: cut Lamminsalo iris hole ({len(iris_poly)} Table-SII vertices, "
-            f"outer AC boundary)"
+            f"{len(iris_tool)} OCC tool pts, lc={lc_iris_cut:.2e} m)"
         )
     except Exception as exc:  # noqa: BLE001
         raise RuntimeError(f"iris OCC cut failed: {exc}") from exc
@@ -1956,31 +2639,22 @@ def mesh_g2_fluid(
     print(f"INFO: G2-fluid faces before revolve: {len(fluid_surfaces)}")
     seed_tags = [s[1] for s in fluid_surfaces]
 
-    # Auto revolve needed for Ball tip fields; structured layers block local 3D sizing.
-    if tip_refine:
-        out = occ.revolve(
-            fluid_surfaces,
-            0, 0, 0,
-            0, 1, 0,
-            REVOLVE_RAD,
-            recombine=True,
-        )
-    else:
-        out = occ.revolve(
-            fluid_surfaces,
-            0, 0, 0,
-            0, 1, 0,
-            REVOLVE_RAD,
-            numElements=[n_theta],
-            heights=[1],
-            recombine=True,
-        )
+    # Structured n_theta revolve (stable OCC); Ball tip fields apply after volume exists.
+    out = occ.revolve(
+        fluid_surfaces,
+        0, 0, 0,
+        0, 1, 0,
+        REVOLVE_RAD,
+        numElements=[n_theta],
+        heights=[1],
+        recombine=True,
+    )
     occ.synchronize()
     volume_tags = [e[1] for e in out if e[0] == 3]
     if not volume_tags:
         raise RuntimeError("No revolved volume")
     print(
-        f"INFO: revolve n_theta={'auto' if tip_refine else n_theta}, volumes={volume_tags}"
+        f"INFO: revolve n_theta={n_theta}, volumes={volume_tags}"
     )
 
     lm = _g2_fluid_landmarks_m()
@@ -2014,8 +2688,7 @@ def mesh_g2_fluid(
     for dim, tag in boundaries:
         if tag in reserved:
             continue
-        patch = _classify_g2_fluid_face(tag, iris_poly=iris_poly, lm=lm)
-        groups[patch].append(tag)
+        groups["wall"].append(tag)
 
     for name in ("iris_wall", "ac_inlet", "outlet_tm"):
         print(f"INFO: patch {name}: {len(set(groups[name]))} faces")
@@ -2053,8 +2726,7 @@ def mesh_g2_fluid(
     if lc_tm_val is not None:
         lc_min = min(lc_min, lc_tm_val)
     gmsh.option.setNumber("Mesh.CharacteristicLengthMin", lc_min)
-    gmsh.option.setNumber("Mesh.CharacteristicLengthMax", lc_bulk)
-    bg_fields: list[int] = []
+    gmsh.option.setNumber("Mesh.CharacteristicLengthMax", lc_max)
     embed_pts: list[int] = []
     tip_origin_list = list(tip_origins_for(tip_sites)) if tip_refine else []
     if tip_refine and lc_tip is not None:
@@ -2063,21 +2735,11 @@ def mesh_g2_fluid(
             if tip_sites == "ivi"
             else TIP_CELLS_ACROSS
         )
-        fields, embed_pts = _gmsh_tip_refinement_fields(
+        _fields, embed_pts = _gmsh_tip_refinement_fields(
             tip_origin_list,
             lc_bulk=lc_bulk,
             lc_tip=lc_tip,
             n_cells_across=n_across,
-        )
-        bg_fields.extend(fields)
-    elif lc_topo is not None:
-        bg_fields.extend(
-            _gmsh_toposet_refinement_fields(
-                TIP_ORIGINS_M,
-                lc_bulk=lc_bulk,
-                lc_topo=lc_topo,
-                skip_ivi=vitreous_sym0_refine,
-            )
         )
     if embed_pts and volume_tags:
         gmsh.model.occ.synchronize()
@@ -2087,36 +2749,38 @@ def mesh_g2_fluid(
             except Exception as exc:  # noqa: BLE001
                 print(f"WARNING: embed {len(embed_pts)} points in vol {v}: {exc}")
         print(f"INFO: embedded {len(embed_pts)} lumen anchor nodes in volume(s)")
-    if tm_markers is not None and tm_layers >= 5 and tm_size_field:
-        bg_fields.extend(
-            _gmsh_tm_refinement_fields(
-                np.asarray(tm_markers, dtype=float),
-                _tm_se_segment_polyline(lm),
-                lc_tm=lc_tm_val or _lc_tm_for_level(mesh_level, tm_layers),
-                lc_bulk=lc_bulk,
-                tm_layers=tm_layers,
-            )
-        )
-    if iris_refine:
-        bg_fields.extend(
-            _gmsh_iris_refinement_fields(
-                iris_poly,
-                lc_iris=lc_iris,
-                lc_bulk=lc_bulk,
-                tm_markers=tm_markers,
-                mesh_level=mesh_level,
-            )
-        )
-    if vitreous_sym0_refine and vit_wall_poly is not None and sym0_sizes is not None:
-        bg_fields.extend(
-            _gmsh_vitreous_sym0_refinement_fields(
-                vit_wall_poly,
-                lc_inner=sym0_sizes["lc_inner"],
-                lc_mid=sym0_sizes["lc_mid"],
-                lc_ivi=sym0_sizes["lc_ivi"],
-                lc_bulk=lc_bulk,
-                dist_inner=sym0_sizes["dist_inner"],
-                dist_mid=sym0_sizes["dist_mid"],
+    adapt_surfaces = (
+        gmsh.model.getBoundary([(3, v) for v in volume_tags], oriented=False)
+        if _adaptive_seed_decimate(mesh_level)
+        else None
+    )
+    bg_fields = _build_fluid_bg_fields(
+        mesh_level=mesh_level,
+        lc_bulk=lc_bulk,
+        lc_fine=lc_fine,
+        lc_iris=lc_iris,
+        lc_topo=lc_topo,
+        lc_tip=lc_tip,
+        tip_refine=tip_refine,
+        tip_sites=tip_sites,
+        tm_markers=tm_markers,
+        tm_layers=tm_layers,
+        tm_size_field=tm_size_field,
+        lc_tm_val=lc_tm_val,
+        iris_refine=iris_refine,
+        iris_poly=iris_poly,
+        vitreous_sym0_refine=vitreous_sym0_refine,
+        vit_wall_poly=vit_wall_poly,
+        sym0_sizes=sym0_sizes,
+        surface_tags=adapt_surfaces,
+    )
+    if adapt:
+        print(
+            f"INFO: {mesh_level} lc_bulk={lc_bulk:.2e}"
+            + (
+                f" adaptive seed edge>={seed_min_edge_m:.2e} m max_verts={seed_max_verts}"
+                if _adaptive_seed_decimate(mesh_level)
+                else " (sym0-IVI-only lean profile)"
             )
         )
     # Ring-level axis coarsening only (MathEval volume field stacks slivers at x≈0).
@@ -2140,7 +2804,11 @@ def mesh_g2_fluid(
 
     msh_path.parent.mkdir(parents=True, exist_ok=True)
     gmsh.write(str(msh_path))
-    report = {k: len(set(v)) for k, v in groups.items()}
+    patch_counts = _reassign_g2_fluid_patch_tags_meshio(
+        msh_path, iris_poly=iris_poly, lm=lm
+    )
+    print(f"INFO: mesh surface patch elements: {patch_counts}")
+    report = {k: patch_counts.get(k, 0) for k in groups}
     report["n_theta"] = n_theta
     if tm_layers >= 5:
         report["fluid_tm_layers"] = tm_layers
@@ -2152,7 +2820,9 @@ def mesh_g2_fluid(
         report["lc_iris_m"] = lc_iris
     if vitreous_sym0_refine and sym0_sizes is not None:
         report["vitreous_sym0_refined"] = True
-        report["vitreous_sym0_layers"] = VITREOUS_SYM0_LAYERS
+        report["vitreous_sym0_layers"] = _sym0_layers_for_level(mesh_level)
+        if _sym0_ivi_only_for_level(mesh_level):
+            report["vitreous_sym0_ivi_only"] = True
         report["lc_vitreous_sym0_m"] = sym0_sizes["lc_mid"]
         report["lc_vitreous_sym0_inner_m"] = sym0_sizes["lc_inner"]
         report["lc_vitreous_sym0_ivi_m"] = sym0_sizes["lc_ivi"]

@@ -4,7 +4,7 @@ Verify eye-fsi-tc0: every preCICE patch exists on its mesh; every solid preCICE 
 
 Usage:
   python3 brunaStuff/audit_eye_fsi_tc0.py [path/to/cases/eye-fsi-tc0]
-Default case dir: repo_root/cases/eye-fsi-tc0 (script lives in brunaStuff/).
+Default case dir: repo_root/cases/old/eye-fsi-tc0 (script lives in brunaStuff/).
 Exit 0 if OK, 1 if mismatches.
 """
 
@@ -79,7 +79,7 @@ def patch_bc_type_in_d(d_path: Path, patch: str) -> str | None:
 
 def main() -> int:
     root = repo_root()
-    case = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else root / "cases/eye-fsi-tc0"
+    case = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else root / "cases/old/eye-fsi-tc0"
     fluid_b = case / "fluid" / "constant" / "polyMesh" / "boundary"
     solid_b = case / "solid" / "constant" / "polyMesh" / "boundary"
     fluid_pd = case / "fluid" / "system" / "preciceDict"

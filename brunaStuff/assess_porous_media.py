@@ -15,7 +15,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-BASE = '/Users/brunaenne/Documents/repos/myopenfoam/cases/eye-fsi-tc0'
+BASE = '/Users/brunaenne/Documents/repos/myopenfoam/cases/old/eye-fsi-tc0'
 
 # ── Physical constants ────────────────────────────────────────────────────────
 NU    = 6.97e-7    # m²/s  kinematic viscosity (transportProperties)

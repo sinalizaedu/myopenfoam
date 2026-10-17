@@ -1,0 +1,35 @@
+{
+  "R_mm": 12.0,
+  "t_mm": 0.5,
+  "ne_per_face": 8,
+  "ne": 8,
+  "order": 2,
+  "etype": "S8R",
+  "mesh_kind": "spherical",
+  "bc_mode": "symmetry_octant",
+  "volume_scale": 8,
+  "n_nodes": 225,
+  "n_elements": 64,
+  "full_sphere_equiv_elements": 512,
+  "theta_min_deg": 3.0,
+  "reduced": true,
+  "symmetry_nsets": {
+    "SYM_X": 17,
+    "SYM_Y": 17,
+    "SYM_Z": 17
+  },
+  "export_files": {
+    "mesh_inp": "octant_mesh.inp",
+    "nodes_by_id": "nodes_by_id.csv",
+    "nodes_spatial_sorted": "nodes_spatial_sorted.csv",
+    "elements_s8r": "elements_s8r.csv",
+    "symmetry_nsets": "symmetry_nsets.json"
+  },
+  "radius_check_mm": {
+    "mean": 12.0,
+    "min": 11.999999999999998,
+    "max": 12.000000000000002,
+    "std": 1.2076904249607842e-15
+  },
+  "comparison_notes": "Match nodes by position: sort both meshes by (x,y,z) and compare pairwise within 1e-6 mm, or use spatial_rank file. node_id order is generator-specific and may differ across implementations."
+}

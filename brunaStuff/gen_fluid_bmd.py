@@ -23,7 +23,7 @@ Vertex numbering:
 Left x positions:  iL=0→x=-5mm, 1→x=-15mm, 2→x=-19.5mm, 3→x=-20mm, 4→x=-21mm
 Right x positions: i=0→x=0,      1→x=5mm,   2→x=15mm,    3→x=19.5mm, 4→x=20mm
 
-Run: python3 brunaStuff/gen_fluid_bmd.py > cases/eye-fsi-tc0/fluid/system/blockMeshDict
+Run: python3 brunaStuff/gen_fluid_bmd.py > cases/old/eye-fsi-tc0/fluid/system/blockMeshDict
 """
 
 # ─── Coordinate tables ────────────────────────────────────────────────────────

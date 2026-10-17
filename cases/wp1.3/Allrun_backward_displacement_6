@@ -1,0 +1,29 @@
+#!/bin/bash
+# WP1.3 — backward displacement (Bols) nos 6 ajustes da matriz principal WP1.2
+#   cd cases/wp1.3 && ./Allrun_backward_displacement_6
+#   docker compose run --rm fsi bash -lc 'cd /simulation/wp1.3 && ./Allrun_backward_displacement_6'
+set -euo pipefail
+cd "$(dirname "$0")"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc 2>/dev/null || echo 4)}"
+
+FIT_ROOT="${FIT_ROOT:-../wp1.2/output_literature_p50_digitized}"
+OUT="${OUT:-output_backward_displacement_6}"
+
+if [[ ! -f "$FIT_ROOT/friedenwald_ogden/fit_results.json" ]]; then
+  echo "Missing fits under $FIT_ROOT — run wp1.2/Allrun_literature_p50 first." >&2
+  exit 1
+fi
+
+echo "=== wp1.3 backward displacement (6 cases) ==="
+echo "  fit_root=$FIT_ROOT  out=$OUT"
+
+python3 scripts/run_wp13_backward_displacement.py \
+  --out "$OUT" \
+  --fit "$FIT_ROOT/friedenwald_ogden/fit_results.json" --material ogden --label friedenwald_ogden \
+  --fit "$FIT_ROOT/friedenwald_yeoh/fit_results.json" --material yeoh --label friedenwald_yeoh \
+  --fit "$FIT_ROOT/pallikaris_ogden/fit_results.json" --material ogden --label pallikaris_ogden \
+  --fit "$FIT_ROOT/pallikaris_yeoh/fit_results.json" --material yeoh --label pallikaris_yeoh \
+  --fit "$FIT_ROOT/silver_ogden/fit_results.json" --material ogden --label silver_ogden \
+  --fit "$FIT_ROOT/silver_yeoh/fit_results.json" --material yeoh --label silver_yeoh
+
+echo "DONE — see $OUT/TABLE10.md"

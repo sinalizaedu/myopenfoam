@@ -7,7 +7,7 @@ Existing vertices 0-55 are preserved.
 New vertices 56-97 are added for the left half.
 
 Run from repo root:
-  python3 brunaStuff/gen_solid_bmd.py > cases/eye-fsi-tc0/solid/system/blockMeshDict
+  python3 brunaStuff/gen_solid_bmd.py > cases/old/eye-fsi-tc0/solid/system/blockMeshDict
 """
 
 header = r"""FoamFile

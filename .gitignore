@@ -13,6 +13,9 @@ brunaStuff/.venv/
 cases/eye-fsi-tc0/geometry/*.msh
 cases/eye-fsi-tc0/geometry/*.vtk
 
+# ASCII Fluent intermediates (regenerate with brunaStuff/fluent_bin_to_ascii.py)
+*.ascii.msh
+
 # OpenFOAM decomposed meshes and local backups
 **/processor[0-9]*/
 *.bak
@@ -25,6 +28,38 @@ cases/doc-g1-sim1/fluid/[1-9]*
 
 # Heavy regenerable G2 VTK (GitHub max 100MB)
 cases/doc-g2-sim2/geometry/eye_g2_fluid_lamminsalo.vtk
+# F1 ParaView export (regenerate with foamToVTK, see doc-g2-sim5/README.md)
+cases/doc-g2-sim1/geometry/eye_g2_fluid_fluent_F1_volume.vtu
+cases/doc-g2-sim1/geometry/eye_g2_fluid_fluent_F1_surface.vtp
+# O1 blockMesh outputs (regenerate with blockMesh + foamToVTK,
+# see cases/doc-g2-sim1/mesh_independence/O1_quality.md)
+cases/doc-g2-sim1/geometry/eye_g2_fluid_lamminsalo_O1_volume.vtu
+cases/doc-g2-sim1/geometry/eye_g2_fluid_lamminsalo_O1_surface.vtp
+cases/doc-g2-sim1/mesh_independence/O1/constant/polyMesh/
 
 # Stray duplicate case tree (regenerate locally)
 cases/cases/
+
+# FEA / sweep run outputs (WP1, claude-wp*, etc.; regenerate locally)
+cases/**/output/
+cases/**/output*/
+cases/old/
+cases/T1*/
+
+# WP4 JSON summaries optional to track; ignore bulky sweep dirs under wp1.4
+cases/wp1.4/sweep_full/output/
+
+# LaTeX build artifacts (sources live in brunaStuff/latex/report/)
+brunaStuff/latex/report/main.log
+brunaStuff/latex/report/main.blg
+brunaStuff/latex/report/main.aux
+brunaStuff/latex/report/main.out
+brunaStuff/latex/report/main.toc
+brunaStuff/latex/report/main.bbl
+brunaStuff/latex/report/main.fls
+brunaStuff/latex/report/main.fdb_latexmk
+brunaStuff/latex/report/main.synctex.gz
+
+# Local verification logs
+overnight_verify.log
+duplicate_nodes.pos

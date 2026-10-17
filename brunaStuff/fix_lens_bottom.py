@@ -13,7 +13,7 @@ Strategy:
 
 import re
 
-SRC = "cases/eye-fsi-tc0/fluid/system/blockMeshDict"
+SRC = "cases/old/eye-fsi-tc0/fluid/system/blockMeshDict"
 
 with open(SRC, "r") as f:
     txt = f.read()

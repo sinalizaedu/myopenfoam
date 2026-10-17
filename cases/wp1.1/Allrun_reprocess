@@ -1,0 +1,7 @@
+#!/bin/bash
+# Repost-process wp1.1 from existing .frd (KDTree R±t/2 mapping; no CalculiX)
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 scripts/reprocess_all.py | tee output_wp1.1/reprocess.log
+python3 scripts/export_for_ai.py > output_wp1.1/EXPORT_FOR_AI.md
+echo "DONE — see output_wp1.1/MESH_INDEPENDENCE.md, RESULTS.md"

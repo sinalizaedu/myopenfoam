@@ -267,6 +267,26 @@ cd /simulation/validation
 ./Allclean
 ```
 
+## LaTeX report (`brunaStuff/latex/report`) — numerical audit
+
+Scalars and tables in `wp0.tex` / `wp1.tex` are checked against canonical JSON and the WP0 Goldmann solver (not against hand-maintained `methodology_audit*.json`).
+
+```bash
+# Fast path (from repo root on the host — NOT from plain `docker compose run fsi` /simulation only):
+./run_report_verification.sh
+
+# Equivalent:
+docker compose run --rm -v "$PWD:/repo" -w /repo fsi bash -lc 'cases/scripts/run_report_verification.sh'
+
+# Audit only (after pipelines already ran)
+docker compose run --rm -v "$PWD:/repo" -w /repo fsi bash -lc \
+  'python3 cases/scripts/audit_latex_report_numbers.py \
+    --write-methodology-audit methodology_audit_wp12_wp13.json \
+    --write-methodology-audit-root methodology_audit.json'
+```
+
+Long FEA reruns (overnight): set `RUN_WP11=1 RUN_WP12=1 RUN_WP12_MULTISTART=1 RUN_WP13=1` on the same `run_report_verification.sh` invocation (see script header). Canonical outputs are listed in repo-root `methodology_audit.json` after a successful audit.
+
 ## Running Simulations
 
 ### Interactive shell

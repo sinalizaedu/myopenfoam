@@ -17,6 +17,13 @@ PLANE_TOL = 2.0e-4
 NODE_WELD = 7
 
 STRUCTURED_LEVELS = {
+    "M6": {
+        "n_theta": 3,
+        "n_merid": 18,
+        "n_r_fluid": 7,
+        "layers": {"cornea": 2, "sclera": 2, "choroid": 2, "retina": 2},
+        "fluid_tm_layers": 3,
+    },
     "M5": {
         "n_theta": 4,
         "n_merid": 28,
@@ -36,6 +43,34 @@ STRUCTURED_LEVELS = {
         "n_merid": 36,
         "n_r_fluid": 14,
         "layers": {"cornea": 3, "sclera": 4, "choroid": 3, "retina": 3},
+        "fluid_tm_layers": 5,
+    },
+    "M7": {
+        "n_theta": 6,
+        "n_merid": 36,
+        "n_r_fluid": 14,
+        "layers": {"cornea": 3, "sclera": 4, "choroid": 3, "retina": 3},
+        "fluid_tm_layers": 5,
+    },
+    "M8": {
+        "n_theta": 5,
+        "n_merid": 30,
+        "n_r_fluid": 12,
+        "layers": {"cornea": 3, "sclera": 3, "choroid": 3, "retina": 3},
+        "fluid_tm_layers": 5,
+    },
+    "N1": {
+        "n_theta": 3,
+        "n_merid": 36,
+        "n_r_fluid": 14,
+        "layers": {"cornea": 3, "sclera": 4, "choroid": 3, "retina": 3},
+        "fluid_tm_layers": 5,
+    },
+    "N2": {
+        "n_theta": 5,
+        "n_merid": 32,
+        "n_r_fluid": 12,
+        "layers": {"cornea": 3, "sclera": 3, "choroid": 3, "retina": 3},
         "fluid_tm_layers": 5,
     },
     "M2": {

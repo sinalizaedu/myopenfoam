@@ -1,0 +1,12 @@
+#!/bin/bash
+# Mesh-independence study — WP1.2 hyperelastic NLGEOM (6 literature cases)
+# Requires fit_results.json under output_literature_p50_digitized/ (run ./Allrun_literature_p50 first).
+#   cd cases/wp1.2 && ./Allrun_mesh_indep
+#   docker compose run --rm fsi bash -lc 'cd /simulation/wp1.2 && ./Allrun_mesh_indep'
+set -euo pipefail
+cd "$(dirname "$0")"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc 2>/dev/null || echo 4)}"
+mkdir -p output_mesh_independence
+echo "=== wp1.2 mesh independence (OMP_NUM_THREADS=$OMP_NUM_THREADS) ==="
+python3 scripts/mesh_independence.py | tee output_mesh_independence/run.log
+echo "DONE — see output_mesh_independence/MESH_INDEPENDENCE.md"

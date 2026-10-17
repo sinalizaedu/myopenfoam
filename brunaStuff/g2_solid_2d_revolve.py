@@ -180,6 +180,87 @@ def _hex_face_area(nodes: dict[int, tuple[float, float, float]], fn: tuple[int, 
     return 0.0
 
 
+def hex_to_5_tets(conn: list[int]) -> list[list[int]]:
+    """Kuhn partition of a brick hex into five tetrahedra (Gmsh type 4)."""
+    b0, b1, b2, b3, t0, t1, t2, t3 = (int(n) for n in conn)
+    return [
+        [b0, b1, b2, t2],
+        [b0, b2, b3, t2],
+        [b0, b3, t0, t2],
+        [b0, t0, t1, t2],
+        [b0, b1, t1, t2],
+    ]
+
+
+def inject_zone_tets(data: MshData, zone_names: frozenset[str]) -> dict:
+    """Replace hex cells in named volume zones with five tets each."""
+    phy_names = {tag: name for tag, (_, name) in data.physical.items()}
+    zone_tags = {tag for tag, name in phy_names.items() if name in zone_names}
+    if not zone_tags:
+        return {"n_hex_removed": 0, "n_tet_added": 0}
+
+    kept: list[tuple[int, int, list[int]]] = []
+    n_hex_removed = 0
+    n_tet_added = 0
+    for etype, phy, nodes in data.elements:
+        if etype == 5 and phy in zone_tags:
+            for tet in hex_to_5_tets(nodes):
+                kept.append((4, phy, tet))
+                n_tet_added += 1
+            n_hex_removed += 1
+        else:
+            kept.append((etype, phy, nodes))
+    data.elements = kept
+    return {"n_hex_removed": n_hex_removed, "n_tet_added": n_tet_added}
+
+
+def inject_axis_pyramids(data: MshData) -> dict:
+    """Split hexes touching x≈0 into one pyramid + two tets (mixed transition)."""
+    tol = 1.0e-9
+    kept: list[tuple[int, int, list[int]]] = []
+    n_pyramid = 0
+    n_tet = 0
+    n_hex_kept = 0
+    for etype, phy, nodes in data.elements:
+        if etype != 5:
+            kept.append((etype, phy, nodes))
+            continue
+        xs = [abs(data.nodes[int(n)][0]) for n in nodes]
+        if min(xs) > tol:
+            kept.append((etype, phy, nodes))
+            n_hex_kept += 1
+            continue
+        b0, b1, b2, b3, t0, t1, t2, t3 = (int(n) for n in nodes)
+        kept.append((7, phy, [b0, b1, t1, t0, b3]))  # pyramid on axis quad
+        kept.append((4, phy, [b1, b2, t2, t1]))
+        kept.append((4, phy, [b0, b3, t2, b1]))
+        n_pyramid += 1
+        n_tet += 2
+    data.elements = kept
+    return {
+        "n_hex_kept": n_hex_kept,
+        "n_pyramid": n_pyramid,
+        "n_tet": n_tet,
+    }
+
+
+def apply_mixed_elements(
+    msh_path: Path,
+    *,
+    tet_zones: frozenset[str] = frozenset({"iris"}),
+    axis_pyramids: bool = False,
+) -> dict:
+    """Post-process revolved 3D mesh to add tet/prism/pyramid diversity."""
+    data = read_msh(msh_path)
+    report: dict = {}
+    if tet_zones:
+        report["tets"] = inject_zone_tets(data, tet_zones)
+    if axis_pyramids:
+        report["axis"] = inject_axis_pyramids(data)
+    write_msh(msh_path, data)
+    return report
+
+
 def revolve_solid_2d_msh(
     msh_2d: Path,
     msh_3d: Path,

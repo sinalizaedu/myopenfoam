@@ -16,7 +16,7 @@ OpenFOAM mapping (SI meters):
 Usage:
   .venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py
   .venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py --mesh
-  .venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py --case doc-g1-sim1 --mesh
+  .venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py --case doc-baseline-2d-fluid --mesh
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ M_PER_CM = 1.0e-2
 Z_SLAB_M = 1.0e-3
 
 REPO = Path(__file__).resolve().parents[1]
-DEFAULT_CASE = "doc-g1-sim1"
+DEFAULT_CASE = "doc-baseline-2d-fluid"
 
 
 def case_paths(case_name: str = DEFAULT_CASE):
@@ -1431,7 +1431,7 @@ actions
         type    cellSet;
         action  new;
         source  boxToCell;
-        box     (-8.0e-3 -1.5e-3 -1e-5) (8.0e-3 7.4e-3 1.001e-3);
+        box     (-8.0e-3 -3.60e-3 -1e-5) (8.0e-3 7.4e-3 1.001e-3);
     }}
     // Remove TM cells from vitreous (not needed physically but keeps zones disjoint)
     {{
@@ -1539,10 +1539,19 @@ def export_json(outlines_cm: dict, path: Path) -> None:
 
 
 MESH_LEVELS = {
-    # G2-fluid mesh independence (doc-g2-sim4): M5 coarsest → M3 finest; M1 = production ref.
+    # G2-fluid mesh independence (doc-g2-sim4): M6/M5 coarsest → M3 finest; M1 = production ref.
+    "M6": {"lc": 2.0e-3, "lc_fine": 6.0e-4, "lc_tm": 2.4e-4},  # 2× M1 → ~½ cells
     "M5": {"lc": 2.0e-3, "lc_fine": 5.5e-4, "lc_tm": 2.2e-4},
     "M4": {"lc": 1.4e-3, "lc_fine": 4.0e-4, "lc_tm": 1.5e-4},
     "M1": {"lc": 1.0e-3, "lc_fine": 3.0e-4, "lc_tm": 1.2e-4},
+    # M7: M1 refinements (TM/iris/tips/symmetry_0) + coarser bulk in vitreous/AC interior
+    "M7": {"lc": 1.0e-3, "lc_fine": 3.0e-4, "lc_tm": 1.2e-4},
+    # M8: M7 adaptive template + coarser bulk (same local TM/iris/tip/sym0 quality)
+    "M8": {"lc": 1.25e-3, "lc_fine": 3.0e-4, "lc_tm": 1.2e-4},
+    # N1: M7 adaptive template, ~50k cells (scout / ~20 min experiment)
+    "N1": {"lc": 1.70e-3, "lc_fine": 4.0e-4, "lc_tm": 1.8e-4},
+    # N2: M8 adaptive template (finer bulk/TM than N1 scout)
+    "N2": {"lc": 1.25e-3, "lc_fine": 3.0e-4, "lc_tm": 1.2e-4},
     "M2": {"lc": 7.0e-4, "lc_fine": 2.2e-4, "lc_tm": 8.5e-5},
     "M3": {"lc": 5.0e-4, "lc_fine": 1.6e-4, "lc_tm": 6.0e-5},
 }

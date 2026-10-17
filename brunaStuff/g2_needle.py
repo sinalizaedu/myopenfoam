@@ -39,12 +39,55 @@ TIP_CELLS_ACROSS = 5
 TIP_REFINE_DIST_M = 6.0e-4  # transition radius around each tip [m]
 TIP_BOX_HALF_M = 1.5e-4     # ±0.15 mm box (covers 30G lumen ID 0.14 mm)
 # IVI-only mesh-independence targets (cells across 30G ID)
-TIP_CELLS_ACROSS_IVI = {"M5": 8, "M4": 9, "M1": 10, "M2": 12, "M3": 14}
+TIP_CELLS_ACROSS_IVI = {
+    "M6": 5,
+    "M5": 8,
+    "M4": 9,
+    "M1": 10,
+    "M7": 10,
+    "M8": 8,
+    "N1": 6,
+    "N2": 7,
+    "M2": 12,
+    "M3": 14,
+}
 # Model B topoSet sphere (r = 0.55 mm): target cells inside sphere (OpenFOAM topoSet)
-TOPOSET_CELLS_INSIDE = {"M5": 55, "M4": 70, "M1": 90, "M2": 100, "M3": 110}
+TOPOSET_CELLS_INSIDE = {
+    "M6": 45,
+    "M5": 55,
+    "M4": 70,
+    "M1": 90,
+    "M7": 90,
+    "M8": 55,
+    "N1": 40,
+    "N2": 50,
+    "M2": 100,
+    "M3": 110,
+}
 TOPOSET_REFINE_DIST_M = 9.0e-4  # Ball transition (~1.6× r_topo; limits bulk aspect ratio)
+TOPOSET_REFINE_DIST_BY_LEVEL = {
+    "M8": 6.5e-4,  # tighter ball — less bulk inflation around topoSet cavities
+    "N1": 6.0e-4,
+    "N2": 6.4e-4,
+}
 # Finer tip sizing on M2/M3 for mesh-independence at 30G lumen
-TIP_LC_LEVEL_SCALE = {"M5": 1.25, "M4": 1.12, "M1": 1.0, "M2": 0.85, "M3": 0.70}
+TIP_LC_LEVEL_SCALE = {
+    "M6": 1.5,
+    "M5": 1.25,
+    "M4": 1.12,
+    "M1": 1.0,
+    "M7": 1.0,
+    "M8": 1.08,
+    "N1": 1.28,
+    "N2": 1.14,
+    "M2": 0.85,
+    "M3": 0.70,
+}
+
+
+def toposet_refine_dist_for_level(mesh_level: str) -> float:
+    """Gmsh Ball radius at IVI/ACP topoSet sites (Model B)."""
+    return TOPOSET_REFINE_DIST_BY_LEVEL.get(mesh_level, TOPOSET_REFINE_DIST_M)
 
 
 def _clean_ring(pts, tol: float = 1e-10):
@@ -346,9 +389,107 @@ actions
     )
 
 
+def write_topo_set_ivi_zone(path: Path) -> None:
+    """IVI tip as cellZone only (doc-g2-sim5 — no subsetMesh cavity)."""
+    ox, oy, oz = IVI_TIP_ORIGIN_M
+    r = TOPOSET_IVI_RADIUS_M
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        f"""FoamFile
+{{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}}
+
+// Model C — IVI volumetric source zone (r={r:.6g} m). Dose via fvOptions semiImplicitSource.
+
+actions
+(
+    {{
+        name    ivi_tip_cells;
+        type    cellSet;
+        action  new;
+        source  nearestToCell;
+        points
+        (
+            ({ox} {oy} {oz})
+        );
+    }}
+    {{
+        name    ivi_tip_cells;
+        type    cellSet;
+        action  add;
+        source  sphereToCell;
+        origin  ({ox} {oy} {oz});
+        radius  {r:.6g};
+    }}
+    {{
+        name    ivi_tip_zone;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     ivi_tip_cells;
+    }}
+);
+"""
+    )
+
+
+def write_topo_set_acp_zone(path: Path) -> None:
+    """ACP tip as cellZone only (doc-g2-sim5 — no subsetMesh cavity)."""
+    ox, oy, oz = ACP_TIP_ORIGIN_M
+    r = TOPOSET_ACP_RADIUS_M
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        f"""FoamFile
+{{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}}
+
+// Model C — ACP volumetric sink zone (r={r:.6g} m). Drainage via fvOptions semiImplicitSource.
+
+actions
+(
+    {{
+        name    acp_tip_cells;
+        type    cellSet;
+        action  new;
+        source  nearestToCell;
+        points
+        (
+            ({ox} {oy} {oz})
+        );
+    }}
+    {{
+        name    acp_tip_cells;
+        type    cellSet;
+        action  add;
+        source  sphereToCell;
+        origin  ({ox} {oy} {oz});
+        radius  {r:.6g};
+    }}
+    {{
+        name    acp_tip_zone;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     acp_tip_cells;
+    }}
+);
+"""
+    )
+
+
 def sync_case_topo_sets(repo: Path) -> None:
     cases = repo / "cases"
     write_topo_set_ivi(cases / "doc-g2-sim2/fluid/system/topoSetDict.iviTip")
     write_topo_set_ivi(cases / "doc-g2-sim4/fluid/system/topoSetDict.iviTip")
     write_topo_set_acp(cases / "doc-g2-sim3/fluid/system/topoSetDict.acpTip")
     write_topo_set_acp(cases / "doc-g2-sim4/fluid/system/topoSetDict.acpTip")
+    write_topo_set_ivi_zone(cases / "T1: Volume vs Patch/doc-g2-sim5/fluid/system/topoSetDict.iviZone")
+    write_topo_set_acp_zone(cases / "T1: Volume vs Patch/doc-g2-sim5/fluid/system/topoSetDict.acpZone")

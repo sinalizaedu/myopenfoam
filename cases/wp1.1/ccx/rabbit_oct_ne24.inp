@@ -1,0 +1,25 @@
+*HEADING
+wp1.1 octant K verification — rabbit (oct_ne24)
+** Units: mm, N, MPa. Linear static (NLGEOM=NO).
+** Geometry: R=7.6 mm, t=0.33 mm, spherical octant (θ,φ), S8R
+** Symmetry BCs on x=0, y=0, z=0 planes; volume_scale=8 in post
+** K_analytic ≈ 0.668380 mmHg/µL
+** Load: uniform internal pressure ΔP=1.0 mmHg on INNER_SURF
+*INCLUDE, INPUT=rabbit_oct_ne24_mesh.inp
+*MATERIAL, NAME=SHELL_MAT
+*ELASTIC
+3.000000, 0.470000
+*SHELL SECTION, ELSET=SHELL, MATERIAL=SHELL_MAT
+0.330000
+*STEP, NAME=PRESSURE, NLGEOM=NO, INC=10
+*STATIC
+1.0, 1.0, 1e-6, 1.0
+*BOUNDARY
+SYM_X, 1, 1, 0.0
+SYM_Y, 2, 2, 0.0
+SYM_Z, 3, 3, 0.0
+*DSLOAD
+INNER_SURF, P, 1.333220000000e-04
+*NODE FILE
+U
+*END STEP
