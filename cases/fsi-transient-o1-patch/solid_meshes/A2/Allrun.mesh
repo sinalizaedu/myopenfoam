@@ -1,0 +1,32 @@
+#!/bin/bash
+# A2: full Lamminsalo Gmsh 3D — dense hex + limbus prisms (NOT coat extrusion).
+set -euo pipefail
+cd "$(dirname "$0")"
+# shellcheck source=../env.sh
+source ../env.sh
+
+mkdir -p geometry 0
+python3 "$EXP" --mode gmsh2d --variant H1 \
+    --n-retina "${N_RETINA:-5}" --n-choroid "${N_CHOROID:-5}" \
+    --n-sclera "${N_SCLERA:-5}" --n-iris "${N_IRIS:-5}" \
+    --radial-scale "${RADIAL_SCALE:-2}" \
+    --split-limbus \
+    --out geometry/o1_solid_2d.msh
+
+PYTHONPATH="$BRUNA${PYTHONPATH:+:$PYTHONPATH}" python3 - <<'PY'
+from pathlib import Path
+from g2_solid_2d_revolve import revolve_solid_2d_file
+
+m2 = Path("geometry/o1_solid_2d.msh")
+m3 = Path("geometry/o1_solid_3d.msh")
+revolve_solid_2d_file(m2, m3, mesh_level="M1", n_theta=12)
+PY
+
+rm -rf constant/polyMesh
+gmshToFoam geometry/o1_solid_3d.msh | tee log.gmshToFoam
+changeDictionary | tee log.changeDictionary
+transformPoints -rotate-y 90 | tee log.transformPoints
+python3 "$EXP" --mode fields --case .
+checkMesh | tee log.checkMesh
+echo "=== A2 summary ==="
+grep -E "cells:|regions:|fsi_active|negative volume|open cells|Failed|Mesh OK|non-orthogonality Max|prisms:|hexahedra:" log.checkMesh || true

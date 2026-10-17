@@ -24,11 +24,16 @@ def main() -> None:
     else:
         print(f"WARNING: missing {log}", file=sys.stderr)
 
-    probe = fluid / "postProcessing" / "iop_probe" / "0" / "p"
-    if probe.is_file():
-        shutil.copy2(probe, dest / "iop_probe_p.txt")
+    probe_dir = fluid / "postProcessing" / "iop_probe"
+    files = sorted(probe_dir.glob("*/p")) if probe_dir.is_dir() else []
+    if files:
+        dest_probe = dest / "iop_probe_p.txt"
+        chunks = []
+        for p in sorted(files, key=lambda x: float(x.parent.name)):
+            chunks.append(p.read_text())
+        dest_probe.write_text("".join(chunks))
     else:
-        print(f"WARNING: missing {probe}", file=sys.stderr)
+        print("WARNING: missing iop_probe", file=sys.stderr)
 
     pp_src = fluid / "postProcessing"
     if pp_src.is_dir():

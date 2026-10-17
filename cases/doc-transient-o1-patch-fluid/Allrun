@@ -1,0 +1,17 @@
+#!/bin/bash
+# doc-transient-o1-patch-fluid — passive pimpleFoam baseline (IVI/ACP off)
+set -euo pipefail
+cd "$(dirname "$0")"
+export MODE="${MODE:-baseline}"
+export MESH_LEVEL="${MESH_LEVEL:-O1}"
+export REUSE_MESH="${REUSE_MESH:-1}"
+export DELTA_T="${DELTA_T:-0.05}"
+export END_TIME="${END_TIME:-1}"
+
+if [ ! -d fluid/constant/polyMesh ]; then
+  echo "ERROR: no polyMesh — run ./scripts/seed_from_baseline.sh first" >&2
+  exit 1
+fi
+
+echo "=== doc-transient-o1-patch-fluid MODE=$MODE MESH_LEVEL=$MESH_LEVEL (patch) dt=$DELTA_T endTime=$END_TIME ==="
+exec bash ./Allrun.sim4

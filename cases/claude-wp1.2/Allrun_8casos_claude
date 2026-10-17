@@ -1,0 +1,6 @@
+#!/bin/bash
+# claude-wp1.2: 8 casos (4 alvos P(V) x 2 materiais), P_final=50 mmHg.
+# Rodar dentro do container FSI a partir de /simulation/claude-wp1.2/
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 scripts/run_literature_matrix_claude.py "$@"

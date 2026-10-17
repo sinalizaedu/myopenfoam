@@ -1,0 +1,19 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+pointSync false;
+
+patches
+(
+    {
+        name            fsi_active;
+        patchInfo { type wall; }
+        constructFrom   patches;
+        patches         (inner);
+    }
+);

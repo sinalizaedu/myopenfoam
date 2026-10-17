@@ -6,7 +6,7 @@ FoamFile
     object      fvOptions;
 }
 
-// Porous zone momentum sources — doc-g1-sim1 (AC / vitreous / TM only)
+// Porous zone momentum sources — doc-baseline-2d-fluid (AC / vitreous / TM only)
 //
 // Lamminsalo (2018) uses Brinkman equations in COMSOL:
 //   0 = -grad(p) + (mu/eps)*laplacian(U) - (mu/kappa)*U  [+ rho*g in full model]
@@ -62,7 +62,7 @@ FoamFile
 // Vitreous: k = 5.8×10⁻¹⁴ m²  →  d_vit = 1/k = 1.724×10¹³ m⁻²
 // TM: k "Adjusted" — d_TM calibrated to IOP₀ = 15 mmHg (Step 0, Sim 1)
 //
-// Step 0 calibration — doc-g1-sim1 M2 (2026-07-19, velocity inlet):
+// Step 0 calibration — doc-baseline-2d-fluid M2 (2026-07-19, velocity inlet):
 //   d_TM = 1.1064e15 m⁻² → IOP₀ = 14.999 mmHg (164968 cells, Q err 0.0%)
 //   U_inlet = 2.22e-6 m/s (Q_3D/A_3D); Q_2D ≈ 2.292e-12 m³/s
 //   MESH_LEVEL=M2, full iris→hyaloid inlet + full TM SE outlet

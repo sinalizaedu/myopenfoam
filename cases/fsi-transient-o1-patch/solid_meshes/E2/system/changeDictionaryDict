@@ -1,0 +1,19 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+
+// Patch types after gmshToFoam (solid)
+
+boundary
+{
+    symmetry_0 { type symmetry; }
+    symmetry_90 { type symmetry; }
+    fsi_active { type wall; }
+    fsi_iris { type wall; }
+    outer { type wall; }
+    defaultFaces { type wall; }
+}

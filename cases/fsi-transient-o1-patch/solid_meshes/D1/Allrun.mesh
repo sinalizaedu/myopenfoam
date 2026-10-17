@@ -1,0 +1,28 @@
+#!/bin/bash
+# D1: O1-matched 2D transfinite quads → 90° revolve → gmshToFoam.
+set -euo pipefail
+cd "$(dirname "$0")"
+# shellcheck source=../env.sh
+source ../env.sh
+
+mkdir -p geometry 0
+python3 "$EXP" --mode gmsh2d --out geometry/o1_solid_2d.msh
+PYTHONPATH="$BRUNA${PYTHONPATH:+:$PYTHONPATH}" python3 - <<'PY'
+from pathlib import Path
+from g2_solid_2d_revolve import revolve_solid_2d_file
+revolve_solid_2d_file(
+    Path("geometry/o1_solid_2d.msh"),
+    Path("geometry/o1_solid_3d.msh"),
+    mesh_level="M1",
+    n_theta=12,
+)
+PY
+
+rm -rf constant/polyMesh
+gmshToFoam geometry/o1_solid_3d.msh | tee log.gmshToFoam
+changeDictionary | tee log.changeDictionary
+transformPoints -rotate-y 90 | tee log.transformPoints
+python3 "$EXP" --mode fields --case .
+checkMesh | tee log.checkMesh
+echo "=== D1 summary ==="
+grep -E "cells:|regions:|fsi_active|negative volume|Failed|Mesh OK|non-orthogonality Max" log.checkMesh || true

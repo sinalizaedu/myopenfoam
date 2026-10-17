@@ -6,7 +6,7 @@ FoamFile
     object      controlDict;
 }
 
-// doc-g2-sim4 MODE=experiment — IVI (5–11 s) + ACP (15–21 s) + Robin wall
+// Fast experiment (~1 h): fixed dt, no adaptive stepping, reduced I/O.
 
 application     pimpleFoam;
 
@@ -21,7 +21,7 @@ adjustTimeStep  no;
 maxDeltaT       0.1;
 
 writeControl    runTime;
-writeInterval   0.25;
+writeInterval   1;
 purgeWrite      0;
 writeFormat     ascii;
 writePrecision  8;
@@ -41,9 +41,9 @@ functions
         regionType      patch;
         name            outlet_tm;
         writeFields     false;
-        log             true;
+        log             false;
         writeControl    timeStep;
-        writeInterval   1;
+        writeInterval   100;
     }
 
     flowRateIVI
@@ -55,9 +55,9 @@ functions
         regionType      patch;
         name            ivi_tip;
         writeFields     false;
-        log             true;
+        log             false;
         writeControl    timeStep;
-        writeInterval   1;
+        writeInterval   100;
     }
 
     flowRateACP
@@ -69,9 +69,9 @@ functions
         regionType      patch;
         name            acp_tip;
         writeFields     false;
-        log             true;
+        log             false;
         writeControl    timeStep;
-        writeInterval   1;
+        writeInterval   100;
     }
 
     flowRateWall
@@ -83,9 +83,9 @@ functions
         regionType      patch;
         name            wall;
         writeFields     false;
-        log             true;
+        log             false;
         writeControl    timeStep;
-        writeInterval   1;
+        writeInterval   100;
     }
 
     pressureACinlet
@@ -97,9 +97,9 @@ functions
         regionType      patch;
         name            ac_inlet;
         writeFields     false;
-        log             true;
+        log             false;
         writeControl    timeStep;
-        writeInterval   2;
+        writeInterval   100;
     }
 
     iop_probe

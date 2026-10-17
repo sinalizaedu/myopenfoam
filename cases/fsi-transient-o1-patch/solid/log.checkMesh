@@ -1,0 +1,108 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh
+Date   : Aug 30 2026
+Time   : 04:05:11
+Host   : 4ae7be5e4289
+PID    : 226
+I/O    : uncollated
+Case   : /simulation/fsi-transient-o1-patch/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+
+Time = 0
+
+Mesh stats 
+    points:           39598
+    faces:            106140
+    internal faces:   94020
+    cells:            33408
+    faces per cell:   5.9913793
+    boundary patches: 6
+    point zones:      0
+    face zones:       0
+    cell zones:       6
+
+Overall number of cells of each type:
+    hexahedra:     33120
+    prisms:        288
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    0
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Number of regions: 1 (OK).
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology
+    fsi_active          2184     2394     ok (non-closed singly connected)  
+    symmetry_0          2784     3070     ok (non-closed singly connected)  
+    symmetry_90         2784     3070     ok (non-closed singly connected)  
+    outer               2556     2810     ok (non-closed singly connected)  
+    fsi_iris            1152     1274     ok (non-closed singly connected)  
+    defaultFaces        660      793      ok (non-closed singly connected)  
+    ".*"                12120    12098    ok (closed singly connected)      
+
+
+Checking faceZone topology for multiply connected surfaces...
+    No faceZones found.
+
+Checking basic cellZone addressing...
+    CellZone            Cells        Points       Volume       BoundingBox
+    cornea              9360         11063        1.5525324e-08 (0 -0.00852 -0.006876819) (0.006876819 -0.00468 1.1058768e-18)
+    retina              3204         4632         1.2476228e-08 (0 -0.0020290697 -0.00847) (0.00847 0.007 1.6094125e-18)
+    choroid             4272         5790         2.5910437e-08 (0 -0.0020870432 -0.00867) (0.00867 0.0072 1.6334359e-18)
+    sclera              7788         9990         4.6468592e-08 (0 -0.0048648143 -0.009) (0.009 0.00753 1.6730744e-18)
+    ciliary             5328         6422         2.3666501e-08 (1.5187851e-18 -0.0046027888 -0.0086136021) (0.0086136021 -0.002 1.6195885e-18)
+    iris                3456         4459         4.779429e-09 (6.6613381e-19 -0.00538 -0.00692) (0.00692 -0.00386 1.1128209e-18)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (0 -0.00852 -0.009) (0.009 0.00753 1.6730744e-18)
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+    Boundary openness (3.6764147e-16 2.7527849e-16 -5.2359422e-16) OK.
+ ***High aspect ratio cells found, Max aspect ratio: 1.9173626e+92, number of cells 12
+  <<Writing 12 cells with high aspect ratio to set highAspectRatioCells
+    Minimum face area = 7.9521794e-12. Maximum face area = 2.0175565e-07.  Face area magnitudes OK.
+ ***Zero or negative cell volume detected.  Minimum negative volume: -6.9539848e-15, Number of negative volume cells: 12
+  <<Writing 12 zero volume cells to set zeroVolumeCells
+    Mesh non-orthogonality Max: 180 average: 12.854136
+   *Number of severely non-orthogonal (> 70 degrees) faces: 1236.
+ ***Number of non-orthogonality errors: 11.
+  <<Writing 1247 non-orthogonal faces to set nonOrthoFaces
+ ***Error in face pyramids: 48 faces are incorrectly oriented.
+  <<Writing 37 faces with incorrect orientation to set wrongOrientedFaces
+    Max skewness = 1.8173696 OK.
+    Coupled point location match (average 0) OK.
+
+Failed 4 mesh checks.
+
+End
+

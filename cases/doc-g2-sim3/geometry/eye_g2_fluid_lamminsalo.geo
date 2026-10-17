@@ -1,1 +1,0 @@
-../../doc-g2-sim1/geometry/eye_g2_fluid_lamminsalo.geo

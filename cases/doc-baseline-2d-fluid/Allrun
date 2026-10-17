@@ -1,5 +1,5 @@
 #!/bin/bash
-# doc-g1-sim1 — G1 Sim 1: AC + vitreous + TM only (Missel/Lamminsalo planar)
+# doc-baseline-2d-fluid — G1 Sim 1: AC + vitreous + TM only (Missel/Lamminsalo planar)
 # gmsh Extrude Layers{1} → gmshToFoam → topoSet → createPatch → simpleFoam
 #
 # Optional env:
@@ -25,14 +25,14 @@ REBUILD_MSH="${REBUILD_MSH:-0}"
 MSH="geometry/eye_g1_lamminsalo_${MESH_LEVEL}.msh"
 REPO_ROOT="$(cd ../.. && pwd)"
 
-echo "=== doc-g1-sim1 (AC / vitreous / TM) MESH_LEVEL=${MESH_LEVEL} ==="
+echo "=== doc-baseline-2d-fluid (AC / vitreous / TM) MESH_LEVEL=${MESH_LEVEL} ==="
 
 if [ "$REBUILD_MSH" = "1" ]; then
     if [ -x "${REPO_ROOT}/.venv-geom/bin/python" ]; then
         echo "=== rebuilding mesh ${MESH_LEVEL} (host) ==="
         "${REPO_ROOT}/.venv-geom/bin/python" \
             "${REPO_ROOT}/brunaStuff/gen_lamminsalo_2d.py" \
-            --case doc-g1-sim1 --mesh --mesh-level "${MESH_LEVEL}"
+            --case doc-baseline-2d-fluid --mesh --mesh-level "${MESH_LEVEL}"
     else
         echo "ERROR: REBUILD_MSH=1 requires host + .venv-geom." >&2
         exit 1
@@ -40,7 +40,7 @@ if [ "$REBUILD_MSH" = "1" ]; then
 fi
 if [ ! -f "$MSH" ]; then
     echo "ERROR: missing $MSH — generate on host:" >&2
-    echo "  .venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py --case doc-g1-sim1 --mesh --mesh-level ${MESH_LEVEL}" >&2
+    echo "  .venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py --case doc-baseline-2d-fluid --mesh --mesh-level ${MESH_LEVEL}" >&2
     exit 1
 fi
 cp -f "$MSH" geometry/eye_g1_lamminsalo.msh
@@ -129,4 +129,4 @@ echo "=== post-run summary ==="
 NCELLS=$(grep -a "nCells:" fluid/log.checkMesh | head -1 | awk '{print $2}' || true)
 echo "  nCells = ${NCELLS:-N/A}"
 python3 scripts/extract_step0_metrics.py || true
-echo "=== doc-g1-sim1 done (${MESH_LEVEL}) ==="
+echo "=== doc-baseline-2d-fluid done (${MESH_LEVEL}) ==="

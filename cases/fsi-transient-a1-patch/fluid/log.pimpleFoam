@@ -1,0 +1,230 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : pimpleFoam
+Date   : Aug 30 2026
+Time   : 22:54:05
+Host   : beb9b6532137
+PID    : 259
+I/O    : uncollated
+Case   : /simulation/fsi-transient-a1-patch/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Selecting dynamicFvMesh dynamicMotionSolverFvMesh
+Selecting motion solver: displacementLaplacian
+Applying motion to entire mesh
+Selecting motion diffusion: quadratic
+Selecting motion diffusion: inverseDistance
+Selecting patchDistMethod meshWave
+
+PIMPLE: no residual control data found. Calculations will employ 3 corrector loops
+
+Reading field p
+
+Reading field U
+
+Reading/calculating face flux field phi
+
+Selecting incompressible transport model Newtonian
+Selecting turbulence model type laminar
+Selecting laminar stress model Stokes
+No MRF models present
+
+Creating finite-volume options from "system/fvOptions"
+
+Selecting finite volume options type explicitPorositySource
+    Source: tm_porous
+    State: active
+    - selecting cells using cellZones (tm_zone)
+    - selected 720 cell(s) with volume 4.1885721e-10
+Porosity region tm_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/tm_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: tm_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00693 0.00033 0.00693)
+
+Selecting finite volume options type explicitPorositySource
+    Source: vitreous_porous
+    State: active
+    - selecting cells using cellZones (vitreous_zone)
+    - selected 33636 cell(s) with volume 3.8071522e-07
+Porosity region vitreous_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/vitreous_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: vitreous_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00837 0.010551 0.00837)
+
+Constructing face velocity Uf
+
+Courant Number mean: 0.000163787 max: 0.16831739
+Courant Number mean: 0.000163787 max: 0.16831739
+
+Starting time loop
+
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[preCICE] This is preCICE version 3.3.1
+---[preCICE] Revision info: v3.3.1
+---[preCICE] Build type: Release (without debug log)
+---[preCICE] Working directory "/simulation/fsi-transient-a1-patch/fluid"
+---[preCICE] Configuring preCICE with configuration "../precice-config.xml"
+---[preCICE] I am participant "Fluid"
+---[preCICE] Setting up primary communication to coupling partner/s
+---[preCICE] Primary ranks are connected
+---[preCICE] Setting up preliminary secondary communication to coupling partner/s
+---[preCICE] Prepare partition for mesh Fluid-Mesh
+---[preCICE] Gather mesh Fluid-Mesh
+---[preCICE] Send global mesh Fluid-Mesh
+---[preCICE] Receive global mesh Solid-Mesh
+---[preCICE] Setting up secondary communication to coupling partner/s
+---[preCICE] Secondary ranks are connected
+---[preCICE] Automatic RBF mapping alias from mesh "Solid-Mesh" to mesh "Fluid-Mesh" in "read" direction resolves to "partition-of-unity RBF" .
+---[preCICE] Computing "partition-of-unity RBF" mapping from mesh "Solid-Mesh" to mesh "Fluid-Mesh" in "read" direction.
+---[preCICE] Mapping "Displacement" for t=0 from "Solid-Mesh" to "Fluid-Mesh" (skipped zero sample)
+---[preCICE] it 1 (min: 1, max: 50), time-window 1, t 0 (max: 2), Dt 0.05, max-dt 0.05
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+surfaceFieldValue flowRateTM:
+    operation     = sum
+
+
+surfaceFieldValue pressureACinlet:
+    operation     = areaAverage
+
+
+Courant Number mean: 0.000163787 max: 0.16831739
+Time = 0.05
+
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for pcorr, Initial residual = 1, Final residual = 0.0015942247, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.024206362, Final residual = 0.00032582602, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.015529494, Final residual = 0.00017240039, No Iterations 100
+time step continuity errors : sum local = 3.0203346e-09, global = 5.4998632e-11, cumulative = 5.4998632e-11
+smoothSolver:  Solving for Ux, Initial residual = 0.00024401672, Final residual = 3.2387858e-07, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 0.00031331422, Final residual = 4.0606758e-07, No Iterations 1
+smoothSolver:  Solving for Uz, Initial residual = 0.00024444892, Final residual = 3.2653653e-07, No Iterations 1
+GAMG:  Solving for p, Initial residual = 0.72681373, Final residual = 0.0079266431, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.15281528, Final residual = 0.011197493, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.09319214, Final residual = 0.0071407494, No Iterations 100
+time step continuity errors : sum local = 1.9558915e-07, global = -3.9615469e-10, cumulative = -3.4115605e-10
+GAMG:  Solving for p, Initial residual = 0.64147033, Final residual = 0.0084420545, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.11576217, Final residual = 0.008721622, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.078996629, Final residual = 0.0020172972, No Iterations 500
+time step continuity errors : sum local = 5.4759299e-08, global = 9.8584441e-12, cumulative = -3.3129761e-10
+PIMPLE: iteration 2
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for pcorr, Initial residual = 0.99999998, Final residual = 0.35209878, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.0026989572, Final residual = 0.00022536693, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.0014960577, Final residual = 6.5659756e-05, No Iterations 100
+time step continuity errors : sum local = 2.3370149e-09, global = -4.3248193e-11, cumulative = -3.745458e-10
+smoothSolver:  Solving for Ux, Initial residual = 0.00035287945, Final residual = 1.749873e-07, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 0.00042863448, Final residual = 2.2806741e-07, No Iterations 1
+smoothSolver:  Solving for Uz, Initial residual = 0.00035375496, Final residual = 1.762768e-07, No Iterations 1
+GAMG:  Solving for p, Initial residual = 0.66008061, Final residual = 0.01115286, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.12889172, Final residual = 0.010980412, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.081995457, Final residual = 0.0098747683, No Iterations 100
+time step continuity errors : sum local = 3.4172145e-07, global = -6.0804281e-10, cumulative = -9.8258862e-10
+GAMG:  Solving for p, Initial residual = 0.50571501, Final residual = 0.01405381, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.096523078, Final residual = 0.01858415, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.06901553, Final residual = 0.0026176942, No Iterations 500
+time step continuity errors : sum local = 9.2917287e-08, global = 4.903483e-11, cumulative = -9.3355379e-10
+PIMPLE: iteration 3
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for pcorr, Initial residual = 0.99999999, Final residual = 0.28316798, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.0025323916, Final residual = 0.00024126431, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.0014145426, Final residual = 6.908542e-05, No Iterations 100
+time step continuity errors : sum local = 3.199484e-09, global = -5.9147594e-11, cumulative = -9.9270138e-10
+smoothSolver:  Solving for Ux, Initial residual = 0.00084096677, Final residual = 3.4542854e-07, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 0.0010241869, Final residual = 4.08218e-07, No Iterations 1
+smoothSolver:  Solving for Uz, Initial residual = 0.00084156054, Final residual = 3.2019222e-07, No Iterations 1
+GAMG:  Solving for p, Initial residual = 0.51384819, Final residual = 0.0056480378, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.10276553, Final residual = 0.015556975, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.067954227, Final residual = 0.0047613096, No Iterations 100
+time step continuity errors : sum local = 2.3259512e-07, global = 7.7131988e-10, cumulative = -2.2138149e-10
+GAMG:  Solving for p, Initial residual = 0.17163544, Final residual = 0.0023110018, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.052341562, Final residual = 0.00051780547, No Iterations 58
+GAMG:  Solving for p, Initial residual = 0.020889437, Final residual = 8.7642824e-05, No Iterations 500
+time step continuity errors : sum local = 3.7246727e-09, global = 2.9683153e-12, cumulative = -2.1841318e-10
+ExecutionTime = 26.78 s  ClockTime = 27 s
+
+---[preCICE] Mapping "Displacement" for t=0.05 from "Solid-Mesh" to "Fluid-Mesh"
+---[preCICE] it 2 (min: 1, max: 50), time-window 1, t 0 (max: 2), Dt 0.05, max-dt 0.05
+surfaceFieldValue flowRateTM write:
+    total faces   = 144
+    total area    = 3.7099083e-06
+
+    sum(outlet_tm) of phi = 1.245036e-11
+
+surfaceFieldValue pressureACinlet write:
+    total faces   = 96
+    total area    = 5.6395557e-06
+
+    areaAverage(ac_inlet) of p = 2.0133231
+
+Courant Number mean: 0.000163787 max: 0.16831739
+Time = 0.05
+
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 8.1746289e-18, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 6.7614413e-21, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.6683774e-17, No Iterations 1
+
+
+--> FOAM FATAL ERROR: (openfoam-2512)
+Maximum number of iterations reached. Increase maxIter.
+    maxIter:53533
+    nChangedCells:0
+    nChangedFaces:165031
+
+
+    From Foam::FaceCellWave<Type, TrackingData>::FaceCellWave(const Foam::polyMesh&, const Foam::labelUList&, const Foam::UList<T>&, Foam::UList<T>&, Foam::UList<T>&, Foam::label, TrackingData&) [with Type = Foam::wallPoint; TrackingData = int; Foam::labelUList = Foam::UList<int>; Foam::label = int]
+    in file lnInclude/FaceCellWave.C at line 1120.
+
+FOAM exiting
+

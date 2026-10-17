@@ -1,0 +1,68 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       pointVectorField;
+    object      pointDisplacement;
+}
+
+// ALE mesh motion. preCICE writes solid displacement on wall; all other patches fixed.
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    iris_wall
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    ac_inlet
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    outlet_tm
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    ivi_tip
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    acp_tip
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    wall
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    lens_wall
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    symmetry_0
+    {
+        type            symmetry;
+    }
+
+    symmetry_90
+    {
+        type            symmetry;
+    }
+}

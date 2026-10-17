@@ -1,0 +1,21 @@
+#!/bin/bash
+# fsi-run-a1-patch — two-way FSI IVI+ACP experiment (O1 fluid + A1 solid)
+# Seed first: ./scripts/seed_from_baseline.sh  (after fsi-transient-a1-patch prewarm)
+set -euo pipefail
+cd "$(dirname "$0")"
+export MODE="${MODE:-experiment}"
+export MESH_LEVEL="${MESH_LEVEL:-O1}"
+export REUSE_MESH="${REUSE_MESH:-1}"
+
+if [ ! -d fluid/constant/polyMesh ]; then
+  echo "ERROR: no polyMesh — run ./scripts/seed_from_baseline.sh first" >&2
+  exit 1
+fi
+if [ "$MODE" = "baseline" ]; then
+  echo "ERROR: fsi-run-a1-patch is experiment-only; use fsi-transient-a1-patch for TM baseline" >&2
+  exit 1
+fi
+
+NP="${NP:-1}"
+echo "=== fsi-run-a1-patch MODE=$MODE MESH_LEVEL=$MESH_LEVEL np=$NP ==="
+exec ./scripts/run_experiment_fsi.sh "$MESH_LEVEL" "$NP"

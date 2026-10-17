@@ -1,0 +1,64 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Cell zones for MESH_LEVEL=O1 (native blockMesh).
+//
+// Difference from topoSetDict.g2: tm_zone is NOT built here.  The O1 mesh gets
+// it from the TM block itself, which is the exact Table SI parallelogram
+// (0.34713 x 0.11402 mm) and therefore cannot leak into the anterior chamber
+// the way cylinderAnnulusToCell does on an unaligned mesh.  The annulus
+// selection is still evaluated, as the cellSet tm_zone_cyl, so the two
+// definitions can be compared on the same mesh -- see mesh_independence/
+// O1_quality.md.
+//
+// vitreous_zone matches topoSetDict.g2.  Box ymin = -3.60 mm reaches the
+// lens-equator / hyaloid face (L at y = -3.57 mm) so the whole vitreous is
+// porous down to the vitreous–AC boundary.  (Older ymin = -1.5 mm left the
+// anterior vitreous non-porous and is now considered a bug.)
+//
+// Coordinates are in the case frame (x >= 0, z <= 0), which is what Allrun
+// rotates the O1 mesh into before running this dict.
+
+actions
+(
+    // Reference only, not a zone: the annulus that topoSetDict.g2 uses.
+    {
+        name    tm_zone_cyl;
+        type    cellSet;
+        action  new;
+        source  cylinderAnnulusToCell;
+        p1      (0.00000 -0.00483 0.00000);
+        p2      (0.00000 -0.00434 0.00000);
+        outerRadius 0.00733;
+        innerRadius 0.00621;
+    }
+
+    {
+        name    vitreous_zone;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-1.0e-4 -3.60e-3 -9.0e-3) (9.0e-3 7.5e-3 1.0e-4);
+    }
+    // Defensive, as in topoSetDict.g2: the TM sits at y ~ -4.7 mm and so is
+    // already outside the box, but keep the parity in case the box moves.
+    {
+        name    vitreous_zone;
+        type    cellSet;
+        action  subtract;
+        source  zoneToCell;
+        zones   (tm_zone);
+    }
+    {
+        name    vitreous_zone;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     vitreous_zone;
+    }
+);

@@ -1,0 +1,332 @@
+% =====================================================================
+% WP4 — texto de tese, itens 4.1 a 4.3
+% Formato: Introdução (ciência + fórmulas) / Metodologia / Resultados
+% Mesmo padrão do texto de WP1.1-1.3.
+%
+% ESCOPO DESTE ARQUIVO: apenas 4.1, 4.2 e 4.3. Os itens 4.4 e 4.5 NÃO
+% estão aqui, e a razão está no fim do arquivo (seção comentada
+% "PENDÊNCIAS"): o 4.4 depende de uma citação que não foi possível ler e
+% o 4.5 não tem fonte para a forma funcional. Escrever "Resultados" para
+% os dois agora seria escrever número sem procedência.
+%
+% Chaves de \citep que precisam entrar no .bib estão listadas no fim.
+% =====================================================================
+
+\section{WP4.1 --- Cadeia da pressão intraocular à pressão de perfusão}
+
+\subsection{Introdução}
+
+Os pacotes anteriores entregam a pressão intraocular ao longo do tempo, $\mathrm{IOP}(t)$, seja pela equação de balanço de volume do WP0, seja pela curva pressão-volume calibrada do WP1.2. Pressão, porém, não é dano. O tecido retiniano sofre quando a perfusão cai, e a perfusão depende da diferença entre a pressão que empurra o sangue para dentro do olho e a pressão intraocular que se opõe a ela. O objetivo do WP4.1 é converter $\mathrm{IOP}(t)$ na grandeza hemodinâmica correspondente, sem alterar nada do solver que a produziu.
+
+A pressão de perfusão ocular média é definida a partir da pressão arterial média, calculada da forma convencional a partir das pressões sistólica e diastólica braquiais \citep{sehi2010},
+
+\begin{equation}
+\mathrm{MAP}=\mathrm{PAD}+\frac{\mathrm{PAS}-\mathrm{PAD}}{3},
+\label{eq:map}
+\end{equation}
+
+e descontando dela a pressão intraocular,
+
+\begin{equation}
+\mathrm{MOPP}(t)=f_{\mathrm{bo}}\cdot\mathrm{MAP}-\mathrm{IOP}(t).
+\label{eq:mopp}
+\end{equation}
+
+O fator $f_{\mathrm{bo}}$ aproxima a queda de pressão entre a artéria braquial, onde a medida é feita, e a artéria oftálmica, que é a que irriga o olho. O valor usual na literatura de glaucoma é $2/3$ \citep{leske2009}. É importante registrar desde já que esse fator é uma convenção, não uma medida feita em cada paciente, e a Seção de resultados quantifica o quanto ele pesa.
+
+Uma segunda definição, complementar, usa a pressão diastólica em vez da média,
+
+\begin{equation}
+\mathrm{OPP}_{\mathrm{diast}}(t)=\mathrm{PAD}_{\mathrm{oft}}-\mathrm{IOP}(t),
+\label{eq:oppdiast}
+\end{equation}
+
+e enfatiza o vale hemodinâmico do ciclo cardíaco em vez da média. Ela exige, no entanto, a pressão diastólica na própria artéria oftálmica, que não se obtém multiplicando a diastólica braquial pelo mesmo $f_{\mathrm{bo}}$ da Equação~\ref{eq:mopp}: aquele fator é convenção para a queda da pressão \emph{média}, e supor que a queda proporcional seja idêntica para a diastólica é uma suposição adicional, sem fonte. Por isso, nesta implementação a $\mathrm{OPP}_{\mathrm{diast}}$ só é calculada quando a $\mathrm{PAD}_{\mathrm{oft}}$ é informada.
+
+\subsection{Metodologia}
+
+A cadeia foi implementada em Python como uma camada que consome os vetores $t$ e $\mathrm{IOP}(t)$ produzidos pelo solver do WP0 e devolve $\mathrm{MOPP}(t)$, a $\mathrm{OPP}_{\mathrm{diast}}(t)$ quando aplicável, e as métricas de limiar temporal. O solver não foi modificado.
+
+As métricas de limiar temporal são os minutos em que a pressão intraocular permanece acima de $30$, $40$ e $50$ mmHg. A primeira implementação as obtinha integrando por trapézios a função indicadora $\mathbf{1}[\mathrm{IOP}(t)>\text{limiar}]$, o que devolve o produto do passo de amostragem pelo número de amostras acima do limiar, e não o tempo efetivamente acima: o viés é de até um intervalo de amostragem, porque o instante de cruzamento cai em geral no meio de um intervalo. A versão final localiza os cruzamentos por interpolação linear da própria curva e integra o tempo acima de forma exata para dado linear por partes. Com o passo do solver, de $0{,}01$ min, as duas versões concordam em menos de um segundo; a diferença importa quando a mesma função é aplicada à série clínica do WP3, que tem seis pontos em trinta minutos.
+
+Para quantificar a dependência em $f_{\mathrm{bo}}$, a cadeia foi reavaliada varrendo o fator na faixa de $0{,}50$ a $0{,}80$, mantendo tudo o mais fixo. A faixa é a recomendada para análise de sensibilidade desse fator.
+
+\subsection{Resultados}
+
+A Equação~\ref{eq:mopp} é linear em $f_{\mathrm{bo}}$, de modo que a sensibilidade da perfusão ao fator é exatamente a pressão arterial média,
+
+\begin{equation}
+\frac{\partial\,\mathrm{MOPP}}{\partial f_{\mathrm{bo}}}=\mathrm{MAP}.
+\label{eq:dmopp_df}
+\end{equation}
+
+Para a pressão arterial de referência adotada ($120/70$ mmHg, $\mathrm{MAP}=86{,}7$ mmHg), cada centésimo no fator desloca a MOPP em $0{,}87$ mmHg, e a faixa de $0{,}50$ a $0{,}80$ cobre $26$ mmHg de pressão de perfusão. Essa amplitude é da ordem da própria MOPP basal, o que significa que nenhum resultado de perfusão pode ser reportado sem a curva de sensibilidade ao lado.
+
+O resultado mais consequente do item, porém, vem de avaliar a Equação~\ref{eq:mopp} no estado basal. Com a pressão arterial de referência e a pressão intraocular basal de $16{,}9$ mmHg derivada no WP4.2,
+
+\begin{equation}
+\mathrm{MOPP}_{\mathrm{basal}}=\tfrac{2}{3}\times 86{,}7-16{,}9=40{,}9\ \text{mmHg}.
+\label{eq:mopp_basal}
+\end{equation}
+
+Ou seja, um olho saudável em repouso, nas condições de referência desta tese, opera com pressão de perfusão média de aproximadamente $41$ mmHg. Esse número tem uma consequência direta sobre a escolha do limiar crítico de perfusão, discutida no WP4.2: qualquer limiar acima de $41$ mmHg classifica o estado basal como já isquêmico, antes de qualquer injeção.
+
+\section{WP4.2 --- Dose isquêmica por evento}
+
+\subsection{Introdução}
+
+O desfecho clinicamente relevante de um pico pressórico não é o valor de pico, mas quanto tempo a perfusão permaneceu abaixo do nível que o tecido tolera. Essa distinção é a mesma que se faz em isquemia miocárdica, onde se integra o déficit no tempo em vez de reportar o extremo. A métrica proposta aqui é a área de déficit de perfusão,
+
+\begin{equation}
+\mathcal{I}=\int_{0}^{T}\max\!\big(0,\ \mathrm{OPP}_{\mathrm{crit}}-\mathrm{OPP}(t)\big)\,\mathrm{d}t
+\qquad[\mathrm{mmHg}\cdot\mathrm{min}],
+\label{eq:dose_isquemica}
+\end{equation}
+
+em que $\mathrm{OPP}_{\mathrm{crit}}$ é a pressão de perfusão abaixo da qual há déficit. A integral só acumula quando a perfusão cruza o limiar, o que torna $\mathcal{I}$ qualitativamente diferente do pico: dois olhos com o mesmo pico podem ter doses muito distintas se decaírem com constantes de tempo diferentes.
+
+A pressão intraocular basal não é um parâmetro livre deste modelo: ela é o equilíbrio da equação de balanço de volume. Anulando a derivada temporal na equação de Goldmann estendida, com a via uveoescleral tratada como insensível à pressão, obtém-se
+
+\begin{equation}
+P_{0}=P_{\mathrm{ev}}+\frac{Q_{\mathrm{prod}}\,(1-f_{\mathrm{uv}})}{C_{\mathrm{out}}},
+\label{eq:p0_equilibrio}
+\end{equation}
+
+em que $P_{\mathrm{ev}}$ é a pressão venosa episcleral, $Q_{\mathrm{prod}}$ a taxa de formação de aquoso, $C_{\mathrm{out}}$ a facilidade de escoamento trabecular e $f_{\mathrm{uv}}$ a fração do escoamento que segue pela via uveoescleral. Derivar $P_0$ em vez de arbitrá-lo evita que a pressão derive ao longo da simulação mesmo sem injeção.
+
+\subsection{Metodologia}
+
+A Equação~\ref{eq:dose_isquemica} foi implementada integrando analiticamente a parte positiva do déficit em cada intervalo da malha temporal, localizando por interpolação o instante em que a perfusão cruza o limiar. A alternativa ingênua, integrar por trapézios o déficit já recortado em zero, erra quando o cruzamento cai dentro de um intervalo; na malha do solver a diferença é nula, mas numa malha de seis pontos como a do protocolo clínico chega a $11\%$.
+
+Dado que $\mathrm{OPP}_{\mathrm{crit}}$ é o parâmetro mais mal conhecido do modelo, nenhuma função do módulo o fixa internamente: a saída padrão é a curva $\mathcal{I}(\mathrm{OPP}_{\mathrm{crit}})$ sobre uma faixa, e não um valor único.
+
+Os quatro parâmetros de vazão da Equação~\ref{eq:p0_equilibrio} foram fixados a partir da literatura, com a procedência de cada um registrada individualmente, conforme a Tabela~\ref{tab:wp42_params}. Essa separação por parâmetro é deliberada: numa revisão anterior deste trabalho, um valor de fração uveoescleral de humano foi aplicado por engano a um cenário de coelho, e o erro passou sem ser notado justamente porque a tabela de parâmetros não trazia a procedência de cada linha.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Parâmetros de vazão para o olho humano e procedência de cada um.}
+\label{tab:wp42_params}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Parâmetro & Valor & Fonte & Observação \\
+\midrule
+$Q_{\mathrm{prod}}$ & $2{,}4$ µL/min & \citet{goel2010} & $2{,}4\pm0{,}6$, medida diurna, 20--83 anos \\
+$C_{\mathrm{out}}$ & $0{,}28$ µL/min/mmHg & \citet{kaufmanalm} & de $0{,}54-0{,}0042\times\text{idade}$; corresponde a $\sim$62 anos \\
+$P_{\mathrm{ev}}$ & $10$ mmHg & \citet{phelps1978} & topo da faixa de 8--10 mmHg \\
+$f_{\mathrm{uv}}$ & $0{,}20$ & \citet{bill1971} & faixa de 4--27\%, olhos sob atropina \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\footnotesize Nenhum dos quatro é medida própria; todos são extrapolações da literatura humana, e a escolha de $f_{\mathrm{uv}}$ é discutida nos resultados.
+\end{table}
+
+\subsection{Resultados}
+
+Aplicando a Equação~\ref{eq:p0_equilibrio} aos valores da Tabela~\ref{tab:wp42_params},
+
+\begin{equation}
+P_{0}=10+\frac{2{,}4\times(1-0{,}20)}{0{,}28}=16{,}86\ \text{mmHg},
+\label{eq:p0_humano}
+\end{equation}
+
+que é a pressão basal adotada em todo o WP1 e arredondada para $16{,}9$ mmHg. Vale notar que esse valor não foi escolhido: ele é consequência dos quatro parâmetros de vazão, e a concordância com a basal usada nos ajustes constitutivos é, portanto, uma amarração entre os pacotes e não uma coincidência.
+
+A fração uveoescleral é o parâmetro mais incerto dos quatro, e $P_0$ depende dele de forma apreciável. A Tabela~\ref{tab:wp42_p0_fuv} mostra a amplitude. Os valores mais altos da faixa correspondem às estimativas de via uveoescleral em olhos humanos jovens, da ordem de 35 a 55\% \citep{alm2009}; o valor de 20\% adotado vem da faixa de 4 a 27\% medida em olhos sob atropina \citep{bill1971}, e portanto é um limite inferior plausível, não um valor central.
+
+\begin{table}[h]
+\centering
+\caption{Pressão basal derivada em função da fração uveoescleral.}
+\label{tab:wp42_p0_fuv}
+\begin{tabular}{@{}rrl@{}}
+\toprule
+$f_{\mathrm{uv}}$ & $P_{0}$ (mmHg) & Procedência da fração \\
+\midrule
+$0{,}20$ & $16{,}86$ & limite inferior, olhos sob atropina \citep{bill1971} \\
+$0{,}27$ & $16{,}26$ & topo da mesma faixa \\
+$0{,}35$ & $15{,}57$ & limite inferior de olhos jovens \citep{alm2009} \\
+$0{,}55$ & $13{,}86$ & limite superior de olhos jovens \citep{alm2009} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Sobre o limiar crítico de perfusão, os valores citados com mais frequência na literatura vêm de estudos de glaucoma crônico: perfusão diastólica abaixo de $30$ mmHg associada a risco aproximadamente seis vezes maior de glaucoma de ângulo aberto \citep{tielsch1995}, e perfusão média abaixo de $40$ mmHg associada a risco relativo de $2{,}6$ na incidência em nove anos \citep{leske2008}; revisões da área situam o limiar de perfusão diastólica entre $50$ e $55$ mmHg \citep{leske2009}. Esses são estudos transversais e longitudinais de uma doença crônica, ao longo de anos, e não medidas de um evento pressórico agudo de minutos.
+
+Essa distinção não é retórica. Pela Equação~\ref{eq:mopp_basal}, a MOPP basal nas condições de referência é $40{,}9$ mmHg. Um limiar de $50$ mmHg classificaria portanto o estado basal como já deficitário, e a dose isquêmica da Equação~\ref{eq:dose_isquemica} acumularia indefinidamente mesmo sem injeção --- o que é fisiologicamente insustentável e matematicamente retira o problema do domínio de validade da forma fechada do WP4.3. A literatura experimental aguda aponta valores bem menores: a autorregulação do fluxo na cabeça do nervo óptico mantém-se ativa para pressões de perfusão acima de aproximadamente $30$ mmHg e deixa de operar abaixo disso, e o fluxo humano não cai de forma significativa até que a perfusão esteja cerca de $30\%$ abaixo do valor basal \citep{nakakura2018}.
+
+Adota-se, por isso, a prática de reportar $\mathcal{I}$ como função de $\mathrm{OPP}_{\mathrm{crit}}$, e não para um valor fixo. A Tabela~\ref{tab:wp42_opp_crit} mostra o efeito, calculado pela forma fechada do WP4.3 com $K=0{,}325$ mmHg/µL, $\Delta V=50$ µL e $C_{\mathrm{out}}=0{,}28$ µL/min/mmHg.
+
+\begin{table}[h]
+\centering
+\caption{Dose isquêmica em função do limiar de perfusão adotado.}
+\label{tab:wp42_opp_crit}
+\begin{tabular}{@{}rrrl@{}}
+\toprule
+$\mathrm{OPP}_{\mathrm{crit}}$ & $\Delta P_{\mathrm{th}}$ & $\mathcal{I}$ & Regime da fonte do limiar \\
+(mmHg) & (mmHg) & (mmHg$\cdot$min) & \\
+\midrule
+$50$ & $-9{,}12$ & --- & crônico; fora do domínio \\
+$40$ & $0{,}88$ & $140{,}8$ & crônico \\
+$31$ & $9{,}88$ & $16{,}0$ & agudo pós-injeção \\
+$30$ & $10{,}88$ & $11{,}1$ & agudo experimental \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\footnotesize $\Delta P_{\mathrm{th}}=\tfrac{2}{3}\mathrm{MAP}-P_{0}-\mathrm{OPP}_{\mathrm{crit}}$ é a elevação de pressão tolerada antes de a perfusão cruzar o limiar. Valor negativo indica que o estado basal já está abaixo do limiar.
+\end{table}
+
+A dose isquêmica varia por um fator de treze entre $30$ e $40$ mmHg de limiar, o que confirma que o parâmetro precisa ser tratado como eixo de sensibilidade e não como constante.
+
+\section{WP4.3 --- Rigidez ocular e dose isquêmica: resultado teórico}
+
+\subsection{Introdução}
+
+Há uma expectativa intuitiva de que um olho mais rígido seja mais perigoso: para o mesmo volume injetado, ele atinge um pico de pressão maior. A intuição é correta quanto ao pico e incorreta quanto à dose, e a razão é que a rigidez governa simultaneamente a altura do pico e a velocidade com que ele decai.
+
+Linearizando a equação de balanço de volume em torno do equilíbrio, a perturbação de pressão decai exponencialmente com constante de tempo
+
+\begin{equation}
+\tau=\frac{1}{C_{\mathrm{out}}\,K},
+\qquad K=\frac{\mathrm{d}P}{\mathrm{d}V}\bigg|_{P_0},
+\label{eq:tau}
+\end{equation}
+
+de modo que a rigidez $K$ aparece duas vezes e em sentidos opostos: o pico vale $\Delta P_0=K\,\Delta V$ e cresce com $K$, mas $\tau$ decresce com $K$. Sem limiar, as duas dependências se cancelam exatamente. Integrando o excesso de pressão sobre todo o transiente,
+
+\begin{equation}
+\int_{0}^{\infty}\Delta P_0\,e^{-t/\tau}\,\mathrm{d}t=\Delta P_0\,\tau=(K\Delta V)\cdot\frac{1}{C_{\mathrm{out}}K}=\frac{\Delta V}{C_{\mathrm{out}}},
+\label{eq:sem_limiar}
+\end{equation}
+
+e a rigidez desaparece do resultado. A existência de um limiar muda o quadro, e é o limiar que dá sentido clínico à métrica: só há dano quando a perfusão cai abaixo de $\mathrm{OPP}_{\mathrm{crit}}$.
+
+\subsection{Metodologia}
+
+Com limiar, a integral da Equação~\ref{eq:dose_isquemica} acumula apenas enquanto a elevação de pressão excede a elevação tolerada,
+
+\begin{equation}
+\Delta P_{\mathrm{th}}=f_{\mathrm{bo}}\,\mathrm{MAP}-P_{0}-\mathrm{OPP}_{\mathrm{crit}},
+\label{eq:dpth}
+\end{equation}
+
+o que ocorre no intervalo $[0,t^{\ast}]$ com $t^{\ast}=\tau\ln(\Delta P_0/\Delta P_{\mathrm{th}})$. Integrando,
+
+\begin{equation}
+\mathcal{I}=\int_{0}^{t^{\ast}}\!\big(\Delta P_0 e^{-t/\tau}-\Delta P_{\mathrm{th}}\big)\mathrm{d}t
+=\tau\left[\Delta P_0-\Delta P_{\mathrm{th}}-\Delta P_{\mathrm{th}}\ln\frac{\Delta P_0}{\Delta P_{\mathrm{th}}}\right],
+\label{eq:I_tau}
+\end{equation}
+
+e substituindo $\Delta P_0=K\Delta V$ e a Equação~\ref{eq:tau} para escrever tudo em parâmetros primitivos,
+
+\begin{equation}
+\mathcal{I}=\frac{\Delta V}{C_{\mathrm{out}}}-\frac{\Delta P_{\mathrm{th}}}{C_{\mathrm{out}}K}\left[1+\ln\frac{K\,\Delta V}{\Delta P_{\mathrm{th}}}\right],
+\qquad K\Delta V>\Delta P_{\mathrm{th}},
+\label{eq:I_fechada}
+\end{equation}
+
+com $\mathcal{I}=0$ quando $K\Delta V\le\Delta P_{\mathrm{th}}$. Derivando a Equação~\ref{eq:I_fechada} em relação à rigidez,
+
+\begin{equation}
+\frac{\partial\mathcal{I}}{\partial K}=\frac{\Delta P_{\mathrm{th}}}{C_{\mathrm{out}}K^{2}}\,\ln\frac{K\,\Delta V}{\Delta P_{\mathrm{th}}}>0
+\quad\text{sempre que}\quad K\Delta V>\Delta P_{\mathrm{th}},
+\label{eq:dIdK}
+\end{equation}
+
+e definindo a rigidez abaixo da qual o pico nunca cruza o limiar,
+
+\begin{equation}
+K_{\mathrm{crit}}=\frac{\Delta P_{\mathrm{th}}}{\Delta V}.
+\label{eq:kcrit}
+\end{equation}
+
+A forma fechada foi implementada em parâmetros primitivos, de modo a varrer cada um sem reexecutar o solver, e conferida contra a integração numérica da equação de balanço de volume no cenário em que a forma fechada é válida, isto é, com rigidez constante e sem refluxo nem paracentese. A verificação é necessária porque a Equação~\ref{eq:I_fechada} supõe bólus instantâneo, enquanto o solver aplica a injeção em rampa de seis segundos.
+
+\subsection{Resultados}
+
+A Equação~\ref{eq:I_fechada} tem três consequências, e as três são verificáveis sem nenhum dado experimental.
+
+A primeira é que $\Delta V/C_{\mathrm{out}}$ é o limite superior assintótico da dose, atingido quando $K\to\infty$. No cenário de referência ($\Delta V=50$ µL, $C_{\mathrm{out}}=0{,}28$ µL/min/mmHg), esse teto vale $178{,}57$ mmHg$\cdot$min. Nenhum olho, por rígido que seja, acumula mais dose do que isso para esse volume injetado.
+
+A segunda é que existe uma rigidez crítica abaixo da qual a dose é exatamente nula, não apenas pequena. Pela Equação~\ref{eq:kcrit}, com $\Delta P_{\mathrm{th}}=15$ mmHg, $K_{\mathrm{crit}}=0{,}30$ mmHg/µL. A Tabela~\ref{tab:wp43_IK} mostra a transição, que é abrupta: a dose permanece em zero até $K_{\mathrm{crit}}$ e cresce rapidamente acima dele.
+
+\begin{table}[h]
+\centering
+\caption{Dose isquêmica em função da rigidez ocular, para $\Delta P_{\mathrm{th}}=15$ mmHg, $\Delta V=50$ µL e $C_{\mathrm{out}}=0{,}28$ µL/min/mmHg.}
+\label{tab:wp43_IK}
+\begin{tabular}{@{}rrrrrrrrr@{}}
+\toprule
+$K$ (mmHg/µL) & $0{,}05$ & $0{,}10$ & $0{,}20$ & $0{,}30$ & $0{,}31$ & $0{,}40$ & $0{,}60$ & $1{,}00$ \\
+\midrule
+$\mathcal{I}$ (mmHg$\cdot$min) & $0$ & $0$ & $0$ & $0$ & $0{,}09$ & $6{,}11$ & $27{,}43$ & $60{,}50$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A consequência clínica é que a população não se distribui num contínuo de risco: ela se separa em dois grupos, os que não cruzam o limiar e acumulam dose exatamente zero, e os que cruzam. Como o WP1.4 mostra que a rigidez escala com a quarta potência inversa do raio, e portanto que o olho curto tem rigidez mais alta, os dois resultados apontam para o mesmo paciente por mecanismos independentes.
+
+A terceira consequência é que a facilidade de escoamento escala a dose linearmente. A Equação~\ref{eq:I_fechada} tem $C_{\mathrm{out}}$ em um único lugar, multiplicando a expressão inteira, de modo que
+
+\begin{equation}
+\mathcal{I}\!\left(C_{\mathrm{out}}/2\right)=2\,\mathcal{I}\!\left(C_{\mathrm{out}}\right)
+\label{eq:escala_cout}
+\end{equation}
+
+exatamente, para qualquer rigidez. A verificação numérica devolve razão $2{,}000000$. O olho glaucomatoso, com facilidade reduzida, tem portanto dose proporcionalmente maior em qualquer rigidez, e esse é um eixo de risco independente da geometria.
+
+A verificação da forma fechada contra a integração numérica da equação de balanço de volume concorda dentro de $0{,}17\%$ no cenário humano. O resíduo não é erro numérico: é a diferença esperada entre a rampa de injeção de seis segundos usada pelo solver e o bólus instantâneo suposto na dedução.
+
+Cabe um registro sobre a interpretação do parâmetro $\Delta P_{\mathrm{th}}$. Todos os números desta seção dependem dele, e ele é, pela Equação~\ref{eq:dpth}, uma função do limiar de perfusão --- o parâmetro mais mal conhecido do modelo, conforme discutido no WP4.2. Por isso $\mathcal{I}$ e $K_{\mathrm{crit}}$ são sempre apresentados como função de $\Delta P_{\mathrm{th}}$, e nenhuma função do módulo implementado fixa esse valor internamente.
+
+% =====================================================================
+% PENDÊNCIAS — por que 4.4 e 4.5 não estão neste arquivo
+% =====================================================================
+%
+% 4.4 (validação contra o zero observado): a conclusão do item depende de
+%     um estudo de OCT-angiografia (PMID 42565012, PMCID PMC13444746) que
+%     não foi possível ler. Sem ler o artigo, não se sabe se o valor de
+%     31 mmHg é o pico de IOP ou a MOPP mínima — e a conclusão do item é
+%     literalmente esse número. Um substituto verificado existe
+%     (Colizzi et al. 2025, n=119), e nele o mínimo de MOPP é 35,7 mmHg,
+%     o que desloca a conclusão. Escrever "Resultados" antes de resolver
+%     isso seria reportar número sem procedência.
+%
+% 4.5 (dose acumulada em regime terapêutico): a forma funcional do peso
+%     de recuperação não tem fonte, e o modelo implementado desconta cada
+%     evento pelo intervalo anterior sem variável de estado — ou seja,
+%     cresce linearmente no número de injeções e nunca satura, que é o
+%     oposto do que "recuperação parcial" significa. Com modelo de estado,
+%     a separação entre regimes cai de ~4x para 1,9x, e a conclusão do
+%     item muda. Precisa ser reescrito antes de virar texto.
+%
+% =====================================================================
+% CHAVES DE \citep A ACRESCENTAR NO .bib
+% =====================================================================
+%
+% sehi2010        — convenção de MAP e OPP (verificar/ajustar para a fonte
+%                   que você já usa para a definição de MAP)
+% leske2009       — Leske MC. Ocular perfusion pressure and glaucoma:
+%                   clinical trial and epidemiologic findings.
+%                   Curr Opin Ophthalmol. 2009;20(2):73-78.
+% tielsch1995     — Tielsch JM, Katz J, Sommer A, Quigley HA, Javitt JC.
+%                   Arch Ophthalmol. 1995;113(2):216-221. PMID 7864755.
+% leske2008       — Leske MC, Wu SY, Hennis A, Honkanen R, Nemesure B.
+%                   Ophthalmology. 2008;115(1):85-93. PMID 17629563.
+% nakakura2018    — Sci Rep. 2018;8:17524. DOI 10.1038/s41598-018-35683-y.
+% goel2010        — Goel M, Picciani RG, Lee RK, Bhattacharya SK.
+%                   Open Ophthalmol J. 2010;4:52-59.
+%                   DOI 10.2174/1874364101004010052.
+% kaufmanalm      — Kaufman PL, Alm A. Production and flow of aqueous
+%                   humor. In: Adler's Physiology of the Eye. Mosby.
+% phelps1978      — Phelps CD, Armaly MF. Am J Ophthalmol. 1978;85(1):35-42.
+% bill1971        — Bill A, Phillips CI. Uveoscleral drainage of aqueous
+%                   humour in human eyes. Exp Eye Res. 1971;12(3):275-281.
+% alm2009         — Alm A, Nilsson SF. Uveoscleral outflow - a review.
+%                   Exp Eye Res. 2009;88(4):760-768.
+%
+% ATENÇÃO: NÃO citar goel2010 para C_out nem para f_uv. A revisão de Goel
+% não dá valor de facilidade de escoamento, e a fração uveoescleral que
+% ela reporta é de 40-50% (primatas) / "similar" em humanos jovens, não
+% 20%. Essas duas atribuições estavam erradas e foram trocadas acima.

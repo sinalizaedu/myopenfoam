@@ -1,0 +1,117 @@
+=== seed doc-run-o1-patch-fluid from ../doc-baseline-o1-patch-fluid (time=834) ===
+=== seed done: polyMesh + fluid/834 + calibration/baseline_iop.yaml ===
+time="2026-08-24T22:59:47+02:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-1d3d17f900b2 Creating 
+ Container myopenfoam-fsi-run-1d3d17f900b2 Created 
+=== experiment 1h: O1 np=4 (stage1 0->2s dt=0.005, stage2->30s dt=0.02) ===
+=== doc-run-o1-patch-fluid MODE=experiment MESH_LEVEL=O1 (patch) REUSE_MESH=1 ===
+=== doc-g2-sim4 MODE=experiment MESH_LEVEL=O1 (blockMesh) REUSE_MESH=1 ===
+=== seeding experiment 0/ from 834 (baseline p/U, no p shift) ===
+  wrote fluid/0/U and fluid/0/p (experiment BCs, baseline pressure from d_TM)
+sync_field_boundaries: updated fluid/0/U
+sync_field_boundaries: updated fluid/0/p
+=== patch counts ===
+  ac_inlet: 96 faces
+  outlet_tm: 144 faces
+  ivi_tip: 252 faces
+  acp_tip: 300 faces
+  wall: 2184 faces
+  lens_wall: 1824 faces
+  iris_wall: 1128 faces
+  symmetry_0: 4461 faces
+  symmetry_90: 4461 faces
+--- stage 1: t=0→2 s (dt=0.005) ---
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : decomposePar -force
+Date   : Aug 24 2026
+Time   : 20:59:52
+Host   : 91ca45d2e5cb
+PID    : 256
+I/O    : uncollated
+Case   : /simulation/doc-run-o1-patch-fluid/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+
+
+Decomposing mesh
+
+Create mesh
+
+Calculating distribution of cells
+Decomposition method scotch [4] (region region0)
+
+Finished decomposition in 0.13 s
+
+Calculating original mesh data
+
+Distributing cells to processors
+
+Distributing faces to processors
+
+Distributing points to processors
+
+Constructing processor meshes
+
+Processor 0
+    Number of cells = 13250
+    Number of points = 15094
+    Number of faces shared with processor 1 = 351
+    Number of processor patches = 1
+    Number of processor faces = 351
+    Number of boundary faces = 3435
+
+Processor 1
+    Number of cells = 13474
+    Number of points = 15507
+    Number of faces shared with processor 0 = 351
+    Number of faces shared with processor 2 = 336
+    Number of processor patches = 2
+    Number of processor faces = 687
+    Number of boundary faces = 3215
+
+Processor 2
+    Number of cells = 13416
+    Number of points = 15925
+    Number of faces shared with processor 1 = 336
+    Number of faces shared with processor 3 = 264
+    Number of processor patches = 2
+    Number of processor faces = 600
+    Number of boundary faces = 4156
+
+Processor 3
+    Number of cells = 13392
+    Number of points = 15539
+    Number of faces shared with processor 2 = 264
+    Number of processor patches = 1
+    Number of processor faces = 264
+    Number of boundary faces = 4044
+
+Number of processor faces = 951
+Max number of cells = 13474 (0.67996712% above average 13383)
+Max number of processor patches = 2 (33.333333% above average 1.5)
+Max number of faces between processors = 687 (44.479495% above average 475.5)
+
+Time = 0
+
+Processor 0: field transfer
+Processor 1: field transfer
+Processor 2: field transfer
+Processor 3: field transfer
+
+End
+

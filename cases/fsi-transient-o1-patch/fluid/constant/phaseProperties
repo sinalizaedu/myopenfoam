@@ -1,0 +1,61 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      phaseProperties;
+}
+
+// Rabbit ocular tissue — Table I + Lamminsalo 2018 operating conditions.
+// Not read by solvers directly; reference for scripts and BC setup.
+
+species         rabbit;
+
+// --- Table I (material properties) ---
+rhoAqueous      995;        // kg/m³  — Lamminsalo Tabela I ᵈ @ 37 °C (Comsol 994–995)
+muAqueous_min   6.89e-4;    // Pa·s   — water 37 °C (Lamminsalo Methods)
+muAqueous_max   7.32e-4;    // Pa·s   — water 34 °C (Lamminsalo Methods)
+muAqueous       6.89e-4;    // Pa·s   — adopted @ 37 °C
+nuAqueous       6.925e-7;   // m²/s   — mu/rho @ 37 °C
+T_aqueous_C     37;
+
+rhoVitreous     1000;
+epsVitreous     1.0;        // Table I porosity εp
+kVitreous       5.8e-14;    // m²     — Table I κ
+dVitreous       1.724e13;   // m⁻²    — Brinkman drag: d = 1/κ
+
+rhoTM           1050;
+epsTM           1.0;        // Table I
+// k_TM adjusted (Table I ᵍ) — calibrate d_TM in fvOptions; d = 1/kappa
+kTM             adjusted;   // see porousMediaProperties
+dTM             adjusted;   // pending Lamminsalo BC recalibration
+
+rhoCornea       1050;
+epsCornea       1.0;
+kCornea         1.04e-18;   // Table I (G2)
+
+rhoLens         1050;
+epsLens         0.0;        // impermeável (Table I ᶠ)
+
+rhoIrisCiliary  1100;
+epsIris         0.0;        // impermeável (Table I ᶠ)
+
+rhoSclera       1100;
+epsSclera       1.0;
+kSclera         1.04e-18;   // Table I retina/choroid/sclera (G2)
+
+// --- Sim 1 G1 — Lamminsalo 2018 (coelho) ---
+P_epi_Torr            10;
+Q_prod_uL_min           3.0;
+
+// --- Lamminsalo 2018 Methods (canonical reference) ---
+lamminsalo2018
+{
+    Q_prod_uL_min           3.0;
+    P_outlet_TM_Torr        10;
+    P_outlet_cornea_Torr    0;
+    U_inlet_mm_min_noPetit  0.1332;
+    U_inlet_mm_min_Petit    0.1655;
+    IOP_calibration_Torr    (10.1 12.5 15 17.5 20);
+    mu_Pa_s_34_37C          (7.32e-4 6.89e-4);
+}

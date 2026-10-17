@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+9
+(
+    outlet_tm
+    {
+        type            patch;
+        nFaces          64;
+        startFace       49197;
+    }
+
+    ac_inlet
+    {
+        type            patch;
+        nFaces          48;
+        startFace       49261;
+    }
+
+    lens_wall
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          848;
+        startFace       49309;
+    }
+
+    iris_wall
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          520;
+        startFace       50157;
+    }
+
+    wall
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          1016;
+        startFace       50677;
+    }
+
+    symmetry_0
+    {
+        type            symmetry;
+        inGroups        1 ( symmetry );
+        nFaces          2203;
+        startFace       51693;
+    }
+
+    symmetry_90
+    {
+        type            symmetry;
+        inGroups        1 ( symmetry );
+        nFaces          2203;
+        startFace       53896;
+    }
+
+    ivi_tip
+    {
+        type            patch;
+        inGroups        1 ( empty );
+        nFaces          112;
+        startFace       56099;
+    }
+
+    acp_tip
+    {
+        type            patch;
+        inGroups        1 ( empty );
+        nFaces          136;
+        startFace       56211;
+    }
+
+)
+
+
+// ************************************************************************* //

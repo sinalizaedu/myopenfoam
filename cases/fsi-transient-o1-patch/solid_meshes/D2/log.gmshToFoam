@@ -1,0 +1,107 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : gmshToFoam geometry/o1_solid_3d.msh
+Date   : Aug 30 2026
+Time   : 21:15:13
+Host   : 148ab713c839
+PID    : 259
+I/O    : uncollated
+Case   : /simulation/fsi-transient-o1-patch/solid_meshes/D2
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Starting to read mesh format at line 2
+Read format version 2.2  ascii 0
+
+Starting to read physical names at line 5
+Physical names:12
+    Volume 1	cornea
+    Volume 2	retina
+    Volume 3	choroid
+    Volume 4	sclera
+    Volume 5	ciliary
+    Volume 6	iris
+    Surface 7	symmetry_0
+    Surface 8	symmetry_90
+    Surface 9	fsi_active
+    Surface 10	outer
+    Surface 11	fsi_iris
+    Surface 12	fsi_lens
+
+Starting to read points at line 20
+Vertices to be read: 92024
+Vertices read:92024
+
+Starting to read cells at line 92047
+Cells to be read: 104652
+
+Mapping region 1 to Foam cellZone 0
+Mapping region 2 to Foam cellZone 1
+Mapping region 3 to Foam cellZone 2
+Mapping region 4 to Foam cellZone 3
+Mapping region 5 to Foam cellZone 4
+Mapping region 6 to Foam cellZone 5
+Mapping region 7 to Foam patch 0
+Mapping region 8 to Foam patch 1
+Mapping region 9 to Foam patch 2
+Mapping region 10 to Foam patch 3
+Mapping region 11 to Foam patch 4
+Mapping region 12 to Foam patch 5
+Cells:
+    total:83592
+    hex  :79992
+    prism:3600
+    pyr  :0
+    tet  :0
+
+CellZones:
+Zone	Size
+    0	25200
+    1	10680
+    2	10680
+    3	16800
+    4	13320
+    5	6912
+
+Patch 0 gets name symmetry_0
+Patch 1 gets name symmetry_90
+Patch 2 gets name fsi_active
+Patch 3 gets name outer
+Patch 4 gets name fsi_iris
+Patch 5 gets name fsi_lens
+
+--> FOAM Warning : 
+    From Foam::polyMesh::polyMesh(const Foam::IOobject&, Foam::pointField&&, const Foam::cellShapeList&, const Foam::faceListList&, const Foam::wordList&, const Foam::wordList&, const Foam::word&, const Foam::word&, const Foam::wordList&, bool)
+    in file meshes/polyMesh/polyMeshFromShapeMesh.C at line 635
+    Found 21084 undefined faces in mesh; adding to default patch defaultFaces
+Finding faces of patch 0
+Finding faces of patch 1
+Finding faces of patch 2
+Finding faces of patch 3
+Finding faces of patch 4
+Finding faces of patch 5
+
+FaceZones:
+Zone	Size
+
+Writing zone 0 to cellZone cornea and cellSet
+Writing zone 1 to cellZone retina and cellSet
+Writing zone 2 to cellZone choroid and cellSet
+Writing zone 3 to cellZone sclera and cellSet
+Writing zone 4 to cellZone ciliary and cellSet
+Writing zone 5 to cellZone iris and cellSet
+End
+

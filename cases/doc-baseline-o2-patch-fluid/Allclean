@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+cd "$(dirname "$0")"
+(
+  cd fluid
+  rm -rf log.* postProcessing dynamicCode codeStream processor* VTK
+  find . -maxdepth 1 -type d -name '[0-9]*' ! -name '0' -exec rm -rf {} +
+  rm -rf constant/polyMesh
+  mkdir -p 0
+  cp -f initial/U.baseline initial/U
+  cp -f initial/p.baseline initial/p
+  cp -f initial/U.baseline 0/U
+  cp -f initial/p.baseline 0/p
+  touch O1.foam case.foam
+)
+echo "=== doc-baseline-o1-patch-fluid: clean done ==="

@@ -1,0 +1,1242 @@
+=== doc-g2-sim4 MODE=baseline MESH_LEVEL=M8 REUSE_MESH=0 ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : gmshToFoam eye_g2_fluid_lamminsalo.msh
+Date   : Aug 03 2026
+Time   : 15:26:26
+Host   : 1daedf974103
+PID    : 235
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Starting to read mesh format at line 2
+Read format version 2.2  ascii 0
+
+Starting to read physical names at line 5
+Physical names:7
+    Surface 2	symmetry_0
+    Surface 3	symmetry_90
+    Surface 4	iris_wall
+    Surface 5	ac_inlet
+    Surface 6	outlet_tm
+    Surface 7	wall
+    Volume 1	fluid
+
+Starting to read points at line 15
+Vertices to be read: 47107
+Vertices read:47107
+
+Starting to read cells at line 47125
+Cells to be read: 116861
+
+Mapping region 2 to Foam patch 0
+Mapping region 7 to Foam patch 1
+Mapping region 3 to Foam patch 2
+Mapping region 4 to Foam patch 3
+Mapping region 5 to Foam patch 4
+Mapping region 6 to Foam patch 5
+Mapping region 1 to Foam cellZone 0
+Cells:
+    total:69132
+    hex  :0
+    prism:68679
+    pyr  :234
+    tet  :219
+
+CellZones:
+Zone	Size
+    0	69132
+
+Patch 0 gets name symmetry_0
+Patch 1 gets name wall
+Patch 2 gets name symmetry_90
+Patch 3 gets name iris_wall
+Patch 4 gets name ac_inlet
+Patch 5 gets name outlet_tm
+
+--> FOAM Warning : 
+    From Foam::polyMesh::polyMesh(const Foam::IOobject&, Foam::pointField&&, const Foam::cellShapeList&, const Foam::faceListList&, const Foam::wordList&, const Foam::wordList&, const Foam::word&, const Foam::word&, const Foam::wordList&, bool)
+    in file meshes/polyMesh/polyMeshFromShapeMesh.C at line 635
+    Found 47729 undefined faces in mesh; adding to default patch defaultFaces
+Finding faces of patch 0
+Finding faces of patch 1
+Finding faces of patch 2
+Finding faces of patch 3
+Finding faces of patch 4
+Finding faces of patch 5
+
+FaceZones:
+Zone	Size
+
+Writing zone 0 to cellZone fluid and cellSet
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Aug 03 2026
+Time   : 15:26:28
+Host   : 1daedf974103
+PID    : 239
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 6(symmetry_0 wall symmetry_90 iris_wall ac_inlet outlet_tm)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 10(symmetry_0 symmetry_90 wall lens_wall iris_wall ac_inlet outlet_tm ivi_tip acp_tip defaultFaces)
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry lens_wall
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry ivi_tip
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry acp_tip
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry defaultFaces
+fieldDict:
+{
+    symmetry_0
+    {
+        type            symmetry;
+        physicalType    patch;
+        nFaces          23044;
+        startFace       148856;
+    }
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          1215;
+        startFace       171900;
+    }
+    symmetry_90
+    {
+        type            symmetry;
+        physicalType    patch;
+        nFaces          23044;
+        startFace       173115;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        nFaces          381;
+        startFace       196159;
+    }
+    ac_inlet
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          24;
+        startFace       196540;
+    }
+    outlet_tm
+    {
+        type            patch;
+        physicalType    patch;
+        nFaces          21;
+        startFace       196564;
+    }
+}
+
+Writing modified boundary
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : createPatch -overwrite -dict system/createPatchDict.demote
+Date   : Aug 03 2026
+Time   : 15:26:28
+Host   : 1daedf974103
+PID    : 243
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Reading "system/createPatchDict.demote"
+
+
+
+Adding patches to mesh region0
+
+
+
+
+Repatching mesh region0
+
+Moving faces from patch wall to patch 1
+Moving faces from patch ac_inlet to patch 1
+Moving faces from patch outlet_tm to patch 1
+Doing topology modification to order faces.
+
+Not synchronising points.
+
+Removing patches with no faces in them.
+
+Removed zero-sized patch ac_inlet type patch at position 4
+Removed zero-sized patch outlet_tm type patch at position 5
+
+
+Writing repatched mesh region0 to 0
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Aug 03 2026
+Time   : 15:26:29
+Host   : 1daedf974103
+PID    : 246
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 4(symmetry_0 wall symmetry_90 iris_wall)
+Extracted patch groups:
+    group symmetry with patches 2(symmetry_0 symmetry_90)
+    group wall with patches 2(wall iris_wall)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 10(symmetry_0 symmetry_90 wall lens_wall iris_wall ac_inlet outlet_tm ivi_tip acp_tip defaultFaces)
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry lens_wall
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry ac_inlet
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry outlet_tm
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry ivi_tip
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry acp_tip
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry defaultFaces
+fieldDict:
+{
+    symmetry_0
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          23044;
+        startFace       148856;
+    }
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          1260;
+        startFace       171900;
+    }
+    symmetry_90
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          23044;
+        startFace       173160;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          381;
+        startFace       196204;
+    }
+}
+
+Writing modified boundary
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.splitPatches -constant
+Date   : Aug 03 2026
+Time   : 15:26:30
+Host   : 1daedf974103
+PID    : 249
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.splitPatches
+
+Time = constant
+    mesh not changed.
+Created faceSet wall_pool
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 1260 faces
+    faceSet wall_pool now size 1260
+Created faceSet outlet_tm_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet outlet_tm_faces now size 1260
+Read set faceSet outlet_tm_faces size:1260
+    Applying source cylinderAnnulusToFace
+    Adding faces with centres within cylinder, with point1 = (0.0067 -0.005 0), point2 = (0.00693 -0.00424 0), radius = 0.00731, inner radius = 0.00632
+    faceSet outlet_tm_faces now size 4
+Created faceSet ac_inlet_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet ac_inlet_faces now size 1260
+Read set faceSet ac_inlet_faces size:1260
+    Applying source cylinderAnnulusToFace
+    Adding faces with centres within cylinder, with point1 = (0.00692 -0.00411 0), point2 = (0.007 -0.0031 0), radius = 0.00738, inner radius = 0.00654
+    faceSet ac_inlet_faces now size 12
+Read set faceSet ac_inlet_faces size:12
+    Applying source faceToFace
+    Removing all elements of face sets: (outlet_tm_faces)
+    faceSet ac_inlet_faces now size 8
+Time = 0
+    mesh not changed.
+Created faceSet wall_pool
+    Applying source patchToFace
+    Adding all faces of patches: (wall) ...
+    Found matching patch wall with 1260 faces
+    faceSet wall_pool now size 1260
+Created faceSet outlet_tm_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet outlet_tm_faces now size 1260
+Read set faceSet outlet_tm_faces size:1260
+    Applying source cylinderAnnulusToFace
+    Adding faces with centres within cylinder, with point1 = (0.0067 -0.005 0), point2 = (0.00693 -0.00424 0), radius = 0.00731, inner radius = 0.00632
+    faceSet outlet_tm_faces now size 4
+Created faceSet ac_inlet_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (wall_pool)
+    faceSet ac_inlet_faces now size 1260
+Read set faceSet ac_inlet_faces size:1260
+    Applying source cylinderAnnulusToFace
+    Adding faces with centres within cylinder, with point1 = (0.00692 -0.00411 0), point2 = (0.007 -0.0031 0), radius = 0.00738, inner radius = 0.00654
+    faceSet ac_inlet_faces now size 12
+Read set faceSet ac_inlet_faces size:12
+    Applying source faceToFace
+    Removing all elements of face sets: (outlet_tm_faces)
+    faceSet ac_inlet_faces now size 8
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : createPatch -overwrite -dict system/createPatchDict.splitPatches
+Date   : Aug 03 2026
+Time   : 15:26:30
+Host   : 1daedf974103
+PID    : 252
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Reading "system/createPatchDict.splitPatches"
+
+
+
+Adding patches to mesh region0
+
+Adding new patch outlet_tm from 
+{
+    type            patch;
+    nFaces          0;
+    startFace       0;
+}
+
+Adding new patch ac_inlet from 
+{
+    type            patch;
+    nFaces          0;
+    startFace       0;
+}
+
+
+
+
+Repatching mesh region0
+
+Read 4 faces from faceSet outlet_tm_faces
+Read 8 faces from faceSet ac_inlet_faces
+Doing topology modification to order faces.
+
+Not synchronising points.
+
+Removing patches with no faces in them.
+
+
+
+Writing repatched mesh region0 to 0
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Aug 03 2026
+Time   : 15:26:31
+Host   : 1daedf974103
+PID    : 255
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 6(symmetry_0 wall symmetry_90 iris_wall outlet_tm ac_inlet)
+Extracted patch groups:
+    group symmetry with patches 2(symmetry_0 symmetry_90)
+    group wall with patches 2(wall iris_wall)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 10(symmetry_0 symmetry_90 wall lens_wall iris_wall ac_inlet outlet_tm ivi_tip acp_tip defaultFaces)
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry lens_wall
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry ivi_tip
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry acp_tip
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry defaultFaces
+fieldDict:
+{
+    symmetry_0
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          23044;
+        startFace       148856;
+    }
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          1248;
+        startFace       171900;
+    }
+    symmetry_90
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          23044;
+        startFace       173148;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          381;
+        startFace       196192;
+    }
+    outlet_tm
+    {
+        type            patch;
+        nFaces          4;
+        startFace       196573;
+    }
+    ac_inlet
+    {
+        type            patch;
+        nFaces          8;
+        startFace       196577;
+    }
+}
+
+Writing modified boundary
+
+End
+
+=== IVI tip cavity ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.iviTip -constant
+Date   : Aug 03 2026
+Time   : 15:26:32
+Host   : 1daedf974103
+PID    : 261
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.iviTip
+
+Time = constant
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 360
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 69132
+Read set cellSet fluid_keep size:69132
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 68772
+Time = 0
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 360
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 69132
+Read set cellSet fluid_keep size:69132
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 68772
+
+End
+
+  ivi_tip_cells: 360
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : subsetMesh fluid_keep -patch ivi_tip -overwrite
+Date   : Aug 03 2026
+Time   : 15:26:33
+Host   : 1daedf974103
+PID    : 268
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Adding exposed internal faces to new patch: ivi_tip
+
+Using cellSet fluid_keep
+
+Subset 68772 of 69132 cells
+
+Reading cellSet: ivi_tip_cells
+Subsetting cellSet ivi_tip_cells
+Writing subsetted mesh and fields to time 0
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Aug 03 2026
+Time   : 15:26:34
+Host   : 1daedf974103
+PID    : 271
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 7(symmetry_0 wall symmetry_90 iris_wall outlet_tm ac_inlet ivi_tip)
+Extracted patch groups:
+    group empty with patches 1(ivi_tip)
+    group symmetry with patches 2(symmetry_0 symmetry_90)
+    group wall with patches 2(wall iris_wall)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 10(symmetry_0 symmetry_90 wall lens_wall iris_wall ac_inlet outlet_tm ivi_tip acp_tip defaultFaces)
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry lens_wall
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry acp_tip
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry defaultFaces
+fieldDict:
+{
+    symmetry_0
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          22924;
+        startFace       148052;
+    }
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          1248;
+        startFace       170976;
+    }
+    symmetry_90
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          22924;
+        startFace       172224;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          381;
+        startFace       195148;
+    }
+    outlet_tm
+    {
+        type            patch;
+        nFaces          4;
+        startFace       195529;
+    }
+    ac_inlet
+    {
+        type            patch;
+        nFaces          8;
+        startFace       195533;
+    }
+    ivi_tip
+    {
+        type            patch;
+        inGroups        1 ( empty );
+        nFaces          81;
+        startFace       195541;
+    }
+}
+
+Writing modified boundary
+
+End
+
+=== ACP tip cavity ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.acpTip -constant
+Date   : Aug 03 2026
+Time   : 15:26:34
+Host   : 1daedf974103
+PID    : 274
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.acpTip
+
+Time = constant
+    mesh not changed.
+Created cellSet acp_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 -0.007 0))
+    cellSet acp_tip_cells now size 1
+Read set cellSet acp_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 -0.007 0), radius = 0.00055
+    cellSet acp_tip_cells now size 342
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 68772
+Read set cellSet fluid_keep size:68772
+    Applying source cellToCell
+    Removing all elements of cell sets: (acp_tip_cells)
+    cellSet fluid_keep now size 68430
+Time = 0
+    mesh not changed.
+Created cellSet acp_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 -0.007 0))
+    cellSet acp_tip_cells now size 1
+Read set cellSet acp_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 -0.007 0), radius = 0.00055
+    cellSet acp_tip_cells now size 342
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 68772
+Read set cellSet fluid_keep size:68772
+    Applying source cellToCell
+    Removing all elements of cell sets: (acp_tip_cells)
+    cellSet fluid_keep now size 68430
+
+End
+
+  acp_tip_cells: 342
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : subsetMesh fluid_keep -patch acp_tip -overwrite
+Date   : Aug 03 2026
+Time   : 15:26:35
+Host   : 1daedf974103
+PID    : 281
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Adding exposed internal faces to new patch: acp_tip
+
+Using cellSet fluid_keep
+
+Subset 68430 of 68772 cells
+
+Reading cellSet: acp_tip_cells ivi_tip_cells
+Subsetting cellSet acp_tip_cells
+Subsetting cellSet ivi_tip_cells
+Writing subsetted mesh and fields to time 0
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Aug 03 2026
+Time   : 15:26:36
+Host   : 1daedf974103
+PID    : 284
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 8(symmetry_0 wall symmetry_90 iris_wall outlet_tm ac_inlet ivi_tip acp_tip)
+Extracted patch groups:
+    group empty with patches 2(ivi_tip acp_tip)
+    group symmetry with patches 2(symmetry_0 symmetry_90)
+    group wall with patches 2(wall iris_wall)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 10(symmetry_0 symmetry_90 wall lens_wall iris_wall ac_inlet outlet_tm ivi_tip acp_tip defaultFaces)
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry lens_wall
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry defaultFaces
+fieldDict:
+{
+    symmetry_0
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          22810;
+        startFace       147299;
+    }
+    wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          1227;
+        startFace       170109;
+    }
+    symmetry_90
+    {
+        type            symmetry;
+        physicalType    patch;
+        inGroups        1 ( symmetry );
+        nFaces          22810;
+        startFace       171336;
+    }
+    iris_wall
+    {
+        type            wall;
+        physicalType    patch;
+        inGroups        1 ( wall );
+        nFaces          381;
+        startFace       194146;
+    }
+    outlet_tm
+    {
+        type            patch;
+        nFaces          4;
+        startFace       194527;
+    }
+    ac_inlet
+    {
+        type            patch;
+        nFaces          8;
+        startFace       194531;
+    }
+    ivi_tip
+    {
+        type            patch;
+        inGroups        1 ( empty );
+        nFaces          81;
+        startFace       194539;
+    }
+    acp_tip
+    {
+        type            patch;
+        inGroups        1 ( empty );
+        nFaces          60;
+        startFace       194620;
+    }
+}
+
+Writing modified boundary
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.g2 -constant
+Date   : Aug 03 2026
+Time   : 15:26:36
+Host   : 1daedf974103
+PID    : 287
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.g2
+
+Time = constant
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source cylinderAnnulusToCell
+    Adding cells with centres within cylinder, with point1 = (0 -0.005 0), point2 = (0 -0.00424 0), radius = 0.0072, inner radius = 0.0064
+    cellSet tm_zone now size 120
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 120
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.0001 -0.0015 -0.009) (0.009 0.0075 0.0001))
+    cellSet vitreous_zone now size 47400
+Read set cellSet vitreous_zone size:47400
+    Applying source cellToCell
+    Removing all elements of cell sets: (tm_zone)
+    cellSet vitreous_zone now size 47400
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 47400
+Time = 0
+    mesh not changed.
+Created cellSet tm_zone
+    Applying source cylinderAnnulusToCell
+    Adding cells with centres within cylinder, with point1 = (0 -0.005 0), point2 = (0 -0.00424 0), radius = 0.0072, inner radius = 0.0064
+    cellSet tm_zone now size 120
+Created cellZoneSet tm_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: tm_zone ...
+    cellZoneSet tm_zone now size 120
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.0001 -0.0015 -0.009) (0.009 0.0075 0.0001))
+    cellSet vitreous_zone now size 47400
+Read set cellSet vitreous_zone size:47400
+    Applying source cellToCell
+    Removing all elements of cell sets: (tm_zone)
+    cellSet vitreous_zone now size 47400
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 47400
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh
+Date   : Aug 03 2026
+Time   : 15:26:37
+Host   : 1daedf974103
+PID    : 293
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+
+Time = 0
+
+Mesh stats 
+    points:           46732
+    faces:            194680
+    internal faces:   147299
+    cells:            68430
+    faces per cell:   4.9975011
+    boundary patches: 8
+    point zones:      0
+    face zones:       0
+    cell zones:       3
+
+Overall number of cells of each type:
+    hexahedra:     0
+    prisms:        68076
+    wedges:        0
+    pyramids:      183
+    tet wedges:    0
+    tetrahedra:    171
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Number of regions: 1 (OK).
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology
+    symmetry_0          22810    11728    ok (non-closed singly connected)  
+    wall                1227     1652     ok (non-closed singly connected)  
+    symmetry_90         22810    11728    ok (non-closed singly connected)  
+    iris_wall           381      520      ok (non-closed singly connected)  
+    outlet_tm           4        10       ok (non-closed singly connected)  
+    ac_inlet            8        20       ok (non-closed singly connected)  
+    ivi_tip             81       106      ok (non-closed singly connected)  
+    acp_tip             60       81       ok (non-closed singly connected)  
+    ".*"                47381    24564    ok (closed singly connected)      
+
+
+Checking faceZone topology for multiply connected surfaces...
+    No faceZones found.
+
+Checking basic cellZone addressing...
+    CellZone            Cells        Points       Volume       BoundingBox
+    fluid               68430        46732        4.3766787e-07 (0 -0.00816 -0.0083639199) (0.0083639199 0.0069 0)
+    tm_zone             120          120          9.7702092e-10 (4.0283365e-19 -0.0047140668 -0.00693) (0.00693 -0.00422 0)
+    vitreous_zone       47400        32149        3.046392e-07 (0 -0.0015480762 -0.0083639199) (0.0083639199 0.0069 0)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (0 -0.00816 -0.0083639199) (0.0083639199 0.0069 0)
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+    Boundary openness (5.2664961e-16 4.0153397e-17 -8.2817233e-16) OK.
+    Max cell openness = 5.1210519e-15 OK.
+    Max aspect ratio = 36.308757 OK.
+    Minimum face area = 8.125e-11. Maximum face area = 4.8652853e-07.  Face area magnitudes OK.
+    Min volume = 2.668564e-14. Max volume = 2.0985319e-11.  Total volume = 4.3766787e-07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 35.210306 average: 2.6223661
+    Non-orthogonality check OK.
+    Face pyramids OK.
+    Max skewness = 1.8495814 OK.
+    Coupled point location match (average 0) OK.
+
+Mesh OK.
+
+End
+
+=== patch counts ===
+  ac_inlet: 8 faces
+  outlet_tm: 4 faces
+  ivi_tip: 81 faces
+  acp_tip: 60 faces
+  wall: 1227 faces
+  symmetry_0: 22810 faces
+  symmetry_90: 22810 faces

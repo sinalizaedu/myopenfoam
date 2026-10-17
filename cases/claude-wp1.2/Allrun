@@ -1,0 +1,7 @@
+#!/bin/bash
+# claude-wp1.2: multi-start do ajuste Ogden N=1 vs Pallikaris.
+# Rodar dentro do container FSI a partir de /simulation/claude-wp1.2/
+# Custo estimado: 35-45 min.
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 scripts/fit_pallikaris_multistart_claude.py "$@"

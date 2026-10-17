@@ -1,0 +1,20 @@
+#!/bin/bash
+# B2: H1 limbus + max radial layers — structured hex wedge (v2 of B1).
+set -euo pipefail
+cd "$(dirname "$0")"
+# shellcheck source=../env.sh
+source ../env.sh
+
+python3 "$GEN" --variant H1 \
+    --n-retina "${N_RETINA:-5}" --n-choroid "${N_CHOROID:-5}" \
+    --n-sclera "${N_SCLERA:-5}" --n-iris "${N_IRIS:-5}" \
+    --out system/blockMeshDict.O1solid
+
+rm -rf constant/polyMesh 0
+mkdir -p 0
+blockMesh -dict system/blockMeshDict.O1solid | tee log.blockMesh
+transformPoints -rotate-y 90 | tee log.transformPoints
+python3 "$EXP" --mode fields --case .
+checkMesh | tee log.checkMesh
+echo "=== B2 summary ==="
+grep -E "cells:|regions:|fsi_active|negative volume|open cells|Failed|Mesh OK|non-orthogonality Max|Cell volumes" log.checkMesh || true

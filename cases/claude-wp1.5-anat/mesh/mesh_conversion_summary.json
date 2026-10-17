@@ -1,0 +1,46 @@
+{
+  "source_mesh": "../../doc-g3-sim1/geometry/eye_g2_solid_lamminsalo_M1.msh",
+  "output_inp": "../mesh/eye_anatomical.inp",
+  "n_nodes": 3780,
+  "n_hex8": 2406,
+  "n_quad4": 1884,
+  "element_type": "C3D8I",
+  "volume_zones": {
+    "CORNEA": 306,
+    "SCLERA": 840,
+    "CHOROID": 630,
+    "RETINA": 630
+  },
+  "surface_patches": {
+    "SYMMETRY_0": 511,
+    "SYMMETRY_90": 433,
+    "OUTER": 444,
+    "FSI_IRIS": 90,
+    "FSI_LENS": 94,
+    "FSI_ACTIVE": 312
+  },
+  "surfaces_matched": {
+    "SYMMETRY_0": 507,
+    "SYMMETRY_90": 429,
+    "OUTER": 444,
+    "FSI_IRIS": 84,
+    "FSI_LENS": 94,
+    "FSI_ACTIVE": 312
+  },
+  "symmetry": {
+    "SYMMETRY_0": "plano z=0, restringir DOF 3 (uz=0)",
+    "SYMMETRY_90": "plano x=0, restringir DOF 1 (ux=0)"
+  },
+  "units": {
+    "coordinates": "metros",
+    "pressure": "Pa"
+  },
+  "geometry_source": "Lamminsalo et al. 2018 / Missel 2012 (coelho)",
+  "node_renumbering": {
+    "gmsh_min": 1537,
+    "gmsh_max": 5316,
+    "ccx_min": 1,
+    "ccx_max": 3780,
+    "reason": "CalculiX requires first *NODE label to be 1"
+  }
+}

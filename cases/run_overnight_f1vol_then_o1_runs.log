@@ -1,0 +1,51 @@
+2026-08-24T20:43:51Z  === OVERNIGHT START np=4 (F1 volume baseline → O1 patch → O1 volume) ===
+2026-08-24T20:43:51Z  === WAIT F1 volume baseline (doc-baseline-f1-volume-fluid) ===
+2026-08-24T20:43:51Z  F1 already running in Docker — polling until End
+2026-08-24T20:43:51Z  F1 still running (latestTime=900)
+2026-08-24T20:59:44Z  === OVERNIGHT START np=4 (F1 volume baseline → O1 patch → O1 volume) ===
+2026-08-24T20:59:44Z  === WAIT F1 volume baseline (doc-baseline-f1-volume-fluid) ===
+2026-08-24T20:59:44Z  F1 already done
+2026-08-24T20:59:44Z  === ensure F1 calibration yaml ===
+time="2026-08-24T22:59:44+02:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-ec07fa11b617 Creating 
+ Container myopenfoam-fsi-run-ec07fa11b617 Created 
+Wrote /simulation/doc-baseline-f1-volume-fluid/calibration/baseline_iop.yaml  d_TM=1.983790e+15  IOP_AC=14.896 mmHg
+total 8
+drwxr-xr-x  4 ubuntu ubuntu 128 Aug 23 16:32 .
+drwxr-xr-x 12 ubuntu ubuntu 384 Aug 24 18:55 ..
+-rw-r--r--  1 ubuntu ubuntu 370 Aug 23 16:32 baseline_F1.yaml
+-rw-r--r--  1 ubuntu ubuntu 287 Aug 24 20:59 baseline_iop.yaml
+# Verified after MODE=baseline simpleFoam — IOP set by d_TM in fvOptions
+case: doc-baseline-f1-volume-fluid
+time: 1000.0
+d_TM: 1.983790e+15
+P_TM_Torr: 10.0
+iop_ac_mmHg: 14.8955
+iop_vit_mmHg: 14.8976
+# Recalibrate IOP: change d_TM (D_TM= env or scripts/set_d_tm.py) and re-run baseline
+2026-08-24T20:59:47Z  ===== O1 EXPERIMENT doc-run-o1-patch-fluid np=4 =====
+2026-08-24T21:15:26Z  === RESUME overnight: wait patch → then volume (np=4) ===
+2026-08-24T21:15:26Z  Patch Docker still running — polling
+2026-08-24T21:15:26Z  Patch in flight (latest~834s)
+2026-08-24T21:29:47Z  === RESUME overnight: wait patch → then volume (np=4) ===
+2026-08-24T21:29:47Z  Patch Docker still running — polling
+2026-08-24T21:29:47Z  Patch in flight (latest~834s)
+2026-08-24T21:30:20Z  === RESUME overnight: wait patch → then volume (np=4) ===
+2026-08-24T21:30:20Z  Patch Docker still running — polling
+2026-08-24T21:30:20Z  Patch in flight (latest~15s)
+2026-08-24T21:31:20Z  Patch in flight (latest~15s)
+2026-08-24T21:44:54Z  === RESUME overnight: wait patch → then volume (np=4) ===
+2026-08-24T21:44:54Z  Patch Docker still running — polling
+2026-08-24T21:44:54Z  Patch in flight (latest~24s)
+2026-08-24T21:45:54Z  Patch in flight (latest~25s)
+2026-08-24T21:46:55Z  Patch in flight (latest~25s)
+2026-08-24T21:47:55Z  Patch in flight (latest~26s)
+2026-08-24T21:48:55Z  Patch in flight (latest~27s)
+2026-08-24T21:49:55Z  Patch in flight (latest~28s)
+2026-08-24T21:50:55Z  Patch in flight (latest~28s)
+2026-08-24T21:51:56Z  Patch in flight (latest~29s)
+2026-08-24T21:52:56Z  Patch container exited
+2026-08-24T21:52:56Z  OK doc-run-o1-patch-fluid
+2026-08-24T21:52:56Z  ===== O1 EXPERIMENT doc-run-o1-volume-fluid np=4 =====
+2026-08-24T22:28:46Z  OK doc-run-o1-volume-fluid
+2026-08-24T22:28:46Z  === RESUME overnight COMPLETE ===

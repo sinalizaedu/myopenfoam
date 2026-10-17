@@ -1,0 +1,131 @@
+===== 2026-08-23T21:23:32+02:00 waiting for mesh prep =====
+===== 2026-08-23T21:28:02+02:00 waiting for mesh prep =====
+===== 2026-08-23T21:29:00+02:00 waiting for mesh prep =====
+===== 2026-08-23T21:29:00+02:00 starting O2/O3 baselines =====
+===== 2026-08-23T21:29:00+02:00 SOLVE doc-baseline-o2-patch-fluid =====
+time="2026-08-23T21:29:00+02:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-1bc29843219d Creating 
+ Container myopenfoam-fsi-run-1bc29843219d Created 
+=== doc-baseline-o2-patch-fluid MODE=baseline MESH_LEVEL=O2 (patch) REUSE_MESH=1 ===
+=== doc-g2-sim4 MODE=baseline MESH_LEVEL=O2 (blockMesh) REUSE_MESH=1 ===
+=== REUSE_MESH=1 baseline: keep polyMesh, reset 0/ ===
+=== patch counts ===
+  ac_inlet: 48 faces
+  outlet_tm: 64 faces
+  ivi_tip: 112 faces
+  acp_tip: 136 faces
+  wall: 1016 faces
+  lens_wall: 848 faces
+  iris_wall: 520 faces
+  symmetry_0: 2203 faces
+  symmetry_90: 2203 faces
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : simpleFoam
+Date   : Aug 23 2026
+Time   : 19:29:04
+Host   : 40e44bbfdec3
+PID    : 236
+I/O    : uncollated
+Case   : /simulation/doc-baseline-o2-patch-fluid/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+
+SIMPLE: convergence criteria
+    field p	 tolerance 0.0001
+    field U	 tolerance 1e-05
+
+Reading field p
+
+Reading field U
+
+Reading/calculating face flux field phi
+
+Selecting incompressible transport model Newtonian
+Selecting turbulence model type laminar
+Selecting laminar stress model Stokes
+No MRF models present
+
+Creating finite-volume options from "system/fvOptions"
+
+Selecting finite volume options type explicitPorositySource
+    Source: tm_porous
+    State: active
+    - selecting cells using cellZones (tm_zone)
+    - selected 256 cell(s) with volume 4.1736065e-10
+Porosity region tm_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/tm_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: tm_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00693 0.00033 0.00693)
+
+Selecting finite volume options type explicitPorositySource
+    Source: vitreous_porous
+    State: active
+    - selecting cells using cellZones (vitreous_zone)
+    - selected 11232 cell(s) with volume 3.7923419e-07
+Porosity region vitreous_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/vitreous_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: vitreous_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00837 0.010564452 0.00837)
+
+
+Starting time loop
+
+surfaceFieldValue flowRateTM:
+    operation     = sum
+
+
+surfaceFieldValue flowRateIVI:
+    operation     = sum
+
+
+surfaceFieldValue flowRateACP:
+    operation     = sum
+
+
+surfaceFieldValue pressureACinlet:
+    operation     = areaAverage
+
+
+Time = 1
+
+smoothSolver:  Solving for Ux, Initial residual = 0.9999999, Final residual = 6.5813894e-10, No Iterations 5
+smoothSolver:  Solving for Uy, Initial residual = 0.99999958, Final residual = 6.5823321e-10, No Iterations 5
+smoothSolver:  Solving for Uz, Initial residual = 0.9999999, Final residual = 6.5977557e-10, No Iterations 5
+GAMG:  Solving for p, Initial residual = 0.99999977, Final residual = 2.8329524, No Iterations 100

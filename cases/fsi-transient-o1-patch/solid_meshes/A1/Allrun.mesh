@@ -1,0 +1,24 @@
+#!/bin/bash
+# A1: conformal extrusion of the O1 fluid wall into hex layers.
+set -euo pipefail
+cd "$(dirname "$0")"
+# shellcheck source=../env.sh
+source ../env.sh
+FLUID="${FLUID_MESH}"
+N_LAYERS="${N_LAYERS:-4}"
+
+if [ ! -f "$FLUID/boundary" ]; then
+    echo "ERROR: O1 fluid mesh not found at $FLUID" >&2
+    exit 1
+fi
+
+python3 "$EXP" --mode extrude --fluid-mesh "$FLUID" --n-layers "$N_LAYERS" \
+    --out system/blockMeshDict.A1
+
+rm -rf constant/polyMesh 0
+mkdir -p 0
+blockMesh -dict system/blockMeshDict.A1 | tee log.blockMesh
+python3 "$EXP" --mode fields --case .
+checkMesh | tee log.checkMesh
+echo "=== A1 summary ==="
+grep -E "cells:|regions:|fsi_active|negative volume|Failed|Mesh OK|non-orthogonality Max" log.checkMesh || true

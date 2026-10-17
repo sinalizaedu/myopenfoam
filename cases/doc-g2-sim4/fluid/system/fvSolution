@@ -11,8 +11,8 @@ solvers
     p
     {
         solver          GAMG;
-        tolerance       1e-08;
-        relTol          0.01;
+        tolerance       1e-07;
+        relTol          0.05;
         smoother        GaussSeidel;
         cacheAgglomeration true;
         agglomerator    faceAreaPair;
@@ -31,30 +31,26 @@ solvers
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-08;
-        relTol          0;
+        tolerance       1e-07;
+        relTol          0.05;
     }
 }
 
-SIMPLE
+PIMPLE
 {
-    nNonOrthogonalCorrectors 8;
-
-    residualControl
-    {
-        p               2e-3;
-        U               1e-5;
-    }
+    nOuterCorrectors 4;
+    nCorrectors     2;
+    nNonOrthogonalCorrectors 2;
 }
 
 relaxationFactors
 {
     fields
     {
-        p               0.1;
+        p               0.3;
     }
     equations
     {
-        U               0.3;
+        U               0.7;
     }
 }

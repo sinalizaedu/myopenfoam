@@ -1,0 +1,36 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      preciceDict;
+}
+
+// preCICE adapter — SOLID (solids4Foam)
+// Two-way: reads Force and writes Displacement (field D) on fsi_active.
+
+participant   Solid;
+
+preciceConfig "../precice-config.xml";
+
+modules ( FSI );
+
+interfaces
+{
+    Interface1
+    {
+        mesh          Solid-Mesh;
+        patches       ( fsi_active );
+        locations     faceCenters;
+        readData      ( Force );
+        writeData     ( Displacement );
+    }
+}
+
+FSI
+{
+    solverType              solid;
+    namePointDisplacement   unused;
+    nameCellDisplacement    D;
+    nameForce               solidForce;
+}

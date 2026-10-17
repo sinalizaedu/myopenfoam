@@ -1,0 +1,22 @@
+/* G1: extrude meridional slab to 90-deg wedge (12 layers). */
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      extrudeMeshDict;
+}
+constructFrom mesh;
+sourceCase ".";
+sourcePatches (front);
+extrudeModel sector;
+nLayers 12;
+expansionRatio 1;
+flipNormals false;
+sectorCoeffs
+{
+    point  (0 0 0);
+    axis   (0 1 0);
+    angle  90;
+}
+mergeFaces false;

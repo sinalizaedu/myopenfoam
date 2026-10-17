@@ -1,0 +1,114 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// Fast stable experiment: 1.0 s linear ramp at each IVI/ACP edge (avoids step blow-up).
+// Effective windows: IVI 5–12 s (plateau 6–11), ACP 15–22 s (plateau 16–21).
+// Rate is already the quarter-symmetry value: ±Q, not ±Q/4.
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+boundaryField
+{
+    iris_wall
+    {
+        type noSlip;
+    }
+    ac_inlet
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate constant 1.25e-11;
+        value           uniform (0 0 0);
+    }
+    outlet_tm { type zeroGradient; }
+
+    ivi_tip
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate table
+        (
+            (0    0)
+            (5    0)
+            (6    2.08325e-9)
+            (11   2.08325e-9)
+            (12   0)
+            (1e6  0)
+        );
+        value           uniform (0 0 0);
+    }
+
+    acp_tip
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate table
+        (
+            (0    0)
+            (15   0)
+            (16   -2.08325e-9)
+            (21   -2.08325e-9)
+            (22   0)
+            (1e6  0)
+        );
+        value           uniform (0 0 0);
+    }
+
+    wall
+    {
+        type            codedFixedValue;
+        name            scleraRobinBC;
+        value           uniform (0 0 0);
+
+        // Windkessel conductance from AC IOP, not wall-face p (needle near-field
+        // poisons the sclera average and the explicit p–U loop explodes).
+        code
+        #{
+            const label timeIndex = this->db().time().timeIndex();
+            static label lastIndex = -1;
+            static scalar Un_hold = 0;
+
+            if (timeIndex != lastIndex)
+            {
+                const fvMesh& mesh = patch().boundaryMesh().mesh();
+                const label aci = mesh.boundaryMesh().findPatchID("ac_inlet");
+                if (aci < 0)
+                {
+                    FatalErrorInFunction
+                        << "scleraRobinBC: patch ac_inlet not found"
+                        << exit(FatalError);
+                }
+                const fvPatch& acPatch = mesh.boundary()[aci];
+                const fvPatchScalarField& pac =
+                    acPatch.lookupPatchField<volScalarField, scalar>("p");
+
+                const scalar area = gSum(acPatch.magSf());
+                const scalar p_avg =
+                    gSum(pac*acPatch.magSf())/max(area, SMALL);
+
+                const scalar p_base = 2.01;
+                const scalar K_comp = 1.0e-7;
+                const scalar Un_target = K_comp*(p_avg - p_base);
+
+                const scalar relax = 0.01;
+                scalar Un = relax*Un_target + (1.0 - relax)*Un_hold;
+                const scalar Un_max = 1.0e-5;
+                Un = min(max(Un, -Un_max), Un_max);
+
+                Un_hold = Un;
+                lastIndex = timeIndex;
+
+                Info<< "scleraRobinBC: t=" << this->db().time().value()
+                    << " p_AC=" << p_avg
+                    << " Un=" << Un_hold
+                    << " Un_target=" << Un_target << endl;
+            }
+
+            operator==(Un_hold*patch().nf());
+        #};
+    }
+
+    lens_wall { type noSlip; }
+    symmetry_0 { type symmetry; }
+    symmetry_90 { type symmetry; }
+}

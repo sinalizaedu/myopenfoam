@@ -1,0 +1,107 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// Passive pimpleFoam TM baseline: ciliary inflow on, IVI/ACP off.
+// Plateau by ~0.5 s; endTime = 2 s leaves headroom. Equilibrated restart → fluid/2.
+
+application     pimpleFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         2;
+
+deltaT          0.05;
+adjustTimeStep  yes;
+maxCo           2;
+maxDeltaT       0.05;
+
+writeControl    adjustableRunTime;
+writeInterval   0.5;
+purgeWrite      1;
+writeFormat     ascii;
+writePrecision  6;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    flowRateTM
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet_tm;
+        writeFields     false;
+        log             true;
+        writeControl    adjustableRunTime;
+        writeInterval   0.5;
+    }
+
+    flowRateIVI
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            ivi_tip;
+        writeFields     false;
+        log             true;
+        writeControl    adjustableRunTime;
+        writeInterval   0.5;
+    }
+
+    flowRateACP
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            acp_tip;
+        writeFields     false;
+        log             true;
+        writeControl    adjustableRunTime;
+        writeInterval   0.5;
+    }
+
+    pressureACinlet
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            ac_inlet;
+        writeFields     false;
+        log             true;
+        writeControl    adjustableRunTime;
+        writeInterval   0.5;
+    }
+
+    iop_probe
+    {
+        type            probes;
+        libs            (sampling);
+        fields          (p);
+        probeLocations
+        (
+            ( 0.0015   -0.0068   0.0000)
+            ( 0.00106  -0.0068  -0.00106)
+            ( 0.0020    0.0030   0.0000)
+            ( 0.00141   0.0030  -0.00141)
+        );
+        writeControl    adjustableRunTime;
+        writeInterval   0.5;
+    }
+}

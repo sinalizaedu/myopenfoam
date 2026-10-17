@@ -1,0 +1,119 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh
+Date   : Aug 30 2026
+Time   : 21:14:40
+Host   : 148ab713c839
+PID    : 239
+I/O    : uncollated
+Case   : /simulation/fsi-transient-o1-patch/solid_meshes/A2
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+
+Time = 0
+
+Mesh stats 
+    points:           92024
+    faces:            259518
+    internal faces:   238434
+    cells:            83592
+    faces per cell:   5.9569337
+    boundary patches: 7
+    point zones:      0
+    face zones:       0
+    cell zones:       6
+
+Overall number of cells of each type:
+    hexahedra:     79992
+    prisms:        3600
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    0
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+  <<Found 360 neighbouring cells with multiple inbetween faces.
+    Upper triangular ordering OK.
+  <<Writing 720 unordered faces to set upperTriangularFace
+    Faces with invalid vertex labels found,  number of faces: 1464
+  <<Writing 1104 faces with out-of-range or duplicate vertices to set outOfRangeFaces
+   *Number of regions: 2
+    The mesh has multiple regions which are not connected by any face.
+  <<Writing region information to "0/cellToRegion"
+  <<Writing region 0 with 76680 cells to cellSet region0
+  <<Writing region 1 with 6912 cells to cellSet region1
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology
+    symmetry_0          7050     7228     multiply connected (shared edge)  
+    symmetry_90         7032     7212     ok (non-closed singly connected)  
+    fsi_active          2324     2591     ok (non-closed singly connected)  
+    outer               2736     3004     multiply connected (shared edge)  
+    fsi_iris            1788     1885     multiply connected (shared edge)  
+    fsi_lens            130      155      ok (non-closed singly connected)  
+    defaultFaces        24       28       multiply connected (shared edge)  
+    ".*"                21084    20634    multiply connected (shared edge)  
+
+Detected 149 bad edges (possibly relevant for finite-area)
+
+Checking faceZone topology for multiply connected surfaces...
+    No faceZones found.
+  <<Writing 156 conflicting points to set nonManifoldPoints
+
+Checking basic cellZone addressing...
+    CellZone            Cells        Points       Volume       BoundingBox
+    cornea              25200        26330        1.4781758e-08 (-0.006966819 -0.00852 -0.006966819) (1.5469446e-18 -0.00468 0)
+    retina              10680        12738        1.2192307e-08 (-0.00847 -0.0020290697 -0.00847) (1.8807178e-18 0.007 0)
+    choroid             10680        12738        2.5309689e-08 (-0.00867 -0.0020870432 -0.00867) (1.9251267e-18 0.0072 0)
+    sclera              16800        19992        4.5625588e-08 (-0.009 -0.0049296285 -0.009) (1.9984014e-18 0.00753 0)
+    ciliary             13320        15314        2.3328913e-08 (-0.0086136021 -0.0046027888 -0.0086136021) (1.9126039e-18 -0.002 -1.9376143e-18)
+    iris                6912         8281         4.5541489e-09 (-0.00692 -0.00538 -0.00692) (1.5365487e-18 -0.00386 -8.4983083e-19)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (-0.009 -0.00852 -0.009) (1.9984014e-18 0.00753 0)
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+ ***Boundary openness (-6.0133288e-05 0.00013990568 -6.0133288e-05) possible hole in boundary description.
+ ***Open cells found, max cell openness: 0.33114945, number of open cells 720
+  <<Writing 720 non closed cells to set nonClosedCells
+ ***Zero or negative face area detected.  Minimum area: 0
+  <<Writing 360 zero area faces to set zeroAreaFaces
+    Min volume = 2.9856794e-15. Max volume = 6.4740808e-12.  Total volume = 1.257924e-07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 90 average: 16.328638
+   *Number of severely non-orthogonal (> 70 degrees) faces: 6888.
+ ***Number of non-orthogonality errors: 360.
+  <<Writing 7248 non-orthogonal faces to set nonOrthoFaces
+ ***Error in face pyramids: 720 faces are incorrectly oriented.
+  <<Writing 720 faces with incorrect orientation to set wrongOrientedFaces
+ ***Max skewness = 39.014593, 540 highly skew faces detected which may impair the quality of the results
+  <<Writing 540 skew faces to set skewFaces
+    Coupled point location match (average 0) OK.
+
+Failed 7 mesh checks.
+
+End
+

@@ -1,0 +1,27 @@
+#!/bin/bash
+# C2: aggressive snappyHexMesh hex + wedge layers (v2 of C1).
+set -euo pipefail
+cd "$(dirname "$0")"
+# shellcheck source=../env.sh
+source ../env.sh
+FLUID="${FLUID_MESH}"
+
+mkdir -p constant/triSurface 0
+python3 "$EXP" --mode stl-inner --fluid-mesh "$FLUID" --out constant/triSurface/inner.stl
+python3 "$EXP" --mode stl-outer --out constant/triSurface/outer.stl
+
+rm -rf constant/polyMesh
+blockMesh | tee log.blockMesh
+snappyHexMesh -overwrite | tee log.snappyHexMesh || true
+if [ ! -f constant/polyMesh/points ]; then
+    echo "ERROR: C2 produced no polyMesh" >&2
+    exit 1
+fi
+python3 "$EXP" --mode fields --case .
+if grep -q "inner" constant/polyMesh/boundary 2>/dev/null; then
+    createPatch -overwrite | tee log.createPatch
+    python3 "$EXP" --mode fields --case .
+fi
+checkMesh | tee log.checkMesh
+echo "=== C2 summary ==="
+grep -E "cells:|regions:|fsi_active|negative volume|open cells|Failed|Mesh OK|non-orthogonality Max" log.checkMesh || true

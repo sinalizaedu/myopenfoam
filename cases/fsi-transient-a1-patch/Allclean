@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e
+cd "$(dirname "$0")"
+(
+  cd fluid
+  rm -rf log.* postProcessing dynamicCode codeStream processor* VTK
+  find . -maxdepth 1 -type d -name '[0-9]*' ! -name '0' -exec rm -rf {} +
+  rm -rf constant/polyMesh
+  mkdir -p 0
+  cp -f initial/U.baseline initial/U
+  cp -f initial/p.baseline initial/p
+  cp -f initial/U.baseline 0/U
+  cp -f initial/p.baseline 0/p
+  cp -f system/controlDict.baseline system/controlDict
+  cp -f system/fvSchemes.baseline system/fvSchemes
+  cp -f system/fvSolution.baseline system/fvSolution
+  rm -f constant/dynamicMeshDict
+  touch O1.foam case.foam
+)
+(
+  cd solid
+  rm -rf log.* postProcessing processor* precice-profiling constant/polyMesh
+  find . -maxdepth 1 -type d -name '[0-9]*' -exec rm -rf {} +
+  mkdir -p 0
+  cp -f initial/D 0/D
+  cp -f initial/solidForce 0/solidForce
+)
+rm -rf precice-run
+echo "=== fsi-transient-a1-patch: clean done ==="

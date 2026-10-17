@@ -1,0 +1,47 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Model B — IVI tip cavity (topoSet r=0.00055 m; physical 30G lumen r=7e-05 m). Dose via Q(t).
+
+actions
+(
+    // Nearest cell to tip point (guaranteed non-empty)
+    {
+        name    ivi_tip_cells;
+        type    cellSet;
+        action  new;
+        source  nearestToCell;
+        points
+        (
+            (0.0 0.003 0.0)
+        );
+    }
+    // Add any cells whose centres fall inside the lumen sphere
+    {
+        name    ivi_tip_cells;
+        type    cellSet;
+        action  add;
+        source  sphereToCell;
+        origin  (0.0 0.003 0.0);
+        radius  0.00055;
+    }
+    {
+        name    fluid_keep;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-1 -1 -1) (1 1 1);
+    }
+    {
+        name    fluid_keep;
+        type    cellSet;
+        action  delete;
+        source  cellToCell;
+        set     ivi_tip_cells;
+    }
+);

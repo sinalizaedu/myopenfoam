@@ -95,8 +95,8 @@ between shells is approximate until conformal fuse geometry is added.
 |------|------|
 | [`doc-g2-sim1`](../doc-g2-sim1/) | Fluid-only steady baseline (rigid wall) |
 | [`doc-g2-sim2`](../doc-g2-sim2/) | Transient IVI (fluid-only) |
-| [`eye-fsi-tc0`](../eye-fsi-tc0/) | Legacy 2D FSI sandbox (blockMesh) |
-| [`pipe-lens-spring`](../pipe-lens-spring/) | Toy lens + Winkler rim reference |
+| [`eye-fsi-tc0`](../old/eye-fsi-tc0/) | Legacy 2D FSI sandbox (blockMesh) |
+| [`pipe-lens-spring`](../old/pipe-lens-spring/) | Toy lens + Winkler rim reference |
 | **`doc-g3-sim1`** | Anatomical G2 solid + fluid FSI |
 
 ## Mesh independence (M1 / M2 / M3)

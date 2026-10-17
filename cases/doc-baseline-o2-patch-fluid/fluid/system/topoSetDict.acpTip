@@ -1,0 +1,45 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Model B — ACP tip cavity (topoSet r=0.00055 m; physical 30G lumen r=7e-05 m). Drainage via Q(t).
+
+actions
+(
+    {
+        name    acp_tip_cells;
+        type    cellSet;
+        action  new;
+        source  nearestToCell;
+        points
+        (
+            (0.0 -0.007 0.0)
+        );
+    }
+    {
+        name    acp_tip_cells;
+        type    cellSet;
+        action  add;
+        source  sphereToCell;
+        origin  (0.0 -0.007 0.0);
+        radius  0.00055;
+    }
+    {
+        name    fluid_keep;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        box     (-1 -1 -1) (1 1 1);
+    }
+    {
+        name    fluid_keep;
+        type    cellSet;
+        action  delete;
+        source  cellToCell;
+        set     acp_tip_cells;
+    }
+);

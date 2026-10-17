@@ -1,0 +1,6 @@
+#!/bin/bash
+# claude-wp1.1: varredura theta_min (borda da calota) em octante S8R.
+# Rodar dentro do container FSI a partir de /simulation/claude-wp1.1/
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 scripts/verify_theta_min_sweep_claude.py "$@"

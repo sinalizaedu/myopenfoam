@@ -1,0 +1,1028 @@
+=== porous-redo launched 2026-08-23T07:50:19Z ===
+vitreous_zone ymin -1.5mm -> -3.60mm; full O1 then F1 pipeline
+time="2026-08-23T09:50:19+02:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-26914d5bddcb Creating 
+ Container myopenfoam-fsi-run-26914d5bddcb Created 
+2026-08-23T07:50:22Z  === POROUS-REDO BATCH START np=4 ===
+2026-08-23T07:50:22Z  === POROUS-REDO BATCH START np=4 ===
+2026-08-23T07:50:22Z  vitreous_zone box ymin = -3.60 mm (full vitreous to hyaloid / AC boundary)
+2026-08-23T07:50:22Z  vitreous_zone box ymin = -3.60 mm (full vitreous to hyaloid / AC boundary)
+2026-08-23T07:50:22Z  ===== CALIBRATE /simulation/doc-g2-sim4 MESH=O1 (IOP_AC≈15, new vitreous porous) =====
+2026-08-23T07:50:22Z  ===== CALIBRATE /simulation/doc-g2-sim4 MESH=O1 (IOP_AC≈15, new vitreous porous) =====
+2026-08-23T07:50:22Z  RUN MESH_LEVEL=O1 MODE=baseline D_TM=7.779000e+14
+=== doc-g2-sim4 MODE=baseline MESH_LEVEL=O1 (blockMesh) REUSE_MESH=0 ===
+Set d_TM = 7.779000e+14 in TM zones (1 replacements)
+=== blockMesh (O1) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh -dict system/blockMeshDict.O1
+Date   : Aug 23 2026
+Time   : 07:50:27
+Host   : ffd393c50fdd
+PID    : 555
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating block mesh from "system/blockMeshDict.O1"
+Creating block edges
+No non-planar block faces defined
+Creating topology blocks
+
+Creating topology patches - from boundary section
+
+Creating block mesh topology - scaling/transform applied later
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 50
+		Number of boundary faces : 92
+		Number of defined boundary faces : 92
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+
+Detected collapsed blocks - using merge points instead of merge topology
+
+Creating block offsets
+Creating merge list (geometric search)...
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale (0.001 0.001 0.001)
+    Block 0 cell size :
+        i : 2.2803509e-05 .. 2.2803509e-05
+        j : 2.8927592e-05 .. 2.8927592e-05
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 1 cell size :
+        i : 2.2803508e-05 .. 2.2803508e-05
+        j : 2.8927592e-05 .. 2.8927592e-05
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 2 cell size :
+        i : 2.8927592e-05 .. 2.8927592e-05
+        j : 5.6488542e-05 .. 5.6488542e-05
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 3 cell size :
+        i : 2.8927592e-05 .. 2.8927592e-05
+        j : 5.6488543e-05 .. 5.6488543e-05
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 4 cell size :
+        i : 5.6488542e-05 .. 5.6488542e-05
+        j : 0.00017426139 .. 0.00017426139
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 5 cell size :
+        i : 5.6488543e-05 .. 5.6488543e-05
+        j : 0.00017426139 .. 0.00017426139
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 6 cell size :
+        i : 0.0001893325 .. 0.0001893325
+        j : 0.00012376431 .. 0.00012376431
+        k : 0.00049444766 .. 0.00049444766
+
+    Block 7 cell size :
+        i : 0.0001893325 .. 0.0001893325
+        j : 0.00012376431 .. 0.00012376431
+        k : 0.00049444766 .. 0.00049444766
+
+    Block 8 cell size :
+        i : 9.9810908e-05 .. 9.9810908e-05
+        j : 4.6666667e-05 .. 4.6666667e-05
+        k : 0 .. 0
+
+    Block 9 cell size :
+        i : 9.9810908e-05 .. 9.9810908e-05
+        j : 4.6666667e-05 .. 4.6666667e-05
+        k : 0 .. 0
+
+    Block 10 cell size :
+        i : 0.00011940813 .. 0.00011940813
+        j : 0.00013753544 .. 6.8767719e-05
+        k : 8.8817842e-19 .. 8.8817842e-19
+
+    Block 11 cell size :
+        i : 0.00011940813 .. 0.00011940813
+        j : 0.00013753544 .. 6.8767719e-05
+        k : 8.8817842e-19 .. 8.8817842e-19
+
+    Block 12 cell size :
+        i : 0.00010822115 .. 0.00010822115
+        j : 0.00011625 .. 0.00011625
+        k : 0 .. 0
+
+    Block 13 cell size :
+        i : 0.00010822115 .. 0.00010822115
+        j : 0.00011625 .. 0.00011625
+        k : 0 .. 0
+
+    Block 14 cell size :
+        i : 5.3659625e-06 .. 5.3659625e-06
+        j : 0.00012139737 .. 0.00012139737
+        k : 0.00039241878 .. 0.00039241878
+
+    Block 15 cell size :
+        i : 5.3659625e-06 .. 5.3659625e-06
+        j : 0.00012139737 .. 0.00012139737
+        k : 0.00039241878 .. 0.00039241878
+
+    Block 16 cell size :
+        i : 0.00011481427 .. 0.00011481427
+        j : 7.9125549e-05 .. 0.0001356438
+        k : 0.00062132973 .. 0.00062132973
+
+    Block 17 cell size :
+        i : 0.00011481427 .. 0.00011481427
+        j : 7.9125549e-05 .. 0.0001356438
+        k : 0.00062132973 .. 0.00062132973
+
+    Block 18 cell size :
+        i : 5.833681e-05 .. 5.833681e-05
+        j : 0.0002191 .. 0.0003756
+        k : 0 .. 0
+
+    Block 19 cell size :
+        i : 5.8336812e-05 .. 5.8336812e-05
+        j : 0.0002191 .. 0.0003756
+        k : 0 .. 0
+
+    Block 20 cell size :
+        i : 6.1982849e-05 .. 6.1982849e-05
+        j : 0.00021818642 .. 0.00037403387
+        k : 0.0001287999 .. 0.0001287999
+
+    Block 21 cell size :
+        i : 6.1983019e-05 .. 6.1983019e-05
+        j : 0.00021818643 .. 0.00037403388
+        k : 0.0001287999 .. 0.0001287999
+
+    Block 22 cell size :
+        i : 6.6114782e-05 .. 6.6114782e-05
+        j : 0.0002144615 .. 0.00036764829
+        k : 0.00025209864 .. 0.00025209864
+
+    Block 23 cell size :
+        i : 6.611445e-05 .. 6.611445e-05
+        j : 0.00021446143 .. 0.00036764816
+        k : 0.00025209864 .. 0.00025209864
+
+    Block 24 cell size :
+        i : 7.083793e-05 .. 7.083793e-05
+        j : 0.00020543257 .. 0.00035217012
+        k : 0.00036462815 .. 0.00036462815
+
+    Block 25 cell size :
+        i : 7.0838233e-05 .. 7.0838233e-05
+        j : 0.00020543264 .. 0.00035217024
+        k : 0.00036462815 .. 0.00036462815
+
+    Block 26 cell size :
+        i : 7.0837281e-05 .. 7.0837281e-05
+        j : 0.00018815302 .. 0.00032254804
+        k : 0.00046158591 .. 0.00046158591
+
+    Block 27 cell size :
+        i : 7.0837116e-05 .. 7.0837116e-05
+        j : 0.0001881529 .. 0.00032254783
+        k : 0.00046158591 .. 0.00046158591
+
+    Block 28 cell size :
+        i : 7.628612e-05 .. 7.628612e-05
+        j : 0.0001603037 .. 0.00027480635
+        k : 0.00053882479 .. 0.00053882479
+
+    Block 29 cell size :
+        i : 7.6286137e-05 .. 7.6286137e-05
+        j : 0.00016030374 .. 0.0002748064
+        k : 0.00053882479 .. 0.00053882479
+
+    Block 30 cell size :
+        i : 9.0111331e-05 .. 9.0111331e-05
+        j : 0.00012349254 .. 0.0002117015
+        k : 0.00059304939 .. 0.00059304939
+
+    Block 31 cell size :
+        i : 9.0111341e-05 .. 9.0111341e-05
+        j : 0.00012349256 .. 0.00021170153
+        k : 0.00059304939 .. 0.00059304939
+
+Adding cell zones
+    0	tm_zone
+    1	vitreous_zone
+No patch pairs to merge
+
+Writing polyMesh with 2 cellZones
+----------------
+Mesh Information
+----------------
+  boundingBox: (0 -0.00816 0) (0.00837 0.0069 0.00837)
+  nPoints: 61832
+  nCells: 54672
+  nFaces: 170936
+  nInternalFaces: 156448
+----------------
+Cell Zones
+----------------
+  zone 0 (size: 720) name: tm_zone
+  zone 1 (size: 33600) name: vitreous_zone
+----------------
+Patches
+----------------
+  patch 0 (start: 156448 size: 144) name: outlet_tm
+  patch 1 (start: 156592 size: 96) name: ac_inlet
+  patch 2 (start: 156688 size: 1824) name: lens_wall
+  patch 3 (start: 158512 size: 1128) name: iris_wall
+  patch 4 (start: 159640 size: 2184) name: wall
+  patch 5 (start: 161824 size: 4556) name: symmetry_0
+  patch 6 (start: 166380 size: 4556) name: symmetry_90
+
+End
+
+=== transformPoints: rotate into case frame (x >= 0, z <= 0) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : transformPoints -rotate-y 90
+Date   : Aug 23 2026
+Time   : 07:50:28
+Host   : ffd393c50fdd
+PID    : 558
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Rotating points about y-axis: 90
+Rotating points by (2.220446e-16 0 1 0 1 0 -1 0 2.220446e-16)
+Writing points into directory "constant/polyMesh"
+
+
+End
+
+=== IVI tip cavity ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.iviTip -constant
+Date   : Aug 23 2026
+Time   : 07:50:29
+Host   : ffd393c50fdd
+PID    : 564
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.iviTip
+
+Time = constant
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 492
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54672
+Read set cellSet fluid_keep size:54672
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 54180
+Time = 0
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 492
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54672
+Read set cellSet fluid_keep size:54672
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 54180
+
+End
+
+  ivi_tip_cells: 492
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : subsetMesh fluid_keep -patch ivi_tip -overwrite
+Date   : Aug 23 2026
+Time   : 07:50:29
+Host   : ffd393c50fdd
+PID    : 571
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Adding exposed internal faces to new patch: ivi_tip
+
+Using cellSet fluid_keep
+
+Subset 54180 of 54672 cells
+
+Reading cellSet: ivi_tip_cells
+Subsetting cellSet ivi_tip_cells
+Writing subsetted mesh and fields to time 0
+
+=== RESTART 2026-08-23T08:11:25Z after iris_wall BC fix ===
+time="2026-08-23T10:11:25+02:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-97b4174fef15 Creating 
+ Container myopenfoam-fsi-run-97b4174fef15 Created 
+2026-08-23T08:11:29Z  === POROUS-REDO BATCH START np=4 ===
+2026-08-23T08:11:29Z  === POROUS-REDO BATCH START np=4 ===
+2026-08-23T08:11:29Z  vitreous_zone box ymin = -3.60 mm (full vitreous to hyaloid / AC boundary)
+2026-08-23T08:11:29Z  vitreous_zone box ymin = -3.60 mm (full vitreous to hyaloid / AC boundary)
+2026-08-23T08:11:29Z  ===== CALIBRATE /simulation/doc-g2-sim4 MESH=O1 (IOP_AC≈15, new vitreous porous) =====
+2026-08-23T08:11:29Z  ===== CALIBRATE /simulation/doc-g2-sim4 MESH=O1 (IOP_AC≈15, new vitreous porous) =====
+2026-08-23T08:11:29Z  RUN MESH_LEVEL=O1 MODE=baseline D_TM=7.779000e+14
+=== doc-g2-sim4 MODE=baseline MESH_LEVEL=O1 (blockMesh) REUSE_MESH=0 ===
+Set d_TM = 7.779000e+14 in TM zones (1 replacements)
+=== blockMesh (O1) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh -dict system/blockMeshDict.O1
+Date   : Aug 23 2026
+Time   : 08:11:36
+Host   : 908a88baaf45
+PID    : 554
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating block mesh from "system/blockMeshDict.O1"
+Creating block edges
+No non-planar block faces defined
+Creating topology blocks
+
+Creating topology patches - from boundary section
+
+Creating block mesh topology - scaling/transform applied later
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 50
+		Number of boundary faces : 92
+		Number of defined boundary faces : 92
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+
+Detected collapsed blocks - using merge points instead of merge topology
+
+Creating block offsets
+Creating merge list (geometric search)...
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale (0.001 0.001 0.001)
+    Block 0 cell size :
+        i : 2.2803509e-05 .. 2.2803509e-05
+        j : 2.8927592e-05 .. 2.8927592e-05
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 1 cell size :
+        i : 2.2803508e-05 .. 2.2803508e-05
+        j : 2.8927592e-05 .. 2.8927592e-05
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 2 cell size :
+        i : 2.8927592e-05 .. 2.8927592e-05
+        j : 5.6488542e-05 .. 5.6488542e-05
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 3 cell size :
+        i : 2.8927592e-05 .. 2.8927592e-05
+        j : 5.6488543e-05 .. 5.6488543e-05
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 4 cell size :
+        i : 5.6488542e-05 .. 5.6488542e-05
+        j : 0.00017426139 .. 0.00017426139
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 5 cell size :
+        i : 5.6488543e-05 .. 5.6488543e-05
+        j : 0.00017426139 .. 0.00017426139
+        k : 0.00086462937 .. 0.00086462937
+
+    Block 6 cell size :
+        i : 0.0001893325 .. 0.0001893325
+        j : 0.00012376431 .. 0.00012376431
+        k : 0.00049444766 .. 0.00049444766
+
+    Block 7 cell size :
+        i : 0.0001893325 .. 0.0001893325
+        j : 0.00012376431 .. 0.00012376431
+        k : 0.00049444766 .. 0.00049444766
+
+    Block 8 cell size :
+        i : 9.9810908e-05 .. 9.9810908e-05
+        j : 4.6666667e-05 .. 4.6666667e-05
+        k : 0 .. 0
+
+    Block 9 cell size :
+        i : 9.9810908e-05 .. 9.9810908e-05
+        j : 4.6666667e-05 .. 4.6666667e-05
+        k : 0 .. 0
+
+    Block 10 cell size :
+        i : 0.00011940813 .. 0.00011940813
+        j : 0.00013753544 .. 6.8767719e-05
+        k : 8.8817842e-19 .. 8.8817842e-19
+
+    Block 11 cell size :
+        i : 0.00011940813 .. 0.00011940813
+        j : 0.00013753544 .. 6.8767719e-05
+        k : 8.8817842e-19 .. 8.8817842e-19
+
+    Block 12 cell size :
+        i : 0.00010822115 .. 0.00010822115
+        j : 0.00011625 .. 0.00011625
+        k : 0 .. 0
+
+    Block 13 cell size :
+        i : 0.00010822115 .. 0.00010822115
+        j : 0.00011625 .. 0.00011625
+        k : 0 .. 0
+
+    Block 14 cell size :
+        i : 5.3659625e-06 .. 5.3659625e-06
+        j : 0.00012139737 .. 0.00012139737
+        k : 0.00039241878 .. 0.00039241878
+
+    Block 15 cell size :
+        i : 5.3659625e-06 .. 5.3659625e-06
+        j : 0.00012139737 .. 0.00012139737
+        k : 0.00039241878 .. 0.00039241878
+
+    Block 16 cell size :
+        i : 0.00011481427 .. 0.00011481427
+        j : 7.9125549e-05 .. 0.0001356438
+        k : 0.00062132973 .. 0.00062132973
+
+    Block 17 cell size :
+        i : 0.00011481427 .. 0.00011481427
+        j : 7.9125549e-05 .. 0.0001356438
+        k : 0.00062132973 .. 0.00062132973
+
+    Block 18 cell size :
+        i : 5.833681e-05 .. 5.833681e-05
+        j : 0.0002191 .. 0.0003756
+        k : 0 .. 0
+
+    Block 19 cell size :
+        i : 5.8336812e-05 .. 5.8336812e-05
+        j : 0.0002191 .. 0.0003756
+        k : 0 .. 0
+
+    Block 20 cell size :
+        i : 6.1982849e-05 .. 6.1982849e-05
+        j : 0.00021818642 .. 0.00037403387
+        k : 0.0001287999 .. 0.0001287999
+
+    Block 21 cell size :
+        i : 6.1983019e-05 .. 6.1983019e-05
+        j : 0.00021818643 .. 0.00037403388
+        k : 0.0001287999 .. 0.0001287999
+
+    Block 22 cell size :
+        i : 6.6114782e-05 .. 6.6114782e-05
+        j : 0.0002144615 .. 0.00036764829
+        k : 0.00025209864 .. 0.00025209864
+
+    Block 23 cell size :
+        i : 6.611445e-05 .. 6.611445e-05
+        j : 0.00021446143 .. 0.00036764816
+        k : 0.00025209864 .. 0.00025209864
+
+    Block 24 cell size :
+        i : 7.083793e-05 .. 7.083793e-05
+        j : 0.00020543257 .. 0.00035217012
+        k : 0.00036462815 .. 0.00036462815
+
+    Block 25 cell size :
+        i : 7.0838233e-05 .. 7.0838233e-05
+        j : 0.00020543264 .. 0.00035217024
+        k : 0.00036462815 .. 0.00036462815
+
+    Block 26 cell size :
+        i : 7.0837281e-05 .. 7.0837281e-05
+        j : 0.00018815302 .. 0.00032254804
+        k : 0.00046158591 .. 0.00046158591
+
+    Block 27 cell size :
+        i : 7.0837116e-05 .. 7.0837116e-05
+        j : 0.0001881529 .. 0.00032254783
+        k : 0.00046158591 .. 0.00046158591
+
+    Block 28 cell size :
+        i : 7.628612e-05 .. 7.628612e-05
+        j : 0.0001603037 .. 0.00027480635
+        k : 0.00053882479 .. 0.00053882479
+
+    Block 29 cell size :
+        i : 7.6286137e-05 .. 7.6286137e-05
+        j : 0.00016030374 .. 0.0002748064
+        k : 0.00053882479 .. 0.00053882479
+
+    Block 30 cell size :
+        i : 9.0111331e-05 .. 9.0111331e-05
+        j : 0.00012349254 .. 0.0002117015
+        k : 0.00059304939 .. 0.00059304939
+
+    Block 31 cell size :
+        i : 9.0111341e-05 .. 9.0111341e-05
+        j : 0.00012349256 .. 0.00021170153
+        k : 0.00059304939 .. 0.00059304939
+
+Adding cell zones
+    0	tm_zone
+    1	vitreous_zone
+No patch pairs to merge
+
+Writing polyMesh with 2 cellZones
+----------------
+Mesh Information
+----------------
+  boundingBox: (0 -0.00816 0) (0.00837 0.0069 0.00837)
+  nPoints: 61832
+  nCells: 54672
+  nFaces: 170936
+  nInternalFaces: 156448
+----------------
+Cell Zones
+----------------
+  zone 0 (size: 720) name: tm_zone
+  zone 1 (size: 33600) name: vitreous_zone
+----------------
+Patches
+----------------
+  patch 0 (start: 156448 size: 144) name: outlet_tm
+  patch 1 (start: 156592 size: 96) name: ac_inlet
+  patch 2 (start: 156688 size: 1824) name: lens_wall
+  patch 3 (start: 158512 size: 1128) name: iris_wall
+  patch 4 (start: 159640 size: 2184) name: wall
+  patch 5 (start: 161824 size: 4556) name: symmetry_0
+  patch 6 (start: 166380 size: 4556) name: symmetry_90
+
+End
+
+=== transformPoints: rotate into case frame (x >= 0, z <= 0) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : transformPoints -rotate-y 90
+Date   : Aug 23 2026
+Time   : 08:11:37
+Host   : 908a88baaf45
+PID    : 557
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Rotating points about y-axis: 90
+Rotating points by (2.220446e-16 0 1 0 1 0 -1 0 2.220446e-16)
+Writing points into directory "constant/polyMesh"
+
+
+End
+
+=== IVI tip cavity ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.iviTip -constant
+Date   : Aug 23 2026
+Time   : 08:11:38
+Host   : 908a88baaf45
+PID    : 563
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.iviTip
+
+Time = constant
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 492
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54672
+Read set cellSet fluid_keep size:54672
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 54180
+Time = 0
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 492
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54672
+Read set cellSet fluid_keep size:54672
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 54180
+
+End
+
+  ivi_tip_cells: 492
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : subsetMesh fluid_keep -patch ivi_tip -overwrite
+Date   : Aug 23 2026
+Time   : 08:11:39
+Host   : 908a88baaf45
+PID    : 570
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Adding exposed internal faces to new patch: ivi_tip
+
+Using cellSet fluid_keep
+
+Subset 54180 of 54672 cells
+
+Reading cellSet: ivi_tip_cells
+Subsetting cellSet ivi_tip_cells
+Writing subsetted mesh and fields to time 0
+
+End
+
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : changeDictionary
+Date   : Aug 23 2026
+Time   : 08:11:40
+Host   : 908a88baaf45
+PID    : 573
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Read dictionary changeDictionaryDict with replacements for dictionaries 1(boundary)
+Reading polyMesh/boundary file to extract patch names
+Loaded dictionary boundary with entries 8(outlet_tm ac_inlet lens_wall iris_wall wall symmetry_0 symmetry_90 ivi_tip)
+Extracted patch groups:
+    group empty with patches 1(ivi_tip)
+    group symmetry with patches 2(symmetry_0 symmetry_90)
+    group wall with patches 3(lens_wall iris_wall wall)
+Replacing entries in dictionary boundary
+Special handling of boundary as polyMesh/boundary file.
+Merging entries from 10(symmetry_0 symmetry_90 wall lens_wall iris_wall ac_inlet outlet_tm ivi_tip acp_tip defaultFaces)
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry acp_tip
+--> FOAM Warning : 
+    From bool merge(bool, Foam::dictionary&, const Foam::dictionary&, bool, const Foam::HashTable<Foam::List<Foam::word> >&)
+    in file changeDictionary.C at line 303
+    Reading "system/changeDictionaryDict/boundary" at line 10 to 19
+    Ignoring non-existing entry defaultFaces
+fieldDict:
+{
+    outlet_tm
+    {
+        type            patch;
+        nFaces          144;
+        startFace       154941;
+    }
+    ac_inlet
+    {
+        type            patch;
+        nFaces          96;
+        startFace       155085;
+    }
+    lens_wall
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          1824;
+        startFace       155181;
+    }
+    iris_wall
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          1128;
+        startFace       157005;
+    }
+    wall
+    {
+        type            wall;
+        inGroups        1 ( wall );
+        nFaces          2184;
+        startFace       158133;
+    }
+    symmetry_0
+    {
+        type            symmetry;
+        inGroups        1 ( symmetry );
+        nFaces          4515;
+        startFace       160317;
+    }
+    symmetry_90
+    {
+        type            symmetry;
+        inGroups        1 ( symmetry );
+        nFaces          4515;
+        startFace       164832;
+    }
+    ivi_tip
+    {
+        type            patch;
+        inGroups        1 ( empty );
+        nFaces          252;
+        startFace       169347;
+    }
+}
+
+Writing modified boundary
+
+End
+
+=== ACP tip cavity ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.acpTip -constant
+Date   : Aug 23 2026
+Time   : 08:11:41
+Host   : 908a88baaf45
+PID    : 576
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.acpTip
+
+Time = constant
+    mesh not changed.
+Created cellSet acp_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 -0.007 0))
+    cellSet acp_tip_cells now size 1
+Read set cellSet acp_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 -0.007 0), radius = 0.00055
+    cellSet acp_tip_cells now size 648
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54180
+Read set cellSet fluid_keep size:54180
+    Applying source cellToCell
+    Removing all elements of cell sets: (acp_tip_cells)
+    cellSet fluid_keep now size 53532
+Time = 0
+    mesh not changed.
+Created cellSet acp_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 -0.007 0))
+    cellSet acp_tip_cells now size 1
+Read set cellSet acp_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 -0.007 0), radius = 0.00055
+    cellSet acp_tip_cells now size 648
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54180
+Read set cellSet fluid_keep size:54180
+    Applying source cellToCell
+    Removing all elements of cell sets: (acp_tip_cells)
+    cellSet fluid_keep now size 53532
+
+End
+
+  acp_tip_cells: 648
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : subsetMesh fluid_keep -patch acp_tip -overwrite
+Date   : Aug 23 2026
+Time   : 08:11:41
+Host   : 908a88baaf45
+PID    : 583
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Adding exposed internal faces to new patch: acp_tip
+
+Using cellSet fluid_keep
+
+Subset 53532 of 54180 cells
+
+Reading cellSet: acp_tip_cells ivi_tip_cells
+Subsetting cellSet acp_tip_cells
+Subsetting cellSet ivi_tip_cells
+Writing subsetted mesh and fields to time 0
+2026-08-23T08:47:48Z  saved /simulation/doc-g2-sim4/calibration/baseline_O1.yaml (+ _porousRedo)
+2026-08-23T08:47:48Z  ===== sim4 IVI+ACP experiment MESH=O1 np=4 =====
+2026-08-23T09:26:20Z  ===== CALIBRATE /simulation/doc-g2-sim5 MESH=O1 (IOP_AC≈15, new vitreous porous) =====
+2026-08-23T10:06:46Z  saved /simulation/doc-g2-sim5/calibration/baseline_O1.yaml (+ _porousRedo)
+2026-08-23T10:06:46Z  ===== sim5 Model C experiment MESH=O1 np=4 =====
+2026-08-23T10:49:13Z  ===== CALIBRATE /simulation/doc-g2-sim4 MESH=F1 (IOP_AC≈15, new vitreous porous) =====
+2026-08-23T12:14:47Z  saved /simulation/doc-g2-sim4/calibration/baseline_F1.yaml (+ _porousRedo)
+2026-08-23T12:14:47Z  ===== sim4 IVI+ACP experiment MESH=F1 np=4 =====
+2026-08-23T15:43:11Z  ===== CALIBRATE /simulation/doc-g2-sim5 MESH=F1 (IOP_AC≈15, new vitreous porous) =====
+2026-08-23T16:11:12Z  PAUSED by user — creating doc-baseline-*-fluid cases
+2026-08-23T16:39:20Z  CANCELLED by user — overnight permanently stopped (was PAUSED)

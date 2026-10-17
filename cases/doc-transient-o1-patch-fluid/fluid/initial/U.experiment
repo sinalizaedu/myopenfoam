@@ -1,0 +1,79 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// Fast stable experiment: 1.0 s linear ramp at each IVI/ACP edge (avoids step blow-up).
+// Effective windows: IVI 5–12 s (plateau 6–11), ACP 15–22 s (plateau 16–21).
+// Rate is already the quarter-symmetry value: ±Q, not ±Q/4.
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+boundaryField
+{
+    iris_wall
+    {
+        type noSlip;
+    }
+    ac_inlet
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate constant 1.25e-11;
+        value           uniform (0 0 0);
+    }
+    outlet_tm { type zeroGradient; }
+
+    ivi_tip
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate table
+        (
+            (0    0)
+            (5    0)
+            (6    2.08325e-9)
+            (11   2.08325e-9)
+            (12   0)
+            (1e6  0)
+        );
+        value           uniform (0 0 0);
+    }
+
+    acp_tip
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate table
+        (
+            (0    0)
+            (15   0)
+            (16   -2.08325e-9)
+            (21   -2.08325e-9)
+            (22   0)
+            (1e6  0)
+        );
+        value           uniform (0 0 0);
+    }
+
+    wall
+    {
+        type            flowRateInletVelocity;
+        volumetricFlowRate table
+        (
+            (0    0)
+            (5    0)
+            (6    -2.08325e-9)
+            (11   -2.08325e-9)
+            (12   0)
+            (15   0)
+            (16   2.08325e-9)
+            (21   2.08325e-9)
+            (22   0)
+            (1e6  0)
+        );
+        value           uniform (0 0 0);
+    }
+
+    lens_wall { type noSlip; }
+    symmetry_0 { type symmetry; }
+    symmetry_90 { type symmetry; }
+}

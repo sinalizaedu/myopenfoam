@@ -21,34 +21,30 @@ FoamFile
     symmetry_0
     {
         type            symmetry;
-        physicalType    patch;
         inGroups        1(symmetry);
-    }
-    wall
-    {
-        type            wall;
-        physicalType    patch;
-        inGroups        1(wall);
     }
     symmetry_90
     {
         type            symmetry;
-        physicalType    patch;
         inGroups        1(symmetry);
     }
-    iris_wall
+    ac_inlet
     {
-        type            wall;
-        physicalType    patch;
-        inGroups        1(wall);
+        type            patch;
     }
     outlet_tm
     {
         type            patch;
     }
-    ac_inlet
+    lens_wall
     {
-        type            patch;
+        type            wall;
+        inGroups        1(wall);
+    }
+    wall
+    {
+        type            wall;
+        inGroups        1(wall);
     }
     ivi_tip
     {

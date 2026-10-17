@@ -5,9 +5,7 @@ FoamFile
     class       volVectorField;
     object      U;
 }
-// G2-fluid Sim 4 — IVI (5–11 s) + ACP (15–21 s) + volume-matched Robin wall
-// IVI:  ivi_tip +Q,  wall −Q
-// ACP:  acp_tip −Q, wall +Q
+// Fast stable experiment: 0.5 s ramp at IVI/ACP onset (avoids step blow-up at t≈5/15).
 dimensions      [0 1 -1 0 0 0 0];
 internalField   uniform (0 0 0);
 boundaryField
@@ -27,9 +25,9 @@ boundaryField
         (
             (0    0)
             (5    0)
-            (5.05 2.08325e-9)
+            (6    2.08325e-9)
             (11   2.08325e-9)
-            (11.05 0)
+            (12   0)
             (1e6  0)
         );
         value           uniform (0 0 0);
@@ -42,9 +40,9 @@ boundaryField
         (
             (0    0)
             (15   0)
-            (15.05 -2.08325e-9)
+            (16   -2.08325e-9)
             (21   -2.08325e-9)
-            (21.05 0)
+            (22   0)
             (1e6  0)
         );
         value           uniform (0 0 0);
@@ -57,21 +55,19 @@ boundaryField
         (
             (0    0)
             (5    0)
-            (5.05 -2.08325e-9)
+            (6    -2.08325e-9)
             (11   -2.08325e-9)
-            (11.05 0)
+            (12   0)
             (15   0)
-            (15.05 2.08325e-9)
+            (16   2.08325e-9)
             (21   2.08325e-9)
-            (21.05 0)
+            (22   0)
             (1e6  0)
         );
         value           uniform (0 0 0);
     }
 
     lens_wall { type noSlip; }
-    iris_wall { type noSlip; }
     symmetry_0 { type symmetry; }
     symmetry_90 { type symmetry; }
-    defaultFaces { type noSlip; }
 }

@@ -1,0 +1,18 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Rabbit aqueous humor — Lamminsalo 2018, T = 37 °C.
+//   μ = 6.89e-4 Pa·s  (Methods)
+//   ρ = 995 kg/m³     (Tabela I ᵈ, Comsol @ 37 °C)
+//   ν = μ/ρ = 6.925e-7 m²/s
+//
+// OpenFOAM incompressible: only ν enters the solver; μ in phaseProperties.
+
+transportModel  Newtonian;
+
+nu              nu [ 0 2 -1 0 0 0 0 ] 6.925e-7;

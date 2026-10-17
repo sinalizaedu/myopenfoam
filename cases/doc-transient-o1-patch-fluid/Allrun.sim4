@@ -1,0 +1,282 @@
+#!/bin/bash
+# G2 Sim 4 protocol: IVI + ACP combined + volume-matched wall flux.
+# Banner name is taken from the case directory (see CASE_NAME below).
+#
+# Optional env: MODE, MESH_LEVEL, D_TM, SKIP_SOLVE, REUSE_MESH (required for experiment), END_TIME
+#   MESH_LEVEL=O1 — native blockMesh (fluid/system/blockMeshDict.O1 from doc-g2-sim1)
+#   MESH_LEVEL=F1|F2 — ANSYS Fluent mesh (eye_g2_fluid_fluent_${MESH_LEVEL}.msh from doc-g2-sim1)
+# Experiment tuning: DELTA_T, ADJUST_TIME_STEP, MAX_CO, MAX_DELTA_T
+# Experiment prescribes a volume-matched wall flux (rigid comparison is doc-g2-sim2).
+set -e
+set -o pipefail
+cd "$(dirname "$0")"
+CASE_NAME="$(basename "$PWD")"
+MODE="${MODE:-baseline}"
+MESH_LEVEL="${MESH_LEVEL:-M8}"
+case "$MESH_LEVEL" in
+    M1|M2|M3|M4|M5|M6|M7|M8|N1|N2) MESH_KIND=gmsh ;;
+    O1) MESH_KIND=blockMesh ;;
+    F1|F2) MESH_KIND=fluent ;;
+    *) echo "ERROR: MESH_LEVEL" >&2; exit 1 ;;
+esac
+case "$MODE" in baseline|experiment) ;; *) echo "ERROR: MODE" >&2; exit 1 ;; esac
+D_TM="${D_TM:-}"
+SKIP_SOLVE="${SKIP_SOLVE:-0}"
+REUSE_MESH="${REUSE_MESH:-0}"
+END_TIME="${END_TIME:-}"
+DELTA_T="${DELTA_T:-}"
+ADJUST_TIME_STEP="${ADJUST_TIME_STEP:-}"
+MAX_CO="${MAX_CO:-}"
+MAX_DELTA_T="${MAX_DELTA_T:-}"
+if [ "$MODE" = "experiment" ] && [ "$REUSE_MESH" != "1" ]; then
+    echo "ERROR: MODE=experiment requires REUSE_MESH=1 (init 0/ from calibrated baseline)" >&2
+    exit 1
+fi
+if [ "$MESH_LEVEL" = "F1" ] || [ "$MESH_LEVEL" = "F2" ]; then
+    MSH="geometry/eye_g2_fluid_fluent_${MESH_LEVEL}.msh"
+    SIM1_MSH="../doc-g2-sim1/geometry/eye_g2_fluid_fluent_${MESH_LEVEL}.msh"
+else
+    MSH="geometry/eye_g2_fluid_lamminsalo_${MESH_LEVEL}.msh"
+    SIM1_MSH="../doc-g2-sim1/geometry/eye_g2_fluid_lamminsalo_${MESH_LEVEL}.msh"
+fi
+
+echo "=== ${CASE_NAME} MODE=${MODE} MESH_LEVEL=${MESH_LEVEL} (${MESH_KIND}) REUSE_MESH=${REUSE_MESH} ==="
+
+if [ "$MODE" = "experiment" ]; then
+    cp -f fluid/initial/U.experiment.robin fluid/initial/U.experiment
+fi
+cp -f "fluid/system/controlDict.${MODE}" fluid/system/controlDict
+cp -f "fluid/system/fvSchemes.${MODE}" fluid/system/fvSchemes
+cp -f "fluid/system/fvSolution.${MODE}" fluid/system/fvSolution
+cp -f "fluid/initial/U.${MODE}" fluid/initial/U
+cp -f "fluid/initial/p.${MODE}" fluid/initial/p
+
+[ -n "$D_TM" ] && python3 scripts/set_d_tm.py "$D_TM"
+if [ -n "$END_TIME" ]; then
+    sed -i.bak -E "s/^(endTime[[:space:]]+).*/\\1${END_TIME};/" fluid/system/controlDict
+    rm -f fluid/system/controlDict.bak
+fi
+[ -n "$DELTA_T" ] && sed -i.bak -E "s/^(deltaT[[:space:]]+).*/\\1${DELTA_T};/" fluid/system/controlDict
+[ -n "$ADJUST_TIME_STEP" ] && sed -i.bak -E "s/^(adjustTimeStep[[:space:]]+).*/\\1${ADJUST_TIME_STEP};/" fluid/system/controlDict
+[ -n "$MAX_CO" ] && sed -i.bak -E "s/^(maxCo[[:space:]]+).*/\\1${MAX_CO};/" fluid/system/controlDict
+[ -n "$MAX_DELTA_T" ] && sed -i.bak -E "s/^(maxDeltaT[[:space:]]+).*/\\1${MAX_DELTA_T};/" fluid/system/controlDict
+rm -f fluid/system/controlDict.bak
+
+if [ "$REUSE_MESH" = "1" ]; then
+    if [ ! -d fluid/constant/polyMesh ]; then
+        echo "ERROR: REUSE_MESH=1 but no polyMesh — run baseline first" >&2
+        exit 1
+    fi
+    if [ "$MODE" = "experiment" ]; then
+        python3 scripts/init_experiment_from_baseline.py
+        python3 scripts/sync_field_boundaries.py fluid
+        find fluid -maxdepth 1 -type d -regex '.*/[0-9]+\.[0-9]+' -exec rm -rf {} +
+        for d in fluid/[0-9]*; do
+            [ -e "$d" ] || continue
+            base="$(basename "$d")"
+            [[ "$base" == "0" ]] && continue
+            if [[ "$base" =~ ^[0-9]+$ ]] && [ "$base" -lt 50 ]; then
+                rm -rf "$d"
+            fi
+        done
+        rm -rf fluid/processor*
+        rm -rf fluid/postProcessing/iop_probe fluid/postProcessing/flowRateIVI \
+               fluid/postProcessing/flowRateACP fluid/postProcessing/flowRateWall \
+               fluid/postProcessing/flowRateTM fluid/postProcessing/pressureACinlet \
+               2>/dev/null || true
+        rm -rf fluid/dynamicCode fluid/codeStream 2>/dev/null || true
+    else
+        echo "=== REUSE_MESH=1 baseline: keep polyMesh, reset 0/ ==="
+        find fluid -maxdepth 1 -type d \( -name '[0-9]*' -o -name 'processor*' \) -exec rm -rf {} +
+        rm -rf fluid/postProcessing fluid/dynamicCode fluid/codeStream 2>/dev/null || true
+        mkdir -p fluid/0
+        cp -f fluid/initial/U fluid/0/U
+        cp -f fluid/initial/p fluid/0/p
+        rm -rf fluid/0/polyMesh
+    fi
+fi
+
+if [ "$REUSE_MESH" != "1" ]; then
+    rm -rf fluid/0 fluid/constant/polyMesh
+    find fluid -maxdepth 1 -type d \( -name '[0-9]*' -o -name 'processor*' \) -exec rm -rf {} +
+    mkdir -p fluid/0
+
+    if [ "$MESH_KIND" = "blockMesh" ]; then
+        SIM1_SYS="../doc-g2-sim1/fluid/system"
+        for f in blockMeshDict.O1 topoSetDict.O1; do
+            if [ ! -f "fluid/system/$f" ] && [ -f "$SIM1_SYS/$f" ]; then
+                ln -sfn "../../../doc-g2-sim1/fluid/system/$f" "fluid/system/$f"
+            fi
+        done
+        if [ ! -f fluid/system/blockMeshDict.O1 ]; then
+            echo "ERROR: missing fluid/system/blockMeshDict.O1" >&2
+            exit 1
+        fi
+        echo "=== blockMesh (${MESH_LEVEL}) ==="
+        (cd fluid && blockMesh -dict system/blockMeshDict.O1 2>&1 | tee log.blockMesh)
+        echo "=== transformPoints: rotate into case frame (x >= 0, z <= 0) ==="
+        (cd fluid && transformPoints -rotate-y 90 2>&1 | tee log.transformPoints)
+        KEEP_GMSH=1
+        FLUENT_ZONES=0
+    elif [ "$MESH_KIND" = "fluent" ]; then
+        SIM5_SYS="../T1: Volume vs Patch/doc-g2-sim5/fluid/system"
+        for f in topoSetDict.${MESH_LEVEL} topoSetDict.${MESH_LEVEL}zones createPatchDict.${MESH_LEVEL}; do
+            if [ ! -f "fluid/system/$f" ] && [ -f "$SIM5_SYS/$f" ]; then
+                ln -sfn "../../../T1: Volume vs Patch/doc-g2-sim5/fluid/system/$f" "fluid/system/$f"
+            fi
+        done
+        if [ ! -f "$MSH" ]; then
+            if [ -f "$SIM1_MSH" ]; then
+                mkdir -p geometry
+                ln -sfn "../../doc-g2-sim1/geometry/eye_g2_fluid_fluent_${MESH_LEVEL}.msh" "$MSH"
+            else
+                echo "ERROR: missing $MSH" >&2
+                exit 1
+            fi
+        fi
+        MSH_REAL="$(python3 -c "import os; print(os.path.realpath('$MSH'))")"
+        BIN2ASCII=""
+        for cand in ../../brunaStuff/fluent_bin_to_ascii.py /opt/brunaStuff/fluent_bin_to_ascii.py; do
+            [ -f "$cand" ] && { BIN2ASCII="$cand"; break; }
+        done
+        if [ -z "$BIN2ASCII" ]; then
+            echo "ERROR: fluent_bin_to_ascii.py not found (mount brunaStuff at /opt/brunaStuff)" >&2
+            exit 1
+        fi
+        echo "=== ${MESH_LEVEL}: Fluent binary -> ASCII ==="
+        python3 "$BIN2ASCII" "$MSH_REAL" geometry/eye_g2_fluid_fluent.ascii.msh
+        echo "=== ${MESH_LEVEL}: fluent3DMeshToFoam ==="
+        (cd fluid && fluent3DMeshToFoam ../geometry/eye_g2_fluid_fluent.ascii.msh \
+            -ignoreFaceGroups "(interior-geom-2-ac-geom-2-tm interior-geom-2-ac interior-geom-2-vitreous interior-geom-2-tm contact_region_2-trg contact_region_2-src-geom-2-ac-geom-2-vitreous)" \
+            2>&1 | tee log.fluent3DMeshToFoam)
+        rm -f geometry/eye_g2_fluid_fluent.ascii.msh
+        echo "=== ${MESH_LEVEL}: transformPoints to the case frame ==="
+        (cd fluid && transformPoints -rotate-angle "((1 1 0) 180)" 2>&1 | tee log.transformPoints)
+        (cd fluid && transformPoints -translate "(0 -0.00886 0)" 2>&1 | tee -a log.transformPoints)
+        (cd fluid && topoSet -dict system/topoSetDict.${MESH_LEVEL} -constant -noZero 2>&1 | tee log.topoSet.${MESH_LEVEL})
+        (cd fluid && createPatch -overwrite -dict system/createPatchDict.${MESH_LEVEL} 2>&1 | tee log.createPatch.${MESH_LEVEL})
+        (cd fluid && topoSet -dict system/topoSetDict.${MESH_LEVEL}zones -constant -noZero 2>&1 | tee log.topoSet.${MESH_LEVEL}zones)
+        (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+        (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+        python3 scripts/check_tm_patches.py
+        KEEP_GMSH=1
+        FLUENT_ZONES=1
+    else
+        if [ ! -f "$MSH" ]; then
+            if [ -f "$SIM1_MSH" ]; then
+                mkdir -p geometry
+                ln -sfn "../../doc-g2-sim1/geometry/eye_g2_fluid_lamminsalo_${MESH_LEVEL}.msh" "$MSH"
+            else
+                echo "ERROR: missing $MSH" >&2
+                exit 1
+            fi
+        fi
+        MSH_REAL="$(python3 -c "import os; print(os.path.realpath('$MSH'))")"
+        cp -f "$MSH_REAL" geometry/eye_g2_fluid_lamminsalo.msh
+
+        cp -f geometry/eye_g2_fluid_lamminsalo.msh fluid/eye_g2_fluid_lamminsalo.msh
+        (cd fluid && gmshToFoam eye_g2_fluid_lamminsalo.msh 2>&1 | tee log.gmshToFoam)
+        rm -f fluid/eye_g2_fluid_lamminsalo.msh
+
+        (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+        KEEP_GMSH=0
+        if grep -q 'ac_inlet' fluid/constant/polyMesh/boundary 2>/dev/null \
+           && grep -q 'outlet_tm' fluid/constant/polyMesh/boundary 2>/dev/null \
+           && grep -q 'iris_wall' fluid/constant/polyMesh/boundary 2>/dev/null \
+           && python3 scripts/check_tm_patches.py; then
+            KEEP_GMSH=1
+            echo "=== gmsh patches ac_inlet / outlet_tm / iris_wall OK — skip topoSet carve ==="
+            (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+        fi
+        if [ "$KEEP_GMSH" != "1" ]; then
+            echo "=== topoSet carve (Y-axis annulus fallback) ==="
+            if grep -q 'ac_inlet' fluid/constant/polyMesh/boundary 2>/dev/null; then
+                (cd fluid && createPatch -overwrite -dict system/createPatchDict.demote 2>&1 | tee log.createPatch.demote)
+                (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.demote)
+            fi
+            (cd fluid && topoSet -dict system/topoSetDict.splitPatches -constant 2>&1 | tee log.topoSet.splitPatches)
+            (cd fluid && createPatch -overwrite -dict system/createPatchDict.splitPatches 2>&1 | tee log.createPatch.splitPatches)
+            (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+            python3 scripts/check_tm_patches.py
+        fi
+    fi
+
+    N_AC_IN=$(python3 - <<'PY'
+from pathlib import Path
+import re
+text = Path("fluid/constant/polyMesh/boundary").read_text()
+m = re.search(r"\bac_inlet\b\s*\{[^}]*?nFaces\s+(\d+);", text, re.S)
+print(m.group(1) if m else 0)
+PY
+)
+    if [ "${N_AC_IN:-0}" = "0" ]; then
+        echo "ERROR: ac_inlet has 0 faces after patch carve — widen topoSetDict.splitPatches" >&2
+        exit 1
+    fi
+
+    # Drop 0/p,U so subsetMesh only updates polyMesh (avoid empty→patch BC clash).
+    rm -f fluid/0/p fluid/0/U
+
+    echo "=== IVI tip cavity ==="
+    (cd fluid && topoSet -dict system/topoSetDict.iviTip -constant 2>&1 | tee log.topoSet.iviTip)
+    N_IVI=$(grep -E "cellSet ivi_tip_cells now size" fluid/log.topoSet.iviTip | tail -1 | awk '{print $NF}' || true)
+    echo "  ivi_tip_cells: ${N_IVI}"
+    [ -z "$N_IVI" ] || [ "$N_IVI" = "0" ] && { echo "ERROR: ivi_tip_cells empty" >&2; exit 1; }
+    (cd fluid && subsetMesh fluid_keep -patch ivi_tip -overwrite 2>&1 | tee log.subsetMesh.iviTip)
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postIviTip)
+
+    echo "=== ACP tip cavity ==="
+    (cd fluid && topoSet -dict system/topoSetDict.acpTip -constant 2>&1 | tee log.topoSet.acpTip)
+    N_ACP=$(grep -E "cellSet acp_tip_cells now size" fluid/log.topoSet.acpTip | tail -1 | awk '{print $NF}' || true)
+    echo "  acp_tip_cells: ${N_ACP}"
+    [ -z "$N_ACP" ] || [ "$N_ACP" = "0" ] && { echo "ERROR: acp_tip_cells empty" >&2; exit 1; }
+    (cd fluid && subsetMesh fluid_keep -patch acp_tip -overwrite 2>&1 | tee log.subsetMesh.acpTip)
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postAcpTip)
+
+    if [ "$MESH_KIND" = "blockMesh" ]; then
+        (cd fluid && topoSet -dict system/topoSetDict.O1 -constant 2>&1 | tee log.topoSet)
+        python3 scripts/check_tm_patches.py
+    elif [ "${FLUENT_ZONES:-0}" = "1" ]; then
+        echo "=== ${MESH_LEVEL}: tm_zone / vitreous_zone from Fluent — skip topoSetDict.g2 ==="
+        python3 scripts/check_tm_patches.py --owners-in-tm-zone
+    else
+        (cd fluid && topoSet -dict system/topoSetDict.g2 -constant 2>&1 | tee log.topoSet)
+        python3 scripts/check_tm_patches.py --owners-in-tm-zone
+    fi
+    cp fluid/initial/U fluid/0/U
+    cp fluid/initial/p fluid/0/p
+    rm -rf fluid/0/polyMesh
+    python3 scripts/sync_field_boundaries.py fluid
+    (cd fluid && checkMesh 2>&1 | tee log.checkMesh)
+    grep -q "FOAM FATAL" fluid/log.checkMesh && { echo "ERROR: checkMesh failed" >&2; exit 1; }
+fi
+
+echo "=== patch counts ==="
+python3 - <<'PY'
+from pathlib import Path
+import re
+text = Path("fluid/constant/polyMesh/boundary").read_text()
+for name in ("ac_inlet", "outlet_tm", "ivi_tip", "acp_tip", "wall", "lens_wall", "iris_wall", "symmetry_0", "symmetry_90"):
+    m = re.search(rf"\b{name}\b\s*\{{[^}}]*?nFaces\s+(\d+);", text, re.S)
+    print(f"  {name}: {m.group(1) if m else 'MISSING'} faces")
+PY
+
+if [ "$SKIP_SOLVE" = "1" ]; then
+    grep -a "nCells:" fluid/log.checkMesh 2>/dev/null | head -1 || true
+    exit 0
+fi
+
+if [ "$MODE" = "baseline" ]; then
+    (cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
+    grep -q "FOAM FATAL" fluid/log.pimpleFoam && exit 1
+    python3 scripts/extract_step0_metrics.py || true
+    python3 scripts/save_baseline_calibration.py || true
+else
+    (cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
+    grep -q "FOAM FATAL" fluid/log.pimpleFoam && exit 1
+    python3 scripts/extract_metrics.py --protocol ivi_acp || true
+    python3 scripts/archive_experiment_results.py || true
+    python3 scripts/plot_iop_acp.py || true
+fi
+
+echo "=== ${CASE_NAME} done (MODE=${MODE}, ${MESH_LEVEL}) ==="

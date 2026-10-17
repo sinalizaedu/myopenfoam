@@ -1,0 +1,52 @@
+{
+  "n_samples": 300,
+  "seed": 42,
+  "bounds": {
+    "comprimento_axial_mm": [
+      20.0,
+      30.0
+    ],
+    "t_equatorial_mm": [
+      0.3,
+      0.8
+    ],
+    "t_posterior_mm": [
+      0.6,
+      1.2
+    ],
+    "mu1_factor": [
+      0.5,
+      1.5
+    ],
+    "alpha1_factor": [
+      0.5,
+      1.5
+    ],
+    "ACD_mm": [
+      2.0,
+      4.5
+    ]
+  },
+  "categorical": {
+    "lens_status": [
+      "phakic",
+      "pseudophakic",
+      "aphakic"
+    ],
+    "vitrectomy": [
+      false,
+      true
+    ]
+  },
+  "nominal_material": {
+    "mu1_MPa": 2.2708230587169704,
+    "alpha1": 1.05617628707085
+  },
+  "notes": [
+    "mu1_factor e alpha1_factor multiplicam os valores nominais do fit Ogden/Friedenwald",
+    "R_mm = comprimento_axial_mm / 2 (aproximação esférica)",
+    "t_mm = 0.55*t_equatorial + 0.45*t_posterior (espessura efetiva, malha uniforme)",
+    "Malha ainda esférica; elipsoide / t(θ) ficam para iteração seguinte",
+    "ACD_mm armazenada para uso futuro com geometria que inclua câmara anterior"
+  ]
+}

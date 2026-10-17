@@ -1,0 +1,146 @@
+#!/bin/bash
+# fsi-transient-a1-patch — O1 fluid + A1 extruded coat solid, two-way FSI.
+set -euo pipefail
+cd "$(dirname "$0")"
+MODE="${MODE:-baseline}"
+SKIP_SOLVE="${SKIP_SOLVE:-0}"
+DELTA_T="${DELTA_T:-0.05}"
+PREWARM_END_TIME="${PREWARM_END_TIME:-${END_TIME:-2}}"
+FSI_END_TIME="${FSI_END_TIME:-${END_TIME:-2}}"
+REUSE_MESH="${REUSE_MESH:-0}"
+MESH="${MESH:-A1}"
+REPO_ROOT="$(cd ../.. && pwd)"
+VERIFY="$REPO_ROOT/brunaStuff/verify_o1_fsi_conformal.py"
+[ -f "$VERIFY" ] || VERIFY="/opt/brunaStuff/verify_o1_fsi_conformal.py"
+EXP="$REPO_ROOT/brunaStuff/o1_solid_export.py"
+[ -f "$EXP" ] || EXP="/opt/brunaStuff/o1_solid_export.py"
+
+if [ "$MODE" = "baseline" ]; then
+    exec env MODE=baseline MESH_LEVEL=O1 SKIP_SOLVE="$SKIP_SOLVE" \
+        REUSE_MESH="$REUSE_MESH" DELTA_T="$DELTA_T" END_TIME="$PREWARM_END_TIME" \
+        ./Allrun.sim4 "$@"
+elif [ "$MODE" != "fsi" ]; then
+    echo "ERROR: MODE must be baseline or fsi" >&2
+    exit 1
+fi
+
+echo "=== patch A1 FSI: fluid mesh and needle-tip cavities ==="
+if [ "$REUSE_MESH" = "1" ] && [ -d fluid/constant/polyMesh ]; then
+    echo "=== REUSE_MESH=1: skip fluid remesh ==="
+else
+    env MODE=baseline MESH_LEVEL=O1 SKIP_SOLVE=1 REUSE_MESH=0 ./Allrun.sim4
+fi
+
+echo "=== patch A1 FSI: solid mesh (MESH=$MESH) ==="
+rm -rf solid/constant/polyMesh solid/0
+mkdir -p solid/0
+if [ ! -d "solid_meshes/$MESH/constant/polyMesh" ]; then
+    echo "ERROR: missing solid_meshes/$MESH — expected A1 extruded coat" >&2
+    exit 1
+fi
+echo "=== copying solid_meshes/$MESH ==="
+cp -a "solid_meshes/$MESH/constant/polyMesh" solid/constant/polyMesh
+python3 "$EXP" --mode fields --case solid
+cp -f solid/0/D solid/initial/D
+cp -f solid/0/solidForce solid/initial/solidForce
+(cd solid && checkMesh 2>&1 | tee log.checkMesh)
+
+echo "=== A1 interface check (RBF mapping; 24 wedge-tip tris omitted) ==="
+if python3 "$VERIFY" \
+    fluid/constant/polyMesh solid/constant/polyMesh --centroid-tol 1e-6; then
+    echo "=== A1 FSI verification PASSED ==="
+else
+    echo "WARN: A1 is not 1:1 conformal (wall 2184 vs fsi_active 2160)."
+    echo "WARN: preCICE RBF thin-plate-splines maps the omitted wedge-tip faces."
+fi
+
+if [ "$SKIP_SOLVE" = "1" ]; then
+    echo "=== mesh-only smoke passed ==="
+    exit 0
+fi
+
+echo "=== phase 1/2: rigid TM prewarm (pimpleFoam, t=0 → ${PREWARM_END_TIME} s, no preCICE) ==="
+rm -f fluid/constant/dynamicMeshDict
+if [ "${FLUID_PREWARM:-1}" = "1" ]; then
+    cp fluid/system/controlDict.baseline fluid/system/controlDict
+    cp fluid/system/fvSchemes.baseline fluid/system/fvSchemes
+    cp fluid/system/fvSolution.baseline fluid/system/fvSolution
+    python3 - "$PREWARM_END_TIME" "$DELTA_T" <<'PY'
+from pathlib import Path
+import re, sys
+end_time, delta_t = sys.argv[1], sys.argv[2]
+p = Path("fluid/system/controlDict")
+text = p.read_text()
+text = re.sub(r"(?m)^endTime\s+[^;]+;", f"endTime         {end_time};", text)
+text = re.sub(r"(?m)^deltaT\s+[^;]+;", f"deltaT          {delta_t};", text)
+text = re.sub(r"(?m)^startTime\s+[^;]+;", "startTime       0;", text)
+text = re.sub(r"(?m)^startFrom\s+[^;]+;", "startFrom       startTime;", text)
+p.write_text(text)
+PY
+    (cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam.prewarm)
+    python3 - <<'PY'
+from pathlib import Path
+import os, shutil
+fluid = Path("fluid")
+times = sorted(
+    float(name)
+    for name in os.listdir(fluid)
+    if name.replace(".", "", 1).isdigit()
+)
+if not times:
+    raise SystemExit("ERROR: no pimpleFoam time directories after prewarm")
+latest = times[-1]
+latest_dir = fluid / (str(int(latest)) if latest.is_integer() else str(latest))
+for field in ("U", "p"):
+    shutil.copy2(latest_dir / field, fluid / "0" / field)
+for d in fluid.iterdir():
+    if d.is_dir() and d.name.replace(".", "", 1).isdigit() and d.name != "0":
+        shutil.rmtree(d)
+print(f"=== prewarm done: fluid/0 seeded from rigid t={latest} (clock reset next) ===")
+PY
+else
+    echo "=== FLUID_PREWARM=0: coupled run starts from existing fluid/0 ==="
+fi
+
+echo "=== phase 2/2: two-way FSI (preCICE, t=0 → ${FSI_END_TIME} s, dt=${DELTA_T}) ==="
+cp fluid/system/controlDict.fsi fluid/system/controlDict
+cp fluid/system/fvSchemes.fsi fluid/system/fvSchemes
+cp fluid/system/fvSolution.fsi fluid/system/fvSolution
+cp fluid/constant/dynamicMeshDict.fsi fluid/constant/dynamicMeshDict
+cp fluid/initial/pointDisplacement fluid/0/pointDisplacement
+python3 scripts/apply_fsi_wall_bc.py fluid/0/U
+python3 - "$FSI_END_TIME" "$DELTA_T" <<'PY'
+from pathlib import Path
+import re, sys
+end_time, delta_t = sys.argv[1], sys.argv[2]
+for name in ("fluid/system/controlDict", "solid/system/controlDict"):
+    p = Path(name)
+    text = p.read_text()
+    text = re.sub(r"(?m)^startFrom\s+[^;]+;", "startFrom       startTime;", text)
+    text = re.sub(r"(?m)^startTime\s+[^;]+;", "startTime       0;", text)
+    text = re.sub(r"(?m)^endTime\s+[^;]+;", f"endTime         {end_time};", text)
+    text = re.sub(r"(?m)^deltaT\s+[^;]+;", f"deltaT          {delta_t};", text)
+    p.write_text(text)
+p = Path("precice-config.xml")
+text = p.read_text()
+text = re.sub(r'<max-time value="[^"]+"', f'<max-time value="{end_time}"', text)
+text = re.sub(
+    r'<time-window-size value="[^"]+"',
+    f'<time-window-size value="{delta_t}"',
+    text,
+)
+p.write_text(text)
+PY
+rm -rf precice-run
+find fluid -maxdepth 1 -type d -name '[0-9]*' ! -name '0' -exec rm -rf {} + 2>/dev/null || true
+find solid -maxdepth 1 -type d -name '[0-9]*' ! -name '0' -exec rm -rf {} + 2>/dev/null || true
+rm -rf solid/postProcessing solid/processor* 2>/dev/null || true
+echo "=== FSI clock: fluid/solid startTime=0, preCICE max-time=${FSI_END_TIME}, Δt=${DELTA_T} ==="
+(cd solid && solids4Foam 2>&1 | tee log.solids4Foam) &
+solid_pid=$!
+trap 'kill "$solid_pid" 2>/dev/null || true' EXIT
+sleep 5
+(cd fluid && pimpleFoam 2>&1 | tee log.pimpleFoam)
+wait "$solid_pid"
+trap - EXIT
+echo "=== patch A1 transient two-way FSI done (prewarm ${PREWARM_END_TIME}s + coupled ${FSI_END_TIME}s) ==="

@@ -1,0 +1,6 @@
+#!/bin/bash
+# claude-wp1.3: pré-tensão (MULF Gee 2010) para os 8 casos do WP1.2.
+# Rodar dentro do container FSI a partir de /simulation/claude-wp1.3/
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 scripts/run_pretension_matrix_claude.py "$@"

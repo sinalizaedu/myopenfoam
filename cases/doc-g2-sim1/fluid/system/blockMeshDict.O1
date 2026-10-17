@@ -1,0 +1,630 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+//
+// Mesh level O1 -- G2-fluid domain built natively with blockMesh.
+//
+// Domain : anterior chamber + posterior chamber + pupil + trabecular meshwork
+//          + vitreous, revolved 90 deg about +y (quarter calotte).
+//          Lens and iris are VOIDS (walls). Cornea / sclera / choroid /
+//          retina / ciliary body are solids and are not meshed.
+//
+// Geometry: Missel (2012) / Lamminsalo (2018) ESM Tables SI-SII, rabbit eye.
+//          Table units are cm; here everything is written in MILLIMETRES and
+//          converted by "scale 0.001".  Missel X -> x (radial), Missel Z -> y
+//          (optical axis, + posterior).  y = 0 is the ellipsoid centre.
+//
+// ---------------------------------------------------------------------------
+// Analytic surfaces (Table SI, cm -> mm)
+// ---------------------------------------------------------------------------
+//   cornea_inside    circle  centre (0, -0.15)  R = 8.01
+//   lens_front       circle  centre (0, -0.31)  R = 5.76
+//   lens_rear        circle  centre (0, -4.15)  R = 4.79
+//   hyaloid_curved   circle  centre (0, +2.95)  R = 9.41
+//   vitreous_retina  ellipse R1 = 8.37 (x), R2 = 6.90 (y), centred (0,0)
+//
+// All four circles are centred ON the revolve axis, so every circular
+// meridional edge is written as "arc ... origin (0 yc 0)" -- exact, and valid
+// unchanged in all three theta layers.
+//
+// ---------------------------------------------------------------------------
+// Meridional block corners
+// ---------------------------------------------------------------------------
+// Table SI/SII landmarks, used verbatim:
+//   A  (0    , -8.16)   cornea inner apex                       [axis]
+//   B  (6.61 , -4.68)   inner_sclera_cornea
+//   C  (6.70 , -4.75)   tm_cornea_void
+//   D  (6.93 , -4.49)   tm_ciliary_void
+//   E  (6.84 , -4.42)   ciliary_tm_aqueous_sclera
+//   F  (6.90 , -4.02)   iris_ciliary_ant
+//   G  (6.92 , -3.86)   iris_ciliary_post
+//   H  (7.00 , -3.35)   hyaloid_curved_flat (ciliary tip)
+//   I  (8.01 , -2.00)   hyaloid_retina (ora); lies on BOTH the ellipse and
+//                       the hyaloid circle, with an 11.6 deg tangent kink
+//   J  (0    , +6.90)   posterior pole                          [axis]
+//   K  (0    , +0.64)   lens rear apex                          [axis]
+//   L  (4.75 , -3.57)   lens_eq_hyaloid (lens equator)
+//   M  (0    , -6.07)   lens front apex                         [axis]
+//   N  (3.78 , -4.94)   iris_turn_ant
+//   O  (3.11 , -5.38)   iris_tip_ant
+//   P  (3.00 , -5.27)   iris_tip_post
+//   Q  (3.69 , -4.81)   iris_turn_post
+//
+// Derived corners (evaluated from the circles above):
+//   R  (3.00 , -5.2270723)  foot of P on lens_front; face P-R is the pupil
+//                           throat, 42.93 um.  NB the true minimum iris-lens
+//                           clearance is 37.3 um at x = 3.195, which sits
+//                           INSIDE block PCi -- see the gap function below.
+//   T  (3.11 , -7.5315989)  cornea at the iris-tip radius
+//   U  (3.78 , -7.2119900)  cornea at the iris-turn radius
+//   V  (0    , -7.00)       axis station, also the ACP needle site   [axis]
+//   V2 (0    , -7.60)       axis station                             [axis]
+//   Z  (6.075475, -4.26313)  on the iris anterior segment F-N.
+//       The peripheral AC is the pentagon B-E-F-N-U, and B is a REFLEX
+//       corner: the cornea arrives with tangent 55.613 deg and the TM inner
+//       face B-E leaves at 48.513 deg, so the fluid turns through 187.10 deg
+//       there.  Any single block corner at B is therefore concave whatever
+//       the cell size (this showed up as 36 concave cells, 24 mis-oriented
+//       face pyramids and skewness 233 in the first attempt).  The pentagon
+//       is instead cut from B along the bisector of that reflex angle
+//       (142.060 deg) to Z on F-N, giving two convex quads with 93.55 deg
+//       each at B.  This also removes the collapsed iris-root fan block: the
+//       65.05 deg corner at F is now an ordinary hex corner, so the only
+//       prisms left in the mesh are the four axis-touching blocks.
+//   Y  (5.21718, -4.36082941)  on the iris posterior segment Q-G.
+//       The obvious posterior-chamber cut L-Q cannot be used: its midpoint
+//       (4.22, -4.189) is 29 um INSIDE the lens_front sphere, so a block
+//       bounded by both the lens arc R-L and the chord L-Q self-intersects,
+//       and the corner it leaves at L is only 6.5 deg.  Instead the 130.03
+//       deg fluid corner at L (between the lens_front tangent, 235.557 deg,
+//       and the chord L-H, 5.583 deg) is BISECTED: the ray leaving L at
+//       300.570 deg meets the line Q-G at Y, giving 65.01 deg on each side.
+//       Q itself survives as an interior point of the polyLine iris edge
+//       P-Q-Y, so the Table SII iris polygon is still exact.
+//
+// Vitreous subdivision, 6 internal cuts (needed for the theta accuracy
+// argument below).  Shell stations on the ellipse, x = 8.37 sin t,
+// y = 6.90 cos t:
+//   S1 t = 18 deg, S2 t = 36, S3 t = 54, S4 t = 72, S5 t = 90, then I at
+//   t = 106.85 deg.  Lens-rear stations W1..W6 at phi = k*83.038543/7 deg,
+//   x = 4.79 sin phi, y = -4.15 + 4.79 cos phi.
+//
+// Iris-lens clearance (iris posterior P-Q is straight, lens front is a
+// circle):   gap(x) = 6.96 - 0.66667 x - sqrt(33.1776 - x^2)  [mm]
+//   x = 3.000 -> 42.93 um (tip corner P)
+//   x = 3.195 -> 37.34 um (MINIMUM)
+//   x = 3.690 -> 77.16 um (turning point Q)
+// Block PCi spans this gap in its x1 direction with 8 cells everywhere, so
+// the minimum section is resolved by 8 cells of ~4.7 um.
+//
+// ---------------------------------------------------------------------------
+// Why 2 theta blocks and 7 vitreous blocks
+// ---------------------------------------------------------------------------
+// blockMesh builds block interiors by transfinite interpolation from the 12
+// edges, so a swept surface of revolution is only reproduced exactly where
+// the meridional edge is straight.  For a block spanning dTheta the radial
+// error at mid-sweep is
+//       err = (1 - cos(dTheta/2)) * (r_chord - r_true)
+// i.e. the coefficient times the chord deviation of the meridional edge.
+// One 90 deg block over the whole shell would pinch the retina inward by
+// 0.93 mm.  With dTheta = 45 deg (coeff 0.0761) and the shell cut into six
+// ~18 deg pieces (deviation ~0.21 mm) the worst surface error is ~16 um,
+// below the ~40 um self-consistency of Tables SI-SII themselves.  The same
+// subdivision makes every shell segment an exact 3-point arc (ellipse-to-arc
+// error < 1 um over 18 deg).
+//
+// Vertex layers: 0-26 theta = 0, 27-53 theta = 45, 54-80 theta = 90,
+// 81-86 on the axis (shared by all layers -> the four axis-touching blocks
+// are collapsed hexes, i.e. prisms).
+//
+// ---------------------------------------------------------------------------
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale   0.001;      // vertices in mm
+
+vertices
+(
+    // ---------------- layer 0 : theta = 0 deg  (x, y, 0) ----------------
+    (6.61       -4.68        0)              //  0  B
+    (6.70       -4.75        0)              //  1  C
+    (6.93       -4.49        0)              //  2  D
+    (6.84       -4.42        0)              //  3  E
+    (6.90       -4.02        0)              //  4  F
+    (6.92       -3.86        0)              //  5  G
+    (7.00       -3.35        0)              //  6  H
+    (4.75       -3.57        0)              //  7  L
+    (3.78       -4.94        0)              //  8  N
+    (3.11       -5.38        0)              //  9  O
+    (3.00       -5.27        0)              // 10  P
+    (5.21718    -4.36082941  0)              // 11  Y   bisector cut on Q-G
+    (3.00       -5.2270723   0)              // 12  R
+    (3.11       -7.5315989   0)              // 13  T
+    (3.78       -7.2119900   0)              // 14  U
+    (2.58647221  6.56228999  0)              // 15  S1  ellipse t=18
+    (4.91976254  5.58221723  0)              // 16  S2  ellipse t=36
+    (6.77147221  4.05571823  0)              // 17  S3  ellipse t=54
+    (7.96034307  2.13221723  0)              // 18  S4  ellipse t=72
+    (8.37        0.0         0)              // 19  S5  ellipse t=90
+    (8.01       -2.00        0)              // 20  I   ora
+    (0.98466162  0.53770000  0)              // 21  W1  lens rear
+    (1.92726600  0.23517400  0)              // 22  W2
+    (2.78754500 -0.25466200  0)              // 23  W3
+    (3.52877400 -0.91087800  0)              // 24  W4
+    (4.11925900 -1.70545300  0)              // 25  W5
+    (4.53380010 -2.60443900  0)              // 26  W6
+
+    // ---------------- layer 1 : theta = 45 deg  (x/sqrt2, y, x/sqrt2) ---
+    (4.67397582 -4.68        4.67397582)     // 27  B
+    (4.73761543 -4.75        4.73761543)     // 28  C
+    (4.90024999 -4.49        4.90024999)     // 29  D
+    (4.83661038 -4.42        4.83661038)     // 30  E
+    (4.87903678 -4.02        4.87903678)     // 31  F
+    (4.89317892 -3.86        4.89317892)     // 32  G
+    (4.94974746 -3.35        4.94974746)     // 33  H
+    (3.35875721 -3.57        3.35875721)     // 34  L
+    (2.67286363 -4.94        2.67286363)     // 35  N
+    (2.19910209 -5.38        2.19910209)     // 36  O
+    (2.12132034 -5.27        2.12132034)     // 37  P
+    (3.68910336 -4.36082941  3.68910336)     // 38  Y
+    (2.12132034 -5.2270723   2.12132034)     // 39  R
+    (2.19910209 -7.5315989   2.19910209)     // 40  T
+    (2.67286363 -7.2119900   2.67286363)     // 41  U
+    (1.82891266  6.56228999  1.82891266)     // 42  S1
+    (3.47879641  5.58221723  3.47879641)     // 43  S2
+    (4.78815392  4.05571823  4.78815392)     // 44  S3
+    (5.62881148  2.13221723  5.62881148)     // 45  S4
+    (5.91848375  0.0         5.91848375)     // 46  S5
+    (5.66392531 -2.00        5.66392531)     // 47  I
+    (0.69626093  0.53770000  0.69626093)     // 48  W1
+    (1.36278488  0.23517400  1.36278488)     // 49  W2
+    (1.97108997 -0.25466200  1.97108997)     // 50  W3
+    (2.49522201 -0.91087800  2.49522201)     // 51  W4
+    (2.91275524 -1.70545300  2.91275524)     // 52  W5
+    (3.20588043 -2.60443900  3.20588043)     // 53  W6
+
+    // ---------------- layer 2 : theta = 90 deg  (0, y, x) ---------------
+    (0          -4.68        6.61      )     // 54  B
+    (0          -4.75        6.70      )     // 55  C
+    (0          -4.49        6.93      )     // 56  D
+    (0          -4.42        6.84      )     // 57  E
+    (0          -4.02        6.90      )     // 58  F
+    (0          -3.86        6.92      )     // 59  G
+    (0          -3.35        7.00      )     // 60  H
+    (0          -3.57        4.75      )     // 61  L
+    (0          -4.94        3.78      )     // 62  N
+    (0          -5.38        3.11      )     // 63  O
+    (0          -5.27        3.00      )     // 64  P
+    (0          -4.36082941  5.21718   )     // 65  Y
+    (0          -5.2270723   3.00      )     // 66  R
+    (0          -7.5315989   3.11      )     // 67  T
+    (0          -7.2119900   3.78      )     // 68  U
+    (0           6.56228999  2.58647221)     // 69  S1
+    (0           5.58221723  4.91976254)     // 70  S2
+    (0           4.05571823  6.77147221)     // 71  S3
+    (0           2.13221723  7.96034307)     // 72  S4
+    (0           0.0         8.37      )     // 73  S5
+    (0          -2.00        8.01      )     // 74  I
+    (0           0.53770000  0.98466162)     // 75  W1
+    (0           0.23517400  1.92726600)     // 76  W2
+    (0          -0.25466200  2.78754500)     // 77  W3
+    (0          -0.91087800  3.52877400)     // 78  W4
+    (0          -1.70545300  4.11925900)     // 79  W5
+    (0          -2.60443900  4.53380010)     // 80  W6
+
+    // ---------------- on the revolve axis (shared by all layers) --------
+    (0          -8.16        0)              // 81  A   cornea apex
+    (0           6.90        0)              // 82  J   posterior pole
+    (0           0.64        0)              // 83  K   lens rear apex
+    (0          -6.07        0)              // 84  M   lens front apex
+    (0          -7.00        0)              // 85  V   ACP needle site
+    (0          -7.60        0)              // 86  V2
+
+    // ---------------- Z, appended (bisector cut on iris F-N) ------------
+    (6.07547500 -4.26313     0          )    // 87  Z   theta = 0
+    (4.29600956 -4.26313     4.29600956 )    // 88  Z   theta = 45
+    (0          -4.26313     6.07547500 )    // 89  Z   theta = 90
+);
+
+
+// ---------------------------------------------------------------------------
+// Blocks.  16 meridional regions x 2 theta blocks = 32.
+//
+// Division chains forced by face matching (do not break these):
+//   TM.x2  = ANG.x1                   = 12
+//   ANG.x2 = AC1.x1 = AC2.x1 = AC3.x2 = 12
+//   AC1.x2                            = 22
+//   AC3.x1 = AC4.x1 = AC5.x1          = 32
+//   AC5.x2 = PCi.x1 = PCo.x1          =  8   (cells across the pupil gap)
+//   PCo.x2 = VIT1..VIT7.x2            = 28   (same grading required)
+//   n_theta                           =  6   per 45 deg block (12 over 90)
+// ---------------------------------------------------------------------------
+
+blocks
+(
+    // ============================ TM ==================================
+    // Table SI parallelogram: 0.34713 mm (C-D outlet face) x 0.11402 mm
+    // (B-C, the flow direction), corner angle 86.4 deg, area 0.0395 mm^2.
+    // x1 = B->C across the meshwork (5 cells, 22.8 um)
+    // x2 = B->E along it           (12 cells, 28.9 um)
+    hex (0 1 2 3 27 28 29 30)        tm_zone (5 12 6) simpleGrading (1 1 1)
+    hex (27 28 29 30 54 55 56 57)    tm_zone (5 12 6) simpleGrading (1 1 1)
+
+    // ============ ANG : iridocorneal angle recess, B-E-F-Z ============
+    // Convex quad, interior angles 93.55 (B) / 147.04 (E) / 65.05 (F) /
+    // 54.36 (Z) deg.  Carries the TM interface B-E and the ciliary face E-F.
+    hex (0 3 4 87 27 30 31 88)               (12 12 6) simpleGrading (1 1 1)
+    hex (27 30 31 88 54 57 58 89)            (12 12 6) simpleGrading (1 1 1)
+
+    // ============ AC1 : peripheral AC, B-Z-N-U ========================
+    // Interior angles 93.55 (B) / 125.64 (Z) / 106.42 (N) / 61.84 (U) deg.
+    // x1 tapers 0.678 mm (cut B-Z) to 2.272 mm (cut N-U), which refines the
+    // mesh into the outflow corner for free.
+    hex (0 87 8 14 27 88 35 41)              (12 22 6) simpleGrading (1 1 1)
+    hex (27 88 35 41 54 89 62 68)            (12 22 6) simpleGrading (1 1 1)
+
+    // ===================== AC2 : mid AC ===============================
+    hex (14 8 9 13 41 35 36 40)              (12 6 6) simpleGrading (1 1 1)
+    hex (41 35 36 40 68 62 63 67)            (12 6 6) simpleGrading (1 1 1)
+
+    // ===================== AC3 : central AC, on axis ==================
+    hex (81 13 9 86 81 40 36 86)             (32 12 6) simpleGrading (1 1 1)
+    hex (81 40 36 86 81 67 63 86)            (32 12 6) simpleGrading (1 1 1)
+
+    // ===================== AC4 : around the iris tip, on axis =========
+    // x2 runs O->P at the iris tip and V2->V on the axis, and both of its
+    // x1-faces are free (axis and iris wall), so it can be graded without
+    // touching any neighbour.  Ratio 0.5 shrinks the axis cells from 0.128 to
+    // 0.064 mm toward V = (0, -7.00), the ACP needle site, which also halves
+    // the jump onto AC3's 0.047 mm cells on the other side of V2.
+    hex (86 9 10 85 86 36 37 85)             (32 6 6) simpleGrading (1 0.5 1)
+    hex (86 36 37 85 86 63 64 85)            (32 6 6) simpleGrading (1 0.5 1)
+
+    // ===================== AC5 : pupil exit, on axis ==================
+    // x2 spans 0.93 mm on the axis down to 0.0429 mm at the throat P-R.
+    hex (85 10 12 84 85 37 39 84)            (32 8 6) simpleGrading (1 1 1)
+    hex (85 37 39 84 85 64 66 84)            (32 8 6) simpleGrading (1 1 1)
+
+    // ============ PCi : pupil channel, throat R-P to cut L-Y ==========
+    // x1 crosses the iris-lens gap everywhere: 8 cells over 0.9185 mm at
+    // the L-Y cut down to 8 cells over 37.3 um at the minimum section.
+    // The two x2 edges (lens arc R-L 2.4295 mm, iris P-Q-Y 2.4226 mm) are
+    // within 0.3% of each other, so the grid lines stay near-orthogonal.
+    hex (12 10 11 7 39 37 38 34)             (8 20 6) simpleGrading (1 1 1)
+    hex (39 37 38 34 66 64 65 61)            (8 20 6) simpleGrading (1 1 1)
+
+    // ============ PCo : posterior chamber, cut L-Y to inlet H-G =======
+    // x2 grading must match VIT (shared face L-H).
+    hex (7 11 5 6 34 38 32 33)               (8 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+    hex (34 38 32 33 61 65 59 60)            (8 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+
+    // ===================== VIT1..VIT7 : vitreous ======================
+    // Named vitreous_zone so porosity covers the whole vitreous (lens rear
+    // → retina), not the truncated y>=-1.5 mm box formerly used by topoSet.
+    // x1 = meridional (axis -> equatorial chord), x2 = radial (lens rear
+    // surface -> retina shell).  The x2 multi-grading puts 12 of the 28
+    // cells into y = 2.39..3.90 mm on the axis, i.e. 0.125 mm cells around
+    // the IVI needle site at (0, +3.0, 0).
+    hex (83 21 15 82 83 48 42 82)    vitreous_zone (17 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+    hex (83 48 42 82 83 75 69 82)    vitreous_zone (17 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+
+    hex (21 22 16 15 48 49 43 42)    vitreous_zone (16 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+    hex (48 49 43 42 75 76 70 69)    vitreous_zone (16 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+
+    hex (22 23 17 16 49 50 44 43)    vitreous_zone (15 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+    hex (49 50 44 43 76 77 71 70)    vitreous_zone (15 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+
+    hex (23 24 18 17 50 51 45 44)    vitreous_zone (14 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+    hex (50 51 45 44 77 78 72 71)    vitreous_zone (14 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+
+    hex (24 25 19 18 51 52 46 45)    vitreous_zone (14 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+    hex (51 52 46 45 78 79 73 72)    vitreous_zone (14 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+
+    hex (25 26 20 19 52 53 47 46)    vitreous_zone (13 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+    hex (52 53 47 46 79 80 74 73)    vitreous_zone (13 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+
+    hex (26 7 6 20 53 34 33 47)      vitreous_zone (11 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+    hex (53 34 33 47 80 61 60 74)    vitreous_zone (11 28 6)
+        simpleGrading (1 ((0.28 0.2857 1) (0.24 0.4286 1) (0.48 0.2857 1)) 1)
+);
+
+
+// ---------------------------------------------------------------------------
+// Edges.  Circular arcs use "origin" so no interpolation points are needed;
+// only the six vitreous_retina ellipse segments carry explicit mid-t points.
+// ---------------------------------------------------------------------------
+
+edges
+(
+    // ============ circumferential arcs, one per off-axis vertex ========
+    arc  0 27 origin (0 -4.68       0)   arc 27 54 origin (0 -4.68       0) // B
+    arc  1 28 origin (0 -4.75       0)   arc 28 55 origin (0 -4.75       0) // C
+    arc  2 29 origin (0 -4.49       0)   arc 29 56 origin (0 -4.49       0) // D
+    arc  3 30 origin (0 -4.42       0)   arc 30 57 origin (0 -4.42       0) // E
+    arc  4 31 origin (0 -4.02       0)   arc 31 58 origin (0 -4.02       0) // F
+    arc  5 32 origin (0 -3.86       0)   arc 32 59 origin (0 -3.86       0) // G
+    arc  6 33 origin (0 -3.35       0)   arc 33 60 origin (0 -3.35       0) // H
+    arc  7 34 origin (0 -3.57       0)   arc 34 61 origin (0 -3.57       0) // L
+    arc  8 35 origin (0 -4.94       0)   arc 35 62 origin (0 -4.94       0) // N
+    arc  9 36 origin (0 -5.38       0)   arc 36 63 origin (0 -5.38       0) // O
+    arc 10 37 origin (0 -5.27       0)   arc 37 64 origin (0 -5.27       0) // P
+    arc 11 38 origin (0 -4.36082941 0)   arc 38 65 origin (0 -4.36082941 0) // Y
+    arc 12 39 origin (0 -5.2270723  0)   arc 39 66 origin (0 -5.2270723  0) // R
+    arc 13 40 origin (0 -7.5315989  0)   arc 40 67 origin (0 -7.5315989  0) // T
+    arc 14 41 origin (0 -7.2119900  0)   arc 41 68 origin (0 -7.2119900  0) // U
+    arc 15 42 origin (0  6.56228999 0)   arc 42 69 origin (0  6.56228999 0) // S1
+    arc 16 43 origin (0  5.58221723 0)   arc 43 70 origin (0  5.58221723 0) // S2
+    arc 17 44 origin (0  4.05571823 0)   arc 44 71 origin (0  4.05571823 0) // S3
+    arc 18 45 origin (0  2.13221723 0)   arc 45 72 origin (0  2.13221723 0) // S4
+    arc 19 46 origin (0  0.0        0)   arc 46 73 origin (0  0.0        0) // S5
+    arc 20 47 origin (0 -2.00       0)   arc 47 74 origin (0 -2.00       0) // I
+    arc 21 48 origin (0  0.53770000 0)   arc 48 75 origin (0  0.53770000 0) // W1
+    arc 22 49 origin (0  0.23517400 0)   arc 49 76 origin (0  0.23517400 0) // W2
+    arc 23 50 origin (0 -0.25466200 0)   arc 50 77 origin (0 -0.25466200 0) // W3
+    arc 24 51 origin (0 -0.91087800 0)   arc 51 78 origin (0 -0.91087800 0) // W4
+    arc 25 52 origin (0 -1.70545300 0)   arc 52 79 origin (0 -1.70545300 0) // W5
+    arc 26 53 origin (0 -2.60443900 0)   arc 53 80 origin (0 -2.60443900 0) // W6
+    arc 87 88 origin (0 -4.26313    0)   arc 88 89 origin (0 -4.26313    0) // Z
+
+    // ================ meridional edges, layer 0 (theta = 0) ===========
+    // cornea_inside  A-T-U-B
+    arc 81 13 origin (0 -0.15 0)
+    arc 13 14 origin (0 -0.15 0)
+    arc 14  0 origin (0 -0.15 0)
+    // lens_front  M-R-L
+    arc 84 12 origin (0 -0.31 0)
+    arc 12  7 origin (0 -0.31 0)
+    // lens_rear  K-W1..W6-L
+    arc 83 21 origin (0 -4.15 0)
+    arc 21 22 origin (0 -4.15 0)
+    arc 22 23 origin (0 -4.15 0)
+    arc 23 24 origin (0 -4.15 0)
+    arc 24 25 origin (0 -4.15 0)
+    arc 25 26 origin (0 -4.15 0)
+    arc 26  7 origin (0 -4.15 0)
+    // hyaloid_curved  I-H
+    arc 20  6 origin (0  2.95 0)
+    // iris posterior P-Y, with the Table SII turning point Q as the knee
+    polyLine 10 11 ((3.69 -4.81 0))
+    // vitreous_retina ellipse  J-S1..S5-I  (mid-t interpolation points)
+    arc 82 15 (1.30935652  6.81504955 0)
+    arc 15 16 (3.79990049  6.14794499 0)
+    arc 16 17 (5.91848375  4.87903678 0)
+    arc 17 18 (7.45772457  3.13253445 0)
+    arc 18 19 (8.26695141  1.07939784 0)
+    arc 19 20 (8.27967096 -1.01096040 0)
+
+    // ================ meridional edges, layer 1 (theta = 45) ==========
+    arc 81 40 origin (0 -0.15 0)
+    arc 40 41 origin (0 -0.15 0)
+    arc 41 27 origin (0 -0.15 0)
+    arc 84 39 origin (0 -0.31 0)
+    arc 39 34 origin (0 -0.31 0)
+    arc 83 48 origin (0 -4.15 0)
+    arc 48 49 origin (0 -4.15 0)
+    arc 49 50 origin (0 -4.15 0)
+    arc 50 51 origin (0 -4.15 0)
+    arc 51 52 origin (0 -4.15 0)
+    arc 52 53 origin (0 -4.15 0)
+    arc 53 34 origin (0 -4.15 0)
+    arc 47 33 origin (0  2.95 0)
+    polyLine 37 38 ((2.60922402 -4.81 2.60922402))
+    arc 82 42 (0.92585488  6.81504955 0.92585488)
+    arc 42 43 (2.68793540  6.14794499 2.68793540)
+    arc 43 44 (4.18499790  4.87903678 4.18499790)
+    arc 44 45 (5.27340762  3.13253445 5.27340762)
+    arc 45 46 (5.84561741  1.07939784 5.84561741)
+    arc 46 47 (5.85461144 -1.01096040 5.85461144)
+
+    // ================ meridional edges, layer 2 (theta = 90) ==========
+    arc 81 67 origin (0 -0.15 0)
+    arc 67 68 origin (0 -0.15 0)
+    arc 68 54 origin (0 -0.15 0)
+    arc 84 66 origin (0 -0.31 0)
+    arc 66 61 origin (0 -0.31 0)
+    arc 83 75 origin (0 -4.15 0)
+    arc 75 76 origin (0 -4.15 0)
+    arc 76 77 origin (0 -4.15 0)
+    arc 77 78 origin (0 -4.15 0)
+    arc 78 79 origin (0 -4.15 0)
+    arc 79 80 origin (0 -4.15 0)
+    arc 80 61 origin (0 -4.15 0)
+    arc 74 60 origin (0  2.95 0)
+    polyLine 64 65 ((0 -4.81 3.69))
+    arc 82 69 (0  6.81504955 1.30935652)
+    arc 69 70 (0  6.14794499 3.79990049)
+    arc 70 71 (0  4.87903678 5.91848375)
+    arc 71 72 (0  3.13253445 7.45772457)
+    arc 72 73 (0  1.07939784 8.26695141)
+    arc 73 74 (0 -1.01096040 8.27967096)
+);
+
+
+// ---------------------------------------------------------------------------
+// Boundary.  29 meridional boundary segments x 2 theta blocks = 58 faces,
+// plus 16 + 16 symmetry faces.  Patch names and types match
+// fluid/initial/U and fluid/initial/p exactly.
+// ---------------------------------------------------------------------------
+
+boundary
+(
+    outlet_tm
+    {
+        type            patch;
+        faces
+        (
+            (1 2 29 28)                 // TM  C-D
+            (28 29 56 55)
+        );
+    }
+
+    ac_inlet
+    {
+        type            patch;
+        faces
+        (
+            (6 5 32 33)                 // PCo  H-G  (ciliary production)
+            (33 32 59 60)
+        );
+    }
+
+    lens_wall
+    {
+        type            wall;
+        faces
+        (
+            (84 12 39 84)               // AC5  lens_front  M-R
+            (84 39 66 84)
+            (12 7 34 39)                // PCi  lens_front  R-L
+            (39 34 61 66)
+            (83 21 48 83)               // VIT1 lens_rear   K-W1
+            (83 48 75 83)
+            (21 22 49 48)               // VIT2 W1-W2
+            (48 49 76 75)
+            (22 23 50 49)               // VIT3 W2-W3
+            (49 50 77 76)
+            (23 24 51 50)               // VIT4 W3-W4
+            (50 51 78 77)
+            (24 25 52 51)               // VIT5 W4-W5
+            (51 52 79 78)
+            (25 26 53 52)               // VIT6 W5-W6
+            (52 53 80 79)
+            (26 7 34 53)                // VIT7 W6-L
+            (53 34 61 80)
+        );
+    }
+
+    iris_wall
+    {
+        type            wall;
+        faces
+        (
+            (87 4 31 88)                // ANG  F-Z   anterior, root to cut
+            (88 31 58 89)
+            (87 8 35 88)                // AC1  Z-N   anterior, cut to turn
+            (88 35 62 89)
+            (8 9 36 35)                 // AC2  N-O   anterior, turn to tip
+            (35 36 63 62)
+            (9 10 37 36)                // AC4  O-P   pupillary margin
+            (36 37 64 63)
+            (10 11 38 37)               // PCi  P-Q-Y posterior, tip to cut
+            (37 38 65 64)
+            (11 5 32 38)                // PCo  Y-G   posterior, cut to root
+            (38 32 59 65)
+        );
+    }
+
+    wall
+    {
+        type            wall;
+        faces
+        (
+            (81 13 40 81)               // AC3  cornea_inside  A-T
+            (81 40 67 81)
+            (14 13 40 41)               // AC2  cornea_inside  T-U
+            (41 40 67 68)
+            (0 14 41 27)                // AC1  cornea_inside  U-B
+            (27 41 68 54)
+            (0 1 28 27)                 // TM   limbal face    B-C
+            (27 28 55 54)
+            (3 2 29 30)                 // TM   ciliary face   D-E
+            (30 29 56 57)
+            (3 4 31 30)                 // ANG  ciliary        E-F
+            (30 31 58 57)
+            (82 15 42 82)               // VIT1 retina shell   J-S1
+            (82 42 69 82)
+            (15 16 43 42)               // VIT2 S1-S2
+            (42 43 70 69)
+            (16 17 44 43)               // VIT3 S2-S3
+            (43 44 71 70)
+            (17 18 45 44)               // VIT4 S3-S4
+            (44 45 72 71)
+            (18 19 46 45)               // VIT5 S4-S5
+            (45 46 73 72)
+            (19 20 47 46)               // VIT6 S5-I
+            (46 47 74 73)
+            (20 6 33 47)                // VIT7 hyaloid I-H
+            (47 33 60 74)
+        );
+    }
+
+    symmetry_0
+    {
+        type            symmetry;
+        faces
+        (
+            (0 1 2 3)                   // TM
+            (0 3 4 87)                  // ANG
+            (0 87 8 14)                 // AC1
+            (14 8 9 13)                 // AC2
+            (81 13 9 86)                // AC3
+            (86 9 10 85)                // AC4
+            (85 10 12 84)               // AC5
+            (12 10 11 7)                // PCi
+            (7 11 5 6)                  // PCo
+            (83 21 15 82)               // VIT1
+            (21 22 16 15)               // VIT2
+            (22 23 17 16)               // VIT3
+            (23 24 18 17)               // VIT4
+            (24 25 19 18)               // VIT5
+            (25 26 20 19)               // VIT6
+            (26 7 6 20)                 // VIT7
+        );
+    }
+
+    symmetry_90
+    {
+        type            symmetry;
+        faces
+        (
+            (54 55 56 57)               // TM
+            (54 57 58 89)               // ANG
+            (54 89 62 68)               // AC1
+            (68 62 63 67)               // AC2
+            (81 67 63 86)               // AC3
+            (86 63 64 85)               // AC4
+            (85 64 66 84)               // AC5
+            (66 64 65 61)               // PCi
+            (61 65 59 60)               // PCo
+            (83 75 69 82)               // VIT1
+            (75 76 70 69)               // VIT2
+            (76 77 71 70)               // VIT3
+            (77 78 72 71)               // VIT4
+            (78 79 73 72)               // VIT5
+            (79 80 74 73)               // VIT6
+            (80 61 60 74)               // VIT7
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.F1 -constant -noZero
+Date   : Aug 23 2026
+Time   : 10:49:27
+Host   : 908a88baaf45
+PID    : 2887
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.F1
+
+Time = constant
+    mesh not changed.
+Created faceSet symmetry_pool
+    Applying source patchToFace
+    Adding all faces of patches: ("symmetry-.*") ...
+    Found matching patch symmetry-geom-2-ac with 2536 faces
+    Found matching patch symmetry-geom-2-vitreous with 4588 faces
+    Found matching patch symmetry-geom-2-tm with 48 faces
+    faceSet symmetry_pool now size 7172
+Created faceSet symmetry_0_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (symmetry_pool)
+    faceSet symmetry_0_faces now size 7172
+Read set faceSet symmetry_0_faces size:7172
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (0 0 1) (to within 0.01) ...
+    faceSet symmetry_0_faces now size 3367
+Created faceSet symmetry_90_faces
+    Applying source faceToFace
+    Adding all elements of face sets: (symmetry_pool)
+    faceSet symmetry_90_faces now size 7172
+Read set faceSet symmetry_90_faces size:7172
+    Applying source normalToFace
+    Adding faces according to normal being aligned with (-1 0 0) (to within 0.01) ...
+    faceSet symmetry_90_faces now size 3805
+
+End
+

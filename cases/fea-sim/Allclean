@@ -1,0 +1,9 @@
+#!/bin/bash
+set -euo pipefail
+cd "$(dirname "$0")"
+rm -rf results
+rm -f ccx/fea-sim_mesh.inp ccx/fea-sim.frd ccx/fea-sim.dat ccx/fea-sim.cvg \
+      ccx/fea-sim.sta ccx/fea-sim.12d ccx/fea-sim_frozen.frd \
+      ccx/fea-sim_frozen.dat ccx/fea-sim_frozen.cvg ccx/fea-sim_frozen.sta \
+      ccx/log.ccx_* ccx/*.rout
+echo "cleaned fea-sim"

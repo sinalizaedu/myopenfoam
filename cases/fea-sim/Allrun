@@ -1,0 +1,84 @@
+#!/bin/bash
+# fea-sim — O1/B2 anatomical coat, CalculiX standalone.
+# Fallback: if the free-iris deck dies in Step 2, rerun fea-sim_frozen.inp.
+# SKIP_FREE_IRIS=1 skips the known-divergent free-iris deck.
+set -euo pipefail
+cd "$(dirname "$0")"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc 2>/dev/null || echo 4)}"
+echo "OMP_NUM_THREADS=$OMP_NUM_THREADS"
+BRUNA="${BRUNA:-/opt/brunaStuff}"
+if [ ! -f "$BRUNA/o1_solid_to_ccx.py" ]; then
+    BRUNA="$(cd ../.. && pwd)/brunaStuff"
+fi
+POLYMESH="${POLYMESH:-/simulation/fsi-transient-o1-patch/solid_meshes/B2/constant/polyMesh}"
+if [ ! -d "$POLYMESH" ]; then
+    POLYMESH="$(cd .. && pwd)/fsi-transient-o1-patch/solid_meshes/B2/constant/polyMesh"
+fi
+mkdir -p ccx results
+echo "=== B2 polyMesh -> CalculiX ==="
+python3 "$BRUNA/o1_solid_to_ccx.py" --polymesh "$POLYMESH" --out ccx/fea-sim_mesh.inp
+
+run_deck() {
+    local deck="$1"
+    local rc
+    echo "=== ccx_preCICE -i ${deck} ==="
+    pushd ccx >/dev/null
+    rm -f ${deck}.frd ${deck}.dat ${deck}.cvg ${deck}.sta ${deck}.12d
+    set +e
+    ccx_preCICE -i "${deck}" 2>&1 | tee "log.ccx_${deck}"
+    rc=${PIPESTATUS[0]}
+    popd >/dev/null
+    # do not `set -e` before return: a non-zero return with errexit
+    # aborts Allrun and skips the frozen-iris / plot fallback.
+    return "$rc"
+}
+
+DECK=fea-sim
+USED="$DECK"
+if [ "${SKIP_FREE_IRIS:-0}" = "1" ]; then
+    echo "SKIP_FREE_IRIS=1 — not running free-iris deck"
+    RC=1
+else
+    set +e
+    run_deck "$DECK"
+    RC=$?
+    set -e
+fi
+if [ $RC -ne 0 ]; then
+    echo "WARNING: ${DECK} failed (rc=$RC) — freezing fsi_iris"
+    set +e
+    run_deck fea-sim_frozen
+    RC2=$?
+    set -e
+    if [ $RC2 -ne 0 ]; then
+        echo "ERROR: frozen iris also failed. Study falls back to sphere + thin-shell analytic."
+        echo "frozen_failed" > results/status.txt
+        python3 "$BRUNA/plot_fea_inflation.py" \
+            --sphere-infl ../fea-simplf/results/inflation.csv \
+            --sphere-gold ../fea-simplf/results/goldmann.csv \
+            --out-dir results \
+            || true
+        tail -30 ccx/log.ccx_fea-sim_frozen || true
+        exit 1
+    fi
+    USED=fea-sim_frozen
+    echo "frozen_iris" > results/status.txt
+else
+    echo "free_iris" > results/status.txt
+fi
+
+python3 "$BRUNA/extract_inflation.py" \
+    --inp ccx/${USED}.inp --frd ccx/${USED}.frd \
+    --out results/inflation.csv --label b2_${USED}
+python3 "$BRUNA/goldmann_from_fea.py" \
+    --csv results/inflation.csv --out results/goldmann.csv
+python3 "$BRUNA/plot_fea_inflation.py" \
+    --sphere-infl ../fea-simplf/results/inflation.csv \
+    --sphere-gold ../fea-simplf/results/goldmann.csv \
+    --b2-infl results/inflation.csv \
+    --b2-gold results/goldmann.csv \
+    --out-dir results \
+    || echo "WARNING: plot_fea_inflation.py failed (matplotlib?); run it on the host"
+echo "USED=${USED}"
+tail -20 ccx/${USED}.sta 2>/dev/null || true
+echo "DONE fea-sim"

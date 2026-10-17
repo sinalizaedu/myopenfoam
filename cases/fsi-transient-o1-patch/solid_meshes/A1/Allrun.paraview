@@ -1,0 +1,16 @@
+#!/bin/bash
+# Export A1 solid mesh to ParaView (.vtu volume + .vtp patches).
+set -euo pipefail
+cd "$(dirname "$0")"
+# shellcheck source=../env.sh
+source ../env.sh
+
+if [ ! -f constant/polyMesh/points ]; then
+    echo "=== building A1 polyMesh first ==="
+    ./Allrun.mesh
+fi
+
+OUT="${PARAVIEW_OUT:-paraview/A1_volume.vtu}"
+python3 "$BRUNA/export_polymesh_paraview.py" --case . --out "$OUT" \
+    --patches fsi_active,outer,defaultFaces
+echo "=== ParaView: open $(pwd)/$OUT ==="

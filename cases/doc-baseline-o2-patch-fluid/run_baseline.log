@@ -1,0 +1,141 @@
+time="2026-08-23T19:16:33+02:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-c5aadb2f073c Creating 
+ Container myopenfoam-fsi-run-c5aadb2f073c Created 
+=== doc-baseline-o2-patch-fluid MODE=baseline MESH_LEVEL=O2 (patch) REUSE_MESH=1 ===
+=== doc-g2-sim4 MODE=baseline MESH_LEVEL=O2 (blockMesh) REUSE_MESH=1 ===
+=== REUSE_MESH=1 baseline: keep polyMesh, reset 0/ ===
+=== patch counts ===
+  ac_inlet: 216 faces
+  outlet_tm: 324 faces
+  ivi_tip: 558 faces
+  acp_tip: 684 faces
+  wall: 4968 faces
+  lens_wall: 4140 faces
+  iris_wall: 2538 faces
+  symmetry_0: 10131 faces
+  symmetry_90: 10131 faces
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : simpleFoam
+Date   : Aug 23 2026
+Time   : 17:16:37
+Host   : 1fe1c95a9587
+PID    : 236
+I/O    : uncollated
+Case   : /simulation/doc-baseline-o2-patch-fluid/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+
+SIMPLE: convergence criteria
+    field p	 tolerance 1e-05
+    field U	 tolerance 1e-05
+
+Reading field p
+
+Reading field U
+
+Reading/calculating face flux field phi
+
+Selecting incompressible transport model Newtonian
+Selecting turbulence model type laminar
+Selecting laminar stress model Stokes
+No MRF models present
+
+Creating finite-volume options from "system/fvOptions"
+
+Selecting finite volume options type explicitPorositySource
+    Source: tm_porous
+    State: active
+    - selecting cells using cellZones (tm_zone)
+    - selected 2592 cell(s) with volume 4.1952154e-10
+Porosity region tm_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/tm_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: tm_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00693 0.00033 0.00693)
+
+Selecting finite volume options type explicitPorositySource
+    Source: vitreous_porous
+    State: active
+    - selecting cells using cellZones (vitreous_zone)
+    - selected 115038 cell(s) with volume 3.8134083e-07
+Porosity region vitreous_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/vitreous_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: vitreous_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00837 0.010530223 0.00837)
+
+
+Starting time loop
+
+surfaceFieldValue flowRateTM:
+    operation     = sum
+
+
+surfaceFieldValue flowRateIVI:
+    operation     = sum
+
+
+surfaceFieldValue flowRateACP:
+    operation     = sum
+
+
+surfaceFieldValue pressureACinlet:
+    operation     = areaAverage
+
+
+Time = 1
+
+smoothSolver:  Solving for Ux, Initial residual = 0.99999995, Final residual = 2.2500286e-09, No Iterations 5
+smoothSolver:  Solving for Uy, Initial residual = 0.99999979, Final residual = 2.2490265e-09, No Iterations 5
+smoothSolver:  Solving for Uz, Initial residual = 0.99999995, Final residual = 2.2515662e-09, No Iterations 5
+GAMG:  Solving for p, Initial residual = 0.99999976, Final residual = 1.8212032, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.16122046, Final residual = 0.041417314, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.092995769, Final residual = 0.0072005262, No Iterations 100
+time="2026-08-23T19:39:19+02:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-5b057ec1b6ad Creating 
+ Container myopenfoam-fsi-run-5b057ec1b6ad Created 
+=== resume simpleFoam -latestTime ===
+Using: OpenFOAM-2512 (2512) - visit www.openfoam.com
+Build: _bd2b6720-20260127
+
+Invalid option: -latestTime
+
+See 'simpleFoam -help' for usage
+ or 'simpleFoam -help-full' for extended usage
+
+

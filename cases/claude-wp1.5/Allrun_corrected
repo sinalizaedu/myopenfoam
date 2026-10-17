@@ -1,0 +1,8 @@
+#!/bin/bash
+# claude-wp1.5 CORRIGIDO: piloto de especie com P0 especifico por especie
+# (humano 16.9 mmHg, coelho anestesiado 26.7 mmHg -- ver
+# CORRECAO_P0_ESPECIE_CLAUDE.md). Rodar dentro do container FSI a partir
+# de /simulation/claude-wp1.5/
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 scripts/run_pilot_species_corrected_claude.py "$@"

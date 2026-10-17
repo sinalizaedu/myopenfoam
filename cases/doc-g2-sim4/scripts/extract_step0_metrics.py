@@ -34,7 +34,18 @@ def read_probe(path: pathlib.Path) -> list[float]:
 def main():
     case = pathlib.Path(__file__).resolve().parent.parent
     fluid = case / "fluid"
-    probes = read_probe(fluid / "postProcessing" / "iop_probe" / "0" / "p")
+    probe_files = list(fluid.glob("postProcessing/iop_probe/*/p"))
+    if not probe_files:
+        print("ERROR: iop_probe data missing", file=sys.stderr)
+        sys.exit(1)
+
+    def _tkey(p: pathlib.Path) -> float:
+        try:
+            return float(p.parent.name)
+        except ValueError:
+            return -1.0
+
+    probes = read_probe(max(probe_files, key=_tkey))
     if len(probes) < 4:
         print("ERROR: iop_probe data missing", file=sys.stderr)
         sys.exit(1)

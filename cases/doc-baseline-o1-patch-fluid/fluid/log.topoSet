@@ -1,0 +1,70 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.O1 -constant
+Date   : Aug 23 2026
+Time   : 16:35:54
+Host   : ecf4c4d63a59
+PID    : 266
+I/O    : uncollated
+Case   : /simulation/doc-baseline-o1-patch-fluid/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.O1
+
+Time = constant
+    mesh not changed.
+Created cellSet tm_zone_cyl
+    Applying source cylinderAnnulusToCell
+    Adding cells with centres within cylinder, with point1 = (0 -0.00483 0), point2 = (0 -0.00434 0), radius = 0.00733, inner radius = 0.00621
+    cellSet tm_zone_cyl now size 1740
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.0001 -0.0036 -0.009) (0.009 0.0075 0.0001))
+    cellSet vitreous_zone now size 33636
+Read set cellSet vitreous_zone size:33636
+    Applying source zoneToCell
+    Removing all cells of cell zones: (tm_zone) ...
+    Using zone tm_zone with 720 cells
+    cellSet vitreous_zone now size 33636
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 33636
+Time = 0
+    mesh not changed.
+Created cellSet tm_zone_cyl
+    Applying source cylinderAnnulusToCell
+    Adding cells with centres within cylinder, with point1 = (0 -0.00483 0), point2 = (0 -0.00434 0), radius = 0.00733, inner radius = 0.00621
+    cellSet tm_zone_cyl now size 1740
+Created cellSet vitreous_zone
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-0.0001 -0.0036 -0.009) (0.009 0.0075 0.0001))
+    cellSet vitreous_zone now size 33636
+Read set cellSet vitreous_zone size:33636
+    Applying source zoneToCell
+    Removing all cells of cell zones: (tm_zone) ...
+    Using zone tm_zone with 720 cells
+    cellSet vitreous_zone now size 33636
+Created cellZoneSet vitreous_zone
+    Applying source setToCellZone
+    Adding all cells from cell set: vitreous_zone ...
+    cellZoneSet vitreous_zone now size 33636
+
+End
+

@@ -1,0 +1,31 @@
+#!/bin/bash
+# fea-simplf — spherical sclera+cornea, CalculiX standalone (no preCICE).
+# Run inside the fsi-openfoam container:
+#   docker compose run --rm fsi bash -lc 'cd /simulation/fea-simplf && ./Allrun'
+set -euo pipefail
+cd "$(dirname "$0")"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc 2>/dev/null || echo 4)}"
+echo "OMP_NUM_THREADS=$OMP_NUM_THREADS"
+BRUNA="${BRUNA:-/opt/brunaStuff}"
+if [ ! -f "$BRUNA/gen_fea_simplf_sphere.py" ]; then
+    BRUNA="$(cd ../.. && pwd)/brunaStuff"
+fi
+DECK=fea-simplf
+mkdir -p ccx results
+echo "=== mesh ==="
+python3 "$BRUNA/gen_fea_simplf_sphere.py" --out ccx/${DECK}_mesh.inp
+echo "=== ccx_preCICE -i ${DECK} ==="
+(
+    cd ccx
+    rm -f ${DECK}.frd ${DECK}.dat ${DECK}.cvg ${DECK}.sta ${DECK}.12d
+    ccx_preCICE -i ${DECK} 2>&1 | tee log.ccx
+)
+echo "=== extract inflation ==="
+python3 "$BRUNA/extract_inflation.py" \
+    --inp ccx/${DECK}.inp --frd ccx/${DECK}.frd \
+    --out results/inflation.csv --label sphere
+python3 "$BRUNA/goldmann_from_fea.py" \
+    --csv results/inflation.csv --out results/goldmann.csv
+echo "=== .sta tail ==="
+tail -20 ccx/${DECK}.sta 2>/dev/null || true
+echo "DONE fea-simplf"

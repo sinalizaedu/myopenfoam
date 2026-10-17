@@ -64,12 +64,16 @@ def main() -> None:
     iop_ac = iop_vit = None
     t = 0.0
 
-    probe = fluid / "postProcessing" / "iop_probe" / "0" / "p"
-    if not probe.is_file():
-        files = sorted(fluid.glob("postProcessing/iop_probe/*/p"))
-        if files:
-            probe = files[-1]
-    if probe.is_file():
+    files = list(fluid.glob("postProcessing/iop_probe/*/p"))
+    probe = None
+    if files:
+        def _tkey(p: Path) -> float:
+            try:
+                return float(p.parent.name)
+            except ValueError:
+                return -1.0
+        probe = max(files, key=_tkey)
+    if probe is not None and probe.is_file():
         t, vals = read_last_probe_row(probe)
         ac = 0.5 * (vals[0] + vals[1])
         vit = 0.5 * (vals[2] + vals[3])

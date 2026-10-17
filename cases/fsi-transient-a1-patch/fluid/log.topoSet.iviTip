@@ -1,0 +1,68 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.iviTip -constant
+Date   : Aug 30 2026
+Time   : 21:10:41
+Host   : 1cc592e9d510
+PID    : 246
+I/O    : uncollated
+Case   : /simulation/fsi-transient-a1-patch/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.iviTip
+
+Time = constant
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 492
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54672
+Read set cellSet fluid_keep size:54672
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 54180
+Time = 0
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 492
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54672
+Read set cellSet fluid_keep size:54672
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 54180
+
+End
+

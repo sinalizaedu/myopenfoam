@@ -1,4 +1,4 @@
-# doc-g1-sim1 — G1 Simulação 1 (AC / vitreous / TM only)
+# doc-baseline-2d-fluid — G1 Simulação 1 (AC / vitreous / TM only)
 
 Missel 2012 / Lamminsalo 2018 **2D planar bilateral** rabbit eye.
 
@@ -23,7 +23,7 @@ Only:
 ## Generate geometry + mesh (host)
 
 ```bash
-.venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py --case doc-g1-sim1 --mesh
+.venv-geom/bin/python brunaStuff/gen_lamminsalo_2d.py --case doc-baseline-2d-fluid --mesh
 # optional: --mesh-level M2|M3
 ```
 
@@ -32,7 +32,7 @@ Artefacts: `geometry/eye_g1_lamminsalo*.{geo,msh}`, `figures/g1_fluid_2d.png`, `
 ## Run (Docker / OpenFOAM)
 
 ```bash
-cd cases/doc-g1-sim1
+cd cases/doc-baseline-2d-fluid
 ./Allclean
 SKIP_SOLVE=1 ./Allrun          # mesh + checkMesh only
 ./Allrun                       # + simpleFoam

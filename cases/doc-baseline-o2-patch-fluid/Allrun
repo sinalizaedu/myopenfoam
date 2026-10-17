@@ -1,0 +1,13 @@
+#!/bin/bash
+# doc-baseline-o2-patch-fluid — baseline-only, MESH_LEVEL=O2, patch tips (Model B)
+set -euo pipefail
+cd "$(dirname "$0")"
+export MODE="${MODE:-baseline}"
+export MESH_LEVEL="${MESH_LEVEL:-O2}"
+export REUSE_MESH="${REUSE_MESH:-0}"
+if [ "$MODE" != "baseline" ]; then
+  echo "ERROR: doc-baseline-o2-patch-fluid is baseline-only (got MODE=$MODE)" >&2
+  exit 1
+fi
+echo "=== doc-baseline-o2-patch-fluid MODE=baseline MESH_LEVEL=$MESH_LEVEL (patch) REUSE_MESH=$REUSE_MESH ==="
+exec bash ./Allrun.sim4

@@ -1,0 +1,16 @@
+#!/bin/bash
+# Export solid A1 mesh to ParaView (.vtu + .vtp).
+set -euo pipefail
+cd "$(dirname "$0")"
+REPO="$(cd ../../.. && pwd)"
+EXP="$REPO/brunaStuff/export_polymesh_paraview.py"
+[ -f "$EXP" ] || EXP="/opt/brunaStuff/export_polymesh_paraview.py"
+
+if [ ! -f constant/polyMesh/points ]; then
+    echo "=== installing A1 polyMesh ==="
+    ./Allrun.mesh
+fi
+
+python3 "$EXP" --case . --out paraview/A1_volume.vtu \
+    --patches fsi_active,outer,defaultFaces
+echo "=== ParaView: open $(pwd)/paraview/A1_volume.vtu ==="

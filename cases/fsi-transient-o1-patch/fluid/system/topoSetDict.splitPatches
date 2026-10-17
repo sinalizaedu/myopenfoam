@@ -1,0 +1,65 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// Fallback carve: annulus about +y (same axis as the 90° revolve / tm_zone).
+// Using the meridional TM segment as a 3D cylinder axis picks wall faces
+// ~6–7 mm away from the TM (IOP stuck at P_TM). Prefer gmsh physical patches.
+
+actions
+(
+    {
+        name    wall_pool;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        patch   wall;
+    }
+
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  new;
+        source  faceToFace;
+        set     wall_pool;
+    }
+    {
+        name    outlet_tm_faces;
+        type    faceSet;
+        action  subset;
+        source  cylinderAnnulusToFace;
+        p1      (0 -0.00505 0);
+        p2      (0 -0.00419 0);
+        outerRadius 0.00748;
+        innerRadius 0.00615;
+    }
+
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  new;
+        source  faceToFace;
+        set     wall_pool;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  subset;
+        source  cylinderAnnulusToFace;
+        p1      (0 -0.00416 0);
+        p2      (0 -0.00305 0);
+        outerRadius 0.00755;
+        innerRadius 0.00637;
+    }
+    {
+        name    ac_inlet_faces;
+        type    faceSet;
+        action  delete;
+        source  faceToFace;
+        set     outlet_tm_faces;
+    }
+);

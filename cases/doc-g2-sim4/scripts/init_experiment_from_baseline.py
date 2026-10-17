@@ -109,7 +109,13 @@ def merge_boundary(field_text: str, bc_template: str) -> str:
                         entry = entry[:-1] + f"        {base_val}\n    }}"
         merged_entries.append(entry)
 
-    new_bf = "boundaryField\n{\n" + "\n".join(merged_entries) + "\n}"
+    def indent_patch(entry: str) -> str:
+        lines = entry.split("\n")
+        if lines and lines[0] and not lines[0].startswith(" "):
+            lines[0] = "    " + lines[0]
+        return "\n".join(lines)
+
+    new_bf = "boundaryField\n{\n" + "\n".join(indent_patch(e) for e in merged_entries) + "\n}"
     return field_text[: m_dst.start()] + new_bf + field_text[dst_end:]
 
 

@@ -1,0 +1,54 @@
+#!/bin/bash
+# Build A1–E1 and/or A2–E2 solid meshes for O1 FSI and write comparison tables.
+set -euo pipefail
+cd "$(dirname "$0")"
+WHICH="${MESH:-all}"
+
+run_one() {
+    local name="$1"
+    echo ""
+    echo "========== $name =========="
+    chmod +x "$name/Allrun.mesh"
+    set +e
+    (cd "$name" && ./Allrun.mesh)
+    local rc=$?
+    set -e
+    if [ "$rc" -ne 0 ]; then
+        echo "WARN: $name Allrun.mesh exited $rc"
+    else
+        echo "$name: finished"
+    fi
+}
+
+V1=(B1 A1 D1 C1 E1)
+V2=(B2 A2 D2 C2 E2)
+G123=(G1 G2 G3)
+
+case "$WHICH" in
+    all)
+        for n in "${V1[@]}"; do run_one "$n"; done
+        for n in "${V2[@]}"; do run_one "$n"; done
+        python3 compare_report.py all || true
+        ;;
+    g123|G123)
+        for n in "${G123[@]}"; do run_one "$n"; done
+        ;;
+    v1)
+        for n in "${V1[@]}"; do run_one "$n"; done
+        python3 compare_report.py v1 || true
+        ;;
+    v2)
+        for n in "${V2[@]}"; do run_one "$n"; done
+        python3 compare_report.py v2 || true
+        ;;
+    *)
+        run_one "$WHICH"
+        if [[ "$WHICH" =~ ^[ABCDE]2$ ]]; then
+            python3 compare_report.py v2 || true
+        else
+            python3 compare_report.py v1 || true
+        fi
+        ;;
+esac
+
+echo "Allmesh done (MESH=$WHICH)"

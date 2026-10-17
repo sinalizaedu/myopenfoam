@@ -108,3 +108,12 @@ $$\mathrm{Br} = \frac{\kappa}{L^2} \ll 1$$
 | **Não previsto** | `buoyantBoussinesq*` + `T` | Boussinesq, gravidade, Nonisothermal Flow — **apenas drug delivery no artigo original** |
 
 Referências cruzadas: `fluid/constant/porousMediaProperties`, `fluid/constant/phaseProperties`, `simulacao_doutorado.md` §1.1, `plano_doutorado.md` §13.1.
+
+---
+
+## 7. Justificativa de modelagem (redação da tese)
+
+Parágrafo canônico sobre Darcy vs Brinkman, stair-step na interface anterior
+vítreo–AC, malha hexaédrica O1 e resultado de independência de malha (−1,99%
+pressão residual): ver `cases/doc-g2-sim1/mesh_independence/O1_quality.md`
+§ *Justificativa de modelagem — redação da tese* (registrado 2026-08-27).

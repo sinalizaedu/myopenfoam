@@ -1,0 +1,20 @@
+#!/bin/bash
+# Install A1 extruded coat as solid/polyMesh (no O1solid blockMesh).
+set -euo pipefail
+cd "$(dirname "$0")"
+REPO="$(cd ../../.. && pwd)"
+EXP="$REPO/brunaStuff/o1_solid_export.py"
+[ -f "$EXP" ] || EXP="/opt/brunaStuff/o1_solid_export.py"
+SRC="../solid_meshes/A1"
+if [ ! -d "$SRC/constant/polyMesh" ]; then
+    echo "ERROR: missing $SRC/constant/polyMesh" >&2
+    exit 1
+fi
+rm -rf constant/polyMesh 0
+mkdir -p 0
+cp -a "$SRC/constant/polyMesh" constant/polyMesh
+python3 "$EXP" --mode fields --case .
+cp -f 0/D initial/D
+cp -f 0/solidForce initial/solidForce
+checkMesh | tee log.checkMesh
+echo "=== A1 solid ready (8640 cells, Mesh OK expected) ==="

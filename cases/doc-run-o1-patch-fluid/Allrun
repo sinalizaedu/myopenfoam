@@ -1,0 +1,30 @@
+#!/bin/bash
+# doc-run-o1-patch-fluid — experiment (IVI+ACP+recovery), MESH_LEVEL=O1, patch tips (Model B)
+# Seed mesh + baseline fields first: ./scripts/seed_from_baseline.sh
+set -euo pipefail
+cd "$(dirname "$0")"
+export MODE="${MODE:-experiment}"
+export MESH_LEVEL="${MESH_LEVEL:-O1}"
+export REUSE_MESH="${REUSE_MESH:-1}"
+
+if [ ! -d fluid/constant/polyMesh ]; then
+  echo "ERROR: no polyMesh — run ./scripts/seed_from_baseline.sh first" >&2
+  exit 1
+fi
+if [ "$MODE" = "experiment" ] && [ "$REUSE_MESH" != "1" ]; then
+  echo "ERROR: MODE=experiment requires REUSE_MESH=1" >&2
+  exit 1
+fi
+if [ "$MODE" = "baseline" ]; then
+  echo "ERROR: doc-run-o1-patch-fluid is experiment-only; use doc-transient-o1-patch-fluid for the pimple baseline" >&2
+  exit 1
+fi
+# REUSE_MESH=1 never re-meshes, so MESH_LEVEL only relabels output here.
+if [ "$REUSE_MESH" = "1" ] && [ "$MESH_LEVEL" != "O1" ]; then
+  echo "WARNING: reusing the seeded O1 polyMesh but labelling output as ${MESH_LEVEL}." >&2
+  echo "         Re-seed from a ${MESH_LEVEL} baseline first, or results will be mislabelled." >&2
+fi
+
+echo "=== doc-run-o1-patch-fluid MODE=$MODE MESH_LEVEL=$MESH_LEVEL (patch) REUSE_MESH=$REUSE_MESH ==="
+NP="${NP:-4}"
+exec ./scripts/run_experiment_1h.sh "$MESH_LEVEL" "$NP"

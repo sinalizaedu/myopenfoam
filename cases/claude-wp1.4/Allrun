@@ -1,0 +1,7 @@
+#!/bin/bash
+# claude-wp1.4: piloto de biometria (14 casos), Ogden + Yeoh, Friedenwald
+# recalibrado, P_final=50 mmHg. Rodar dentro do container FSI a partir de
+# /simulation/claude-wp1.4/
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 scripts/run_pilot_biometry_claude.py "$@"

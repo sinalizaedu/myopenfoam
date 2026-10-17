@@ -1,9 +1,11 @@
 #!/bin/bash
 # doc-g2-sim1 — G2-fluid Sim 1: AC + vitreous + TM, 90° calotte
-# gmsh revolve → gmshToFoam → changeDictionary → topoSet → simpleFoam
+# M1..M5: gmsh revolve → gmshToFoam → changeDictionary → topoSet → simpleFoam
+# O1:     blockMesh → transformPoints → topoSet → simpleFoam
 #
 # Optional env:
 #   MESH_LEVEL=M1|M2|M3   (default M1) — gmsh size levels from gen_lamminsalo_g2.py
+#   MESH_LEVEL=O1         — native blockMesh, fluid/system/blockMeshDict.O1
 #   D_TM=<value>
 #   SKIP_SOLVE=1
 #   REBUILD_MSH=1
@@ -12,8 +14,9 @@ set -o pipefail
 cd "$(dirname "$0")"
 MESH_LEVEL="${MESH_LEVEL:-M1}"
 case "$MESH_LEVEL" in
-    M1|M2|M3|M4|M5) ;;
-    *) echo "ERROR: MESH_LEVEL must be M1, M2, M3, M4, or M5" >&2; exit 1 ;;
+    M1|M2|M3|M4|M5) MESH_KIND=gmsh ;;
+    O1)             MESH_KIND=blockMesh ;;
+    *) echo "ERROR: MESH_LEVEL must be M1-M5 (gmsh) or O1 (blockMesh)" >&2; exit 1 ;;
 esac
 D_TM="${D_TM:-}"
 SKIP_SOLVE="${SKIP_SOLVE:-0}"
@@ -21,52 +24,81 @@ REBUILD_MSH="${REBUILD_MSH:-0}"
 MSH="geometry/eye_g2_fluid_lamminsalo_${MESH_LEVEL}.msh"
 REPO_ROOT="$(cd ../.. && pwd)"
 
-echo "=== doc-g2-sim1 G2-fluid MESH_LEVEL=${MESH_LEVEL} ==="
+echo "=== doc-g2-sim1 G2-fluid MESH_LEVEL=${MESH_LEVEL} (${MESH_KIND}) ==="
 
-if [ "$REBUILD_MSH" = "1" ]; then
-    if [ -x "${REPO_ROOT}/.venv-geom/bin/python" ]; then
-        echo "=== rebuilding mesh ${MESH_LEVEL} (host) ==="
-        "${REPO_ROOT}/cases/doc-g2-sim1/scripts/gen_mesh_g2_fluid.sh" "${MESH_LEVEL}"
-    else
-        echo "ERROR: REBUILD_MSH=1 requires host + .venv-geom." >&2
+if [ "$MESH_KIND" = "gmsh" ]; then
+    if [ "$REBUILD_MSH" = "1" ]; then
+        if [ -x "${REPO_ROOT}/.venv-geom/bin/python" ]; then
+            echo "=== rebuilding mesh ${MESH_LEVEL} (host) ==="
+            "${REPO_ROOT}/cases/doc-g2-sim1/scripts/gen_mesh_g2_fluid.sh" "${MESH_LEVEL}"
+        else
+            echo "ERROR: REBUILD_MSH=1 requires host + .venv-geom." >&2
+            exit 1
+        fi
+    fi
+    if [ ! -f "$MSH" ]; then
+        echo "ERROR: missing $MSH — generate on host:" >&2
+        echo "  cases/doc-g2-sim1/scripts/gen_mesh_g2_fluid.sh ${MESH_LEVEL}" >&2
         exit 1
     fi
+    cp -f "$MSH" geometry/eye_g2_fluid_lamminsalo.msh
 fi
-if [ ! -f "$MSH" ]; then
-    echo "ERROR: missing $MSH — generate on host:" >&2
-    echo "  cases/doc-g2-sim1/scripts/gen_mesh_g2_fluid.sh ${MESH_LEVEL}" >&2
-    exit 1
-fi
-cp -f "$MSH" geometry/eye_g2_fluid_lamminsalo.msh
 
 [ -n "$D_TM" ] && python3 scripts/set_d_tm.py "$D_TM"
 
-echo "=== gmshToFoam ==="
 rm -rf fluid/0 fluid/constant/polyMesh
 find fluid -maxdepth 1 -type d \( -name '[0-9]*' -o -name 'processor*' \) -exec rm -rf {} +
 mkdir -p fluid/0
-cp -f "$MSH" fluid/eye_g2_fluid_lamminsalo.msh
-(cd fluid && gmshToFoam eye_g2_fluid_lamminsalo.msh 2>&1 | tee log.gmshToFoam)
-rm -f fluid/eye_g2_fluid_lamminsalo.msh
 
-echo "=== changeDictionary (patch types) ==="
-(cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+if [ "$MESH_KIND" = "gmsh" ]; then
+    echo "=== gmshToFoam ==="
+    cp -f "$MSH" fluid/eye_g2_fluid_lamminsalo.msh
+    (cd fluid && gmshToFoam eye_g2_fluid_lamminsalo.msh 2>&1 | tee log.gmshToFoam)
+    rm -f fluid/eye_g2_fluid_lamminsalo.msh
+
+    echo "=== changeDictionary (patch types) ==="
+    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary)
+else
+    # blockMeshDict.O1 already emits the final patch names and types, and
+    # tm_zone as a cellZone, so gmshToFoam / changeDictionary / createPatch are
+    # all unnecessary.  The dict is written in its natural frame (quarter swept
+    # from +x toward +z); the gmsh family instead occupies x >= 0, z <= 0, which
+    # is the frame topoSetDict.g2 and the controlDict probes are written for.
+    # A 90 deg rotation about the +y axis (z -> x) maps one onto the other.  It
+    # is a rotation, not a mirror, so cell orientation is preserved.  Side
+    # effect: symmetry_0 ends up on x = 0 and symmetry_90 on z = 0, i.e. the two
+    # names swap planes.  Harmless -- both carry type symmetry with identical
+    # entries in fluid/initial/{U,p}.
+    echo "=== blockMesh (${MESH_LEVEL}) ==="
+    (cd fluid && blockMesh -dict system/blockMeshDict.${MESH_LEVEL} 2>&1 \
+        | tee log.blockMesh)
+
+    echo "=== transformPoints: rotate into the case frame (x >= 0, z <= 0) ==="
+    (cd fluid && transformPoints -rotate-y 90 2>&1 | tee log.transformPoints)
+fi
 
 echo "=== topoSet zones (TM + vitreous) ==="
-(cd fluid && topoSet -dict system/topoSetDict.g2 -constant 2>&1 | tee log.topoSet)
-
-echo "=== carve ac_inlet / outlet_tm from wall ==="
-# Prefer gmsh physical patches (Lamminsalo landmarks). Fallback: topoSet cylinders.
-if grep -q 'ac_inlet' fluid/constant/polyMesh/boundary 2>/dev/null \
-   && grep -q 'outlet_tm' fluid/constant/polyMesh/boundary 2>/dev/null \
-   && grep -q 'iris_wall' fluid/constant/polyMesh/boundary 2>/dev/null; then
-    echo "=== gmsh patches ac_inlet / outlet_tm / iris_wall present — skip topoSet carve ==="
-    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+if [ "$MESH_KIND" = "gmsh" ]; then
+    (cd fluid && topoSet -dict system/topoSetDict.g2 -constant 2>&1 | tee log.topoSet)
 else
-    echo "=== topoSet carve (fallback) ==="
-    (cd fluid && topoSet -dict system/topoSetDict.splitPatches -constant 2>&1 | tee log.topoSet.splitPatches)
-    (cd fluid && createPatch -overwrite -dict system/createPatchDict.splitPatches 2>&1 | tee log.createPatch.splitPatches)
-    (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+    # O1 keeps the exact block-based tm_zone and only adds vitreous_zone.
+    (cd fluid && topoSet -dict system/topoSetDict.O1 -constant 2>&1 | tee log.topoSet)
+fi
+
+if [ "$MESH_KIND" = "gmsh" ]; then
+    echo "=== carve ac_inlet / outlet_tm from wall ==="
+    # Prefer gmsh physical patches (Lamminsalo landmarks). Fallback: topoSet cylinders.
+    if grep -q 'ac_inlet' fluid/constant/polyMesh/boundary 2>/dev/null \
+       && grep -q 'outlet_tm' fluid/constant/polyMesh/boundary 2>/dev/null \
+       && grep -q 'iris_wall' fluid/constant/polyMesh/boundary 2>/dev/null; then
+        echo "=== gmsh patches ac_inlet / outlet_tm / iris_wall present — skip topoSet carve ==="
+        (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+    else
+        echo "=== topoSet carve (fallback) ==="
+        (cd fluid && topoSet -dict system/topoSetDict.splitPatches -constant 2>&1 | tee log.topoSet.splitPatches)
+        (cd fluid && createPatch -overwrite -dict system/createPatchDict.splitPatches 2>&1 | tee log.createPatch.splitPatches)
+        (cd fluid && changeDictionary 2>&1 | tee log.changeDictionary.postSplit)
+    fi
 fi
 
 echo "=== initial fields ==="

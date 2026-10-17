@@ -1,0 +1,46 @@
+#!/bin/bash
+# E1: merge O1 fluid + B1 solid, then splitMeshRegions.
+set -euo pipefail
+cd "$(dirname "$0")"
+# shellcheck source=../env.sh
+source ../env.sh
+SOLID_B1="$B1_CASE"
+
+if [ ! -f "$SOLID_B1/constant/polyMesh/points" ]; then
+    echo "ERROR: build B1 first (solid_meshes/B1/Allrun.mesh)" >&2
+    exit 1
+fi
+if [ ! -f "$FLUID/constant/polyMesh/points" ]; then
+    echo "ERROR: O1 fluid mesh missing at $FLUID" >&2
+    exit 1
+fi
+
+rm -rf constant/polyMesh 0 constant/domain* constant/fluid constant/solid
+mkdir -p 0 constant
+cp -a "$FLUID/constant/polyMesh" constant/polyMesh
+# Drop fluid 0/ so mergeMeshes does not require matching fields.
+rm -rf 0
+mkdir -p 0
+mergeMeshes . "$SOLID_B1" -overwrite | tee log.mergeMeshes
+splitMeshRegions -overwrite | tee log.splitMeshRegions
+
+REGION=""
+for cand in solid domain1 region1; do
+    if [ -d "constant/$cand/polyMesh" ]; then
+        REGION=$cand
+        break
+    fi
+done
+if [ -z "$REGION" ]; then
+    REGION=$(find constant -mindepth 2 -maxdepth 2 -type d -name polyMesh \
+        ! -path 'constant/polyMesh' | head -1 | awk -F/ '{print $2}')
+fi
+echo "E1 using region ${REGION:-none}"
+if [ -n "${REGION}" ] && [ -d "constant/$REGION/polyMesh" ]; then
+    rm -rf constant/polyMesh
+    mv "constant/$REGION/polyMesh" constant/polyMesh
+fi
+python3 "$EXP" --mode fields --case .
+checkMesh | tee log.checkMesh
+echo "=== E1 summary ==="
+grep -E "cells:|regions:|fsi_active|negative volume|Failed|Mesh OK|non-orthogonality Max" log.checkMesh || true

@@ -1,0 +1,72 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       dictionary;
+    location    "250/uniform/functionObjects";
+    object      functionObjectProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+cdf7e925f5746741c316f5fbcf39ad0dfca90775
+{
+    flowRateTM
+    {
+        scalar
+        {
+            sum(outlet_tm,phi) 1.130595468880208e-12;
+        }
+    }
+    flowRateTM_left
+    {
+        scalar
+        {
+            sum(outlet_tm_left,phi) 1.161494057834189e-12;
+        }
+    }
+    flowRateAC
+    {
+        scalar
+        {
+            sum(ac_inlet,phi) -1.146044763523904e-12;
+        }
+    }
+    flowRateAC_left
+    {
+        scalar
+        {
+            sum(ac_inlet_left,phi) -1.146044763523827e-12;
+        }
+    }
+    pressureACinlet
+    {
+        scalar
+        {
+            areaAverage(ac_inlet,p) 2.009890936735269;
+        }
+    }
+    iop_probe
+    {
+        scalar
+        {
+            average(p)      2.009833127993007;
+            min(p)          2.00977372544901;
+            max(p)          2.009892945509074;
+        }
+        label
+        {
+            size(p)         4;
+        }
+    }
+}
+
+
+// ************************************************************************* //

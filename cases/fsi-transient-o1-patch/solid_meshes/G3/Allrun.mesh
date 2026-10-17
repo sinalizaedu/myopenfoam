@@ -1,0 +1,28 @@
+#!/bin/bash
+# G3: Gmsh transfinite + Extrude revolve — coat + ciliary + iris (3 solids).
+set -euo pipefail
+cd "$(dirname "$0")"
+# shellcheck source=../env.sh
+source ../env.sh
+GEOM=g3
+
+for d in constant system initial; do
+    if [ ! -d "$d" ]; then
+        cp -r ../D1/"$d" .
+    fi
+done
+
+mkdir -p geometry 0
+python3 "$GEN_GMSH" --geometry "$GEOM" \
+    --out-geo "geometry/o1_solid_${GEOM}.geo" \
+    --out-msh "geometry/o1_solid_${GEOM}.msh" \
+    --mesh
+
+rm -rf constant/polyMesh
+gmshToFoam "geometry/o1_solid_${GEOM}.msh" | tee log.gmshToFoam
+changeDictionary | tee log.changeDictionary
+transformPoints -rotate-y 90 | tee log.transformPoints
+python3 "$EXP" --mode fields --case .
+checkMesh | tee log.checkMesh
+echo "=== G3 summary (transfinite extrude, 3 solids) ==="
+grep -E "cells:|regions:|coat|ciliary|iris|fsi_active|fsi_iris|negative volume|Failed|Mesh OK|non-orthogonality Max" log.checkMesh || true

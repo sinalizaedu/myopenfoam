@@ -1,0 +1,112 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// FSI experiment (~overnight): preCICE two-way + IVI/ACP patch protocol t=5→30.
+
+application     pimpleFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         30;
+
+deltaT          0.05;
+maxCo           100;
+adjustTimeStep  no;
+maxDeltaT       0.1;
+
+writeControl    runTime;
+writeInterval   1;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable true;
+
+functions
+{
+    preCICE_Adapter
+    {
+        type preciceAdapterFunctionObject;
+        libs ("libpreciceAdapterFunctionObject.so");
+    }
+
+    flowRateTM
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            outlet_tm;
+        writeFields     false;
+        log             false;
+        writeControl    timeStep;
+        writeInterval   100;
+    }
+
+    flowRateIVI
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            ivi_tip;
+        writeFields     false;
+        log             false;
+        writeControl    timeStep;
+        writeInterval   100;
+    }
+
+    flowRateACP
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            acp_tip;
+        writeFields     false;
+        log             false;
+        writeControl    timeStep;
+        writeInterval   100;
+    }
+
+    pressureACinlet
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        fields          (p);
+        operation       areaAverage;
+        regionType      patch;
+        name            ac_inlet;
+        writeFields     false;
+        log             false;
+        writeControl    timeStep;
+        writeInterval   100;
+    }
+
+    iop_probe
+    {
+        type            probes;
+        libs            (sampling);
+        fields          (p);
+        probeLocations
+        (
+            ( 0.0015   -0.0068   0.0000)
+            ( 0.00106  -0.0068  -0.00106)
+            ( 0.0020    0.0030   0.0000)
+            ( 0.00141   0.0030  -0.00141)
+        );
+        writeControl    timeStep;
+        writeInterval   2;
+    }
+}

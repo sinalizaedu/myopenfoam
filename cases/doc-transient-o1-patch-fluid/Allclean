@@ -1,0 +1,20 @@
+#!/bin/bash
+# Clean pimple outputs; keep polyMesh unless FULL=1
+set -euo pipefail
+cd "$(dirname "$0")"
+FULL="${FULL:-0}"
+CASE_NAME="$(basename "$PWD")"
+(
+  cd fluid
+  rm -rf log.* postProcessing dynamicCode codeStream processor* VTK
+  find . -maxdepth 1 -type d -regex './[0-9]+\.[0-9]+' -exec rm -rf {} +
+  find . -maxdepth 1 -type d -name '[0-9]*' ! -name '0' -exec rm -rf {} +
+  if [ "$FULL" = "1" ]; then
+    rm -rf constant/polyMesh
+  fi
+  mkdir -p 0
+  cp -f initial/U.baseline 0/U
+  cp -f initial/p.baseline 0/p
+  touch O1.foam F1.foam case.foam
+)
+echo "=== ${CASE_NAME}: clean done (FULL=$FULL) ==="

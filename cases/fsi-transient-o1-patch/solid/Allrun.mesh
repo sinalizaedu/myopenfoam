@@ -1,0 +1,23 @@
+#!/bin/bash
+# Rebuild O1 solid polyMesh for fsi-transient-o1-patch (simulation-ready baseline).
+set -euo pipefail
+cd "$(dirname "$0")"
+REPO="$(cd ../../.. && pwd)"
+
+python3 "$REPO/brunaStuff/gen_o1_solid_bmd.py" \
+    --variant O1 --out system/blockMeshDict.O1solid
+
+rm -rf constant/polyMesh 0
+mkdir -p 0
+blockMesh -dict system/blockMeshDict.O1solid | tee log.blockMesh
+transformPoints -rotate-y 90 | tee log.transformPoints
+cp initial/D 0/D
+cp initial/solidForce 0/solidForce
+checkMesh | tee log.checkMesh
+
+echo ""
+echo "=== solid mesh summary ==="
+grep -E "cells:|regions:|fsi_active|non-orthogonality Max|severely|negative volume|Max skewness|Failed" log.checkMesh || true
+echo ""
+echo "Mesh is ready for MODE=fsi (solids4Foam). Prefer MESH=B1 from solid_meshes/."
+echo "checkMesh may still warn at the limbus; inspect solid/log.checkMesh."

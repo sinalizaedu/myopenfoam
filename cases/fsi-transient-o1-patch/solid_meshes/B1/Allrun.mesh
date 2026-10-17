@@ -1,0 +1,21 @@
+#!/bin/bash
+# B1: structured multi-block O1 3D wedge (same topology as the fluid wall).
+# G1 sector-extrude landed in the wrong octant and added inverted cells.
+set -euo pipefail
+cd "$(dirname "$0")"
+# shellcheck source=../env.sh
+source ../env.sh
+
+python3 "$GEN" --variant O1 \
+    --n-retina "${N_RETINA:-3}" --n-choroid "${N_CHOROID:-4}" \
+    --n-sclera "${N_SCLERA:-5}" --n-iris 4 \
+    --out system/blockMeshDict.O1solid
+
+rm -rf constant/polyMesh 0
+mkdir -p 0
+blockMesh -dict system/blockMeshDict.O1solid | tee log.blockMesh
+transformPoints -rotate-y 90 | tee log.transformPoints
+python3 "$EXP" --mode fields --case .
+checkMesh | tee log.checkMesh
+echo "=== B1 summary ==="
+grep -E "cells:|regions:|fsi_active|negative volume|Failed|Mesh OK|non-orthogonality Max|Cell volumes" log.checkMesh || true

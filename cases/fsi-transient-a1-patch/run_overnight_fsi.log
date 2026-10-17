@@ -1,0 +1,822 @@
+time="2026-08-30T23:10:36+02:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-715c96191f05 Creating 
+ Container myopenfoam-fsi-run-715c96191f05 Created 
+=== patch A1 FSI: fluid mesh and needle-tip cavities ===
+=== fsi-transient-a1-patch MODE=baseline MESH_LEVEL=O1 (blockMesh) REUSE_MESH=0 ===
+=== blockMesh (O1) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : blockMesh -dict system/blockMeshDict.O1
+Date   : Aug 30 2026
+Time   : 21:10:40
+Host   : 1cc592e9d510
+PID    : 237
+I/O    : uncollated
+Case   : /simulation/fsi-transient-a1-patch/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Creating block mesh from "system/blockMeshDict.O1"
+Creating block edges
+No non-planar block faces defined
+Creating topology blocks
+
+Creating topology patches - from boundary section
+
+Creating block mesh topology - scaling/transform applied later
+
+Check topology
+
+	Basic statistics
+		Number of internal faces : 50
+		Number of boundary faces : 92
+		Number of defined boundary faces : 92
+		Number of undefined boundary faces : 0
+	Checking patch -> block consistency
+
+
+Detected collapsed blocks - using merge points instead of merge topology
+
+Creating block offsets
+Creating merge list (geometric search)...
+
+Creating polyMesh from blockMesh
+Creating patches
+Creating cells
+Creating points with scale (0.001 0.001 0.001)
+    Block 0 cell size :
+        i : 2.28035e-05 .. 2.28035e-05
+        j : 2.89276e-05 .. 2.89276e-05
+        k : 0.000864629 .. 0.000864629
+
+    Block 1 cell size :
+        i : 2.28035e-05 .. 2.28035e-05
+        j : 2.89276e-05 .. 2.89276e-05
+        k : 0.000864629 .. 0.000864629
+
+    Block 2 cell size :
+        i : 2.89276e-05 .. 2.89276e-05
+        j : 5.64885e-05 .. 5.64885e-05
+        k : 0.000864629 .. 0.000864629
+
+    Block 3 cell size :
+        i : 2.89276e-05 .. 2.89276e-05
+        j : 5.64885e-05 .. 5.64885e-05
+        k : 0.000864629 .. 0.000864629
+
+    Block 4 cell size :
+        i : 5.64885e-05 .. 5.64885e-05
+        j : 0.000174261 .. 0.000174261
+        k : 0.000864629 .. 0.000864629
+
+    Block 5 cell size :
+        i : 5.64885e-05 .. 5.64885e-05
+        j : 0.000174261 .. 0.000174261
+        k : 0.000864629 .. 0.000864629
+
+    Block 6 cell size :
+        i : 0.000189332 .. 0.000189332
+        j : 0.000123764 .. 0.000123764
+        k : 0.000494448 .. 0.000494448
+
+    Block 7 cell size :
+        i : 0.000189332 .. 0.000189332
+        j : 0.000123764 .. 0.000123764
+        k : 0.000494448 .. 0.000494448
+
+    Block 8 cell size :
+        i : 9.98109e-05 .. 9.98109e-05
+        j : 4.66667e-05 .. 4.66667e-05
+        k : 0 .. 0
+
+    Block 9 cell size :
+        i : 9.98109e-05 .. 9.98109e-05
+        j : 4.66667e-05 .. 4.66667e-05
+        k : 0 .. 0
+
+    Block 10 cell size :
+        i : 0.000119408 .. 0.000119408
+        j : 0.000137535 .. 6.87677e-05
+        k : 8.88178e-19 .. 8.88178e-19
+
+    Block 11 cell size :
+        i : 0.000119408 .. 0.000119408
+        j : 0.000137535 .. 6.87677e-05
+        k : 8.88178e-19 .. 8.88178e-19
+
+    Block 12 cell size :
+        i : 0.000108221 .. 0.000108221
+        j : 0.00011625 .. 0.00011625
+        k : 0 .. 0
+
+    Block 13 cell size :
+        i : 0.000108221 .. 0.000108221
+        j : 0.00011625 .. 0.00011625
+        k : 0 .. 0
+
+    Block 14 cell size :
+        i : 5.36596e-06 .. 5.36596e-06
+        j : 0.000121397 .. 0.000121397
+        k : 0.000392419 .. 0.000392419
+
+    Block 15 cell size :
+        i : 5.36596e-06 .. 5.36596e-06
+        j : 0.000121397 .. 0.000121397
+        k : 0.000392419 .. 0.000392419
+
+    Block 16 cell size :
+        i : 0.000114814 .. 0.000114814
+        j : 7.91255e-05 .. 0.000135644
+        k : 0.00062133 .. 0.00062133
+
+    Block 17 cell size :
+        i : 0.000114814 .. 0.000114814
+        j : 7.91255e-05 .. 0.000135644
+        k : 0.00062133 .. 0.00062133
+
+    Block 18 cell size :
+        i : 5.83368e-05 .. 5.83368e-05
+        j : 0.0002191 .. 0.0003756
+        k : 0 .. 0
+
+    Block 19 cell size :
+        i : 5.83368e-05 .. 5.83368e-05
+        j : 0.0002191 .. 0.0003756
+        k : 0 .. 0
+
+    Block 20 cell size :
+        i : 6.19828e-05 .. 6.19828e-05
+        j : 0.000218186 .. 0.000374034
+        k : 0.0001288 .. 0.0001288
+
+    Block 21 cell size :
+        i : 6.1983e-05 .. 6.1983e-05
+        j : 0.000218186 .. 0.000374034
+        k : 0.0001288 .. 0.0001288
+
+    Block 22 cell size :
+        i : 6.61148e-05 .. 6.61148e-05
+        j : 0.000214462 .. 0.000367648
+        k : 0.000252099 .. 0.000252099
+
+    Block 23 cell size :
+        i : 6.61145e-05 .. 6.61145e-05
+        j : 0.000214461 .. 0.000367648
+        k : 0.000252099 .. 0.000252099
+
+    Block 24 cell size :
+        i : 7.08379e-05 .. 7.08379e-05
+        j : 0.000205433 .. 0.00035217
+        k : 0.000364628 .. 0.000364628
+
+    Block 25 cell size :
+        i : 7.08382e-05 .. 7.08382e-05
+        j : 0.000205433 .. 0.00035217
+        k : 0.000364628 .. 0.000364628
+
+    Block 26 cell size :
+        i : 7.08373e-05 .. 7.08373e-05
+        j : 0.000188153 .. 0.000322548
+        k : 0.000461586 .. 0.000461586
+
+    Block 27 cell size :
+        i : 7.08371e-05 .. 7.08371e-05
+        j : 0.000188153 .. 0.000322548
+        k : 0.000461586 .. 0.000461586
+
+    Block 28 cell size :
+        i : 7.62861e-05 .. 7.62861e-05
+        j : 0.000160304 .. 0.000274806
+        k : 0.000538825 .. 0.000538825
+
+    Block 29 cell size :
+        i : 7.62861e-05 .. 7.62861e-05
+        j : 0.000160304 .. 0.000274806
+        k : 0.000538825 .. 0.000538825
+
+    Block 30 cell size :
+        i : 9.01113e-05 .. 9.01113e-05
+        j : 0.000123493 .. 0.000211701
+        k : 0.000593049 .. 0.000593049
+
+    Block 31 cell size :
+        i : 9.01113e-05 .. 9.01113e-05
+        j : 0.000123493 .. 0.000211702
+        k : 0.000593049 .. 0.000593049
+
+Adding cell zones
+    0	tm_zone
+    1	vitreous_zone
+No patch pairs to merge
+
+Writing polyMesh with 2 cellZones
+----------------
+Mesh Information
+----------------
+  boundingBox: (0 -0.00816 0) (0.00837 0.0069 0.00837)
+  nPoints: 61832
+  nCells: 54672
+  nFaces: 170936
+  nInternalFaces: 156448
+----------------
+Cell Zones
+----------------
+  zone 0 (size: 720) name: tm_zone
+  zone 1 (size: 33600) name: vitreous_zone
+----------------
+Patches
+----------------
+  patch 0 (start: 156448 size: 144) name: outlet_tm
+  patch 1 (start: 156592 size: 96) name: ac_inlet
+  patch 2 (start: 156688 size: 1824) name: lens_wall
+  patch 3 (start: 158512 size: 1128) name: iris_wall
+  patch 4 (start: 159640 size: 2184) name: wall
+  patch 5 (start: 161824 size: 4556) name: symmetry_0
+  patch 6 (start: 166380 size: 4556) name: symmetry_90
+
+End
+
+=== transformPoints: rotate into case frame (x >= 0, z <= 0) ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : transformPoints -rotate-y 90
+Date   : Aug 30 2026
+Time   : 21:10:41
+Host   : 1cc592e9d510
+PID    : 240
+I/O    : uncollated
+Case   : /simulation/fsi-transient-a1-patch/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Rotating points about y-axis: 90
+Rotating points by (2.22045e-16 0 1 0 1 0 -1 0 2.22045e-16)
+Writing points into directory "constant/polyMesh"
+
+
+End
+
+=== IVI tip cavity ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : topoSet -dict system/topoSetDict.iviTip -constant
+Date   : Aug 30 2026
+Time   : 21:10:41
+Host   : 1cc592e9d510
+PID    : 246
+I/O    : uncollated
+Case   : /simulation/fsi-transient-a1-patch/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Reading topoSetDict.iviTip
+
+Time = constant
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 492
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54672
+Read set cellSet fluid_keep size:54672
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 54180
+Time = 0
+    mesh not changed.
+Created cellSet ivi_tip_cells
+    Applying source nearestToCell
+    Adding cells nearest to 1((0 0.003 0))
+    cellSet ivi_tip_cells now size 1
+Read set cellSet ivi_tip_cells size:1
+    Applying source sphereToCell
+    Adding cells within sphere, origin = (0 0.003 0), radius = 0.00055
+    cellSet ivi_tip_cells now size 492
+Created cellSet fluid_keep
+    Applying source boxToCell
+    Adding cells with centre within boxes 1((-1 -1 -1) (1 1 1))
+    cellSet fluid_keep now size 54672
+Read set cellSet fluid_keep size:54672
+    Applying source cellToCell
+    Removing all elements of cell sets: (ivi_tip_cells)
+    cellSet fluid_keep now size 54180
+
+End
+
+  ivi_tip_cells: 492
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : subsetMesh fluid_keep -patch ivi_tip -overwrite
+Date   : Aug 30 2026
+Time   : 21:10:42
+Host   : 1cc592e9d510
+PID    : 253
+I/O    : uncollated
+Case   : /simulation/fsi-transient-a1-patch/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+time="2026-08-31T00:39:47+02:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-67a409dda9e7 Creating 
+ Container myopenfoam-fsi-run-67a409dda9e7 Created 
+=== patch A1 FSI: fluid mesh and needle-tip cavities ===
+=== REUSE_MESH=1: skip fluid remesh ===
+=== patch A1 FSI: solid mesh (MESH=A1) ===
+=== copying solid_meshes/A1 ===
+Wrote 0/D and 0/solidForce in solid
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : checkMesh
+Date   : Aug 30 2026
+Time   : 22:39:52
+Host   : 676a5ac002dd
+PID    : 232
+I/O    : uncollated
+Case   : /simulation/fsi-transient-a1-patch/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Check mesh...
+
+Time = 0
+
+Mesh stats 
+    points:           11895
+    faces:            28944
+    internal faces:   22896
+    cells:            8640
+    faces per cell:   6
+    boundary patches: 3
+    point zones:      0
+    face zones:       0
+    cell zones:       3
+
+Overall number of cells of each type:
+    hexahedra:     8640
+    prisms:        0
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    0
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Cell to face addressing OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+   *Number of regions: 3
+    The mesh has multiple regions which are not connected by any face.
+  <<Writing region information to "0/cellToRegion"
+  <<Writing region 0 with 3072 cells to cellSet region0
+  <<Writing region 1 with 816 cells to cellSet region1
+  <<Writing region 2 with 4752 cells to cellSet region2
+
+Checking patch topology for multiply connected surfaces...
+    Patch               Faces    Points     Surface topology
+    fsi_active          2160     2379     ok (non-closed singly connected)  
+    outer               2160     2379     ok (non-closed singly connected)  
+    defaultFaces        1728     2160     ok (non-closed singly connected)  
+    ".*"                6048     6054     ok (closed singly connected)      
+
+
+Checking faceZone topology for multiply connected surfaces...
+    No faceZones found.
+
+Checking basic cellZone addressing...
+    CellZone            Cells        Points       Volume       BoundingBox
+    cornea              3072         4225         1.6355801e-08 (-1.9360926e-05 -0.00815938 -0.0069208399) (0.0069208096 -0.0043237028 1.9423159e-05)
+    ciliary             1248         1820         1.1456196e-08 (-3.4267108e-05 -0.0047839488 -0.00784463) (0.00784463 -0.0019127768 3.4303753e-05)
+    sclera              4320         5915         7.3493334e-08 (-4.3065949e-05 -0.00225859 -0.00837) (0.00837 0.00689894 4.3078842e-05)
+
+Checking basic pointZone addressing...
+    No pointZones found.
+
+Checking geometry...
+    Overall domain bounding box (-4.3065949e-05 -0.00815938 -0.00837) (0.00837 0.00689894 4.3078842e-05)
+    Mesh has 3 geometric (non-empty/wedge) directions (1 1 1)
+    Mesh has 3 solution (non-empty) directions (1 1 1)
+    Boundary openness (2.9509969e-18 -1.3270047e-16 3.4594133e-16) OK.
+    Max cell openness = 2.975532e-16 OK.
+    Max aspect ratio = 15.259321 OK.
+    Minimum face area = 1.1240629e-09. Maximum face area = 3.7703542e-07.  Face area magnitudes OK.
+    Min volume = 1.6121259e-13. Max volume = 2.8447583e-11.  Total volume = 1.0130533e-07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 30.304022 average: 1.7281159
+    Non-orthogonality check OK.
+    Face pyramids OK.
+    Max skewness = 1.3048322 OK.
+    Coupled point location match (average 0) OK.
+
+Mesh OK.
+
+End
+
+=== A1 interface check (RBF mapping; 24 wedge-tip tris omitted) ===
+[SKIP] lens_wall <-> fsi_lens: solid lens void (no fsi_lens patch)
+[FAIL] wall <-> fsi_active: 2184 != 2160 faces
+[PASS] Lamminsalo coupled surfaces: max point error 7.57 um
+[PASS] posterior band offsets: 0.100/0.200/0.330 mm
+O1 FSI verification FAILED
+WARN: A1 is not 1:1 conformal (wall 2184 vs fsi_active 2160).
+WARN: preCICE RBF thin-plate-splines maps the omitted wedge-tip faces.
+=== phase 1/2: rigid TM prewarm (pimpleFoam, t=0 → 2 s, no preCICE) ===
+=== FLUID_PREWARM=0: coupled run starts from existing fluid/0 ===
+=== phase 2/2: two-way FSI (preCICE, t=0 → 2 s, dt=0.05) ===
+fluid/0/U: wall already movingWallVelocity
+=== FSI clock: fluid/solid startTime=0, preCICE max-time=2, Δt=0.05 ===
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : solids4Foam
+Date   : Aug 30 2026
+Time   : 22:39:54
+Host   : 676a5ac002dd
+PID    : 249
+I/O    : uncollated
+Case   : /simulation/fsi-transient-a1-patch/solid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+/*---------------------------------------------------------------------------*\
+|    For further information on the solids4Foam toolbox implementations,      |
+|    please see www.solids4foam.com and the following publication:            |
+|                                                                             |
+|    P. Cardiff, I. Batistić Ž. Tuković: solids4foam: A toolbox for           |
+|    performing solid mechanics and fluid-solid interaction simulations in    |
+|    OpenFOAM. Journal of Open Source Software. 2025, 10(108), 7407,          |
+|    10.21105/joss.07407.                                                     |
+\*---------------------------------------------------------------------------*/
+
+Selecting physicsModel solidModel
+Selecting solidModel unsLinearGeometry
+Creating solidForce boundary condition
+    force is specified as a field
+Creating fixedDisplacement boundary condition
+Creating solidTraction boundary condition
+    under-relaxation method: fixed
+No finite volume options present
+Creating the mechanicalModel
+Number of cells in new mesh : 3072
+Number of faces in new mesh : 10288
+Number of points in new mesh: 4225
+Number of cells in new mesh : 1248
+Number of faces in new mesh : 4256
+Number of points in new mesh: 1820
+    oldInternalFaces : 48
+Number of cells in new mesh : 4320
+Number of faces in new mesh : 14448
+Number of points in new mesh: 5915
+    oldInternalFaces : 48
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+Selecting mechanical law linearElastic
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[preCICE] This is preCICE version 3.3.1
+---[preCICE] Revision info: v3.3.1
+---[preCICE] Build type: Release (without debug log)
+---[preCICE] Working directory "/simulation/fsi-transient-a1-patch/solid"
+---[preCICE] Configuring preCICE with configuration "../precice-config.xml"
+---[preCICE] I am participant "Solid"
+---[preCICE] Setting up primary communication to coupling partner/s
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : pimpleFoam
+Date   : Aug 30 2026
+Time   : 22:39:59
+Host   : 676a5ac002dd
+PID    : 257
+I/O    : uncollated
+Case   : /simulation/fsi-transient-a1-patch/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Selecting dynamicFvMesh dynamicMotionSolverFvMesh
+Selecting motion solver: displacementLaplacian
+Applying motion to entire mesh
+Selecting motion diffusion: quadratic
+Selecting motion diffusion: inverseDistance
+Selecting patchDistMethod meshWave
+
+PIMPLE: no residual control data found. Calculations will employ 3 corrector loops
+
+Reading field p
+
+Reading field U
+
+Reading/calculating face flux field phi
+
+Selecting incompressible transport model Newtonian
+Selecting turbulence model type laminar
+Selecting laminar stress model Stokes
+No MRF models present
+
+Creating finite-volume options from "system/fvOptions"
+
+Selecting finite volume options type explicitPorositySource
+    Source: tm_porous
+    State: active
+    - selecting cells using cellZones (tm_zone)
+    - selected 720 cell(s) with volume 4.1885721e-10
+Porosity region tm_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/tm_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: tm_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00693 0.00033 0.00693)
+
+Selecting finite volume options type explicitPorositySource
+    Source: vitreous_porous
+    State: active
+    - selecting cells using cellZones (vitreous_zone)
+    - selected 33636 cell(s) with volume 3.8071522e-07
+Porosity region vitreous_porous:
+    selecting model: DarcyForchheimer
+--> FOAM IOWarning :
+    Found [v1806] 'coordinateRotation' entry instead of 'rotation' in dictionary "system/fvOptions/vitreous_porous/explicitPorositySourceCoeffs/DarcyForchheimerCoeffs/coordinateSystem"
+
+    This keyword is 90 months old.
+
+Using [v1806] 'axesRotation' instead of 'axes' in selection table: coordinateRotation
+
+    This lookup is 90 months old.
+
+    creating porous zone: vitreous_zone
+    origin: (0 0 0) e1: (1 0 0) e2: (0 1 0)
+    local bounds: (0.00837 0.010551 0.00837)
+
+Constructing face velocity Uf
+
+Courant Number mean: 0.000163787 max: 0.16831739
+Courant Number mean: 0.000163787 max: 0.16831739
+
+Starting time loop
+
+---[preciceAdapter] Loaded the OpenFOAM-preCICE adapter - v1.3.1.
+---[preciceAdapter] Reading preciceDict...
+---[preCICE] This is preCICE version 3.3.1
+---[preCICE] Revision info: v3.3.1
+---[preCICE] Build type: Release (without debug log)
+---[preCICE] Working directory "/simulation/fsi-transient-a1-patch/fluid"
+---[preCICE] Configuring preCICE with configuration "../precice-config.xml"
+---[preCICE] I am participant "Fluid"
+---[preCICE] Setting up primary communication to coupling partner/s
+---[preCICE] Primary ranks are connected
+---[preCICE] Primary ranks are connected
+---[preCICE] Setting up preliminary secondary communication to coupling partner/s
+---[preCICE] Receive global mesh Fluid-Mesh
+---[preCICE] Setting up preliminary secondary communication to coupling partner/s
+---[preCICE] Prepare partition for mesh Fluid-Mesh
+---[preCICE] Gather mesh Fluid-Mesh
+---[preCICE] Send global mesh Fluid-Mesh
+---[preCICE] Receive global mesh Solid-Mesh
+---[preCICE] Prepare partition for mesh Solid-Mesh
+---[preCICE] Gather mesh Solid-Mesh
+---[preCICE] Send global mesh Solid-Mesh
+---[preCICE] Setting up secondary communication to coupling partner/s
+---[preCICE] Setting up secondary communication to coupling partner/s
+---[preCICE] Secondary ranks are connected
+---[preCICE] Secondary ranks are connected
+---[preCICE] Automatic RBF mapping alias from mesh "Solid-Mesh" to mesh "Fluid-Mesh" in "read" direction resolves to "partition-of-unity RBF" .
+---[preCICE] Computing "partition-of-unity RBF" mapping from mesh "Solid-Mesh" to mesh "Fluid-Mesh" in "read" direction.
+---[preCICE] Mapping "Displacement" for t=0 from "Solid-Mesh" to "Fluid-Mesh" (skipped zero sample)
+---[preCICE] it 1 (min: 1, max: 50), time-window 1, t 0 (max: 2), Dt 0.05, max-dt 0.05
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+surfaceFieldValue flowRateTM:
+    operation     = sum
+
+
+surfaceFieldValue pressureACinlet:
+    operation     = areaAverage
+
+
+Courant Number mean: 0.000163787 max: 0.16831739
+Time = 0.05
+
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for pcorr, Initial residual = 1, Final residual = 0.0015942247, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.024206362, Final residual = 0.00032582602, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.015529494, Final residual = 0.00017240039, No Iterations 100
+time step continuity errors : sum local = 3.0203346e-09, global = 5.4998632e-11, cumulative = 5.4998632e-11
+smoothSolver:  Solving for Ux, Initial residual = 0.00024401672, Final residual = 3.2387858e-07, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 0.00031331422, Final residual = 4.0606758e-07, No Iterations 1
+smoothSolver:  Solving for Uz, Initial residual = 0.00024444892, Final residual = 3.2653653e-07, No Iterations 1
+GAMG:  Solving for p, Initial residual = 0.72681373, Final residual = 0.0079266431, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.15281528, Final residual = 0.011197493, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.09319214, Final residual = 0.0071407494, No Iterations 100
+time step continuity errors : sum local = 1.9558915e-07, global = -3.9615469e-10, cumulative = -3.4115605e-10
+GAMG:  Solving for p, Initial residual = 0.64147033, Final residual = 0.0084420545, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.11576217, Final residual = 0.008721622, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.078996629, Final residual = 0.0020172972, No Iterations 500
+time step continuity errors : sum local = 5.4759299e-08, global = 9.8584441e-12, cumulative = -3.3129761e-10
+PIMPLE: iteration 2
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for pcorr, Initial residual = 0.99999998, Final residual = 0.35209878, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.0026989572, Final residual = 0.00022536693, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.0014960577, Final residual = 6.5659756e-05, No Iterations 100
+time step continuity errors : sum local = 2.3370149e-09, global = -4.3248193e-11, cumulative = -3.745458e-10
+smoothSolver:  Solving for Ux, Initial residual = 0.00035287945, Final residual = 1.749873e-07, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 0.00042863448, Final residual = 2.2806741e-07, No Iterations 1
+smoothSolver:  Solving for Uz, Initial residual = 0.00035375496, Final residual = 1.762768e-07, No Iterations 1
+GAMG:  Solving for p, Initial residual = 0.66008061, Final residual = 0.01115286, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.12889172, Final residual = 0.010980412, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.081995457, Final residual = 0.0098747683, No Iterations 100
+time step continuity errors : sum local = 3.4172145e-07, global = -6.0804281e-10, cumulative = -9.8258862e-10
+GAMG:  Solving for p, Initial residual = 0.50571501, Final residual = 0.01405381, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.096523078, Final residual = 0.01858415, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.06901553, Final residual = 0.0026176942, No Iterations 500
+time step continuity errors : sum local = 9.2917287e-08, global = 4.903483e-11, cumulative = -9.3355379e-10
+PIMPLE: iteration 3
+GAMG:  Solving for cellDisplacementx, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementy, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for cellDisplacementz, Initial residual = 0, Final residual = 0, No Iterations 0
+GAMG:  Solving for pcorr, Initial residual = 0.99999999, Final residual = 0.28316798, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.0025323916, Final residual = 0.00024126431, No Iterations 100
+GAMG:  Solving for pcorr, Initial residual = 0.0014145426, Final residual = 6.908542e-05, No Iterations 100
+time step continuity errors : sum local = 3.199484e-09, global = -5.9147594e-11, cumulative = -9.9270138e-10
+smoothSolver:  Solving for Ux, Initial residual = 0.00084096677, Final residual = 3.4542854e-07, No Iterations 1
+smoothSolver:  Solving for Uy, Initial residual = 0.0010241869, Final residual = 4.08218e-07, No Iterations 1
+smoothSolver:  Solving for Uz, Initial residual = 0.00084156054, Final residual = 3.2019222e-07, No Iterations 1
+GAMG:  Solving for p, Initial residual = 0.51384819, Final residual = 0.0056480378, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.10276553, Final residual = 0.015556975, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.067954227, Final residual = 0.0047613096, No Iterations 100
+time step continuity errors : sum local = 2.3259512e-07, global = 7.7131988e-10, cumulative = -2.2138149e-10
+GAMG:  Solving for p, Initial residual = 0.17163544, Final residual = 0.0023110018, No Iterations 100
+GAMG:  Solving for p, Initial residual = 0.052341562, Final residual = 0.00051780547, No Iterations 58
+GAMG:  Solving for p, Initial residual = 0.020889437, Final residual = 8.7642824e-05, No Iterations 500
+time step continuity errors : sum local = 3.7246727e-09, global = 2.9683153e-12, cumulative = -2.1841318e-10
+ExecutionTime = 26.88 s  ClockTime = 27 s
+
+---[preCICE] Automatic RBF mapping alias from mesh "Fluid-Mesh" to mesh "Solid-Mesh" in "read" direction resolves to "partition-of-unity RBF" .
+---[preCICE] Computing "partition-of-unity RBF" mapping from mesh "Fluid-Mesh" to mesh "Solid-Mesh" in "read" direction.
+---[preCICE] Mapping "Force" for t=0 from "Fluid-Mesh" to "Solid-Mesh" (skipped zero sample)
+---[preCICE] Mapping "Force" for t=0.05 from "Fluid-Mesh" to "Solid-Mesh"
+---[preCICE] it 1 (min: 1, max: 50), time-window 1, t 0 (max: 2), Dt 0.05, max-dt 0.05
+---[preciceAdapter] preCICE was configured and initialized
+--> FOAM Warning : 
+    From void adapterInfo(std::string, std::string)
+    in file Utilities.C at line 17
+    [36mWarning in the preCICE adapter: [0m
+You have enabled 'runTimeModifiable' in the controlDict. The preciceAdapter does not yet fully support this functionality when 'adjustableTimestep' is not enabled. If you modify the 'deltaT' in the controlDict during the simulation, it will not be updated.
+
+---[preciceAdapter] Setting the solver's endTime to infinity to prevent early exits. Only preCICE will control the simulation's endTime. Any functionObject's end() method will be triggered by the adapter. You may disable this behavior in the adapter's configuration.
+Time = 0.05
+
+Evolving solid solver
+Solving the momentum equation for D
+setCellDisplacements: reading cellDisplacements
+    Corr, res, relRes, matRes, iters
+    50, 1.307933, 0.89572756, 0, 1
+    100, 1.2984946, 0.98021272, 0, 1
+    150, 1.3411274, 0.91572951, 0, 1
+--> FOAM Warning : Max iterations reached within momentum loop
+ExecutionTime = 4.65 s  ClockTime = 36 s
+
+---[preCICE] relative convergence measure: relative two-norm diff of data "Displacement" = 1.00e+00, limit = 1.00e-04, normalization = 2.87e+101, conv = false
+---[preCICE] relative convergence measure: relative two-norm diff of data "Force" = 1.00e+00, limit = 1.00e-04, normalization = 1.00e-02, conv = false
+---[preCICE] Mapping "Displacement" for t=0.05 from "Solid-Mesh" to "Fluid-Mesh"
+---[preCICE] it 2 (min: 1, max: 50), time-window 1, t 0 (max: 2), Dt 0.05, max-dt 0.05
+surfaceFieldValue flowRateTM write:
+    total faces   = 144
+    total area    = 3.7099083e-06
+
+    sum(outlet_tm) of phi = 1.245036e-11
+
+surfaceFieldValue pressureACinlet write:
+    total faces   = 96
+    total area    = 5.6395557e-06
+
+    areaAverage(ac_inlet) of p = 2.0133231
+
+Courant Number mean: 0.000163787 max: 0.16831739
+Time = 0.05
+
+PIMPLE: iteration 1
+GAMG:  Solving for cellDisplacementx, Initial residual = 1, Final residual = 8.1746289e-18, No Iterations 1
+GAMG:  Solving for cellDisplacementy, Initial residual = 1, Final residual = 6.7614413e-21, No Iterations 1
+GAMG:  Solving for cellDisplacementz, Initial residual = 1, Final residual = 1.6683774e-17, No Iterations 1
+

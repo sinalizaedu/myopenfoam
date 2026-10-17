@@ -1,0 +1,20 @@
+#!/bin/bash
+# claude-wp1_octant: matriz Ogden x Yeoh independente (multi-start), com
+# checagem de malha no WP1.1 e reconciliacao de metodo no WP1.3.
+# Rodar dentro do container FSI a partir de /simulation/claude-wp1_octant/
+#
+# Custo estimado: 2-3h (bem mais caro que o Composer por causa do multi-start).
+# Recomendado rodar em background (nohup ... &  ou dentro de tmux/screen).
+#
+# Uso:
+#   ./Allrun                  # roda tudo (ogden + yeoh)
+#   ./Allrun --only ogden     # so a trilha Ogden
+#   ./Allrun --only yeoh      # so a trilha Yeoh (WP1.1-1.3, octante) + compara com Composer
+#
+# Pedido de 22/09: rodar so Yeoh, casos 1.1-1.3, geometria octante -> use:
+#   ./Allrun --only yeoh
+# Ao final escreve output/COMPARE_TO_COMPOSER.md com o veredito BATE/DIVERGE
+# ponto a ponto contra os numeros do Composer (wp1_octant/output/MATERIAL_MATRIX_SUMMARY.md).
+set -euo pipefail
+cd "$(dirname "$0")"
+python3 scripts/run_all_claude.py "$@"

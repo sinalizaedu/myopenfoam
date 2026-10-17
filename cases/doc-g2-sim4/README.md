@@ -26,15 +26,15 @@
 
 ```bash
 cd cases/doc-g2-sim4
-MODE=baseline MESH_LEVEL=M1 ./Allrun
-MODE=experiment MESH_LEVEL=M1 REUSE_MESH=1 ./Allrun
+MODE=baseline MESH_LEVEL=M8 ./Allrun
+MODE=experiment MESH_LEVEL=M8 REUSE_MESH=1 ./Allrun
 ```
 
 Docker:
 
 ```bash
 docker compose run --rm --user ubuntu fsi bash -lc \
-  'cd /simulation/doc-g2-sim4 && MODE=baseline MESH_LEVEL=M1 ./Allrun'
+  'cd /simulation/doc-g2-sim4 && MODE=baseline MESH_LEVEL=M8 ./Allrun'
 ```
 
 ## IOP calibration

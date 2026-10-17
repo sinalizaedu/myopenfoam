@@ -1,0 +1,57 @@
+*HEADING
+fea-simplf: 90deg spherical sclera+cornea, Neo-Hooke, IOP0=15 mmHg
+** SI: m, kg, s, Pa. Living IOP = 15 mmHg = 1999.83 Pa.
+** Step 1: 0 -> 15 mmHg (living eye). Step 2: 15 -> 50 mmHg (invert 50 uL).
+** 50 mmHg is a solver ceiling, not a clinical target.
+*INCLUDE, INPUT=fea-simplf_mesh.inp
+**
+** Neo-Hooke from B2 mechanicalProperties: C10=E/[4(1+nu)], D1=6(1-2nu)/E
+*MATERIAL, NAME=CORNEA_MAT
+*HYPERELASTIC, NEO HOOKE
+2.551020408e+05, 2.400000000e-07
+*DENSITY
+1143
+*MATERIAL, NAME=SCLERA_MAT
+*HYPERELASTIC, NEO HOOKE
+4.319727891e+05, 1.417322835e-07
+*DENSITY
+1243
+*SOLID SECTION, ELSET=CORNEA, MATERIAL=CORNEA_MAT
+*SOLID SECTION, ELSET=SCLERA, MATERIAL=SCLERA_MAT
+**
+*AMPLITUDE, NAME=RAMP
+0.0, 0.0
+1.0, 1.0
+**
+** ------------------------------------------------------------------
+** STEP 1: prestress to living IOP = 15 mmHg
+** first increment 0.067 -> ~1 mmHg; check inner nodes move OUTWARD
+** ------------------------------------------------------------------
+*STEP, NLGEOM, INC=40
+*STATIC
+0.067, 1.0, 1e-6, 0.1
+*BOUNDARY
+SYMMETRY_0, 3, 3, 0.0
+SYMMETRY_90, 1, 1, 0.0
+POSTERIOR_RING, 2, 2, 0.0
+*DSLOAD, AMPLITUDE=RAMP
+FSI_ACTIVE_SURF, P, 1999.83
+*NODE FILE, FREQUENCY=1
+U
+*EL FILE, FREQUENCY=5
+S
+*END STEP
+**
+** ------------------------------------------------------------------
+** STEP 2: 15 -> 50 mmHg (replace DSLOAD; CCX ramps from previous P)
+** ------------------------------------------------------------------
+*STEP, NLGEOM, INC=80
+*STATIC
+0.05, 1.0, 1e-6, 0.1
+*DSLOAD
+FSI_ACTIVE_SURF, P, 6666.1
+*NODE FILE, FREQUENCY=1
+U
+*EL FILE, FREQUENCY=5
+S
+*END STEP

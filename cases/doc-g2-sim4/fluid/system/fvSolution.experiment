@@ -11,7 +11,7 @@ solvers
     p
     {
         solver          GAMG;
-        tolerance       1e-08;
+        tolerance       1e-05;
         relTol          0.01;
         smoother        GaussSeidel;
         cacheAgglomeration true;
@@ -24,24 +24,25 @@ solvers
     pFinal
     {
         $p;
+        tolerance       1e-07;
         relTol          0;
+        maxIter         500;
     }
 
     "(U|UFinal)"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-08;
-        relTol          0.1;
+        tolerance       1e-07;
+        relTol          0.05;
     }
 }
 
 PIMPLE
 {
-    nOuterCorrectors 4;
-    nCorrectors     2;
+    nOuterCorrectors         3;
+    nCorrectors              2;
     nNonOrthogonalCorrectors 2;
-    // Pressure anchored by outlet_tm fixedValue (same as simpleFoam baseline).
 }
 
 relaxationFactors

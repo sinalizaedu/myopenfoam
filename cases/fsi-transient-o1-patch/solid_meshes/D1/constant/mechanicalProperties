@@ -1,0 +1,62 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      mechanicalProperties;
+}
+
+// Human ocular linear elasticity — literature values (Karimi 2018/2024, Tahavvor 2020,
+// Wollensak & Spoerl 2004). nu kept below 0.50 for near-incompressible stability in solids4Foam.
+//
+// Six cellZones (no lens in solid mesh — lens is a fluid void at lens_wall):
+//   cornea, retina, choroid, sclera, ciliary, iris
+// Names must match blockMeshDict.O1solid zone labels and polyMesh/cellZones.
+
+planeStress     no;
+
+mechanical
+(
+    cornea
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1143;   // Karimi et al. (2018)
+        E       E   [ 1 -1 -2 0 0 0 0 ] 1.5e6;  // Karimi et al. (2018)
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.47;
+    }
+    retina
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1110;   // Karimi et al. (2018)
+        E       E   [ 1 -1 -2 0 0 0 0 ] 20000;  // 20 kPa — Wollensak & Spoerl (2004)
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.47;
+    }
+    choroid
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1002;   // Tahavvor & Tahavvor (2020)
+        E       E   [ 1 -1 -2 0 0 0 0 ] 6e5;    // 600 kPa
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+    sclera
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1243;   // Karimi et al. (2018, 2024)
+        E       E   [ 1 -1 -2 0 0 0 0 ] 2.54e6; // Karimi et al. (2024)
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.47;
+    }
+    ciliary
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1002;   // choroid proxy
+        E       E   [ 1 -1 -2 0 0 0 0 ] 6e5;
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.49;
+    }
+    iris
+    {
+        type    linearElastic;
+        rho     rho [ 1 -3  0 0 0 0 0 ] 1000;   // Karimi et al. (2018)
+        E       E   [ 1 -1 -2 0 0 0 0 ] 4000;   // Karimi et al. (2018)
+        nu      nu  [ 0  0  0 0 0 0 0 ] 0.47;
+    }
+);

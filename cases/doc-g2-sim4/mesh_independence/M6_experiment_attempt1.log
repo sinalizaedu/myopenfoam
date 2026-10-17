@@ -1,0 +1,59 @@
+time="2026-07-29T21:04:02-03:00" level=warning msg="Found orphan containers ([doc-g1-sim1-calib]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container myopenfoam-fsi-run-1dfa2e1e6fb4 Creating 
+ Container myopenfoam-fsi-run-1dfa2e1e6fb4 Created 
+=== doc-g2-sim4 MODE=experiment MESH_LEVEL=M6 REUSE_MESH=1 ===
+=== seeding experiment 0/ from 216 (baseline p/U, no p shift) ===
+  wrote fluid/0/U and fluid/0/p (experiment BCs, baseline pressure from d_TM)
+=== patch counts ===
+  ac_inlet: 3 faces
+  outlet_tm: 9 faces
+  ivi_tip: 168 faces
+  acp_tip: 144 faces
+  wall: 2718 faces
+  symmetry_0: 27146 faces
+  symmetry_90: 27146 faces
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : pimpleFoam
+Date   : Jul 30 2026
+Time   : 00:04:07
+Host   : 5bb23eb065c9
+PID    : 238
+I/O    : uncollated
+Case   : /simulation/doc-g2-sim4/fluid
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+
+PIMPLE: no residual control data found. Calculations will employ 4 corrector loops
+
+Reading field p
+
+
+
+--> FOAM FATAL IO ERROR: (openfoam-2512)
+Size 71952 is not equal to the expected length 162876
+
+file: 0/p/internalField at line 21.
+
+    From void Foam::Field<Type>::assign(const Foam::entry&, Foam::label) [with Type = double; Foam::label = int]
+    in file ./src/OpenFOAM/lnInclude/Field.C at line 252.
+
+FOAM exiting
+
+
