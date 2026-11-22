@@ -25,7 +25,7 @@ from fit_pallikaris import Geometry, P0_MMHG  # noqa: E402
 
 R_OBS_MM = 12.0
 T_MM = 0.5
-BETA = 0.7
+BETA = 1.0
 TOL_MM = 1e-3
 MAX_ITER = 20
 N_LOAD_STEPS = 24

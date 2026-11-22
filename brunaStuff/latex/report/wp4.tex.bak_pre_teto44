@@ -1,0 +1,384 @@
+\section{WP4.1 --- Da IOP para a MOPP}
+\label{sec_wp41}
+
+\subsection{Introdução}
+
+A IVI eleva a IOP por alguns minutos, como mostrado no WP0. Enquanto a IOP permanece alta, a pressão que mantém o fluxo sanguíneo através da retina e do nervo óptico diminui. Essa pressão é descrita pela pressão de perfusão ocular média (MOPP). A pressão de perfusão de um tecido é a diferença entre a pressão arterial média e a pressão venosa, e no olho a IOP substitui a pressão venosa \citep{leske2009opp, oppopa2013}. Como a pressão na artéria oftálmica equivale a cerca de dois terços da pressão braquial \citep{oppopa2013}, a MOPP é definida como
+\begin{equation}
+\mathrm{MOPP}(t)=\frac{2}{3}\,\mathrm{PAM}-\mathrm{IOP}(t),
+\qquad
+\mathrm{PAM}=\mathrm{PAD}+\frac{1}{3}\left(\mathrm{PAS}-\mathrm{PAD}\right),
+\label{eq_wp41_mopp}
+\end{equation}
+em que PAM é a pressão arterial média \citep{oppopa2013}, e PAS e PAD são as pressões arteriais sistólica e diastólica.
+
+O WP0 fornece o modelo 0D que calcula a IOP durante e depois de uma IVI. O WP4.1 usa o protocolo humano de referência desse modelo e compara duas leis de $P(V)$, que relacionam o volume injetado à pressão. A primeira é a lei de \citet{friedenwald1937} recalibrada no WP0, a mesma curva que o WP1.2 adota como alvo para ajustar os modelos hiperelásticos. A segunda é uma reta de rigidez constante, próxima da secante da Friedenwald na faixa da injeção. Comparar as duas mostra quanto o enrijecimento da curva altera a MOPP.
+
+A pressão arterial não faz parte do modelo 0D e entra apenas na conversão da Equação~\ref{eq_wp41_mopp}. Para cada lei de $P(V)$ reportam-se o pico de IOP, o mínimo de MOPP e o tempo em que a MOPP fica abaixo de dois valores de referência, adotados só para descrever a curva, e não como limiares de risco. A pressão arterial e o fator braquial-oftálmico são valores adotados, e por isso também são variados para mostrar quanto alteram a MOPP.
+
+\subsection{Metodologia}
+
+As simulações seguem o protocolo humano de referência do WP0, com refluxo instantâneo e sem paracentese. Foram feitas duas simulações, uma com a lei de Friedenwald recalibrada ($K_f=0{,}00581$ µL$^{-1}$) e outra com uma reta de $K=0{,}325$ mmHg/µL, próxima da secante da Friedenwald entre $0$ e $50$ µL ($0{,}322$ mmHg/µL).
+
+A conversão em MOPP usa a Equação~\ref{eq_wp41_mopp} com IOP basal de $16{,}9$ mmHg e pressão arterial de $120/80$ mmHg, adotada como referência e não medida. A diretriz ACC/AHA classifica como normal a pressão abaixo de $120/80$ mmHg, de modo que o valor adotado fica no limite dessa faixa \citep{whelton2018}. Numa janela de $40$ min extraem-se o pico de IOP, o mínimo de MOPP e o tempo com MOPP abaixo de $30$ e de $40$ mmHg, contando apenas os trechos abaixo do limiar e interpolando linearmente nos cruzamentos. Além do caso de referência, simularam-se com a Friedenwald recalibrada as pressões arteriais de $110/70$, $130/80$ e $140/90$ mmHg e os fatores braquial-oftálmicos de $0{,}5$ e $0{,}8$. Essas faixas são adotadas, e variou-se um parâmetro por vez para medir o efeito de cada um sobre a MOPP.
+
+\subsection{Resultados}
+
+A Tabela~\ref{tab_wp41_mopp} resume a conversão para as duas leis de $P(V)$ com $\mathrm{PAM}=93{,}33$ mmHg ($120/80$ mmHg adotados).
+
+O pico de IOP da Friedenwald é o alvo de calibração do WP0, e a MOPP mínima, que ocorre nesse pico, tem a mesma dependência. A reta fica a menos de $0{,}2$ mmHg da Friedenwald no pico e na MOPP mínima, porque tem rigidez próxima à secante da mesma curva.
+
+O limiar de $30$ mmHg corresponde a uma IOP de $32{,}2$ mmHg, apenas $0{,}7$ mmHg abaixo do pico da Friedenwald, e por isso uma diferença de $0{,}2$ mmHg no pico leva a $0{,}34$ min na reta e a $0{,}09$ min na Friedenwald. Como o limiar está tão perto do pico, o tempo abaixo dele reflete o valor do pico e quase não depende da lei adotada. Abaixo de $40$ mmHg a diferença é de cerca de $1$ min, com a IOP da reta acima da IOP da Friedenwald durante o decaimento.
+
+A Figura~\ref{fig_wp41_sens} varia a lei de $P(V)$, a pressão arterial de $110/70$ a $140/90$ mmHg e o fator braquial-oftálmico de $0{,}5$ a $0{,}8$, e a Tabela~\ref{tab_wp41_sens} detalha os dois últimos. A lei de $P(V)$ muda a MOPP em até cerca de $1$ mmHg, pois entre $1$ e $6$ min a MOPP da reta fica de $0{,}6$ a $1{,}0$ mmHg abaixo da MOPP da Friedenwald e a diferença cai a $0{,}2$ mmHg aos $15$ min. A pressão arterial muda a MOPP mínima em $15{,}6$ mmHg e o fator em $28{,}0$ mmHg. A MOPP depende, portanto, mais da pressão arterial e do fator braquial-oftálmico, ambos adotados, do que da lei de $P(V)$ comparada aqui. Com $110/70$ mmHg a MOPP basal já é $38{,}66$ mmHg, abaixo de $40$ mmHg, e por isso o tempo abaixo de $40$ mmHg ocupa toda a janela e descreve o basal, não a injeção.
+
+\begin{table}[h]
+\centering
+\caption{Conversão de IOP em MOPP para uma injeção de $50$ µL, pressão arterial de $120/80$ mmHg e janela de $40$ min.}
+\label{tab_wp41_mopp}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Grandeza & $K$ constante & Friedenwald recalibrada \\
+\midrule
+MOPP basal (mmHg) & 45,32 & 45,32 \\
+Pico de IOP (mmHg) & 33,08 & 32,90 \\
+Instante do pico (min) & 0,10 & 0,10 \\
+MOPP mínima (mmHg) & 29,15 & 29,32 \\
+Tempo com MOPP $<30$ mmHg (min) & 0,34 & 0,09 \\
+Tempo com MOPP $<40$ mmHg (min) & 12,02 & 10,98 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Sensibilidade da MOPP à pressão arterial e ao fator braquial-oftálmico para a Friedenwald recalibrada, injeção de $50$ µL e janela de $40$ min. A referência é $120/80$ mmHg com fator $2/3$.}
+\label{tab_wp41_sens}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Cenário & MOPP basal & MOPP mínima & Tempo $<30$ & Tempo $<40$ \\
+ & (mmHg) & (mmHg) & (min) & (min) \\
+\midrule
+$110/70$ mmHg, fator $2/3$ & 38,66 & 22,65 & 5,48 & 40,00 \\
+$120/80$ mmHg, fator $2/3$ & 45,32 & 29,32 & 0,09 & 10,98 \\
+$130/80$ mmHg, fator $2/3$ & 47,54 & 31,54 & 0,00 & 6,96 \\
+$140/90$ mmHg, fator $2/3$ & 54,21 & 38,21 & 0,00 & 0,73 \\
+$120/80$ mmHg, fator $0{,}5$ & 29,77 & 13,76 & 40,00 & 40,00 \\
+$120/80$ mmHg, fator $0{,}8$ & 57,77 & 41,76 & 0,00 & 0,00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{Figuras/fig_mopp_sensibilidade.png}
+\caption{MOPP após uma injeção de $50$ µL. Em (a) troca-se a lei de $P(V)$, em (b) a pressão arterial e em (c) o fator braquial-oftálmico, e o restante fica no valor de referência adotado ($120/80$ mmHg, fator $2/3$ e Friedenwald recalibrada). As linhas pontilhadas marcam $30$ e $40$ mmHg.}
+\label{fig_wp41_sens}
+\end{figure}
+
+\section{WP4.2 --- Dose isquêmica}
+\label{sec_wp42}
+
+\subsection{Introdução}
+
+No WP4.1, o mínimo de MOPP e o tempo abaixo de um valor fixo descrevem a queda de perfusão causada pela injeção, mas não dizem se ela é perigosa. O WP4.2 parte da mesma $\mathrm{MOPP}(t)$, calculada para o protocolo de injeção de referência, e mede o quanto ela fica abaixo de um limiar crítico, aqui chamado de $\mathrm{OPP}_{\text{crit}}$, e por quanto tempo.
+
+O valor de $\mathrm{OPP}_{\text{crit}}$ não é bem definido. Os limiares disponíveis vêm de estudos populacionais de glaucoma, com exposição crônica. No estudo de \citet{memarzadeh2010}, a chance de glaucoma de ângulo aberto foi $3{,}6$ vezes maior com pressão de perfusão média de $50$ mmHg ou menos, em comparação com $61$ a $80$ mmHg. No de \citet{tielsch1995}, foi $6{,}2$ vezes maior com pressão de perfusão diastólica (pressão diastólica menos IOP) abaixo de $30$ mmHg, em comparação com $50$ mmHg ou mais. Essas pressões não incluem o fator de $2/3$ da MOPP. Com $120/80$ mmHg, os $50$ mmHg de pressão de perfusão média equivalem a uma MOPP de $18{,}9$ mmHg.
+
+Para a queda aguda de perfusão causada por uma IVI, não há na literatura revisada limiar validado nem desfecho clínico ligado ao déficit acumulado. Por isso a dose isquêmica é um índice exploratório para comparar cenários, e não uma medida calibrada de dano.
+
+Uma queda curta e profunda e uma queda longa e de pequena amplitude podem ter o mesmo mínimo de MOPP. Supõe-se aqui que suas consequências sejam distintas e, por isso, adota-se uma dose isquêmica que soma a profundidade do déficit em relação ao limiar ao longo do tempo, na mesma forma da dose de pressão e tempo usada em neurointensivismo, que é a área da pressão intracraniana acima de um limiar \citep{vik2008,kahraman2010,akerlund2020}. Para uma janela de duração $T$, a dose total é
+\begin{equation}
+\mathcal{I}=\int_{0}^{T}\max\!\left[\mathrm{OPP}_{\text{crit}}-\mathrm{MOPP}(t),\,0\right]\mathrm{d}t,
+\label{eq_wp42_dose}
+\end{equation}
+com unidade de mmHg$\cdot$min. Quando a MOPP basal já está abaixo de $\mathrm{OPP}_{\text{crit}}$, a integral inclui também o déficit que já existiria sem a injeção, ao longo de toda a janela, chamado aqui de déficit de repouso. Para isolar o efeito da injeção, desconta-se esse déficit e usa-se a dose atribuída à injeção
+\begin{equation}
+\mathcal{I}_{\mathrm{inj}}=\mathcal{I}-T\,\max\!\left[\mathrm{OPP}_{\text{crit}}-\mathrm{MOPP}_{\text{basal}},\,0\right].
+\label{eq_wp42_Ievt}
+\end{equation}
+Nos casos em que $\mathrm{MOPP}_{\text{basal}}\ge\mathrm{OPP}_{\text{crit}}$, $\mathcal{I}_{\mathrm{inj}}=\mathcal{I}$.
+
+Para uma forma linear de $P(V)$, com rigidez $K$, a dose tem solução fechada. Seja $q=V_{\text{inj}}/\Delta t_{\text{inj}}$ a vazão da injeção, $\lambda=C_{\text{out}}K$ e $\Delta P_{m}=\mathrm{MOPP}_{\text{basal}}-\mathrm{OPP}_{\text{crit}}$ a margem entre o basal e o limiar. Com $P(V)$ linear, a MOPP vale $\mathrm{MOPP}_{\text{basal}}-K\,V(t)$ e o integrando da Equação~\ref{eq_wp42_dose} passa a ser $K\,V(t)-\Delta P_{m}$, de modo que a dose é a área em que a IOP acima do basal, $K\,V$, ultrapassa a margem. Durante a injeção, o balanço de volume do WP0 se reduz a $\mathrm{d}V/\mathrm{d}t=q-\lambda V$, porque a drenagem do excesso de volume vale $C_{\text{out}}K\,V=\lambda V$ e a produção e a drenagem basais se anulam. Com $V(0)=0$, o volume retido é
+\begin{equation}
+V(t)=\frac{q}{\lambda}\left(1-e^{-\lambda t}\right),\qquad 0\le t\le\Delta t_{\text{inj}},
+\label{eq_wp42_vrampa}
+\end{equation}
+e a IOP acima do basal vale $K\,V(t)$. Ao fim da injeção, o refluxo remove o volume $\Delta V_{\text{refluxo}}$ de uma vez, e o volume restante, $V_1=V(\Delta t_{\text{inj}})-\Delta V_{\text{refluxo}}$, decai como $V_1e^{-\lambda(t-\Delta t_{\text{inj}})}$, com constante de tempo $\tau=1/\lambda$. A fórmula de $V$ muda em $\Delta t_{\text{inj}}$, e por isso a integral de $K\,V-\Delta P_{m}$ é dividida nesse instante. A dose é a soma de uma parcela da rampa e outra do decaimento,
+\begin{equation}
+\mathcal{I}_{\text{lin}}=\mathcal{I}_{\text{rampa}}+\mathcal{I}_{\text{dec}},
+\label{eq_wp42_fechada}
+\end{equation}
+A parcela da rampa é a integral de $K\,V(t)-\Delta P_{m}$ de $t_c$ a $\Delta t_{\text{inj}}$, com $K\,V=(q/C_{\text{out}})(1-e^{-\lambda t})$, e vale
+\begin{equation}
+\mathcal{I}_{\text{rampa}}=\frac{q}{C_{\text{out}}}\left(\Delta t_{\text{inj}}-t_c\right)-\frac{q}{C_{\text{out}}\lambda}\left(1-\frac{C_{\text{out}}\Delta P_{m}}{q}-e^{-\lambda\Delta t_{\text{inj}}}\right)-\Delta P_{m}\left(\Delta t_{\text{inj}}-t_c\right),
+\label{eq_wp42_rampa}
+\end{equation}
+em que $t_c=-\ln\!\left(1-C_{\text{out}}\Delta P_{m}/q\right)/\lambda$ é o instante em que a MOPP cruza o limiar durante a injeção. A parcela do decaimento é a integral de $K\,V_1e^{-\lambda s}-\Delta P_{m}$ de $s=0$ até $s^{*}=\ln(K\,V_1/\Delta P_{m})/\lambda$, com $s=t-\Delta t_{\text{inj}}$, e vale
+\begin{equation}
+\mathcal{I}_{\text{dec}}=\frac{1}{\lambda}\left[K\,V_1-\Delta P_{m}\left(1+\ln\frac{K\,V_1}{\Delta P_{m}}\right)\right].
+\label{eq_wp42_dec}
+\end{equation}
+A parcela da rampa vale zero quando $K\,V(\Delta t_{\text{inj}})\le\Delta P_{m}$, e a do decaimento vale zero quando $K\,V_1\le\Delta P_{m}$. A expressão supõe $\Delta P_{m}>0$, porque com $\Delta P_{m}\le0$ o basal já está abaixo do limiar. O numérico integra o balanço de volume completo do WP0 e vale também para a Friedenwald.
+
+\subsection{Metodologia}
+
+A dose numérica usou a simulação do WP4.1 com a Friedenwald recalibrada do WP0 e com a reta de $K=0{,}325$ mmHg/µL, janela de $T=40$ min e pressão arterial adotada de $120/80$ mmHg. A dose $\mathcal{I}_{\mathrm{inj}}$ (Equação~\ref{eq_wp42_Ievt}) foi calculada para $\mathrm{OPP}_{\text{crit}}$ de $25$, $30$, $35$, $40$ e $45$ mmHg, valores adotados que vão de abaixo do mínimo de MOPP do WP4.1 até logo abaixo da MOPP basal, e não derivados dos limiares populacionais da Introdução. Para $\mathrm{OPP}_{\text{crit}}=50$ mmHg calcularam-se também a dose total $\mathcal{I}$ (Equação~\ref{eq_wp42_dose}) e o déficit de repouso.
+
+A sensibilidade variou, uma entrada de cada vez e com $\mathrm{OPP}_{\text{crit}}=40$ mmHg, a pressão arterial, de $120/80$ mmHg para $110/70$ e $140/90$ mmHg, e o $K_f$. O $K_f$ foi variado de $0{,}0035$ a $0{,}0075$ µL$^{-1}$ com $P_0=16{,}9$ mmHg fixo. Esses extremos são, arredondados, os valores que o WP0 obtém ao calibrar o $K_f$ com $P_0$ de $22$ e de $14$ mmHg e o mesmo pico de IOP.
+
+A forma fechada (Equação~\ref{eq_wp42_fechada}) foi avaliada com $V_{\text{inj}}=50$ µL, $\Delta t_{\text{inj}}=6$ s, $\Delta V_{\text{refluxo}}=1{,}19$ µL e $C_{\text{out}}=0{,}28$ µL/min/mmHg, que são os valores do protocolo humano de referência do WP0, e com $\Delta P_{m}\approx15{,}32$ mmHg, que é a margem entre a MOPP basal ($45{,}32$ mmHg) e $\mathrm{OPP}_{\text{crit}}=30$ mmHg, a maior das três margens comparadas adiante. O intervalo de $K$, de $0{,}05$ a $1{,}00$ mmHg/µL, é uma varredura adotada. Para compará-la com a simulação, a Friedenwald foi trocada pela reta de $K=0{,}325$ mmHg/µL, próxima da secante de $0$ a $50$ µL ($0{,}322$ mmHg/µL), com $\mathrm{OPP}_{\text{crit}}$ de $40$, $35$ e $30$ mmHg, três dos cinco valores da dose numérica, que dão $\Delta P_{m}\approx5{,}32$, $10{,}32$ e $15{,}32$ mmHg.
+
+\subsection{Resultados}
+
+A Tabela~\ref{tab_wp42_dose} e a Figura~\ref{fig_wp42_dose} mostram $\mathcal{I}_{\mathrm{inj}}$ para a Friedenwald de referência e para a reta de $K=0{,}325$ mmHg/µL. Com a Friedenwald, a dose é praticamente nula até $\mathrm{OPP}_{\text{crit}}=30$ mmHg e chega a $42{,}7$ mmHg$\cdot$min em $40$ mmHg e a $151$ mmHg$\cdot$min em $45$ mmHg. A reta dá mais dose que a Friedenwald, $39\%$ a mais com $35$ mmHg, $21\%$ com $40$ mmHg e $3{,}8\%$ com $45$ mmHg, de modo que a diferença entre as leis diminui à medida que o limiar sobe. Com $\mathrm{OPP}_{\text{crit}}=50$ mmHg, a dose total seria $351$ mmHg$\cdot$min, mas $187$ mmHg$\cdot$min ($53{,}3\%$) já existiriam sem a injeção, porque a MOPP basal está abaixo de $50$ mmHg.
+
+\begin{table}[h]
+\centering
+\caption{Dose atribuída à injeção $\mathcal{I}_{\mathrm{inj}}$ em mmHg$\cdot$min para a Friedenwald do WP0 e para a reta de $K=0{,}325$ mmHg/µL do WP4.1 ($120/80$ mmHg, $T=40$ min).}
+\label{tab_wp42_dose}
+\begin{tabular}{@{}rrr@{}}
+\toprule
+$\mathrm{OPP}_{\text{crit}}$ (mmHg) & Friedenwald & Reta $K=0{,}325$ mmHg/µL \\
+\midrule
+25 & 0 & 0 \\
+30 & 0,0080 & 0,079 \\
+35 & 8,62 & 12,0 \\
+40 & 42,7 & 51,8 \\
+45 & 151 & 157 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{Figuras/fig_dose_tabela15.png}
+\caption{Dose atribuída à injeção $\mathcal{I}_{\mathrm{inj}}$ em função de $\mathrm{OPP}_{\text{crit}}$, para a Friedenwald do WP0 e para a reta de $K=0{,}325$ mmHg/µL do WP4.1 ($120/80$ mmHg, $T=40$ min).}
+\label{fig_wp42_dose}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Dose atribuída à injeção $\mathcal{I}_{\mathrm{inj}}$ ao variar uma entrada por vez, com $\mathrm{OPP}_{\text{crit}}=40$ mmHg e janela de $40$ min. Nas demais entradas vale o caso central da primeira linha.}
+\label{tab_wp42_sens}
+\begin{tabular}{@{}llr@{}}
+\toprule
+Entrada variada & Valor & $\mathcal{I}_{\mathrm{inj}}$ (mmHg$\cdot$min) \\
+\midrule
+Caso central & Friedenwald recalibrada (WP0), $120/80$ mmHg & $42{,}7$ \\
+\midrule
+Pressão arterial & $110/70$ mmHg & $164$ \\
+ & $140/90$ mmHg & $0{,}456$ \\
+\addlinespace
+$K_f$ & $0{,}0035$ µL$^{-1}$ & $10$ \\
+ & $0{,}0075$ µL$^{-1}$ & $61$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A Tabela~\ref{tab_wp42_sens} mostra o efeito de cada entrada com $\mathrm{OPP}_{\text{crit}}=40$ mmHg. A pressão arterial é a entrada que mais altera a dose, de $164$ mmHg$\cdot$min com $110/70$ mmHg a $0{,}456$ mmHg$\cdot$min com $140/90$ mmHg, uma variação de mais de duas ordens de grandeza. Ela é adotada, e não foi medida nos estudos de IVI reutilizados. Com $110/70$ mmHg a MOPP basal é de $38{,}66$ mmHg, já abaixo de $40$ mmHg, e esses $164$ mmHg$\cdot$min já descontam um déficit de repouso de $53{,}8$ mmHg$\cdot$min. O $K_f$, com $P_0$ fixo, leva o pico de IOP a $25{,}3$ e a $39{,}9$ mmHg e a dose a $10$ e a $61$ mmHg$\cdot$min.
+
+A Figura~\ref{fig_wp42_fechada} mostra a forma fechada em função de $K$. A dose é nula até $K=0{,}30$ mmHg/µL e vale $0{,}0004$ mmHg$\cdot$min com $K=0{,}315$ mmHg/µL, $0{,}0790$ mmHg$\cdot$min com $K=0{,}325$ mmHg/µL e $55{,}7$ mmHg$\cdot$min com $K=1{,}00$ mmHg/µL.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{Figuras/fig_wp42_fechada.png}
+\caption{Dose pela forma fechada com a rampa de injeção de $6$ s em função de $K$, para $\Delta P_{m}\approx15{,}32$ mmHg e $C_{\text{out}}=0{,}28$ µL/min/mmHg.}
+\label{fig_wp42_fechada}
+\end{figure}
+
+A forma fechada reproduz a simulação da Tabela~\ref{tab_wp42_dose} com a reta de $K=0{,}325$ mmHg/µL, com $0{,}079$, $12{,}0$ e $51{,}8$ mmHg$\cdot$min para $\mathrm{OPP}_{\text{crit}}$ de $30$, $35$ e $40$ mmHg e diferença abaixo de $0{,}01\%$.
+
+Em resumo, a dose depende sobretudo do limiar adotado e da pressão arterial. No protocolo de referência, ela é praticamente nula até $\mathrm{OPP}_{\text{crit}}=30$ mmHg e cresce rapidamente acima disso. A pressão arterial adotada muda a dose em mais de duas ordens de grandeza, e o $K_f$ a muda por um fator de seis.
+
+\section{WP4.3 --- Rigidez crítica}
+\label{sec_wp43}
+
+\subsection{Introdução}
+
+A dose do WP4.2 depende da rigidez ocular $K$, a razão entre o aumento de IOP e o volume retido, que não é medida em cada olho e muda com a lei $P(V)$ adotada. Por isso a pergunta natural é a partir de que rigidez a injeção passa a produzir dose. O WP4.3 responde a essa pergunta com a rigidez crítica $K_{\text{crit}}$, abaixo da qual a dose é nula. Ele traz também dois resultados que valem para qualquer $P(V)$, um limite superior para a dose e a forma como ela escala com $C_{\text{out}}$. Esses resultados mostram o que a conclusão do WP4.2 herda da incerteza em $K$ e o que independe dela.
+
+A dose é nula enquanto a IOP acima do basal não passa de $\Delta P_{m}$, e o maior valor dessa IOP é o do fim da injeção, $K\,V(\Delta t_{\text{inj}})$, antes do refluxo. A rigidez crítica é a que iguala os dois. Pela Equação~\ref{eq_wp42_vrampa} e com $K/\lambda=1/C_{\text{out}}$, $K\,V(\Delta t_{\text{inj}})=(q/C_{\text{out}})\left(1-e^{-C_{\text{out}}K\Delta t_{\text{inj}}}\right)$, e igualar esse valor a $\Delta P_{m}$ e isolar $K$ resulta em
+\begin{equation}
+K_{\text{crit}}=-\frac{1}{C_{\text{out}}\,\Delta t_{\text{inj}}}\ln\!\left(1-\frac{C_{\text{out}}\,\Delta P_{m}\,\Delta t_{\text{inj}}}{V_{\text{inj}}}\right)\approx\frac{\Delta P_{m}}{V_{\text{inj}}}.
+\label{eq_wp43_kcrit}
+\end{equation}
+A forma aproximada vem de $\ln(1-x)\approx-x$ com $x=C_{\text{out}}\Delta P_{m}\Delta t_{\text{inj}}/V_{\text{inj}}$ pequeno. Integrar o balanço de volume do WP0 de $0$ a $\infty$, com o volume voltando ao basal e todo o excesso drenado pela via trabecular, dá $\Delta V_{\text{eff}}=C_{\text{out}}\int_{0}^{\infty}\Delta P\,\mathrm{d}t$, com $\Delta V_{\text{eff}}=V_{\text{inj}}-\Delta V_{\text{refluxo}}$, qualquer que seja $P(V)$. A área da IOP acima do basal é, portanto,
+\begin{equation}
+\int_{0}^{\infty}\Delta P\,\mathrm{d}t=\frac{\Delta V_{\text{eff}}}{C_{\text{out}}}.
+\label{eq_wp43_area}
+\end{equation}
+Como $\max[\Delta P-\Delta P_{m},0]\le\Delta P$, a dose é uma parte dessa área, e por isso
+\begin{equation}
+\mathcal{I}_{\text{lin}}\le\frac{\Delta V_{\text{eff}}}{C_{\text{out}}},
+\label{eq_wp43_teto}
+\end{equation}
+com igualdade no limite $\Delta P_{m}\to0$, em que o limiar coincide com a MOPP basal. Para $K$ bem acima de $K_{\text{crit}}$, a parcela do decaimento domina. Nela (Equação~\ref{eq_wp42_dec}), $C_{\text{out}}$ aparece no fator $1/(C_{\text{out}}K)$ fora dos colchetes e, de forma fraca, em $V_1$, porque $V(\Delta t_{\text{inj}})\approx V_{\text{inj}}\left(1-C_{\text{out}}K\Delta t_{\text{inj}}/2\right)$ pela Equação~\ref{eq_wp42_vrampa}. Reduzir $C_{\text{out}}$ à metade dobra o fator e quase não muda os colchetes, de modo que a dose é aproximadamente inversamente proporcional a $C_{\text{out}}$,
+\begin{equation}
+\mathcal{I}_{\text{lin}}\!\left(\tfrac{C_{\text{out}}}{2}\right)\approx2\,\mathcal{I}_{\text{lin}}\!\left(C_{\text{out}}\right).
+\label{eq_wp43_escala}
+\end{equation}
+
+
+
+\subsection{Metodologia}
+
+As Equações~\ref{eq_wp43_kcrit} a \ref{eq_wp43_escala} foram avaliadas com MOPP basal de $45{,}3$ mmHg e $\mathrm{OPP}_{\text{crit}}$ adotado de $30$ mmHg, que dão $\Delta P_{m}\approx15{,}32$ mmHg, e com $V_{\text{inj}}=50$ µL, $\Delta t_{\text{inj}}=6$ s, $\Delta V_{\text{refluxo}}=1{,}19$ µL e $C_{\text{out}}=0{,}28$ µL/min/mmHg. A escala em $C_{\text{out}}$ foi conferida calculando a dose da forma fechada com $C_{\text{out}}$ e com $C_{\text{out}}/2$ para $K$ de $0{,}325$, $0{,}40$, $0{,}60$ e $1{,}00$ mmHg/µL. O teto foi conferido integrando a IOP acima do basal da simulação da Friedenwald do WP0 por $300$ min.
+
+\subsection{Resultados}
+
+Com esses valores, a rigidez crítica é $K_{\text{crit}}\approx0{,}308$ mmHg/µL. A reta de $K=0{,}325$ mmHg/µL usada no WP4.1, próxima da secante da Friedenwald, fica pouco acima, e uma redução de $5{,}3\%$ em $K$, de $0{,}325$ a $0{,}308$ mmHg/µL, zera a dose.
+
+O teto $\Delta V_{\text{eff}}/C_{\text{out}}\approx174$ mmHg$\cdot$min é a área total do excesso de IOP, fixada pelo volume líquido retido e independente de $P(V)$. A integral da IOP acima do basal na simulação da Friedenwald deu $174{,}3$ mmHg$\cdot$min. A dose da injeção o atingiria se $\mathrm{OPP}_{\text{crit}}$ fosse igual à MOPP basal, e com $K=1{,}00$ mmHg/µL ela chega a $32\%$ dele. O teto vale para uma janela longa em relação a $\tau=1/(C_{\text{out}}K)$. Para $K=0{,}325$ mmHg/µL, $\tau\approx11$ min e uma janela de $40$ min contém $\approx97\%$ dele.
+
+Reduzir $C_{\text{out}}$ à metade multiplica a dose por $2{,}29$ com $K=0{,}325$ mmHg/µL e por $2{,}04$, $2{,}02$ e $2{,}01$ com $K$ de $0{,}40$, $0{,}60$ e $1{,}00$ mmHg/µL.
+
+Em resumo, a dose tem uma fronteira em $K$ e um limite superior. Ela é nula abaixo de $K_{\text{crit}}$, e a reta de $K=0{,}325$ mmHg/µL está só $5{,}3\%$ acima, de modo que uma pequena redução de $K$ a zera. Acima de $K_{\text{crit}}$, a dose nunca passa de $174$ mmHg$\cdot$min, qualquer que seja $P(V)$, e com $K=1{,}00$ mmHg/µL chega a $32\%$ desse valor. A drenagem controla a escala da dose, pois reduzir $C_{\text{out}}$ à metade a multiplica por $2{,}29$ perto de $K_{\text{crit}}$ e por cerca de $2$ para $K$ maiores.
+
+\section{WP4.4 --- Comparação com a literatura clínica}
+\label{sec_wp44}
+
+\subsection{Introdução}
+
+O WP0 compara o pico de IOP do modelo com a literatura clínica. O WP4.4 compara o que os itens anteriores acrescentam, que são a MOPP ao longo do tempo, a dose isquêmica e o teto da dose.
+
+Os estudos reutilizados dividem-se em dois grupos. Um mede a IOP em instantes discretos após a injeção, o que permite convertê-la em MOPP pela Equação~\ref{eq_wp41_mopp} e integrar a dose pela Equação~\ref{eq_wp42_dose}. O outro mede a perfusão da retina por angiografia por tomografia de coerência óptica, exame que quantifica a fração da área da retina ocupada por vasos com fluxo sanguíneo \citep{papazoglou2026}. Como o instante de aquisição e a magnitude do pico diferem entre esses estudos, o conjunto limita o valor de $\mathrm{OPP}_{\text{crit}}$.
+
+O único limiar de perfusão com desfecho encontrado na literatura revisada é experimental. Em modelo suíno, manter a pressão de perfusão em $5$ mmHg por $2$ h reduziu a amplitude do eletrorretinograma a $14$ a $20\%$ do basal, sem recuperação em $6$ semanas \citep{kyhn2009}. Essa pressão é definida sem o fator braquial-oftálmico e não é diretamente comparável à MOPP.
+
+A dose é uma integral e os estudos fornecem de dois a quatro pontos, de modo que o valor depende de como se liga um ponto ao seguinte. A diferença entre ligar por reta e por decaimento exponencial mede essa incerteza.
+
+O teto do WP4.3 não depende da rigidez, porque o pico cresce com ela e a constante de tempo decresce na mesma proporção. Medir a área de IOP acima do basal devolve, então, $C_{\text{out}}$ pela Equação~\ref{eq_wp43_area}, e essa é a única saída do WP4 verificável sem supor a lei $P(V)$.
+
+\subsection{Metodologia}
+
+A comparação usou os estudos da Tabela~\ref{tab:literatura_master} que relatam a IOP basal e injetaram $\SI{50}{\micro\liter}$, e também a série de $65$ olhos \citep{lee2016}, da qual se tomaram o subgrupo de $\SI{50}{\micro\liter}$ e a pressão arterial média medida antes e logo após a injeção. Ficaram de fora o estudo sem basal relatado e o de $\SI{100}{\micro\liter}$. Dos estudos de perfusão \citep{barash2020,arumuganathan2021,papazoglou2026}, foram extraídos a IOP relatada, o instante de aquisição e a variação de perfusão relatada.
+
+As IOP foram convertidas em MOPP pela Equação~\ref{eq_wp41_mopp} com pressão arterial de $120/80$ mmHg e fator de $2/3$, adotados onde o estudo não os mediu. A dose $\mathcal{I}_{\mathrm{inj}}$ (Equação~\ref{eq_wp42_Ievt}) foi integrada em janela de $40$ min com $\mathrm{OPP}_{\text{crit}}=40$ mmHg, e a área de IOP acima do basal até o retorno ao basal. As duas integrais foram calculadas ligando os pontos medidos por reta e por decaimento exponencial, e a área reportada é a da segunda forma, que é a prevista pelo modelo. As constantes de tempo foram ajustadas aos pontos de cada estudo, e a do modelo nos mesmos instantes. A área foi invertida pela Equação~\ref{eq_wp43_area}, com $\Delta V_{\text{eff}}=48{,}81$ µL, para obter o $C_{\text{out}}$ implícito.
+
+\subsection{Resultados}
+
+A perfusão caiu de forma significativa só em \citet{barash2020}, o estudo com a MOPP mais baixa, de $15{,}9$ mmHg (Figura~\ref{fig_wp44}a). A queda média foi de $7{,}5\%$ na rede de capilares superficiais da retina central e de $3{,}3\%$ na cabeça do nervo óptico. Nessa rede, a queda acompanhou a variação de IOP. Em \citet{arumuganathan2021}, com MOPP de $28{,}7$ mmHg aos $5$ min, e em \citet{papazoglou2026}, com $31{,}1$ mmHg aos $\SI{7{,}5}{\minute}$, a perfusão não mudou de forma significativa. \citet{arumuganathan2021} relata, porém, queda nos mapas de perfusão, avaliada só visualmente, em $17$ dos $24$ olhos com IOP alta. Lidos como limiares, os dois resultados poriam $\mathrm{OPP}_{\text{crit}}$ entre $15{,}9$ e $28{,}7$ mmHg, mas nenhum dos dois limites é firme, porque em \citet{barash2020} a queda acompanhou a IOP sem um valor de corte e em \citet{arumuganathan2021} houve a queda visual. Os dois estudos também diferem no pico de IOP, com média de $46{,}4$ mmHg em \citet{arumuganathan2021} e de $26$ a $49$ mmHg em \citet{papazoglou2026}. A diferença entre elas pode vir do tamanho do pico, e não do instante da medida.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{Figuras/fig_wp44.png}
+\caption{Comparação do WP4 com a literatura clínica. Em (a), a MOPP do modelo ao longo do tempo e os estudos de perfusão na MOPP em que mediram, com círculo cheio para queda significativa e círculo aberto para ausência de mudança. Em (b), a área de IOP acima do basal em múltiplos do teto do WP4.3, com o ponto na interpolação exponencial e a barra cobrindo também a linear.}
+\label{fig_wp44}
+\end{figure}
+
+A Tabela~\ref{tab_wp44} resume os cinco estudos de IOP. A MOPP mínima vai de $14{,}3$ a $35{,}4$ mmHg, e a do modelo é $29{,}3$ mmHg. Em \citet{sharei2010}, \citet{soheilian2017} e \citet{lee2016}, ela fica abaixo da do modelo. A dose vai de $12$ a $250$ mmHg$\cdot$min, e a do modelo é $42{,}7$ mmHg$\cdot$min.
+
+\begin{table}[htbp]
+\centering
+\caption{MOPP, constante de tempo, dose e área de IOP acima do basal nos estudos de $\SI{50}{\micro\liter}$, com pressão arterial de $120/80$ mmHg e fator de $2/3$ adotados. A dose usa $\mathrm{OPP}_{\text{crit}}=40$ mmHg e janela de $40$ min, e a faixa cobre as duas interpolações.}
+\label{tab_wp44}
+\small
+\begin{tabular}{@{}lrrrrlr@{}}
+\toprule
+Estudo & $n$ & MOPP basal & MOPP mín. & $\tau$ & Dose & Área \\
+ & & (mmHg) & (mmHg) & (min) & (mmHg$\cdot$min) & (mmHg$\cdot$min) \\
+\midrule
+\citet{sharei2010} & 45 & 39,8 & 14,3 & 5,9 & 160 a 242 & 153 \\
+\citet{soheilian2017}, grupo A & 44 & 48,0 & 21,6 & 20,0 & 217 a 250 & 584 \\
+\citet{hu2022conbercept} & 40 & 47,4 & 35,4 & 15,7 & 12 a 27 & 214 \\
+\citet{papazoglou2026} & 54 & 48,2 & 31,1 & 5,0 & não estimável & 389 \\
+\citet{lee2016}, $\SI{50}{\micro\liter}$ & 50 & 45,6 & 20,5 & 9,0 & 103 a 236 & 230 \\
+\midrule
+Modelo (WP4.1 a WP4.3) & --- & 45,3 & 29,3 & 11,0 & 42,7 & 174 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Em \citet{papazoglou2026}, não foi possível estimar a dose. A primeira medida veio em mediana $\approx\SI{7{,}5}{\minute}$ após a injeção, já depois do pico. As duas formas de ligar os pontos dão $44$ e $255$ mmHg$\cdot$min. Estendido para trás até o fim da injeção, o decaimento entre os dois pontos daria um pico de $91$ mmHg.
+
+\citet{lee2016} é a única série que mediu a pressão arterial, o que permite conferir o valor adotado. A pressão arterial média medida foi de $95{,}39$ mmHg antes da injeção e de $104{,}28$ mmHg logo depois. Com esses valores no lugar de $120/80$ mmHg, a MOPP mínima do subgrupo de $\SI{50}{\micro\liter}$ sobe de $20{,}5$ para $27{,}8$ mmHg, e a dose cai de $103$ a $236$ para $34$ a $92$ mmHg$\cdot$min. Nessa série, a pressão adotada subestima a MOPP mínima em $7{,}3$ mmHg e multiplica a dose por $2{,}6$ a $3{,}0$.
+
+A constante de tempo medida vai de $5{,}0$ a $20{,}0$ min (Tabela~\ref{tab_wp44}). Nos mesmos instantes, a do modelo vai de $10{,}2$ a $12{,}6$ min. A medida é menor que a do modelo em \citet{sharei2010}, \citet{papazoglou2026} e \citet{lee2016}, e maior em \citet{hu2022conbercept} e \citet{soheilian2017}. O desvio, portanto, não tem um sentido fixo.
+
+A área de IOP acima do basal vai de $0{,}9$ a $3{,}4$ vezes o teto do WP4.3 (Figura~\ref{fig_wp44}b). Só \citet{sharei2010} fica abaixo do teto. \citet{hu2022conbercept} e \citet{lee2016} ficam em $1{,}2$ e $1{,}3$ vezes o teto, \citet{papazoglou2026} em $2{,}2$ vezes e \citet{soheilian2017}, que tem o decaimento mais lento, em $3{,}4$ vezes. O $C_{\text{out}}$ implícito é de $0{,}32$ µL/min/mmHg em \citet{sharei2010}, $0{,}23$ em \citet{hu2022conbercept} e $0{,}21$ em \citet{lee2016}, perto dos $0{,}28$ adotados. Em \citet{papazoglou2026} e \citet{soheilian2017}, ele cai para $0{,}13$ e $0{,}08$ µL/min/mmHg. Como o teto não depende da rigidez, uma área maior que ele só se explica por $C_{\text{out}}$ menor ou por mais volume retido.
+
+Toda a dose que uma injeção de $\SI{50}{\micro\liter}$ pode gerar, limitada pelo teto, equivale a manter a perfusão $1{,}5$ mmHg abaixo do basal por $2$ h. No experimento suíno de \citet{kyhn2009}, com a mesma duração, o déficit foi de dezenas de mmHg.
+\section{WP4.5 --- Ilustração de dose acumulada em regimes de injeção}
+\label{sec_wp45}
+
+\subsection{Introdução}
+
+Os pacientes com doenças da retina recebem injeções repetidas, e a dose $\mathcal{I}_{\mathrm{inj}}$ de cada injeção, usada só para comparar cenários, sem calibração clínica, pode ser somada ao longo do tratamento. A dose acumulada sem recuperação é a soma simples das doses de cada injeção. Não há medida de recuperação entre injeções. O modelo adota um decaimento exponencial de meia-vida apenas para mostrar como o intervalo reduz o acúmulo. Cada injeção $k$ contribui com o peso $w_k$, dado por
+\begin{equation}
+w_k=\begin{cases}1, & k=1\\ 2^{-\Delta_k/t_{1/2}}, & k\ge 2\end{cases}
+\label{eq_wp45_peso}
+\end{equation}
+em que $\Delta_k$ é o intervalo entre a injeção $k$ e a anterior e $t_{1/2}$ é a escala de tempo da recuperação. Sem recuperação, $w_k=1$ para todo $k$. Assim, a dose acumulada é
+\begin{equation}
+\mathcal{I}_{\text{ac}}=\mathcal{I}_{\text{inj}}\sum_{k=1}^{N}w_k
+\label{eq_wp45_cum}
+\end{equation}
+em que $N$ é o número de injeções e $N_{\text{ef}}$, a soma dos pesos, é o número efetivo de injeções. O acúmulo anterior não decai. O que varia com o intervalo é o peso da injeção nova, e $N_{\text{ef}}$ não é um decaimento da dose já acumulada. No limite de intervalos muito longos, a dose acumulada se aproxima da de uma única injeção. Intervalos curtos aumentam o acúmulo efetivo.
+
+O WP4.5 aplica essa equação a três regimes esquemáticos de $48$ semanas, como aritmética de cenário.
+
+\subsection{Metodologia}
+
+Foram usados cinco ensaios clínicos (CATT, HAWK, HARRIER, TENAYA e LUCERNE), publicados em três artigos, como base de três regimes de injeção. Cada regime foi reduzido a um cronograma de injeções em $48$ semanas, contadas a partir da primeira e com a carga de indução incluída. O CATT \citep{catt2012} usa injeções a cada $4$ semanas, das semanas $0$ a $44$ ($12$ injeções). O HAWK/HARRIER \citep{dugel2020hawkharrier} usa as semanas $0$, $4$, $8$, $20$, $32$ e $44$, e o TENAYA/LUCERNE \citep{heier2022tenaya} as semanas $0$, $4$, $8$, $12$, $28$ e $44$, ambos para o paciente que permanece no intervalo longo. Cada injeção contribui com $\mathcal{I}_{\mathrm{inj}}=20$ mmHg$\cdot$min, valor adotado. A recuperação parcial usa $t_{1/2}=2$, $4$, $8$ e $12$ semanas, valores ilustrativos, com $4$ semanas adotado como caso central.
+
+\subsection{Resultados}
+
+Para $t_{1/2}=4$ semanas, caso central, o número efetivo de injeções é $6{,}5$ no CATT, $2{,}375$ no HAWK/HARRIER e $2{,}625$ no TENAYA/LUCERNE.
+
+\begin{table}[h]
+\centering
+\caption{Dose acumulada em $48$ semanas, sem recuperação e para $t_{1/2}$ de $2$ a $12$ semanas ($\mathcal{I}_{\mathrm{inj}}=20$ mmHg$\cdot$min).}
+\label{tab_wp45_cum}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+ & \multicolumn{3}{c}{Dose acumulada (mmHg$\cdot$min)} \\
+\cmidrule(l){2-4}
+$t_{1/2}$ (sem) & CATT & HAWK/HARRIER & TENAYA/LUCERNE \\
+\midrule
+$\infty$ (sem recuperação) & 240 & 120 & 120 \\
+2 & 75,0 & 30,9 & 35,2 \\
+4 & 130,0 & 47,5 & 52,5 \\
+8 & 175,6 & 69,5 & 72,4 \\
+12 & 194,6 & 81,7 & 83,5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No modelo adotado, o CATT acumula de $2{,}1$ a $2{,}7$ vezes a dose dos regimes de intervalo longo para $t_{1/2}$ entre $2$ e $12$ semanas, contra $2{,}0$ vezes sem recuperação. O TENAYA/LUCERNE fica de $2\%$ a $14\%$ acima do HAWK/HARRIER, e a diferença diminui quando $t_{1/2}$ aumenta, porque a dose de carga a mais do TENAYA/LUCERNE (quatro contra três) é compensada, cada vez mais, pelo seu intervalo mais longo. A carga de indução responde por $84\%$ de $N_{\text{ef}}$ no HAWK/HARRIER e por $95\%$ no TENAYA/LUCERNE para $t_{1/2}=4$ semanas, e por $63\%$ e $81\%$ para $t_{1/2}=12$ semanas. A dose de cada regime varia por um fator de $2{,}4$ a $2{,}6$ ao longo da faixa de $t_{1/2}$, um efeito comparável à diferença entre o CATT e os de intervalo longo e maior que a diferença entre os dois regimes de intervalo longo.
+
+\section{WP4.6 --- Paracentese e perfusão pós-IVI}
+\label{sec_wp46}
+
+\subsection{Introdução}
+
+Os itens~\ref{sec_wp41} e \ref{sec_wp42} adotaram a IVI sem paracentese, como no pico pós-$50$ µL do WP0. O WP0 simulou três estratégias de paracentese com drenagem de $50$ µL (profilática $30$ s antes da injeção, reativa $30$ s depois e tardia $2$ min depois). O WP4.6 repete a cadeia retratada nos itens anteriores, incluindo a paracentese.
+
+\subsection{Metodologia}
+
+As curvas $\mathrm{IOP}(t)$ utilizadas no presente caso vieram do balanço de volume do WP0, sem alteração de equações. Foram simulados três instantes de início da paracentese, a profilática em $t=-\SI{30}{\second}$, a reativa em $+\SI{30}{\second}$ e a tardia em $+\SI{2}{\minute}$, contados a partir do início da injeção ($t=0$, $50$ µL em $6$ s, com refluxo instantâneo de $\approx1{,}19$ µL). Em cada curva extraíram-se pico de IOP, mínimo de MOPP ($f_{\mathrm{braq\text{-}oft}}=2/3$), tempos com MOPP abaixo de $30$ e $40$ mmHg (interpolação nos cruzamentos, como no WP4.1) e a dose $\mathcal{I}_{\mathrm{inj}}$. A dose usou a definição do WP4.2 (Equação~\ref{eq_wp42_Ievt}), com $\mathrm{OPP}_{\text{crit}}\in\{25,30,31,35,40,45\}$ mmHg e janela de $40$ min a partir do início da injeção. Ela foi integrada numericamente sobre cada curva, porque a forma fechada do WP4.2 não cobre a paracentese. As equações de MOPP e de dose do WP4.1 e do WP4.2 não foram alteradas.
+
+\subsection{Resultados}
+
+Sem paracentese, conforme extraído no WP4.1, o pico de IOP é $32{,}90$ mmHg, a MOPP mínima é $29{,}32$ mmHg, a MOPP fica $10{,}98$ min abaixo de $40$ mmHg e a dose é $8{,}6$ mmHg$\cdot$min com $\mathrm{OPP}_{\text{crit}}=35$ mmHg e $42{,}7$ mmHg$\cdot$min com $40$ mmHg (Tabela~\ref{tab_wp46_par}). Enquanto isso, a paracentese profilática reduz o pico a $17{,}12$ mmHg e eleva a MOPP mínima a $45{,}10$ mmHg, sem minutos abaixo de $30$ ou $40$ mmHg e com dose nula até $\mathrm{OPP}_{\text{crit}}=45$ mmHg. Na reativa e na tardia, o pico e a MOPP mínima não mudam, porque o pico ocorre antes da paracentese, e o tempo abaixo de $30$ mmHg é de $0{,}09$ min. O tempo abaixo de $40$ mmHg cai para $0{,}54$ min na reativa e $2{,}02$ min na tardia. A dose cai para $2{,}1$ e $6{,}9$ mmHg$\cdot$min com $\mathrm{OPP}_{\text{crit}}=35$ mmHg ($-76\%$ e $-20\%$) e para $4{,}5$ e $16{,}8$ mmHg$\cdot$min com $40$ mmHg ($-89\%$ e $-61\%$). A IOP mínima é $8{,}7$ mmHg na profilática, abaixo da pressão venosa episcleral de $10$ mmHg adotada no WP0, e $16{,}2$ e $15{,}0$ mmHg na reativa e na tardia.
+
+\begin{table}[h]
+\centering
+\caption{Métricas de perfusão por cenário de paracentese (Friedenwald, $120/80$ mmHg, refluxo de $\approx1{,}19$ µL).}
+\label{tab_wp46_par}
+\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ & IOP pico & MOPP mín. & $T_{<30}$ & $T_{<40}$ & \multicolumn{2}{c}{$\mathcal{I}_{\mathrm{inj}}$ (mmHg$\cdot$min)} \\
+\cmidrule(l){6-7}
+Cenário & (mmHg) & (mmHg) & (min) & (min) & $\mathrm{OPP}_{\text{crit}}=35$ & $\mathrm{OPP}_{\text{crit}}=40$ \\
+\midrule
+Sem paracentese (WP4.1) & 32,90 & 29,32 & 0,09 & 10,98 & 8,6 & 42,7 \\
+Profilática ($-30$ s) & 17,12 & 45,10 & 0 & 0 & 0 & 0 \\
+Reativa ($+30$ s) & 32,90 & 29,32 & 0,09 & 0,54 & 2,1 & 4,5 \\
+Tardia ($+2$ min) & 32,90 & 29,32 & 0,09 & 2,02 & 6,9 & 16,8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As doses dependem do limiar $\mathrm{OPP}_{\text{crit}}$ e da pressão arterial, ambos adotados, e nenhum estudo reutilizado aqui mede o limiar crítico pós-IVI. Elas servem para comparar cenários entre si e não calibram risco clínico agudo.

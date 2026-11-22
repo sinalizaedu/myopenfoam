@@ -1,0 +1,1 @@
+FOAM FATAL ERROR: gnuplot not found - skipping graph creation
